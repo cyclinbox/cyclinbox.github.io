@@ -1,0 +1,344 @@
+<html>
+<head>
+    <title>ANOMS 百度智能云分服</title>
+    <meta charset="utf-8">
+        <!--meta name="viewport" content="width=device-width, user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0"-->
+        <!--link rel="shortcut icon" href="index_files/slime_green.png" /-->
+        <!--link rel="bookmark"href="index_files/aydlt-fol4r-005.ico" /-->
+        <!--link rel="shortcut icon" href="index_files/slime.png" /-->
+        <!--link rel="bookmark" href="index_files/slime.png" /-->
+        <script language="javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.js"></script>
+        <link rel="stylesheet" href="common.css" type="text/css" />
+    <style type="text/css">
+      *{
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    min-width:1440px;
+    width:100%;
+    background-color: #f8f8f8;
+}
+.head-div{
+    background-color: #385;
+    height: 130px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+.head-img{
+    width: 414px;
+    height: 130px;
+    vertical-align:middle;
+    margin: 0 30 0 0;
+}
+#head-title{
+    text-align: left;
+    padding:40 30 20 0;
+    color:#fff;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 22px;
+}
+
+
+/* nav
+#nav{background-color: #358;position: fixed;top: 0;width: 100%;}
+ul{
+    height: 36;
+    width:100%;
+    list-style-type: none;
+}
+ul li{
+    float:left;
+    margin: 0 20 0 50;
+    padding: 5 20 5 20;
+}
+ul li a{text-decoration: none;font-weight:bold;}
+ul li a:link {color: #fff;}
+ul li a:visited {color: #fff;}
+ul li a:hover {color: #acf}
+ul li a:active {color: #acf}
+.isthispage{
+    border:solid #afa;
+    border-top-width:0;
+    border-bottom-width: 2px;
+    border-left-width: 0;
+    border-right-width: 0px;
+}
+nav end*/
+
+
+/*sticky nav*/
+.nav_sticky {
+    height: 38;
+    width: 100%;
+    font-size: 16px;
+    background-color: rgba(51,170,85,0.75);
+}
+
+.content_sticky{}/*占个位置，控制导航栏贴附的代码里有用*/
+
+.nav_sticky ul{
+    height: 38;
+    width:100%;
+    list-style-type: none;    /* background-color: #3355aa;*/
+
+}
+.nav_sticky ul li{
+    float:left;
+    margin: 2 20 0 20;
+    padding: 5 20 4 20;
+}
+.nav_sticky ul a{text-decoration: none;font-weight:bold;}
+.nav_sticky ul a:link {color: #f8fff8;}
+.nav_sticky ul a:visited {color: #f8fff8;}
+.nav_sticky ul a:hover {color: #afb;}
+.nav_sticky ul a:active {color: #afb;}
+.isthispage{
+    border:solid #f8fff8;
+    border-top-width:0;
+    border-bottom-width: 2px;
+    border-left-width: 0;
+    border-right-width: 0px;
+}
+
+
+
+
+/*sticky nav end*/
+
+
+#photo-list img {width: 100%;height: auto; border:0;}
+
+#text-div{
+    text-align: left;
+    line-height:24px;
+    margin:30 160 30 160;
+    padding:50 80 50 80;
+    background-color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';
+    box-shadow: 0px 0px 16px #ddd;
+}
+
+#paragraph-title{
+    text-align: left;
+    font-weight: bolder;
+    font-size: 22px;
+    color:#2b9a57;
+}
+
+#paragraph-content{
+    text-align: left;
+    font-size: 16px;
+    color:#111;
+}
+#paragraph-content a{text-decoration: none;font-weight:bold;}/* 文字链接取消下划线 */
+#paragraph-content a:link {color: #00cc7a;}/* 未访问的链接 */
+#paragraph-content a:visited {color: #00cc7a;}/* 已访问的链接 */
+#paragraph-content a:hover {color: #0f9} /* 鼠标移动到链接上 */
+#paragraph-content a:active {color: #0f9} /* 选定的链接 */
+
+
+#appendix a{text-decoration: none;font-weight:bold;}/* 文字链接取消下划线 */
+#appendix a:link {color: #193a8f;}/* 未访问的链接 */
+#appendix a:visited {color: #193a8f;}/* 已访问的链接 */
+#appendix a:hover {color: #204acf} /* 鼠标移动到链接上 */
+#appendix a:active {color: #204acf} /* 选定的链接 */
+
+
+#tips{
+    font-size: 12px;
+    color:#666;
+}
+
+
+table{
+    margin:20 20 0 20;
+    border:0;
+    padding:0;
+    text-align:center;
+}
+
+table tr td{
+    width:200px;
+    margin:0;
+    padding:0 60 0 60;
+    border:solid black;
+    border-top-width:0;
+    border-bottom-width: 2;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+
+#page-bottom{
+    margin: 0;
+    padding: 40 100 20 100;
+    background-color: #4b6;
+    color: #fff;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#page-bottom a {text-decoration: none;font-weight:lighter;}/* 文字链接取消下划线 */
+#page-bottom a:link {color: #fff;}/* 未访问的链接 */
+#page-bottom a:visited {color: #fff;}/* 已访问的链接 */
+#page-bottom a:hover {color: #ccc} /* 鼠标移动到链接上 */
+#page-bottom a:active {color: #ccc} /* 选定的链接 */
+
+#bottom-img{
+    margin: 20;
+    padding: 0 20 0 0;
+    height: 80;
+    width: auto;
+    vertical-align:middle;
+    border:solid white;
+    border-top-width:0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-right-width: 2px;
+}
+
+#code{
+    font-family:'Courier New', Courier, monospace;
+    color:grey;
+    font-weight: bolder;
+
+}
+                #avatar{
+                        margin:0 20 60 0;
+                        width:100px;
+                        height:100px;
+                        box-shadow: 0px 0px 5px #ccc;
+                        float:left;
+                }
+                #avatar img{
+                        width:100%;
+                        height:100%;
+                }
+                #avatar+div{
+
+                        display:inline;
+
+                }
+    </style>
+        <script type="text/javascript">
+                        if((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|UCWEB|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)))
+                        {
+                                window.location.href="lite/about.php";
+                        }
+    </script>
+
+</head>
+
+<body>
+        <div id="head" class="head-div">
+                <div>
+                        <a href="index.php">
+                                <!--img src="index_files/ANOMS.png" align="left" class="head-img"/-->
+                        </a>
+
+
+                </div>
+                <div id="head-title">
+                        <h1>&nbsp;&nbsp;「ANOMS」百度智能云分服</h1>
+                </div>
+        </div>
+
+
+
+        <div id="nav" class="nav_sticky">
+        <ul>
+                        <a href="#"><li class="isthispage">首页</li></a>
+                        <a href="http://106.13.132.254:8787" target=_blank><li>Rstudio在线版</li></a>
+                        <a href="http://106.13.132.254:23333" target=_blank><li>MCSM控制面板</li></a>
+                        <a href="lifeRestart/view/index.html" target=_blank><li>人生重开模拟器</li></a>
+                </ul>
+        </div>
+
+
+
+        <div id="main" class="content_sticky">
+    <!--main text start from here-->
+                <div id="text-div">
+
+            <div id="about">
+                                <div id="paragraph-title">
+                                        关于本服务器
+                                </div>
+                                <div id="paragraph-content"><br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;运行系统: Ubuntu x86_64 GNU/Linux<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;服务器配置: 1核2GB<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;云服务器提供商: 百度智能云<br>
+
+                                        <br><br><br>
+                                </div>
+            </div>
+
+            <div id="about_host">
+                                <div id="paragraph-title">
+                                        关于服主
+                                </div>
+                <div id="paragraph-content"><br>
+                        <div id="avatar"style="cursor:pointer"onclick="window.alert('  建立Minecraft服务器最初只是我的一个想法。我从小就对计算机感兴趣，虽然大学没有进入计算机专业，但是在课余时间仍然学习了不少与计算机有关的知识。还记得一年前，在一个树莓派微型主机上搭建起了我的第一个网站——那是一个很简陋的页面，几乎显示不了多少内容。但那是之后很多事情的起步。建网站、架设服务器，渐渐发现原来计算机可以做的事情很多。\n\n  ANOMS这个名字的灵感来源是GNU/Linux，我曾经花过很大的力气学习过它的基本操作，也为Linux命令行操作的精准高效而着迷。去年年底我开始租用这台运行着Ubuntu系统（一种Linux发行版）的阿里云的服务器，原本是为了一项比赛而准备的，但是因为疫情，比赛无法举办了，服务器也因此闲置。后来突发奇想，试着在上面运行MC服务器，成功以后就想着建立一个面向大众的服务器，给大家带来欢乐。\n\n  服务器是阿里云学生机，一个月租金只有不到10元，但是较低的配置使我不敢保证在线人数较多/有人大量繁殖生物/高频红石开动时仍然不会卡，因此开通了捐赠的界面，用于升级服务器配置（升级的价格大概需要每个月上百元）。金额随意，量力而行，最重要的其实是要玩得开心。\n\n  最后，也祝大家心想事成，谢谢各位对本服的支持。');"><!--img src="index_files/avatar/zhangwanyu.jpg"/--><span style="color:#A61;font-size:16pt;line-height:16pt;">这是服主头像awa</span></div>
+                                        <div>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;服主网名: cyclin/秋冬之续风/匆匆/zhangwanyu<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;一些信息：某华北地区985天坑专业本科生，什么都会一点，但是都不够精通。除了生物学，还比较喜欢研究计算机，自学过Linux操作系统、网站开发等基础知识<span style="color:#888;">（需要装系统也可以找我23333）</span>。<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;联系方式: QQ: 1738296705。哔哩哔哩主页: <a href="https://space.bilibili.com/398122142">https://space.bilibili.com/398122142</a><br>
+                                        </div>
+                                        <br><br><br>
+                                </div>
+                        </div>
+
+                </div>
+                <!--main text end at here-->
+                <div id="page-bottom">
+                        <div>
+                                <a href="index.html"><img id=bottom-img src="index_files/slime_green.png" align="left" /></a>
+                                <!--span id=bottom-img style="color:#aaa;font-size:32pt;" align="left">这是页面底端</span-->
+                        </div>
+                        <br>友情链接：<br><br>
+                        <a href="http://anoms.top"target="_blank">ANOMS总站</a>&nbsp;&nbsp;&nbsp;
+                        <a href="https://hmcl.huangyuhui.net/"target="_blank">HMCL主页</a>&nbsp;&nbsp;&nbsp;
+                        <a href="https://www.java.com/zh_CN/"target="_blank">Java for windows下载</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="https://optifine.net/adloadx?f=preview_OptiFine_1.16.1_HD_U_G2_pre2.jar"target="_blank">optifine for MC 1.16.1</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="https://www.mcbbs.net/"target="_blank">MCBBS</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="https://minecraft-zh.gamepedia.com/Minecraft_Wiki"target="_blank">官方中文Minecraft Wiki</a>
+                        <br><br><br><br><span style="width:100%;text-align:center;display:inline-block;"><a href="http://www.beian.miit.gov.cn"target="_blank">ANOMS2020-2021&nbsp;|&nbsp;津ICP备20004656号</a></span>
+                </div>
+
+        </div>
+
+
+
+
+        <script type="text/javascript">
+                //=================导航栏自动黏附====================
+                // 获取导航栏到屏幕顶部的距离
+                var oTop1 = $(".nav_sticky").offset().top;
+                //var oTop2 = $(".nav2").offset().top;
+                //获取导航栏的高度，此高度用于保证内容的平滑过渡
+                var martop1 = $('.nav_sticky').outerHeight();
+                //var martop2 = $('.nav2').outerHeight();
+                var sTop = 0;
+                // 监听页面的滚动
+                $(window).scroll(function () {
+                        // 获取页面向上滚动的距离
+                        sTop = $(this).scrollTop();
+                        // 当导航栏到达屏幕顶端
+                        if (sTop >= oTop1) {
+                                // 修改导航栏position属性，使之固定在屏幕顶端
+                                $(".nav_sticky").css({ "position": "fixed", "top": "0" });
+                                // 修改内容的margin-top值，保证平滑过渡
+                                $(".content_sticky").css({ "margin-top": martop1 });
+                        } else {
+                                // 当导航栏脱离屏幕顶端时，回复原来的属性
+                                $(".nav_sticky").css({ "position": "static" });
+                                $(".content_sticky").css({ "margin-top": "0" });
+                        }
+                });
+                //=================导航栏自动黏附end====================
+        </script>
+
+
+</body>
+</html>
