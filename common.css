@@ -1,0 +1,199 @@
+*{
+margin: 0;
+padding: 0;
+}
+html,body{
+min-width:1440px;
+width:100%;
+background-color: #f8f8f8;
+}
+.head-div{
+background-color: #385;
+height: 130px;
+width: 100%;
+margin: 0;
+padding: 0;
+}
+.head-img{
+width: 414px;
+height: 130px;
+vertical-align:middle;
+margin: 0 30 0 0;
+}
+#head-title{
+text-align: left;
+padding:40 30 20 0;
+color:#fff;
+font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+font-size: 22px;
+}
+
+/*sticky nav*/
+.nav_sticky {
+height: 38;
+width: 100%;
+font-size: 17px;
+background-color: rgba(51,170,85,0.75);
+}
+
+.content_sticky{
+
+}/*占个位置，控制导航栏贴附的代码里有用*/
+
+.nav_sticky ul{
+height: 38;
+width:100%;
+list-style-type: none;    /* background-color: #3355aa;*/
+
+}
+.nav_sticky ul li{
+float:left;
+margin: 2 20 0 20;
+padding: 5 20 4 20;
+}
+.nav_sticky ul a{text-decoration: none;font-weight:bold;}
+.nav_sticky ul a:link {color: #f8fff8;}
+.nav_sticky ul a:visited {color: #f8fff8;}
+.nav_sticky ul a:hover {color: #afb;}
+.nav_sticky ul a:active {color: #afb;}
+.isthispage{
+border:solid #f8fff8;
+border-top-width:0;
+border-bottom-width: 2px;
+border-left-width: 0;
+border-right-width: 0px;
+}
+
+/*sticky nav end*/
+
+
+#photo-list img {width: 100%;height: auto; border:0;}
+
+#text-div{
+text-align: left;
+line-height:24px;
+margin:30 160 30 160;
+padding:50 80 50 80;
+background-color: #fff;
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';
+font-size: 17px;
+box-shadow: 0px 0px 16px #ddd;
+}
+
+#paragraph-title{
+text-align: left;
+font-weight: bolder;
+font-size: 22px;
+color:#2b9a57;
+}
+
+#paragraph-content{
+text-align: left;
+font-size: 17px;
+color:#111;
+}
+#paragraph-content a{text-decoration: none;font-weight:bold;}/* 文字链接取消下划线 */
+#paragraph-content a:link {color: #00cc7a;}/* 未访问的链接 */
+#paragraph-content a:visited {color: #00cc7a;}/* 已访问的链接 */
+#paragraph-content a:hover {color: #0f9} /* 鼠标移动到链接上 */
+#paragraph-content a:active {color: #0f9} /* 选定的链接 */
+
+
+#appendix a{text-decoration: none;font-weight:bold;}/* 文字链接取消下划线 */
+#appendix a:link {color: #193a8f;}/* 未访问的链接 */
+#appendix a:visited {color: #193a8f;}/* 已访问的链接 */
+#appendix a:hover {color: #204acf} /* 鼠标移动到链接上 */
+#appendix a:active {color: #204acf} /* 选定的链接 */
+
+
+#tips{
+font-size: 12px;
+color:#666;
+}
+
+
+table{
+margin:20 20 0 20;
+border:0;
+padding:0;
+text-align:center;
+}
+
+table tr td{
+width:200px;
+margin:0;
+padding:0 60 0 60;
+border:solid black;
+border-top-width:0;
+border-bottom-width: 2;
+border-left-width: 0;
+border-right-width: 0;
+}
+
+
+#page-bottom{
+margin: 0;
+padding: 40 100 20 100;
+background-color: #4b6;
+color: #fff;
+font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#page-bottom a {text-decoration: none;font-weight:lighter;}/* 文字链接取消下划线 */
+#page-bottom a:link {color: #fff;}/* 未访问的链接 */
+#page-bottom a:visited {color: #fff;}/* 已访问的链接 */
+#page-bottom a:hover {color: #ccc} /* 鼠标移动到链接上 */
+#page-bottom a:active {color: #ccc} /* 选定的链接 */
+
+#bottom-img{
+margin: 20;
+padding: 0 20 0 0;
+height: 80;
+width: auto;
+vertical-align:middle;
+border:solid white;
+border-top-width:0;
+border-bottom-width: 0;
+border-left-width: 0;
+border-right-width: 2px;
+}
+
+#code{
+font-family:'Courier New', Courier, monospace;
+color:grey;
+font-weight: bolder;
+
+}
+#avatar{
+        margin:0 20 20 0;
+        width:150px;
+        height:auto;
+        box-shadow: 0px 0px 5px #ccc;
+        float:left;
+}
+#avatar img{
+        width:100%;
+        height:auto;
+}
+#avatar+div{
+
+        display:inline;
+
+}
+
+#photo{
+    /*margin:0 20 20 0;*/
+    width:200px;
+    height:auto;
+    box-shadow: 0px 0px 5px #ccc;
+    float:right;
+}
+#photo img{
+    width:100%;
+    height:auto;
+}
+#photo+div{
+
+    display:inline;
+
+}
