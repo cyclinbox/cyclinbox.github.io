@@ -127,7 +127,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -177,215 +177,6 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/18/%E5%A6%82%E4%BD%95%E5%AF%B93d%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B1%95%E7%A4%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/cyclinbox.png">
-      <meta itemprop="name" content="Warren Zhang">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Warren's Blog">
-      <meta itemprop="description" content="一切会变好的吗？会！">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Warren's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/10/18/%E5%A6%82%E4%BD%95%E5%AF%B93d%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B1%95%E7%A4%BA/" class="post-title-link" itemprop="url">如何对3D数据进行可视化展示</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2022-10-18 17:46:48" itemprop="dateCreated datePublished" datetime="2022-10-18T17:46:48+08:00">2022-10-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>很多时候，我们要对三维空间中的数据进行可视化展示和分析。然而，由于三维空间内的数据可视化涉及透视、投影等操作，其复杂性远高于平面内的数据可视化。因此我花了一下午的时间，调研了一下相关工具，汇总成本文。文中一些疏漏之处，还请多多指教。</p>
-<h2 id="一、基于python的方法"><a href="#一、基于python的方法" class="headerlink" title="一、基于python的方法"></a>一、基于python的方法</h2><h3 id="（一）matplotlib"><a href="#（一）matplotlib" class="headerlink" title="（一）matplotlib"></a>（一）matplotlib</h3><p>matplotlib在科学技术和统计分析中多有使用，但是以往人们用得多的是他的二维数据展示功能，例如各种统计图的绘制。但是matplotlib也可也展示三维数据。下面是一个例子</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#导入三维工具包mplot3dfrom mpl_toolkits import mplot3d</span><br><span class="line">import numpy as np</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">#从三个维度构建</span><br><span class="line">z = np.linspace(0, 1, 100)</span><br><span class="line">x = z * np.sin(20 * z)</span><br><span class="line">y = z * np.cos(20 * z)</span><br><span class="line">#创建3d绘图区域</span><br><span class="line">ax = plt.axes(projection=&#x27;3d&#x27;)</span><br><span class="line">ax.plot3D(x, y, z, &#x27;gray&#x27;)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-
-<p>结果如下图所示：</p>
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_1.png"></p>
-<p>当然，也可也创建三维曲面：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#求向量积(outer()方法又称外积)</span><br><span class="line">x = np.outer(np.linspace(-2, 2, 30), np.ones(30))</span><br><span class="line">#矩阵转置</span><br><span class="line">y = x.copy().T </span><br><span class="line">#数据z</span><br><span class="line">z = np.cos(x ** 2 + y ** 2)</span><br><span class="line">#绘制曲面图</span><br><span class="line">ax = plt.axes(projection=&#x27;3d&#x27;)</span><br><span class="line">ax.plot_surface(x, y, z,cmap=&#x27;viridis&#x27;, edgecolor=&#x27;none&#x27;)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_11.png"></p>
-<p>然而，上述方法也有缺点。<strong>maplotlib的三维绘图工具本质上只是将三维结构中的点 “拍扁”</strong> <strong>到二维空间中，因此如果两个三维结构有相交，这种绘图方法会导致两个图形的空间位置错乱</strong>，而且根本看不出相交线。</p>
-<p>一个例子：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#求向量积(outer()方法又称外积)</span><br><span class="line">x = np.outer(np.linspace(-2, 2, 30), np.ones(30))</span><br><span class="line">#矩阵转置</span><br><span class="line">y = x.copy().T </span><br><span class="line">#数据z</span><br><span class="line">z1 = x**2+y</span><br><span class="line">z2 = x**2-y</span><br><span class="line">#绘制曲面图</span><br><span class="line">ax = plt.axes(projection=&#x27;3d&#x27;)</span><br><span class="line">ax.plot_surface(x, y, z1,cmap=&#x27;viridis&#x27;, edgecolor=&#x27;none&#x27;)</span><br><span class="line">ax.plot_surface(x, y, z2,cmap=&#x27;plasma&#x27;,  edgecolor=&#x27;none&#x27;)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_1-error-fig-of-matplot3d.png"></p>
-<p>可以从上图中看到，函数z2的图像全部遮盖住了z1的图像。然而从函数表达式中我们可以得知，z1与z2有一个相交的曲线（<code>y=0, z=x^2</code>），这并不能从图中体现出来。通过这个例子我们可以知道，使用matplotlib绘制三维函数图像，虽然可行（_真的吗？_），但是总归不严谨。</p>
-<h3 id="（二）Mayavi"><a href="#（二）Mayavi" class="headerlink" title="（二）Mayavi"></a>（二）Mayavi</h3><p>Mayavi是一个3-D科学数据可视化工具，其官网为<a target="_blank" rel="noopener" href="https://mayavi.readthedocs.io/">https://mayavi.readthedocs.io/</a>。可以通过下列的conda指令进行安装：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">conda install -c conda-forge pyqt # PyQt5为Mayavi所依赖，因此需要预先安装</span><br><span class="line">conda install -c conda-forge mayavi</span><br></pre></td></tr></table></figure>
-
-<p>Mayavi是一个很大的工具包，因此安装耗时也比较长，请耐心等待。安装成功后，在命令行输入指令<code>mayavi2 --version</code>，如果能够正确输出版本号（例如<code>Mayavi 4.7.2</code>），则表明安装成功。</p>
-<p>Mayavi可以以一个独立的应用程序的形式运行，当然也可也在python代码中调用。Mayavi提供了一个叫做<a target="_blank" rel="noopener" href="https://mayavi.readthedocs.io/en/latest/mlab.html">mlab</a>的接口，通过<code>from mayavi import mlab</code>在python中导入这个接口，即可像matplotlib一样使用。</p>
-<p>使用mayavi进行数据可视化展示的一个示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">from mayavi import mlab</span><br><span class="line">x, y = np.ogrid[-2:2:20j, -2:2:20j]</span><br><span class="line">z = x * np.exp( - x**2 - y**2)</span><br><span class="line">pl = mlab.surf(x, y, z, warp_scale=&quot;auto&quot;)</span><br><span class="line">mlab.axes(xlabel=&#x27;x&#x27;, ylabel=&#x27;y&#x27;, zlabel=&#x27;z&#x27;)</span><br><span class="line">mlab.outline(pl)</span><br><span class="line">mlab.show()</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_2-fig-in-mayavi.png"></p>
-<p>对于多个相交的曲面，Mayavi的展示效果要强于matplotlib，其可以很好的反映两个曲面的相交情况。下图展示一个例子（仍然以上一小节中的函数z1和z2为例）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">from mayavi import mlab</span><br><span class="line">x, y = np.ogrid[-2:2:20j, -2:2:20j]</span><br><span class="line">z1 = x**2 + y</span><br><span class="line">z2 = x**2 - y</span><br><span class="line">pl1 = mlab.surf(x, y, z1, warp_scale=&quot;auto&quot;, colormap=&#x27;autumn&#x27;)</span><br><span class="line">pl2 = mlab.surf(x, y, z2, warp_scale=&quot;auto&quot;, colormap=&#x27;winter&#x27;)</span><br><span class="line">mlab.axes(xlabel=&#x27;x&#x27;, ylabel=&#x27;y&#x27;, zlabel=&#x27;z&#x27;)</span><br><span class="line">mlab.outline(pl1)</span><br><span class="line">mlab.outline(pl2)</span><br><span class="line">mlab.show()</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_2-fig-of-2-mesh-in-mayavi.png"></p>
-<h3 id="（三）PyVista"><a href="#（三）PyVista" class="headerlink" title="（三）PyVista"></a>（三）PyVista</h3><p>PyVista是另一个基于Python的三维数据可视化软件。其官网为<a target="_blank" rel="noopener" href="https://docs.pyvista.org/index.html">https://docs.pyvista.org/index.html</a>。安装方法也很简单，直接执行指令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install -c conda-forge pyvista</span><br></pre></td></tr></table></figure>
-
-<p>即可。</p>
-<p>使用PyVista绘图的一个示例如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">import pyvista as pv</span><br><span class="line">from pyvista import examples</span><br><span class="line"># Make data</span><br><span class="line">x = np.arange(-2, 2, 0.05)</span><br><span class="line">y = np.arange(-2, 2, 0.05)</span><br><span class="line">x, y = np.meshgrid(x, y)</span><br><span class="line">z1 = x**2 + y </span><br><span class="line">z2 = x**2 - y</span><br><span class="line">grid1 = pv.StructuredGrid(x, y, z1) # 绘制函数z1的多边形模型</span><br><span class="line">grid2 = pv.StructuredGrid(x, y, z2) # 绘制函数z2的多边形模型</span><br><span class="line">pl = pv.Plotter() # 创建绘图对象</span><br><span class="line">pl.add_mesh(grid1, color=&quot;#5599aa&quot;) # 将函数z1的多边形模型加入绘图对象中，并设置颜色</span><br><span class="line">pl.add_mesh(grid2, color=&quot;#aa9965&quot;) # 将函数z2的多边形模型加入绘图对象中，并设置颜色</span><br><span class="line">pl.add_axes(line_width=5, labels_off=False) # 左下角展示坐标轴</span><br><span class="line">pl.show() # 图像展示</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_3-pyvista.png"></p>
-<h2 id="二、基于matlab的方法"><a href="#二、基于matlab的方法" class="headerlink" title="二、基于matlab的方法"></a>二、基于matlab的方法</h2><p>前面我们讲了三种基于python的三维结构展示方法，但是其实很多科学计算软件内置了三维数据可视化方法，例如matlab。下面举一个例子</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">clear;%清除之前所有已有的变量</span><br><span class="line">X=[-2:0.05:2];</span><br><span class="line">Y=[-2:0.05:2];</span><br><span class="line">[x,y] = meshgrid(X,Y);</span><br><span class="line">z1 = x.^2 + y; % 函数z1</span><br><span class="line">z2 = x.^2 - y; % 函数z2</span><br><span class="line"></span><br><span class="line">mesh(x,y,z1);</span><br><span class="line">hold on; % 保持上一个图形不消失，继续绘制</span><br><span class="line">mesh(x,y,z2);</span><br><span class="line">xlabel(&#x27;x&#x27;), ylable(&#x27;y&#x27;), zlabel(&#x27;z&#x27;)</span><br><span class="line">show()</span><br></pre></td></tr></table></figure>
-
-<p>结果如下图所示：</p>
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_4-matlab.png"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/17/notice/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/cyclinbox.png">
-      <meta itemprop="name" content="Warren Zhang">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Warren's Blog">
-      <meta itemprop="description" content="一切会变好的吗？会！">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Warren's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/10/17/notice/" class="post-title-link" itemprop="url">博客内容迁移说明</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2022-10-17 23:40:21" itemprop="dateCreated datePublished" datetime="2022-10-17T23:40:21+08:00">2022-10-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:01:22" itemprop="dateModified" datetime="2023-04-23T10:01:22+08:00">2023-04-23</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>基于hexo的博客系统暂时停止使用。</p>
-<p>原先在此发表的文章已经迁移到了<a target="_blank" rel="noopener" href="http://zhangwanyu.anoms.top/">ANOMSの另一个小世界</a>上。后者是我的博客网站，欢迎参观留言。</p>
-<p>cyclin</p>
-<p>2022-10-17</p>
-<hr>
-<p>update 2023-4-23</p>
-<p>Wordpress已停用</p>
-<p>目前考虑迁移回hexo</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/17/%E6%BB%A1%E5%9F%8E%E5%B7%B2%E6%98%AF%E6%A1%82%E8%8A%B1%E9%A6%99/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -422,7 +213,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 11:14:25" itemprop="dateModified" datetime="2023-04-23T11:14:25+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -444,7 +235,9 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>上海的桂花开了。园区里飘散着一股甜甜的香味。</p>
+          <span id="more"></span>
+
+<p>上海的桂花开了。园区里飘散着一股甜甜的香味。</p>
 <p>虽然上海的桂花比家乡晚开了一个多月，但这也足够让我惊喜。在我的印象中，桂花是秋天的代表，当桂花的香气在飘散在空中时，人们就会意识到，原来秋天已经来了。</p>
 <p>可惜，我在北方上大学的四年里，并没有如尝所愿在秋天到来时品尝这沁人的芬芳。北京太冷，天津太干，可能都不适合桂花的生长吧。</p>
 <p>刚刚过去的周末过得懒洋洋的。周六补了个觉，在草草做了点计算生物学的作业以后去和同学打羽毛球了。三个多小时的运动，很累，但是很快乐。于是周日就惨了，我要完成作业，要帮某人检查作业，还要规划点别的任务。当然，懒散如我，肯定不可能真的按照计划完成。在昨天下午匆忙完成计算生物学作业以后，又一次骑上自行车，出门溜达去了。这一次去了一些不一样的地方，例如西岸艺术中心和油罐艺术中心，例如上海南站，还例如虹漕体育馆。虽是仲秋，天气也有些阴沉，但穿梭于满城桂花的香气中，心情是愉悦放松的。</p>
@@ -512,7 +305,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:50:52" itemprop="dateModified" datetime="2023-04-23T10:50:52+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -537,125 +330,14 @@
           <p>Python是一种很流行的编程语言，由于其语法简单而功能强大，已被广泛使用。目前的最新版本是3.10。</p>
 <p>SciPy是一个Python的软件包，其基于NumPy软件包扩展了大量功能，包括统计方法、信号处理、线性代数以及规划问题。最新版本为1.9.1。</p>
 <p>本文将基于Python这一编程语言以及Scipy这一软件包，说明如何使用这二者进行线性规划问题的求解。</p>
-<h2 id="0、准备（Python和SciPy的安装）"><a href="#0、准备（Python和SciPy的安装）" class="headerlink" title="0、准备（Python和SciPy的安装）"></a>0、准备（Python和SciPy的安装）</h2><h3 id="1-Python的安装"><a href="#1-Python的安装" class="headerlink" title="(1) Python的安装"></a>(1) Python的安装</h3><p>有多种方法可以安装Python，这里列举两个方法。</p>
-<ol>
-<li> 从Python<a target="_blank" rel="noopener" href="https://www.python.org/downloads/">官方网站</a>安装。点击网页上的Download按钮，下载安装包，然后直接执行安装即可。<strong>（比较麻烦，不推荐）</strong></li>
-<li> 安装<a target="_blank" rel="noopener" href="https://anaconda.org/">Anaconda</a>。Anaconda是一个优秀的Python发行版，内置了大量科学计算和数据分析的软件包，并带有<code>conda</code>这一包管理器和<code>Jupyter</code>这一IDE，是数据分析的首选。从<a target="_blank" rel="noopener" href="https://www.anaconda.com/products/distribution">官方网站</a>下载安装包，然后直接执行安装即可。<strong>（推荐）</strong></li>
-</ol>
-<h3 id="2-SciPy的安装"><a href="#2-SciPy的安装" class="headerlink" title="(2) SciPy的安装"></a>(2) SciPy的安装</h3><p>如果已经安装了Anaconda，则无需进行这一步，Anaconda已经打包了SciPy在自己的发行版中。</p>
-<p>如果安装的是Python，可以使用下面的方法安装。首先，确定<code>Python</code>和<code>pip</code>已经被加载到环境变量中；然后，打开一个命令行窗口（Windows的“命令提示符”和macOS的“终端”），输入下面的指令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install scipy  -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-
-<p>即可执行安装。</p>
-<h2 id="1、快速上手"><a href="#1、快速上手" class="headerlink" title="1、快速上手"></a>1、快速上手</h2><p>SciPy提供的线性规划计算工具为<code>scipy.optimize.linprog</code>函数。因此要想计算线性规划问题，需要按照要求导入scipy这一软件包</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">from scipy.optimize import linprog</span><br></pre></td></tr></table></figure>
-
-<p>以一个线性规划问题为例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">max z = 29*x_1+45*x_2</span><br><span class="line">s.t.</span><br><span class="line">  x_1  -x_2-3*x_3       &amp;lt;= 5</span><br><span class="line">2*x_1-3*x_2-7*x_3+3*x_4 &amp;gt;= 10</span><br><span class="line">2*x_1+8*x_2  +x_3        = 60</span><br><span class="line">4*x_1+4*x_2        +x_4  = 60</span><br><span class="line"> 0 &amp;lt;= x_1</span><br><span class="line"> 0 &amp;lt;= x_2 &amp;lt;= 5</span><br><span class="line">      x_3 &amp;lt;= 0.5</span><br><span class="line">-3 &amp;lt;= x_4</span><br></pre></td></tr></table></figure>
-
-<p>在上面这个问题中，我们的目标是最大化目标函数z，因此为了使用SciPy求解，我们必须对目标函数的系数向量取相反数</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c = np.array([-29.0, -45.0, 0.0, 0.0])</span><br></pre></td></tr></table></figure>
-
-<p>在约束条件中，有几个不等式，我们将其全部化成小于等于的形式，得到约束条件的系数矩阵<code>A_ub</code>和列向量<code>b_ub</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A_ub = np.array([[1.0, -1.0, -3.0, 0.0],</span><br><span class="line">                [-2.0, 3.0, 7.0, -3.0]])</span><br><span class="line">b_ub = np.array([5.0, -10.0])</span><br></pre></td></tr></table></figure>
-
-<p>在约束条件中，还有几个等式，我们能够得到约束条件的系数矩阵<code>A_eq</code>和列向量<code>b_eq</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A_eq = np.array([[2.0, 8.0, 1.0, 0.0],</span><br><span class="line">                [4.0, 4.0, 0.0, 1.0]])</span><br><span class="line">b_eq = np.array([60.0, 60.0])</span><br></pre></td></tr></table></figure>
-
-<p>此外，我们注意到，变量x_1到x_4x还有取值范围的限制。因此这一项也应该被我们考虑进去。我们使用一个一维数组存储x_1到x_4​的取值范围，其中每个变量的取值范围用一个<a target="_blank" rel="noopener" href="https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences">元组（Tuple）</a>进行存储</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">x1_bounds = (0, None)  </span><br><span class="line"># None代表可以取到无穷大</span><br><span class="line">x2_bounds = (0, 5.0)</span><br><span class="line">x3_bounds = (-np.inf, 0.5)  </span><br><span class="line"># +/- np.inf 可以代替None用以表示无穷大或者无穷小</span><br><span class="line">x4_bounds = (-3.0, None)</span><br><span class="line">bounds = [x1_bounds, x2_bounds, x3_bounds, x4_bounds] </span><br><span class="line"># 这个数组存储了变量x1到x4的取值范围。</span><br></pre></td></tr></table></figure>
-
-<p>之后，用一行代码即可完成线性规划的求解</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 别忘了   import numpy as np</span><br><span class="line"># 也别忘了 from scipy.optimize import linprog</span><br><span class="line">result = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds)</span><br><span class="line">print(result) # 输出求解结果</span><br></pre></td></tr></table></figure>
-
-<p>SciPy给出的结果如下所示：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">    con: array([15.53611731, 16.61287584])</span><br><span class="line">    fun: -370.23223964124924</span><br><span class="line">message: &#x27;The algorithm terminated successfully and determined that the problem</span><br><span class="line">          is infeasible.&#x27;</span><br><span class="line">    nit: 6</span><br><span class="line">  slack: array([ 0.79315063, -1.76308707])</span><br><span class="line"> status: 2</span><br><span class="line">success: False</span><br><span class="line">      x: array([ 6.60059411,  3.9736669 , -0.52664072,  1.09008012])</span><br></pre></td></tr></table></figure>
-
-<p>看到那个<code>success: False</code>了吗？这意味着我们的问题没有可行解。这并不一定意味着我们做错了，因为一些问题确实不存在可行解。但是，也许我们将条件放宽一点，例如令 <code>0 &lt;= x_2 &lt;= 6</code> ，就能得到可行解。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x2_bounds = (0, 6)</span><br><span class="line">bounds = [x1_bounds, x2_bounds, x3_bounds, x4_bounds]</span><br><span class="line">result = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds)</span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
-
-<p>SciPy给出的结果如下所示：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">    con: array([9.79743930e-09, 1.04769242e-08])</span><br><span class="line">    fun: -505.97435889005345</span><br><span class="line">message: &#x27;Optimization terminated successfully.&#x27;</span><br><span class="line">    nit: 4</span><br><span class="line">  slack: array([ 6.53052723e-10, -2.26972219e-09])</span><br><span class="line"> status: 0</span><br><span class="line">success: True</span><br><span class="line">      x: array([ 9.41025641,  5.17948718, -0.25641026,  1.64102564])</span><br></pre></td></tr></table></figure>
-
-<p>这回确实得到了可行解。我们看一下目标函数的值是多少：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x = np.array(result.x)</span><br><span class="line">print(c @ x) # @运算符是NumPy软件包中的点乘运算符</span><br><span class="line"># out: -505.97435889005345</span><br></pre></td></tr></table></figure>
-
-<h2 id="2、函数原型与参数含义"><a href="#2、函数原型与参数含义" class="headerlink" title="2、函数原型与参数含义"></a>2、函数原型与参数含义</h2><p>我们现在研究一下<code>scipy.optimize.linprog</code>这个函数，以便学习其用法。</p>
-<p>参考<a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html#scipy-optimize-linprog">SciPy文档</a>，这一函数的原型如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scipy.optimize.linprog(c, A_ub=None, b_ub=None, A_eq=None, b_eq=None, </span><br><span class="line">bounds=None, method=&#x27;highs&#x27;, callback=None, options=None, x0=None, </span><br><span class="line">integrality=None)</span><br></pre></td></tr></table></figure>
-
-<p>接下来，我们逐一分析相关参数。首先是与线性规划问题紧密相关的5个参数：</p>
-<ul>
-<li><p>  <code>c</code>：一个一维数组（向量），代表目标函数的系数向量</p>
-</li>
-<li><p>  <code>A_ub</code>：一个二维数组（矩阵），是不等式约束条件的系数矩阵</p>
-</li>
-<li><p>  <code>b_ub</code>：一个一维数组（向量），是不等式约束条件的资源向量</p>
-</li>
-<li><p>  <code>A_eq</code>：一个二维数组（矩阵），是等式约束条件的系数矩阵</p>
-</li>
-<li><p>  <code>b_eq</code>：一个一维数组（向量），是等式约束条件的资源向量</p>
-</li>
-<li><p>  <code>bounds</code>：一个元组类型的一维数组，每一个元组都定义了一个决策变量xix_ixi​的取值范围<code>(min, max)</code>，可以在元组中使用<code>None</code>代表正负无穷（例如，<code>(None, 0)</code>代表取值范围为负无穷大到0）。这是一个可选参数，如果不给出，则默认值为<code>(0, None)</code>，即0到正无穷大。</p>
-</li>
-<li><p>  <code>method</code>：字符串，指定求解方法，默认值为<code>&#39;highs&#39;</code>，可选择的其他方法包括<code>&#39;highs-ds&#39;</code>，<code>&#39;highs-ipm&#39;</code>，<code>&#39;interior-point&#39;</code>，<code>&#39;revised simplex&#39;</code>以及<code>&#39;simplex&#39;</code>。这一参数将在SciPy的1.11.0以后的版本中废除。</p>
-</li>
-<li><p>  <code>x0</code>：一个一维数组（向量），代表一个初始基可行解。这个参数目前只在<code>&#39;revised simplex&#39;</code>方法中被用到，因此可以不给出。</p>
-</li>
-<li><p><code>integrality</code>：一个一维数组，指定每个决策变量的取整约束条件，默认是不存在取整约束。这个参数仅在<code>highs</code>方法中被用到。对每一个决策变量，不同的取整约束如下：</p>
-<ul>
-<li>  <code>0</code>：连续变量，可以取到取值范围内的所有实数，不存在取整约束。</li>
-<li>  <code>1</code>：整数变量，只能取到取值范围内的所有整数。</li>
-<li>  <code>2</code>：半连续变量，可以取到取值范围内的所有实数，以及0。</li>
-<li>  <code>3</code>：半整数变量，只能取到取值范围内的所有整数，以及0。</li>
-</ul>
-</li>
-</ul>
-<p>此外，还有两个可选参数<code>callback</code>和<code>options</code>，这两个参数包含一些与程序运行以及返回值有关的选项，而与线性规划问题本身无关，因此本文略过。</p>
-<h2 id="3-返回值"><a href="#3-返回值" class="headerlink" title="3. 返回值"></a>3. 返回值</h2><p>线性规划求解函数<code>scipy.optimize.linprog</code>的返回值是一个<code>scipy.optimize.optimize.OptimizeResult</code>类型的对象，其包含下列属性：</p>
-<ul>
-<li>  <code>x</code>：决策变量的值。如果问题存在可行解的话，<code>x</code>就是一个可行解。</li>
-<li>  <code>fun</code>：目标函数的值，也就是<code>c@x</code>（向量CCC点乘向量XXX）的结果。</li>
-<li>  <code>slack</code>：不等式约束中，松弛变量的值，原则上是正的。其等于<code>b_ub-A_ub@x</code>。</li>
-<li>  <code>con</code>：等式约束中，残差的值，原则上等于0。其等于<code>b_eq-A_eq@x</code></li>
-<li>  <code>success</code>：一个布尔变量，代表是否找到了最优解。</li>
-<li><code>status</code>：状态码。含义如下：<ul>
-<li>  <code>0</code>：成功找到最优解</li>
-<li>  <code>1</code>：达到了迭代次数的最大限制</li>
-<li>  <code>2</code>：问题似乎无解</li>
-<li>  <code>3</code>：问题似乎存在无界解</li>
-<li>  <code>4</code>：遇到了数值困难</li>
-</ul>
-</li>
-<li>  <code>nit</code>：迭代次数</li>
-<li>  <code>message</code>：对问题求解结果的文字描述。</li>
-</ul>
-<h2 id="4、例题"><a href="#4、例题" class="headerlink" title="4、例题"></a>4、例题</h2><p>某工厂在计划期内要安排生产I、II两种产品，已知生产单位产品所需设备台时及原材料消耗如下表所示</p>
-<p>资源</p>
-<p>产品I</p>
-<p>产品II</p>
-<p>现有条件</p>
-<p>设备</p>
-<p>1台时/件</p>
-<p>2台时/件</p>
-<p>8台时</p>
-<p>原材料A</p>
-<p>4kg/件</p>
-<p>0</p>
-<p>16kg</p>
-<p>原材料B</p>
-<p>0</p>
-<p>4kg/件</p>
-<p>12kg</p>
-<p>该工厂每生产一件产品I可获利2元，每生产一件产品II可获利3元，如何安排生产计划使得该工厂获利最多？</p>
-<h3 id="解："><a href="#解：" class="headerlink" title="解："></a>解：</h3><p>我们建立上述问题的线性规划数学模型，编写程序如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">from scipy.optimize import linprog</span><br><span class="line">c = np.array([-2.0, -3.0])</span><br><span class="line">A_ub = np.array([[1.0, 2.0],</span><br><span class="line">                [4.0, 0.0],</span><br><span class="line">                [0.0, 4.0]])</span><br><span class="line">b_ub = np.array([8.0, 16.0, 12.0])</span><br><span class="line">result = linprog(c, A_ub=A_ub, b_ub=b_ub)</span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
-
-<p>程序的运行结果如下所示：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">    con: array([], dtype=float64)</span><br><span class="line">    fun: -13.999999982532964</span><br><span class="line">message: &#x27;Optimization terminated successfully.&#x27;</span><br><span class="line">    nit: 4</span><br><span class="line">  slack: array([1.02599227e-08, 1.66172107e-08, 4.00000001e+00])</span><br><span class="line"> status: 0</span><br><span class="line">success: True</span><br><span class="line">      x: array([4., 2.])</span><br></pre></td></tr></table></figure>
-
-<p>我们可以看到，SciPy成功帮助我们求出了最优解，即x1=4,x2=2，此时目标函数值 z=−z1=13.999≈14 ，也就是说，原问题的最大利润值是14元。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/10/17/%E4%BD%BF%E7%94%A8python%E5%92%8Cscipy%E8%A7%A3%E5%86%B3%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -717,7 +399,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:48:57" itemprop="dateModified" datetime="2023-04-23T10:48:57+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -739,22 +421,16 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>之前的博客系统是基于wordpress建立的，而Hexo作为另一个广为人知的博客系统（参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/102592286">从零开始搭建个人博客</a>），之前研究的不多。</p>
+          <p>2023年之前的博客系统是基于wordpress建立的，而Hexo作为另一个广为人知的博客系统（参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/102592286">从零开始搭建个人博客</a>），之前研究的不多。</p>
 <p>最近倒是整了点歪门邪道，搞出来了一个脚本出来。这个脚本主要面向懒人和Hexo的小白用户，帮助实现Hexo博客系统本地仓库的一键构建，与GitHub deploy相关参数的配置。<strong>使用方法也很简单，将代码中标为橙色的几个shell变量改成自己的变量，然后<code>chmod +x</code>，之后直接在命令行窗口中运行就行。</strong></p>
-<hr>
-<p>我们假设读者已经对命令行操作有所了解，并已经在电脑上安装了<code>nodejs</code>和<code>npm</code>。此外，还需要准备下面的东西：<strong>一个用于存放博客源代码的空文件夹</strong>，<strong>一个已经注册好的GitHub账户</strong>，以及<strong>一个GitHub Pages存储库</strong>。（理论上其他代码托管平台例如Gitee，GitLab的Pages服务也可以，但是可能需要个人提前踩坑，因此无脑选GitHub总还是好的）</p>
-<p>然后，将下面这段代码复制下来，粘贴到一个文本文件中，并命名为<code>init_blog.sh</code>。</p>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"># 本shell脚本的目标是建立一个自动化搭建博客站点的流程，包括环境初始化、设置NexT主题，以及GitHub 账号设置。</span><br><span class="line"># 橙色部分的变量值需要手动修改</span><br><span class="line"></span><br><span class="line">## 0. 部分博客信息的设置。需要手动修改</span><br><span class="line">BLOG_NAME=&quot;Blog_name&quot; #改成博客系统的源代码文件夹的名字</span><br><span class="line"># 不要带空格、英文逗号、英文引号，不然可能会造成bug；可以用下划线和中文标点代替</span><br><span class="line"></span><br><span class="line">REPO=&quot;https://github.com/username/username.github.io.git&quot;</span><br><span class="line"># GitHub存储库的地址。在GitHub存储库里点右上角那个绿色的&quot;Code&quot;按钮复制就能得到。</span><br><span class="line"></span><br><span class="line">BRANCH=&quot;main&quot;</span><br><span class="line"># GitHub存储库的代码分支。因为有些存储库是main作为主分支，有些则是master作为主分支。建议去GitHub存储库检查一下分支名称是什么。</span><br><span class="line"></span><br><span class="line">EMAIL=&quot;user@institute.com&quot;</span><br><span class="line"># GitHub账户绑定的邮箱</span><br><span class="line"></span><br><span class="line">USERNAME=&quot;username&quot;</span><br><span class="line"># GitHub的账户名称，例如cyclinbox或者Hazelandinstant</span><br><span class="line"></span><br><span class="line">TOKEN=&quot;token&quot;</span><br><span class="line"># GitHub的账户令牌，在`Settings -&gt; Developer settings -&gt; Personal access tokens`处获得</span><br><span class="line"></span><br><span class="line">## 1. 新建一个目录，用于存放博客源代码</span><br><span class="line">mkdir $BLOG_NAME</span><br><span class="line">cd    $BLOG_NAME</span><br><span class="line">hexo init  --no-clone</span><br><span class="line"></span><br><span class="line">## 2. 新建一个页面看看：</span><br><span class="line">hexo new First_Page</span><br><span class="line">echo &quot;Hello World\! This is my First blog\!&quot; &gt;&gt; source/_posts/First-Page.md</span><br><span class="line"></span><br><span class="line">## 3. 安装Next主题</span><br><span class="line">npm install hexo-theme-next</span><br><span class="line"># 此时的安装路径为`node_modules/hexo-theme-next`</span><br><span class="line"># 应该是不需要做其他改动的，例如不用把这个文件夹移动到theme下面。（不然可能会报错？）</span><br><span class="line"></span><br><span class="line">## 4. 然后在_config.yml文件中修改主题。下面的代码可以自动完成这个过程。</span><br><span class="line"># 这一步也可以通过直接修改_config.yml文件第100行的 theme 的内容实现。</span><br><span class="line">sed -e &#x27;s/theme: landscape/theme: next/&#x27; _config.yml &gt; _config.yml.new</span><br><span class="line">mv  _config.yml.new  _config.yml</span><br><span class="line"></span><br><span class="line">## 5. 修改GitHub存储库的信息</span><br><span class="line">sed -e &quot;s/  type: &#x27;&#x27;/  type: git/&quot; _config.yml &gt; _config.yml.new</span><br><span class="line">mv  _config.yml.new  _config.yml</span><br><span class="line">#echo &quot;- type: git&quot;             &gt;&gt; _config.yml</span><br><span class="line">echo &quot;  repo: $&#123;REPO&#125;&quot;          &gt;&gt; _config.yml</span><br><span class="line">echo &quot;  branch: $&#123;BRANCH&#125;&quot;      &gt;&gt; _config.yml</span><br><span class="line">echo &quot;  token: $&#123;TOKEN&#125;&quot;        &gt;&gt; _config.yml</span><br><span class="line">echo &quot;  name: $&#123;USERNAME&#125;&quot;      &gt;&gt; _config.yml</span><br><span class="line">echo &quot;  email: $&#123;EMAIL&#125;&quot;        &gt;&gt; _config.yml</span><br><span class="line"></span><br><span class="line">## 6. 安装hexo-deployer-git插件，否则使用hexo deploy指令时会报错</span><br><span class="line">npm install --save hexo-deployer-git</span><br><span class="line"># 不出意外还得初始化一下存储库</span><br><span class="line">git init</span><br><span class="line">git config user.email $&#123;EMAIL&#125;</span><br><span class="line">git config user.name $&#123;USERNAME&#125;</span><br><span class="line">git remote add origin $&#123;REPO&#125;</span><br><span class="line"></span><br><span class="line">## 7. 大功告成！</span><br><span class="line">echo</span><br><span class="line">echo &quot;博客系统初始化完成！执行下列指令发布第一篇博客吧~&quot;</span><br><span class="line">echo &quot;cd $&#123;BLOG_NAME&#125;;hexo deploy&quot;</span><br><span class="line">echo &quot;执行hexo --help查看更多帮助&quot;</span><br><span class="line">echo</span><br><span class="line">echo &quot;如果提示没有配置远程rsa密钥，则使用下列方法获得密钥后，复制公钥内容到github个人设置中的SSH and GPG keys中的 New SSH key中：&quot;</span><br><span class="line">echo &quot;ssh-keygen -t rsa -C $&#123;EMAIL&#125; #一路回车就行，不用管提示&quot;</span><br><span class="line">echo &quot;cat ~/.ssh/id_rsa.pub #这个就是公钥内容&quot;</span><br><span class="line">echo </span><br><span class="line">echo &quot;如果遇到其他错误，例如无法合并远程分支，或者其他莫名其妙的报错，可以根据报错内容，在互联网上搜索解决方案，或求助于其他人&quot;</span><br><span class="line">echo &quot;谢谢您的使用，再会~&quot;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>之后按照自己的实际情况，<strong>修改上面标橙色的6行内容</strong>，保存后使用chmod +x授予可执行权限，之后执行即可。</p>
-<p>这样我们就得到了一个Next主题的Hexo博客系统了~</p>
-<p>至于之后的更高级配置，可以参考 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/106060640">个人博客第8篇——优化主题</a> 这篇文章，以及有空的话也可以自己折腾呀~</p>
-<p>最终效果（这个是我用自己的<a target="_blank" rel="noopener" href="https://cyclinbox.github.io/">GitHub Page</a>演示的，但目前的博客还是用现在这个。或许未来某天，我也会选择换到Hexo，谁知道呢？）：</p>
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/09/%E5%9B%BE%E7%89%87.png"></p>
-<p>以上。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/09/28/%E4%BB%8E%E5%A4%B4%E5%BB%BA%E7%AB%8Bhexo%E5%8D%9A%E5%AE%A2%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%B8%80%E4%B8%AA%E6%87%92%E4%BA%BA%E8%84%9A%E6%9C%AC/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -816,7 +492,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:47:11" itemprop="dateModified" datetime="2023-04-23T10:47:11+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -839,14 +515,14 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>上海的初秋，不像北京天津那般晴朗而辽阔，没有“晴空一鹤排云上，便引诗情到碧霄”的诗意。寒冷而潮湿，这是我对她的第一印象。</p>
-<p>台风来了。或者说，他还没来，但是他已经早早的用各种方式宣誓了自己的到来。阴沉沉的天空，淅淅沥沥的秋雨，带给人的不只是寒冷，还有心情上的压抑。</p>
-<p>所里安排我们新生体检，昨天因为去的太晚，扑了个空。今天再去，终于赶在上午第一节课下课前完成了所有检查。不知道是这般赶时间的检查导致心神疲惫，还是因为回来的路上淋了点雨，一整天都昏昏沉沉的，而且心情很压抑，很难受。孤独感再次袭来，</p>
-<p>可能有些伤春悲秋了吧。今天感觉很难受，很孤独，很想找个依靠。</p>
-<hr>
-<p>说起来，之前我在网站里谈论过孤独这个话题，不过那段话被我藏到了一个<a target="_blank" rel="noopener" href="http://anoms.top/weather_get_v4.0/about.php">页面的彩蛋</a>里。这个彩蛋需要点击“关于我们”栏目的头像才能触发。也不知道之前有没有人发现过那个彩蛋。</p>
-<p>其实我想，这种藏小心思，也实在是有些幼稚，那就像是有一个秘密，希望和别人分享，又害怕和别人分享。还是希望自己能成熟点吧。</p>
-<p>今天确实有点emo了，可能是天气原因加上一些事情很不顺心。其实想想看，今天写下的这些东西感觉挺幼稚的。以后不会了。也希望读者朋友们不要因为本文破坏我的形象🤪</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/09/13/%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B5%EF%BC%9A%E5%86%8D%E8%B0%88%E5%AD%A4%E7%8B%AC1/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -908,7 +584,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:51:29" itemprop="dateModified" datetime="2023-04-23T10:51:29+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -937,18 +613,14 @@
           <blockquote>
 <p>本小节内容翻译自 Genes XI, chapter 8.11, p183-185。部分句子参考《基因X》中文版的翻译进行了调整。</p>
 </blockquote>
-<h2 id="关键内容提点"><a href="#关键内容提点" class="headerlink" title="关键内容提点"></a>关键内容提点</h2><ul>
-<li>  “加工的假基因”（processed pseudogenes）来自于mRNA转录本的逆转录与整合</li>
-<li>  “未加工的假基因”（nonprocessed pseudogenes）来自功能基因的不完整复制（duplication），或第二拷贝（second-copy）的突变</li>
-<li>  一些假基因可能获得一些与他们的亲本基因（parent genes）不同的功能，例如调节基因表达，也因此他们可能会获得不同的名字</li>
-</ul>
-<p>正如前一章所述，假基因是功能基因的拷贝，并且有一些变异区或者缺失区，这导致它们可能不会产生功能性多肽的产物（但是它们有可能转录，而转录产物可能具有调控功能）。例如，与他们的功能性同僚（functional counterparts）相比，许多假基因含有移码突变或无义突变，这些突变导致它们无法产生有功能的蛋白。从假基因的起源模式来看，一共可以分为两种：</p>
-<p><strong>加工的假基因（processed pseudogenes）</strong> 来自成熟mRNA转录本的反转录产物，这些转录本被反转录为cDNA，然后整合到了基因组中。这可能发生在细胞中存在活性逆转录酶的时候，如在活性逆转录病毒感染或逆转录病毒活性期间。由于mRNA已经经过了加工，因此这一类假基因经常缺少正常表达所需要的调控区。虽然这类基因最初都包含功能性肽段的编码序列，但在形成的一开始就是无功能的。这些假基因也缺乏内含子，可能包含mRNA的poly(A)尾的残余，以及逆转录转座子的侧翼直接重复的特征。</p>
-<p><strong>未加工的假基因（nonprocessed pseudogenes）</strong> 来自多拷贝基因或单拷贝基因的一个拷贝的失活突变，或者功能基因的不完全复制。通常，这些都是由导致串联重复的机制形成的。一个例子是β-珠蛋白假基因，其在启动子区和外显子区出现了多个突变，并且丢失了剪接位点。如果一个基因连同它的调控区被完整地复制，那么在一段时间内可能会有两个有功能的基因拷贝，但是，在一个副本中发生的失活突变并不一定会受到负选择的影响。因此，基因家族是非加工假基因的一个非常成熟的起源，而在珠蛋白基因家族中存在多个假基因就证明了这一点。另外，一个功能基因的不完全复制，会导致一个新的基因拷贝缺失调控区域和/或编码序列，于是新出现的拷贝会立即成为一个假基因，“在到达时死亡”。</p>
-<p>人类基因组中大约含有20000个假基因。核糖体蛋白（RP）假基因由一个很大的假基因家族构成，包含大约2000份假基因的拷贝。这些都是加工的假基因；高拷贝数可能是大约80个功能性RP基因拷贝的高表达率的函数（也就是说，因为RP的编码基因多，因此产生的假基因也相应的更多）。它们插入基因组的过程显然是由L1逆转录转座子介导的。RP基因在物种间高度保守，因此在具有长期独立进化历史和全基因组序列的物种中，识别RP假基因的直系同源基因是可能的。在人类这两千多个RP的假基因中，人-黑猩猩同源的有1282个，而人-大鼠同源的只有11个，人-小鼠同源的则更少，只有6个（然而，大鼠-小鼠同源的有接近400个），这表明灵长类和啮齿类中，大多数RP假基因起源较晚，而大多数祖先物种的RP假基因会因为缺失或突变，在被识别之前就已经丢失了。</p>
-<p>有趣的是，RP假基因的进化速率比中性进化的速度更慢，这提示RP假基因可能还有一些功能，因此受到负选择。虽然假基因在刚出现时是无功能的，然而有清晰的例子表明，一些前假基因（former pseudogenes）出现了新功能化（neofunctionalized）或亚功能化（subfunctionalized）的迹象。其中，新功能化（neofunctionalized）指假基因获得了一些新的功能，而亚功能化（subfunctionalized）指假基因获得了其亲本基因的部分功能，或者对亲本基因的功能起到补充。一旦这些假基因重新获得了功能，他们会受到选择压力的约束，因此进化速度会比中性进化的速度更慢。</p>
-<p>一个假基因是如何获得一个新的功能？一种可能性是，假基因已经无法被翻译为有功能的蛋白，但其还可以被正常转录。这些无法被翻译的转录本可以影响或调控亲本基因的表达。例如，小鼠中的加工假基因 <em>Makorin1-p1</em> 能够稳定 <em>Makorin1</em> 基因的转录本，后者是一个有功能的基因。一些内源性siRNA是假基因编码的。第二种可能是，一个加工假基因可能插入到了一个带有新的调控区域的位置，例如插入到转录因子结合位点，这种与亲本基因迥然不同的调控环境会让假基因以一种不同于亲本基因的组织特异性方式发生表达。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/09/13/%E5%81%87%E5%9F%BA%E5%9B%A0%E6%98%AF%E6%B2%A1%E6%9C%89%E5%8A%9F%E8%83%BD%E7%9A%84%E5%9F%BA%E5%9B%A0%E6%8B%B7%E8%B4%9D/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1010,7 +682,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:51:54" itemprop="dateModified" datetime="2023-04-23T10:51:54+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1033,18 +705,14 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>前几天，南风窗的公众号上发表了一篇文章，题目叫做《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/BPJYwU4iFCHp4MxM3duRfA">这样下去，你不配恋爱</a>》。文章从越来越多的年轻人宣称“没时间谈恋爱”这一现象出发，对当代年轻人的爱情观进行了剖析。文章很长，其中的许多观点乍一看也很有道理。只不过，我有话想说。</p>
-<p>文章中提到，“真正的爱情，是这个世界上最反效率的东西之一，它是日久天长的心理和情感需求，所以它不能和其它欲望并列。如果把它和其它欲望并列起来，在效率原则的作用下，它就一定会排在最后。”</p>
-<p>请注意上述文章的观点是认为我们应该追求“真正的爱情”，而混杂了利益关系等因素的所谓恋爱和婚姻根本不是爱情。</p>
-<p>我看到这篇文章，第一反应是觉得这篇文章的中心论点是纯扯淡，为了真正的爱情放弃那些“世俗的欲望”（然而这些可能是当代年轻人在社会上安身立命的基石），极大的概率是被高速运转的社会所淘汰，最终既失去了爱情，又失去了在社会上安身立命的资格。</p>
-<p>然而，这篇文章是否也可以这么理解：这种真正的爱情，是会带给人积极向上的力量的，而这种力量，可以让人们超越自己的极限，实现一些曾经不敢想象的目标，后者完全可以让一个人在社会上安身立命（例如，在爱情的力量下，人们创业成功/考公考研上岸/事业上有了更深入的进展）</p>
-<p>如果是后面这种理解方式，那么我们也可以认为所谓“真正的爱情”是一种类似于神经生长因子的精神动力源泉[1]，这种动力源泉可以帮助我们变成更好的人。因此，追求真正的爱情，看起来是一件极其有意义的事情。</p>
-<p>然而，不管怎么理解，最关键的问题其实在于，爱情这种东西实在是太难以遇到。牛郎织女、梁山伯祝英台、焦仲卿刘兰芝这样的故事确实很感人，也确实如作者所说可以算作“真正的爱情”，然而这样的故事毕竟太少——不然人们也不会把他们编成神话诗歌戏曲一代代传唱了。即使在社会流动性高度发达的今天，遇见真爱也是件小概率的事件。某种意义上可以说，人们能一代代繁衍下来，主要还是靠所谓“搭伙过日子”的婚姻进行下来的。</p>
-<p>或许我们可以理解作者把爱情看得很重要的心态——实际上爱情也确实很重要。然而如果为了这种重要却可遇不可求的爱情，而放弃了其他追求（作者说这些都是些欲望，但有没有一种可能，这些都是正常社会生活所必须的），实在是因小失大。对于我们普通人，最好的办法还是努力完善自我，提高自己的能力和价值，然后在“搭伙过日子”的婚姻中尽可能提高生活的幸福感吧——毕竟很多时候，钱真的能带来幸福。</p>
-<p>以上仅为9月3号深夜的一些胡思乱想，其中的诸多观点可能存在幼稚甚至反社会之处。也许未来某一天，我会反过来再把上面这些话批评得体无完肤——谁知道呢？不过爱情这个话题确实值得探讨一番。很想在评论区里听一听不同的意见，不知道各位如何看待。</p>
-<hr>
-<p><strong>注释：</strong></p>
-<p>[1] 神经生长因子：<strong>“在脊椎动物神经系统的发育过程中，约有50%的原始神经元存活并与靶细胞建立了连接，而没有建立连接的神经元则发生凋亡，这与靶细胞分泌的神经生长因子（NGF）有关——只有接受了足够量存活因子的神经元才能生存，其他的细胞则发生凋亡”</strong>（翟中和《细胞生物学》第四版，P344）。有一种理论认为，爱情可以带给人们强大的动力，这种动力会驱动人们变成更好的人。所以是不是可以理解为，每一个渴望爱情的人都是一个孤单的神经元，而爱情就是让神经元生长的NGF。得到爱情的人们会更加积极上进，就像得到NGF的神经元可以免于凋亡——然而，真正的爱情又是那样的稀少，以至于很多人终其一生都没能体会过爱情的滋味——即便很多人最终还是结婚生子，就此操劳一生。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/09/04/%E5%86%8D%E8%B0%88%E7%88%B1%E6%83%85-%E5%AF%B9%E5%8D%97%E9%A3%8E%E7%AA%97%E5%85%AC%E4%BC%97%E5%8F%B7%E7%9A%84%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E7%9A%84%E5%8F%8D%E6%80%9D/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1106,7 +774,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 11:14:46" itemprop="dateModified" datetime="2023-04-23T11:14:46+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1130,17 +798,14 @@
     <div class="post-body" itemprop="articleBody">
           <p>今天下午，闲聊群里有人转发了IBP云参观的直播链接。点进去看了会儿，然后退出了。不是因为对直播内容不感兴趣，只是已经到了下午的上班时间，在这里摸鱼看直播总还是不太好。</p>
 <p>可是，直播开始的几分钟里，那些闪过的画面，依然刺痛了我，让我回忆起在生物物理所的那些日子。</p>
-<p>北京的天依然很晴，天空是蓝色的，没有一朵云。这是夏末秋初的北京，就如记忆中的那样。</p>
-<p>赛利麦，江州渔父，711，熟悉的街道，熟悉的建筑，甚至还有熟悉的六号楼和建所60周年纪念长廊。这些景物一一划过镜头，也不断冲击着我的神经，提醒着我可能再也不能亲眼目睹这些场景了。</p>
-<p>有时候人们会说自己很怀旧。有一个英文单词叫做nostalgia，过去的美好时光，不正是表明人们更喜欢过去那些已经回不来的事情了吗？你看，生物物理所对面的那家旅馆，就叫时光漫步酒店，nostalgia hotel，多巧啊。我在回忆着过去的美好时光，而那段美好时光，就发生在一座以“过去的美好时光”命名的酒店旁。</p>
-<p>上初中时，并不会怀念小学生活，因为小学过得并不美好。高中时，倒是很怀念初中生活，因为熟悉的小伙伴很多，那时也有很多开心的回忆。大学时常常怀念高中，怀念那些孤独而充实的时光。然而我并不特别想念大学期间在南开园度过的两年；如果说大学生活有什么值得回忆的，那一定是在生物物理所度过的一年时光，是和邹承鲁班的同学们，和课题组的师兄师姐们以及yxy一起度过的时光——那是充实的一年，我把很多的时间用在了写代码、学习和社交上，虽然也有不少时间被浪费，但至少比在南开园里要好很多。</p>
-<p>我们为什么会怀念过去呢？可能是现在过得不好，也可能纯粹是在新环境中暂时感到不适应。后者是暂时的，因为我们可以相信，只要不断努力，生活最终会变好。</p>
-<p>也许将来有一天，我还会怀念起在上海生科院度过的这些日子。 不过这些都不重要。虽然说，“当我们拥有很多珍贵的东西时，我们不会珍惜；直到真正失去，才追悔莫及”。可是，我们也可以不用后悔，只需要我们过好当下的每一天，好好珍惜我们身边那些美好的事物就行了。</p>
-<p>以上。</p>
-<p>2022年8月24日写于岳阳路</p>
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/08/5725b6ffb19452b45737b9ba48274243.png"></p>
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/08/864b545393136846bb64ca66f09a0aa1.png"></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/25/%E7%94%B1%E4%B8%80%E5%9C%BA%E7%BA%BF%E4%B8%8A%E4%BA%91%E5%8F%82%E8%A7%82%E5%BC%95%E5%8F%91%E7%9A%84%E7%A2%8E%E7%A2%8E%E5%BF%B5/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1202,7 +867,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 11:16:59" itemprop="dateModified" datetime="2023-04-23T11:16:59+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1224,34 +889,202 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>网易云音乐一直提供外链播放器，这为博客系统的搭建带来了新组件。</p>
-<p>然而，官方的插件只能播放一首音乐，而如果我们想要实现随机听音乐的效果，就只能靠自己魔改代码了。</p>
-<p>先来分析一下网易云音乐的外链播放器组件。我们在网易云音乐网页版中，选取一首歌曲，在歌曲页面中点击<strong>“生成外链播放器”</strong>，可以得到一串外链播放器的代码，如下所示（以一首《卡农》为例）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=330 height=86 src=&quot;https://music.163.com/outchain/player?type=2&amp;id=29414800&amp;auto=0&amp;height=66&quot;&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+          <p>本文实现了一种网易云音乐随机听歌的组件</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/20/%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E9%9A%8F%E6%9C%BA%E5%90%AC%E6%AD%8C%E7%BB%84%E4%BB%B6/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
 
-<p>这段代码嵌入到网页中，则会是下面的效果：</p>
-<p>这个组件实现了音乐播放功能，但是只能循环播放一首音乐。我们想播放多首音乐，怎么办？</p>
-<p>先来分析上面这段代码吧。可以看到，这段代码定义了一个<code>iframe</code>框架，其中<code>border/width/height</code>等属性是对框架长宽和边框等的设置，而能让我们听歌的关键在于最后的那一段<code>src</code>链接。</p>
-<p>那么我们看一下这个链接：<code>https://music.163.com/outchain/player?type=2&amp;id=29414800&amp;auto=0&amp;height=66</code></p>
-<p>链接通过GET传参，定义了四个参数，分别是<code>type/id/auto/height</code>。研究了一下发现，id是音乐的标识符，auto定义了是否允许自动播放（0为不允许，1为允许），height定义了播放器高度。那么如果我们想播放多首音乐，只要改变id的参数就行了。</p>
-<hr>
-<p><strong>下面上代码，一共分三块。</strong></p>
-<p><strong>第一块是HTML，这里定义了一个iframe框架和一个按钮，包在一个div里面。</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;div id=&#x27;MusicPlayer&#x27; style=&quot;width:100%;height:100%;&quot;&gt;</span><br><span class="line">&lt;div id=&#x27;mp-content&#x27; style=&quot;width:100%;height:auto;&quot;&gt;</span><br><span class="line">&lt;!--replace this xml with netease iframe--&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;button id=&#x27;mp-shuffle-btn&#x27; onclick=&#x27;shuffle(&quot;1&quot;);&#x27;&gt;切歌&lt;/button&gt;</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+    
+    
+    
 
-<p><strong>第二块是JavaScript代码，实现了随机切歌的功能</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">var lastIndex = -1;</span><br><span class="line">// 下面定义了一个数组mList，这个数组的每个元素均为一首音乐的id，注释后面是乐曲名</span><br><span class="line">var mList=[</span><br><span class="line">&#x27;1492283139&#x27;,//疾如猛火</span><br><span class="line">&#x27;1392438000&#x27;,//Raindrop</span><br><span class="line">&#x27;1910966474&#x27;,//华灯星聚</span><br><span class="line">&#x27;5197160&#x27;,//Proud of you</span><br><span class="line">&#x27;1645112&#x27;,//For River(Johnny Version)</span><br><span class="line">&#x27;5284529&#x27;,//祝福-叶倩文</span><br><span class="line">&#x27;757757&#x27;,//朝(早晨)-ゴンチチ</span><br><span class="line">&#x27;28219176&#x27;,//虹之间</span><br><span class="line">&#x27;29097535&#x27;,//彩蝶舞夏</span><br><span class="line">&#x27;5188837&#x27;,//卡农-1</span><br><span class="line">&#x27;478507889&#x27;,//卡农-2</span><br><span class="line">&#x27;1439409941&#x27;,//Rainbow Mile</span><br><span class="line">&#x27;569214126&#x27;,//可能否</span><br><span class="line">&#x27;27946926&#x27;,//Positive Outlook</span><br><span class="line">&#x27;1645140&#x27;//To the moon(Ending Version)</span><br><span class="line">]</span><br><span class="line">// 一首歌曲的id可以通过网易云音乐网页版获取</span><br><span class="line">// 查看方法为在网易云音乐网页版里，点进一首歌的主页，然后读取浏览器地址栏里面的URL</span><br><span class="line">// 此时的URL里会有一个&quot;id=xxxxx&quot;，这里就是音乐的id。</span><br><span class="line"></span><br><span class="line">// 接下来我们定义一个切歌的函数，其中auto参数指定是否允许随机播放</span><br><span class="line">function shuffle(auto)&#123;</span><br><span class="line">var mlen  = mList.length;        </span><br><span class="line">var index = Math.floor(Math.random()*100000%mlen); // 随机取下标</span><br><span class="line">if(index==lastIndex)&#123; // 如果下标取重了（随机选到的歌曲和当前播放的相同）</span><br><span class="line">if(index+1&lt;mlen) index += 1; // 则切换到播放列表的下一首歌</span><br><span class="line">else index = 0; // 如果正在播放最后一首歌，那么切换到第一首歌</span><br><span class="line">&#125;</span><br><span class="line">lastIndex = index;</span><br><span class="line">var mID  = mList[index];</span><br><span class="line">var mXML = &#x27;&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=100% height=92 paddingwidth=&quot;0&quot; src=&quot;https://music.163.com/outchain/player?type=2&amp;id=&#123;&#123;id&#125;&#125;&amp;auto=&#123;&#123;auto&#125;&#125;&amp;height=66&quot;&gt;&lt;/iframe&gt;&#x27;; //定义iframe框架的代码</span><br><span class="line">mXML = mXML.replace(&#x27;&#123;&#123;id&#125;&#125;&#x27;,mID);</span><br><span class="line">mXML = mXML.replace(&#x27;&#123;&#123;auto&#125;&#125;&#x27;,auto);</span><br><span class="line">document.getElementById(&#x27;mp-content&#x27;).innerHTML = mXML; //将新iframe代码插入HTML</span><br><span class="line">&#125;</span><br><span class="line">shuffle(&#x27;0&#x27;); //加载页面时一并载入歌曲，但是自动播放设置为关闭</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
 
-<p><strong>第三段是css样式表，可以帮我们把组件弄得好看一点</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">#mp-shuffle-btn&#123;</span><br><span class="line"> width:84px;</span><br><span class="line"> height: 42px;</span><br><span class="line"> float: right;</span><br><span class="line"> margin: 0px 0 0 0 ;</span><br><span class="line"> border: 0px;</span><br><span class="line"> padding: 0 0px 0 0px;</span><br><span class="line"> background-color: #046c99;</span><br><span class="line"> color: #fff;</span><br><span class="line"> font-size: 16px;</span><br><span class="line"> font-weight: bold;</span><br><span class="line"> box-shadow: 0px 0px 4px rgba(127,127,198,0.5);</span><br><span class="line"> cursor: pointer;</span><br><span class="line"> &#125;</span><br><span class="line">#mp-shuffle-btn:hover &#123;background-color: #0587bf;&#125; </span><br><span class="line">#mp-shuffle-btn:active &#123;background-color: #0587bf;&#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
 
-<p><strong>使用时把这三段代码放在一起，粘贴到网页内既可。</strong></p>
-<p>实际使用效果：</p>
-<p>切歌</p>
-<p>var lastIndex = -1; var mList=[ ‘1492283139’,//疾如猛火 ‘1392438000’,//Raindrop ‘1910966474’,//华灯星聚 ‘5197160’,//Proud of you ‘1645112’,//For River(Johnny Version) ‘5284529’,//祝福-叶倩文 ‘757757’,//朝(早晨)-ゴンチチ ‘28219176’,//虹之间 ‘29097535’,//彩蝶舞夏 ‘5188837’,//卡农-1 ‘478507889’,//卡农-2 ‘1439409941’,//Rainbow Mile ‘569214126’,//可能否 ‘27946926’,//Positive Outlook ‘1645140’//To the moon(Ending Version) ] function shuffle_2(auto){ var mlen = mList.length; // len of music array var index = Math.floor(Math.random()*100000%mlen); // random index if(index==lastIndex){ if(index+1&lt;mlen) index += 1; else index = 0; } lastIndex = index; var mID = mList[index]; var mXML = ‘<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=100% height=92 paddingwidth="0" src="https://music.163.com/outchain/player?type=2&id=250&auto=&height=66"></iframe>‘; mXML = mXML.replace(‘250‘,mID); mXML = mXML.replace(‘‘,auto); document.getElementById(‘mp-content-2’).innerHTML = mXML; } shuffle_2(‘0’); //加载页面时一并载入歌曲，但是自动播放设置为关闭 #mp-shuffle-btn-2{ width:84px; height: 42px; float: right; margin: 0px 0 0 0 ; border: 0px; padding: 0 0px 0 0px; /*background-color: rgb(11, 153, 122);*/ background-color: #046c99; color: #fff; font-size: 16px; font-weight: bold; box-shadow: 0px 0px 4px rgba(127,127,198,0.5); cursor: pointer; } #mp-shuffle-btn-2:hover {background-color: #0587bf;} #mp-shuffle-btn-2:active {background-color: #0587bf;}</p>
-<hr>
-<p>（PS：另一个小组件，随机句子切换，可以查看我朋友Eamon的<a target="_blank" rel="noopener" href="https://www.fanyiming.life/posts/b7af6d70.html">博客文章</a>）</p>
-<p>（PPS：我发现如果把iframe里面的URL修改一下，把type设置为0，id设置为歌单id，height加高100px，变成 <code>https://music.163.com/outchain/player?type=0&amp;id=774883428&amp;auto=0&amp;height=166</code> 这个样子，则可以播放歌单里面的音乐，还能选歌，感觉好神奇😂）</p>
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/12/%E7%A8%8B%E5%BA%8F%E4%BA%BA%E7%94%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/08/12/%E7%A8%8B%E5%BA%8F%E4%BA%BA%E7%94%9F/" class="post-title-link" itemprop="url">程序人生</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-08-12 22:42:06" itemprop="dateCreated datePublished" datetime="2022-08-12T22:42:06+08:00">2022-08-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 11:15:15" itemprop="dateModified" datetime="2023-04-23T11:15:15+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%91%98%E6%8A%84/" itemprop="url" rel="index"><span itemprop="name">摘抄</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>这是小米公司董事长雷军在二十多年前写下的一篇帖子。感触很深，摘抄于此，以供品读。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/12/%E7%A8%8B%E5%BA%8F%E4%BA%BA%E7%94%9F/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/11/%E4%BD%BF%E7%94%A8ffmpeg%E5%B7%A5%E5%85%B7%E5%B0%86%E5%AD%97%E5%B9%95%E5%B5%8C%E5%85%A5%E8%A7%86%E9%A2%91%E4%B8%AD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/08/11/%E4%BD%BF%E7%94%A8ffmpeg%E5%B7%A5%E5%85%B7%E5%B0%86%E5%AD%97%E5%B9%95%E5%B5%8C%E5%85%A5%E8%A7%86%E9%A2%91%E4%B8%AD/" class="post-title-link" itemprop="url">使用ffmpeg工具将字幕嵌入视频中</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-08-11 16:46:32" itemprop="dateCreated datePublished" datetime="2022-08-11T16:46:32+08:00">2022-08-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:49:23" itemprop="dateModified" datetime="2023-04-23T10:49:23+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <span id="more"></span>
+
+<p>参考：[ffmpeg]怎么把字幕烧进视频里面 - 路人乙小明的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/61853454">https://zhuanlan.zhihu.com/p/61853454</a></p>
+<p>ffmpeg是一个强大的开源视频处理工具，市面上很流行的格式工厂、QQ影音等工具中都有它的身影。</p>
+<p>srt是一种字幕格式，其以一段文字的开始和结束时间为标记，从而记录字幕与时间轴，一个例子如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">00:00:05,220 --&gt; 00:00:14,470</span><br><span class="line">遗传学已经非常成功地确定了基因组中与疾病风险改变相关的许多区域</span><br><span class="line"></span><br><span class="line">2</span><br><span class="line">00:00:14,480 --&gt; 00:00:26,551</span><br><span class="line">当我们想从全基因组关联研究或GWAS中提取基因，并</span><br><span class="line">将其转化为某种临床影响，例如开发新疗法时</span><br><span class="line"></span><br><span class="line">3</span><br><span class="line">00:00:26,575 --&gt; 00:00:30,071</span><br><span class="line">知道这些疾病的机制对我们来说就变得很重要</span><br></pre></td></tr></table></figure>
+
+<p>要将字幕嵌入到视频中，有很多种方法。其中，兼容性最强的方法就是直接把字幕渲染成为视频的一部分。这个任务可以交给ffmpeg完成。</p>
+<p>譬如说，我们有一个视频文件<code>input.mp4</code>，和一个字幕文件<code>subtitle.srt</code>，要想得到一个有字幕的视频，可以采用下面的指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mp4 -vf subtitles=subtitle.srt output.mp4</span><br></pre></td></tr></table></figure>
+
+<p>这会渲染出一个带字幕的视频，文件名为output.mp4</p>
 
       
     </div>
@@ -1271,7 +1104,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>

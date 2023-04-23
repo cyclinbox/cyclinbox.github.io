@@ -19,15 +19,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="perl是一个较为常见的脚本执行程序，但是由于我之前用得比较少，对其了解不多。最近碰到了一个问题需要解决。是这样的，我想用C++写一个程序，实现百度开放API提供的翻译功能。在编译安装libcurl库以后，发现还有一个md5的函数需要openssl提供。由于我在网上找到的预编译的openssl库的lib文件有点问题，于是想着自己编译。 openssl提供的说明文档中指出，如果想用mingw编译，需">
+    <meta name="description" content="perl是一个较为常见的脚本执行程序，但是由于我之前用得比较少，对其了解不多。   最近碰到了一个问题需要解决。是这样的，我想用C++写一个程序，实现百度开放API提供的翻译功能。在编译安装libcurl库以后，发现还有一个md5的函数需要openssl提供。由于我在网上找到的预编译的openssl库的lib文件有点问题，于是想着自己编译。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次手动安装perl模块的经历">
 <meta property="og:url" content="http://example.com/2022/05/15/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85perl%E6%A8%A1%E5%9D%97%E7%9A%84%E7%BB%8F%E5%8E%86/index.html">
 <meta property="og:site_name" content="Warren&#39;s Blog">
-<meta property="og:description" content="perl是一个较为常见的脚本执行程序，但是由于我之前用得比较少，对其了解不多。最近碰到了一个问题需要解决。是这样的，我想用C++写一个程序，实现百度开放API提供的翻译功能。在编译安装libcurl库以后，发现还有一个md5的函数需要openssl提供。由于我在网上找到的预编译的openssl库的lib文件有点问题，于是想着自己编译。 openssl提供的说明文档中指出，如果想用mingw编译，需">
+<meta property="og:description" content="perl是一个较为常见的脚本执行程序，但是由于我之前用得比较少，对其了解不多。   最近碰到了一个问题需要解决。是这样的，我想用C++写一个程序，实现百度开放API提供的翻译功能。在编译安装libcurl库以后，发现还有一个md5的函数需要openssl提供。由于我在网上找到的预编译的openssl库的lib文件有点问题，于是想着自己编译。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-05-14T17:24:35.000Z">
-<meta property="article:modified_time" content="2023-04-23T02:06:33.006Z">
+<meta property="article:modified_time" content="2023-04-23T03:19:52.575Z">
 <meta property="article:author" content="Warren Zhang">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="perl">
@@ -131,7 +131,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -218,7 +218,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 11:19:52" itemprop="dateModified" datetime="2023-04-23T11:19:52+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -240,18 +240,23 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>perl是一个较为常见的脚本执行程序，但是由于我之前用得比较少，对其了解不多。<br>最近碰到了一个问题需要解决。是这样的，我想用C++写一个程序，实现百度开放API提供的翻译功能。在编译安装libcurl库以后，发现还有一个md5的函数需要openssl提供。由于我在网上找到的预编译的openssl库的lib文件有点问题，于是想着自己编译。</p>
+        <p>perl是一个较为常见的脚本执行程序，但是由于我之前用得比较少，对其了解不多。  </p>
+<p>最近碰到了一个问题需要解决。是这样的，我想用C++写一个程序，实现百度开放API提供的翻译功能。在编译安装libcurl库以后，发现还有一个md5的函数需要openssl提供。由于我在网上找到的预编译的openssl库的lib文件有点问题，于是想着自己编译。</p>
+<span id="more"></span>
+
 <p>openssl提供的说明文档中指出，如果想用mingw编译，需要使用带有perl的msys2终端。我没有这个终端，于是用了git-bash代替。然而系统中安装的strawberry perl不能用（提示无法处理UNIX-Like的文件路径），而strawberry perl又与git-bash的perl冲突，因此手动修改了系统的环境变量$PATH，把strawberry perl的路径给删掉了。</p>
 <p>这样以后，执行./Configure ming64依然不行，提示缺少几个perl的模块。于是有了本文的主题：手动安装perl模块。</p>
 <p>要说一下，git-bash的perl很残废，连cpan运行都出错。因此，只能通过手动安装报错中提到的模块，一点一点解决问题。</p>
 <p>例如下面这个报错：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">$ ./Configure mingw64</span><br><span class="line">Configuring OpenSSL version 3.0.2 for target mingw64</span><br><span class="line">Using os-specific seed configuration</span><br><span class="line">Creating configdata.pm</span><br><span class="line">Running configdata.pm</span><br><span class="line">Can&#x27;t locate Pod/Escapes.pm in @INC (you may need to install the Pod::Escapes module) (@INC contains: /usr/lib/perl5/site_perl /usr/share/perl5/site_perl /usr/lib/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib/perl5/core_perl /usr/share/perl5/core_perl) at /usr/lib/perl5/vendor_perl/Pod/Simple.pm line 8.</span><br><span class="line">BEGIN failed--compilation aborted at /usr/lib/perl5/vendor_perl/Pod/Simple.pm line 8.</span><br><span class="line">Compilation failed in require at /usr/lib/perl5/vendor_perl/Pod/Simple/Methody.pm line 5.</span><br><span class="line">BEGIN failed--compilation aborted at /usr/lib/perl5/vendor_perl/Pod/Simple/Methody.pm line 5.</span><br><span class="line">Compilation failed in require at /usr/lib/perl5/vendor_perl/Pod/Text.pm line 6.</span><br><span class="line">BEGIN failed--compilation aborted at /usr/lib/perl5/vendor_perl/Pod/Text.pm line 6.</span><br><span class="line">Compilation failed in require at (eval 8) line 1.</span><br><span class="line">BEGIN failed--compilation aborted at /usr/lib/perl5/vendor_perl/Pod/Usage.pm line 30.</span><br><span class="line">Compilation failed in require at configdata.pm line 30297.</span><br><span class="line">BEGIN failed--compilation aborted at configdata.pm line 30297.</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ ./Configure mingw64</span><br><span class="line">Configuring OpenSSL version 3.0.2 for target mingw64</span><br><span class="line">Using os-specific seed configuration</span><br><span class="line">Creating configdata.pm</span><br><span class="line">Running configdata.pm</span><br><span class="line">Can&#x27;t locate Pod/Escapes.pm in @INC (you may need to install the Pod::Escapes module) (@INC contains: /usr/lib/perl5/site_perl /usr/share/perl5/site_perl /usr/lib/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib/perl5/core_perl /usr/share/perl5/core_perl) at /usr/lib/perl5/vendor_perl/Pod/Simple.pm line 8.</span><br><span class="line">BEGIN failed--compilation aborted at /usr/lib/perl5/vendor_perl/Pod/Simple.pm line 8.</span><br><span class="line">Compilation failed in require at /usr/lib/perl5/vendor_perl/Pod/Simple/Methody.pm line 5.</span><br><span class="line">BEGIN failed--compilation aborted at /usr/lib/perl5/vendor_perl/Pod/Simple/Methody.pm line 5.</span><br><span class="line">Compilation failed in require at /usr/lib/perl5/vendor_perl/Pod/Text.pm line 6.</span><br><span class="line">BEGIN failed--compilation aborted at /usr/lib/perl5/vendor_perl/Pod/Text.pm line 6.</span><br><span class="line">Compilation failed in require at (eval 8) line 1.</span><br><span class="line">BEGIN failed--compilation aborted at /usr/lib/perl5/vendor_perl/Pod/Usage.pm line 30.</span><br><span class="line">Compilation failed in require at configdata.pm line 30297.</span><br><span class="line">BEGIN failed--compilation aborted at configdata.pm line 30297.</span><br></pre></td></tr></table></figure>
 
-<p>提示缺少Pod::Escape模块，同时指出了几个perl的library路径。我们选择将模块安装到/usr/lib/perl5/vendor_perl路径下面。<br>在清华大学TUNA镜像站中找到CPAN，在这里寻找需要的模块。CPAN的所有模块列在了网页 <a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/CPAN/modules/01modules.index.html">https://mirrors.tuna.tsinghua.edu.cn/CPAN/modules/01modules.index.html</a> 当中。由于页面太长，推荐在命令行中配合grep搜索指定模块的下载链接。</p>
-<p>还是以上面这个模块为例，我们找到链接为<br><a target="_blank" rel="noopener" href="http://mirrors.tuna.tsinghua.edu.cn/CPAN/authors/id/N/NE/NEILB/Pod-Escapes-1.07.tar.gz">http://mirrors.tuna.tsinghua.edu.cn/CPAN/authors/id/N/NE/NEILB/Pod-Escapes-1.07.tar.gz</a></p>
-<p>下载下来并解压，将压缩包里的lib下面的东西copy到/usr/lib/perl5/vendor_perl下面。</p>
-<p>大部分缺失的perl模块可以通过这种方式得到安装。少部分模块可能直接搜索名字搜索不到，但是通过cpan install可以知道去下载哪个压缩包。</p>
-<p>在编译libopenssl的过程中，perl主要用于configuration和复制一些文件，主要的编译工作依然是交给gcc完成。</p>
+<p>提示缺少<code>Pod::Escape</code>模块，同时指出了几个perl的library路径。我们选择将模块安装到<code>/usr/lib/perl5/vendor_perl</code>路径下面。  </p>
+<p>在清华大学TUNA镜像站中找到CPAN，在这里寻找需要的模块。CPAN的所有模块列在了网页  <a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/CPAN/modules/01modules.index.html">https://mirrors.tuna.tsinghua.edu.cn/CPAN/modules/01modules.index.html</a> 当中。由于页面太长，推荐在命令行中配合grep搜索指定模块的下载链接。</p>
+<p>还是以上面这个模块为例，我们找到链接为  </p>
+<p><a target="_blank" rel="noopener" href="http://mirrors.tuna.tsinghua.edu.cn/CPAN/authors/id/N/NE/NEILB/Pod-Escapes-1.07.tar.gz">http://mirrors.tuna.tsinghua.edu.cn/CPAN/authors/id/N/NE/NEILB/Pod-Escapes-1.07.tar.gz</a></p>
+<p>下载下来并解压，将压缩包里的<code>lib</code>下面的东西copy到<code>/usr/lib/perl5/vendor_perl</code>下面。</p>
+<p>大部分缺失的perl模块可以通过这种方式得到安装。少部分模块可能直接搜索名字搜索不到，但是通过<code>cpan install</code>可以知道去下载哪个压缩包。</p>
+<p>在编译libopenssl的过程中，perl主要用于configuration和复制一些文件，主要的编译工作依然是交给<code>gcc</code>完成。</p>
 
     </div>
 
@@ -286,8 +291,8 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2022/04/27/wp-global-styles-rife-free/" rel="prev" title="Custom Styles">
-                  <i class="fa fa-chevron-left"></i> Custom Styles
+                <a href="/2022/04/27/windows-install-fltk/" rel="prev" title="windows下安装FLTK">
+                  <i class="fa fa-chevron-left"></i> windows下安装FLTK
                 </a>
             </div>
             <div class="post-nav-item">

@@ -19,15 +19,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="背景：想在平板电脑上原生运行R和Rstudio。前者是一个用于统计分析和作图的编程语言，后者是一个强大的代码编辑器和编程环境（IDE）。 博主的平板电脑是安卓系统的，有Termux这一软件可以实现对Linux终端的模拟（下载地址：https:&#x2F;&#x2F;f-droid.org&#x2F;en&#x2F;packages&#x2F;com.termux&#x2F; ）。由于这个模拟器并不是真正的Linux环境，因此许多软件并不能正常运行。幸运的是">
+    <meta name="description" content="背景：想在平板电脑上原生运行R和Rstudio。前者是一个用于统计分析和作图的编程语言，后者是一个强大的代码编辑器和编程环境（IDE）。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ubuntu-port 22.0.4 安装rstudio-server的一些探索">
 <meta property="og:url" content="http://example.com/2023/03/15/ubuntu-port-22-0-4-%E5%AE%89%E8%A3%85rstudio-server%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8E%A2%E7%B4%A2/index.html">
 <meta property="og:site_name" content="Warren&#39;s Blog">
-<meta property="og:description" content="背景：想在平板电脑上原生运行R和Rstudio。前者是一个用于统计分析和作图的编程语言，后者是一个强大的代码编辑器和编程环境（IDE）。 博主的平板电脑是安卓系统的，有Termux这一软件可以实现对Linux终端的模拟（下载地址：https:&#x2F;&#x2F;f-droid.org&#x2F;en&#x2F;packages&#x2F;com.termux&#x2F; ）。由于这个模拟器并不是真正的Linux环境，因此许多软件并不能正常运行。幸运的是">
+<meta property="og:description" content="背景：想在平板电脑上原生运行R和Rstudio。前者是一个用于统计分析和作图的编程语言，后者是一个强大的代码编辑器和编程环境（IDE）。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-03-15T14:15:14.000Z">
-<meta property="article:modified_time" content="2023-04-23T02:06:33.456Z">
+<meta property="article:modified_time" content="2023-04-23T02:42:40.689Z">
 <meta property="article:author" content="Warren Zhang">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="Rstudio">
@@ -133,7 +133,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -220,7 +220,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:42:40" itemprop="dateModified" datetime="2023-04-23T10:42:40+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -243,6 +243,8 @@
     
     <div class="post-body" itemprop="articleBody">
         <p>背景：想在平板电脑上原生运行<a target="_blank" rel="noopener" href="https://cran.r-project.org/">R</a>和<a target="_blank" rel="noopener" href="https://posit.co/">Rstudio</a>。前者是一个用于统计分析和作图的编程语言，后者是一个强大的代码编辑器和编程环境（IDE）。</p>
+<span id="more"></span>
+
 <p>博主的平板电脑是安卓系统的，有<a target="_blank" rel="noopener" href="https://termux.dev/en/">Termux</a>这一软件可以实现对Linux终端的模拟（下载地址：<a target="_blank" rel="noopener" href="https://f-droid.org/en/packages/com.termux/">https://f-droid.org/en/packages/com.termux/</a> ）。由于这个模拟器并不是真正的Linux环境，因此许多软件并不能正常运行。幸运的是，在这一终端模拟器上，还有软件包<a target="_blank" rel="noopener" href="https://github.com/termux/proot-distro">proot-distro</a> 可以安装Linux子系统（如ubuntu-port），因此我们借助<a target="_blank" rel="noopener" href="https://github.com/termux/proot-distro">proot-distro</a>在安卓平板上安装了ubuntu-port 22.0.4的系统，并成功安装<a target="_blank" rel="noopener" href="https://anaconda.org/">miniconda</a>。</p>
 <p>有了ubuntu-port 22.0.4的系统和miniconda，安装R和Rstudio变得简单了一些。首先，我们安装了R，过程大致参考了许多网上教程，如 <a target="_blank" rel="noopener" href="https://www.plob.org/article/24073.html">《如何使用conda安装R和R包》</a>、<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2e1986296e15">《conda 安装R语言及其R包》</a> 等_（现已成功安装，可以通过命令行界面访问R）_。这之后，需要安装Rstudio。本文主要讲的是安装Rstudio时的一些探索。</p>
 <p>注意到，Linux终端只有命令行界面，因此安装本地版Rstudio不太可能。我们要做的是安装Rstudio-server，然后通过平板上安装的浏览器对其进行访问。</p>

@@ -19,19 +19,19 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="客户端通过ssh登录服务器的一般方法如下： 1ssh &lt;username&gt;@&lt;ip address&gt;  其中&lt;username&gt;和&lt;ip address&gt;分别填入用户名和远程服务器的IP地址。 如果没有配置免密登录，这一步之后一般会提示输入密码。 但是如果经常要登录，每次都输入密码显然很麻烦。于是我们可以配置免密登录，方法如下： 1、在客户端上输入下">
+    <meta name="description" content="如何配置ssh免密登录？">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux客户机和服务器之间配置免密登录（SSH）">
 <meta property="og:url" content="http://example.com/2023/02/13/linux%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88ssh%EF%BC%89/index.html">
 <meta property="og:site_name" content="Warren&#39;s Blog">
-<meta property="og:description" content="客户端通过ssh登录服务器的一般方法如下： 1ssh &lt;username&gt;@&lt;ip address&gt;  其中&lt;username&gt;和&lt;ip address&gt;分别填入用户名和远程服务器的IP地址。 如果没有配置免密登录，这一步之后一般会提示输入密码。 但是如果经常要登录，每次都输入密码显然很麻烦。于是我们可以配置免密登录，方法如下： 1、在客户端上输入下">
+<meta property="og:description" content="如何配置ssh免密登录？">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-02-13T06:52:14.000Z">
-<meta property="article:modified_time" content="2023-04-23T02:06:33.448Z">
+<meta property="article:modified_time" content="2023-04-23T02:42:08.802Z">
 <meta property="article:author" content="Warren Zhang">
+<meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="ssh">
 <meta property="article:tag" content="免密登录">
-<meta property="article:tag" content="计算机技术杂谈">
 <meta name="twitter:card" content="summary">
 
 
@@ -133,7 +133,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -220,7 +220,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:42:08" itemprop="dateModified" datetime="2023-04-23T10:42:08+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -242,24 +242,44 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>客户端通过ssh登录服务器的一般方法如下：</p>
+        <p>如何配置ssh免密登录？</p>
+<span id="more"></span>
+
+<p>客户端通过ssh登录服务器的一般方法如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
 
 <p>其中<code>&lt;username&gt;</code>和<code>&lt;ip address&gt;</code>分别填入用户名和远程服务器的IP地址。</p>
 <p>如果没有配置免密登录，这一步之后一般会提示输入密码。</p>
 <p>但是如果经常要登录，每次都输入密码显然很麻烦。于是我们可以配置免密登录，方法如下：</p>
-<h3 id="1、在客户端上输入下列指令，生成客户机的公钥和密钥"><a href="#1、在客户端上输入下列指令，生成客户机的公钥和密钥" class="headerlink" title="1、在客户端上输入下列指令，生成客户机的公钥和密钥"></a>1、在客户端上输入下列指令，生成客户机的公钥和密钥</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
+<h3 id="1、在客户端上输入下列指令，生成客户机的公钥和密钥"><a href="#1、在客户端上输入下列指令，生成客户机的公钥和密钥" class="headerlink" title="1、在客户端上输入下列指令，生成客户机的公钥和密钥"></a>1、在客户端上输入下列指令，生成客户机的公钥和密钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
 
 <p>这个指令的输出大致如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/home/&lt;username&gt;/.ssh/id_rsa):</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/home/&lt;username&gt;/.ssh/id_rsa):</span><br></pre></td></tr></table></figure>
 
 <p>我们直接接受默认设置，连按三次回车键即可。</p>
 <p>此时，客户端会生成两个文件，分别是公钥（<code>~/.ssh/id_rsa.pub</code>）和密钥（<code>~/.ssh/id_rsa</code>）</p>
-<h3 id="2、在客户端上输入下列指令，将公钥上传到远程服务器"><a href="#2、在客户端上输入下列指令，将公钥上传到远程服务器" class="headerlink" title="2、在客户端上输入下列指令，将公钥上传到远程服务器"></a>2、在客户端上输入下列指令，将公钥上传到远程服务器</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="2、在客户端上输入下列指令，将公钥上传到远程服务器"><a href="#2、在客户端上输入下列指令，将公钥上传到远程服务器" class="headerlink" title="2、在客户端上输入下列指令，将公钥上传到远程服务器"></a>2、在客户端上输入下列指令，将公钥上传到远程服务器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
 
 <p>其中<code>&lt;username&gt;</code>和<code>&lt;ip address&gt;</code>分别填入用户名和远程服务器的IP地址。</p>
 <p>在运行上述指令的过程中，可能会提示输入服务器登录密码。照他的提示做就行。</p>
-<h3 id="3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。"><a href="#3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。" class="headerlink" title="3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。"></a>3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。"><a href="#3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。" class="headerlink" title="3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。"></a>3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+
+
+<hr>
+<p>评论区备份：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Hazel:</span><br><span class="line"></span><br><span class="line">	所以这样的方法不需要在服务器上做什么更改吗？</span><br><span class="line">	还想再学学如何绕过VPN连接，有什么好的软件推荐或者在终端上有什么操作吗？</span><br><span class="line"></span><br><span class="line">WarrenZhang:</span><br><span class="line"></span><br><span class="line">	需要的呀，正文里面有一小段《在客户端上输入下列指令，将公钥上传到远程服务器》，讲得就是在服务器端的更改。</span><br><span class="line">	ssh登录好像一般不会走VPN，如果需要通过VPN进行ssh登录链接，可以在命令行中加一个 &quot;ProxyCommand&quot; 参数，具体用法可以参考此文：https://blog.csdn.net/qq_34139020/article/details/101039791</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
     </div>
 
     
@@ -285,9 +305,9 @@
 </div>
 
           <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
               <a href="/tags/ssh/" rel="tag"><i class="fa fa-tag"></i> ssh</a>
               <a href="/tags/%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/" rel="tag"><i class="fa fa-tag"></i> 免密登录</a>
-              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
           </div>
 
         

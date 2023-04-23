@@ -19,17 +19,17 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="一、基本概念：nwk格式文件nwk格式是一种存储系统发育树的格式，更具体的信息可以参考https:&#x2F;&#x2F;evolution.genetics.washington.edu&#x2F;phylip&#x2F;newicktree.html。在这一类型的文件中，系统发育树的节点和分支由圆括号的层次关系所表示。 一颗系统发育树的表达式以分号结尾，用圆括号和逗号标记节点和分支。节点名称可以为空，也可以是一串可打印字符，但是不能">
+    <meta name="description" content="一、基本概念：nwk格式文件nwk格式是一种存储系统发育树的格式，更具体的信息可以参考https:&#x2F;&#x2F;evolution.genetics.washington.edu&#x2F;phylip&#x2F;newicktree.html。在这一类型的文件中，系统发育树的节点和分支由圆括号的层次关系所表示。 一颗系统发育树的表达式以分号结尾，用圆括号和逗号标记节点和分支。节点名称可以为空，也可以是一串可打印字符，但">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用ggtree绘制系统发育树">
 <meta property="og:url" content="http://example.com/2022/07/26/%E4%BD%BF%E7%94%A8ggtree%E7%BB%98%E5%88%B6%E7%B3%BB%E7%BB%9F%E5%8F%91%E8%82%B2%E6%A0%91/index.html">
 <meta property="og:site_name" content="Warren&#39;s Blog">
-<meta property="og:description" content="一、基本概念：nwk格式文件nwk格式是一种存储系统发育树的格式，更具体的信息可以参考https:&#x2F;&#x2F;evolution.genetics.washington.edu&#x2F;phylip&#x2F;newicktree.html。在这一类型的文件中，系统发育树的节点和分支由圆括号的层次关系所表示。 一颗系统发育树的表达式以分号结尾，用圆括号和逗号标记节点和分支。节点名称可以为空，也可以是一串可打印字符，但是不能">
+<meta property="og:description" content="一、基本概念：nwk格式文件nwk格式是一种存储系统发育树的格式，更具体的信息可以参考https:&#x2F;&#x2F;evolution.genetics.washington.edu&#x2F;phylip&#x2F;newicktree.html。在这一类型的文件中，系统发育树的节点和分支由圆括号的层次关系所表示。 一颗系统发育树的表达式以分号结尾，用圆括号和逗号标记节点和分支。节点名称可以为空，也可以是一串可打印字符，但">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/07/ggtree_test.png">
 <meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/07/ggtree_test.anno_.png">
 <meta property="article:published_time" content="2022-07-26T07:17:13.000Z">
-<meta property="article:modified_time" content="2023-04-23T02:06:33.179Z">
+<meta property="article:modified_time" content="2023-04-23T02:49:44.555Z">
 <meta property="article:author" content="Warren Zhang">
 <meta property="article:tag" content="ggtree">
 <meta property="article:tag" content="R语言学习">
@@ -136,7 +136,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -223,7 +223,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:49:44" itemprop="dateModified" datetime="2023-04-23T10:49:44+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -245,7 +245,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="一、基本概念：nwk格式文件"><a href="#一、基本概念：nwk格式文件" class="headerlink" title="一、基本概念：nwk格式文件"></a>一、基本概念：nwk格式文件</h2><p>nwk格式是一种存储系统发育树的格式，更具体的信息可以参考<a target="_blank" rel="noopener" href="https://evolution.genetics.washington.edu/phylip/newicktree.html">https://evolution.genetics.washington.edu/phylip/newicktree.html</a>。在这一类型的文件中，系统发育树的节点和分支由圆括号的层次关系所表示。</p>
+        <span id="more"></span>
+
+
+<h2 id="一、基本概念：nwk格式文件"><a href="#一、基本概念：nwk格式文件" class="headerlink" title="一、基本概念：nwk格式文件"></a>一、基本概念：nwk格式文件</h2><p>nwk格式是一种存储系统发育树的格式，更具体的信息可以参考<a target="_blank" rel="noopener" href="https://evolution.genetics.washington.edu/phylip/newicktree.html">https://evolution.genetics.washington.edu/phylip/newicktree.html</a>。在这一类型的文件中，系统发育树的节点和分支由圆括号的层次关系所表示。</p>
 <p>一颗系统发育树的表达式以分号结尾，用圆括号和逗号标记节点和分支。节点名称可以为空，也可以是一串可打印字符，但是不能包含空格、逗号、分号、圆括号和方括号。</p>
 <p>一种拓展的表示方法是在节点名称后加分支长度，二者以冒号隔开。例如</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(B:6.0,(A:5.0,C:3.0,E:4.0):5.0,D:11.0);</span><br></pre></td></tr></table></figure>

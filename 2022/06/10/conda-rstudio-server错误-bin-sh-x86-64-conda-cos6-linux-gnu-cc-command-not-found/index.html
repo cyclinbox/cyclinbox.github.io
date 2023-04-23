@@ -19,15 +19,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="背景：我在Windows subsystem for Linux下面安装了anaconda，并使用这个anaconda安装了R（顺便配置了一个conda env，叫做r420）。为了更方便的使用这个R，我又安装了R studio server，通过浏览器调用这个Linux版本的R。 最近在使用中，发现了一个问题：安装 R 包时，出现错误：“&#x2F;bin&#x2F;sh: x86_64-conda_cos6-li">
+    <meta name="description" content="如何解决conda - rstudio-server的这个报错？">
 <meta property="og:type" content="article">
 <meta property="og:title" content="conda - rstudio-server错误 :&#x2F;bin&#x2F;sh: x86_64-conda_cos6-linux-gnu-cc: command not found">
 <meta property="og:url" content="http://example.com/2022/06/10/conda-rstudio-server%E9%94%99%E8%AF%AF-bin-sh-x86-64-conda-cos6-linux-gnu-cc-command-not-found/index.html">
 <meta property="og:site_name" content="Warren&#39;s Blog">
-<meta property="og:description" content="背景：我在Windows subsystem for Linux下面安装了anaconda，并使用这个anaconda安装了R（顺便配置了一个conda env，叫做r420）。为了更方便的使用这个R，我又安装了R studio server，通过浏览器调用这个Linux版本的R。 最近在使用中，发现了一个问题：安装 R 包时，出现错误：“&#x2F;bin&#x2F;sh: x86_64-conda_cos6-li">
+<meta property="og:description" content="如何解决conda - rstudio-server的这个报错？">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-06-10T03:56:20.000Z">
-<meta property="article:modified_time" content="2023-04-23T02:06:33.071Z">
+<meta property="article:modified_time" content="2023-04-23T02:31:06.018Z">
 <meta property="article:author" content="Warren Zhang">
 <meta name="twitter:card" content="summary">
 
@@ -130,7 +130,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -217,7 +217,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:31:06" itemprop="dateModified" datetime="2023-04-23T10:31:06+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -239,7 +239,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="背景："><a href="#背景：" class="headerlink" title="背景："></a>背景：</h2><p>我在Windows subsystem for Linux下面安装了anaconda，并使用这个anaconda安装了R（顺便配置了一个conda env，叫做r420）。为了更方便的使用这个R，我又安装了R studio server，通过浏览器调用这个Linux版本的R。</p>
+        <p>如何解决conda - rstudio-server的这个报错？</p>
+<span id="more"></span>
+
+<h2 id="背景："><a href="#背景：" class="headerlink" title="背景："></a>背景：</h2><p>我在Windows subsystem for Linux下面安装了anaconda，并使用这个anaconda安装了R（顺便配置了一个conda env，叫做r420）。为了更方便的使用这个R，我又安装了R studio server，通过浏览器调用这个Linux版本的R。</p>
 <p>最近在使用中，发现了一个问题：安装 R 包时，出现错误：“/bin/sh: x86_64-conda_cos6-linux-gnu-cc: command not found”，这导致我没法安装新的软件包</p>
 <h2 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a>解决方法：</h2><p>经过检查，如果我在shell中调用R安装R包，则不会出错。因此不是R自带的编译工具链的问题。</p>
 <p>经过上网搜索，猜测可能是Rstudio server环境变量中没有包含R自带的编译工具链。</p>
