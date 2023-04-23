@@ -27,7 +27,7 @@
 <meta property="og:description" content="本文实现了一种网易云音乐随机听歌的组件">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-08-20T11:13:00.000Z">
-<meta property="article:modified_time" content="2023-04-23T03:16:59.319Z">
+<meta property="article:modified_time" content="2023-04-23T03:26:34.375Z">
 <meta property="article:author" content="Warren Zhang">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="网易云音乐">
@@ -218,7 +218,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 11:16:59" itemprop="dateModified" datetime="2023-04-23T11:16:59+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 11:26:34" itemprop="dateModified" datetime="2023-04-23T11:26:34+08:00">2023-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -266,9 +266,69 @@
 
 <p><strong>使用时把这三段代码放在一起，粘贴到网页内既可。</strong></p>
 <p>实际使用效果：</p>
-<p>切歌</p>
 <html>
-var lastIndex = -1; var mList=\[ '1492283139',//疾如猛火 '1392438000',//Raindrop '1910966474',//华灯星聚 '5197160',//Proud of you '1645112',//For River(Johnny Version) '5284529',//祝福-叶倩文 '757757',//朝(早晨)-ゴンチチ '28219176',//虹之间 '29097535',//彩蝶舞夏 '5188837',//卡农-1 '478507889',//卡农-2 '1439409941',//Rainbow Mile '569214126',//可能否 '27946926',//Positive Outlook '1645140'//To the moon(Ending Version) \] function shuffle\_2(auto){ var mlen = mList.length; // len of music array var index = Math.floor(Math.random()\*100000%mlen); // random index if(index==lastIndex){ if(index+1<mlen) index += 1; else index = 0; } lastIndex = index; var mID = mList\[index\]; var mXML = '<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=100% height=92 paddingwidth="0" src="https://music.163.com/outchain/player?type=2&id=250&auto=&height=66"></iframe>'; mXML = mXML.replace('250',mID); mXML = mXML.replace('',auto); document.getElementById('mp-content-2').innerHTML = mXML; } shuffle\_2('0'); //加载页面时一并载入歌曲，但是自动播放设置为关闭 #mp-shuffle-btn-2{ width:84px; height: 42px; float: right; margin: 0px 0 0 0 ; border: 0px; padding: 0 0px 0 0px; /\*background-color: rgb(11, 153, 122);\*/ background-color: #046c99; color: #fff; font-size: 16px; font-weight: bold; box-shadow: 0px 0px 4px rgba(127,127,198,0.5); cursor: pointer; } #mp-shuffle-btn-2:hover {background-color: #0587bf;} #mp-shuffle-btn-2:active {background-color: #0587bf;}
+<!-- wp:html -->
+<div id="MusicPlayer-2" style="width:100%;height:100%;display:block;">
+    <div id="mp-content-2" style="width:100%;height:auto;">
+        <!--replace this xml with netease iframe-->
+    </div>
+    <button id="mp-shuffle-btn-2" onclick="shuffle_2('1');">切歌</button>
+</div>
+<script>
+    var lastIndex = -1;
+    var mList=[
+        '1492283139',    //疾如猛火
+        '1392438000',    //Raindrop
+        '1910966474',    //华灯星聚
+        '5197160',    //Proud of you
+        '1645112',    //For River(Johnny Version)
+        '5284529',    //祝福-叶倩文
+        '757757',    //朝(早晨)-ゴンチチ
+        '28219176',    //虹之间
+        '29097535',    //彩蝶舞夏
+        '5188837',    //卡农-1
+        '478507889',    //卡农-2
+        '1439409941',    //Rainbow Mile
+        '569214126',    //可能否
+        '27946926',    //Positive Outlook
+        '1645140'    //To the moon(Ending Version)
+    ]
+    function shuffle_2(auto){    
+        var mlen  = mList.length;        // len of music array
+        var index = Math.floor(Math.random()*100000%mlen); // random index
+        if(index==lastIndex){
+            if(index+1<mlen) index += 1;
+            else index = 0;
+        }
+        lastIndex = index;
+        var mID  = mList[index];
+        var mXML = '<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=100% height=92 paddingwidth="0" src="https://music.163.com/outchain/player?type=2&id=250&auto=&height=66"></iframe>';
+        mXML = mXML.replace('250',mID);
+        mXML = mXML.replace('',auto);
+        document.getElementById('mp-content-2').innerHTML = mXML;
+    }
+    shuffle_2('0'); //加载页面时一并载入歌曲，但是自动播放设置为关闭
+</script>
+<style>
+#mp-shuffle-btn-2{
+ width:84px;
+ height: 42px;
+ float: right;
+ margin: 0px 0 0 0 ;
+ border: 0px;
+ padding: 0 0px 0 0px;
+ /*background-color: rgb(11, 153, 122);*/
+ background-color: #046c99;
+ color: #fff;
+ font-size: 16px;
+ font-weight: bold;
+ box-shadow: 0px 0px 4px rgba(127,127,198,0.5);
+ cursor: pointer;
+ }
+#mp-shuffle-btn-2:hover {background-color: #0587bf;} 
+#mp-shuffle-btn-2:active {background-color: #0587bf;}
+</style>
+<!-- /wp:html -->
 </html>
 
 
