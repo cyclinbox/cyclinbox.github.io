@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#144267"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="客户端通过ssh登录服务器的一般方法如下： 1ssh &lt;username&gt;@&lt;ip address&gt;  其中&lt;username&gt;和&lt;ip address&gt;分别填入用户名和远程服务器的IP地址。 如果没有配置免密登录，这一步之后一般会提示输入密码。 但是如果经常要登录，每次都输入密码显然很麻烦。于是我们可以配置免密登录，方法如下： 1、在客户端上输入下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux客户机和服务器之间配置免密登录（SSH）">
+<meta property="og:url" content="http://example.com/2023/02/13/linux%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88ssh%EF%BC%89/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="客户端通过ssh登录服务器的一般方法如下： 1ssh &lt;username&gt;@&lt;ip address&gt;  其中&lt;username&gt;和&lt;ip address&gt;分别填入用户名和远程服务器的IP地址。 如果没有配置免密登录，这一步之后一般会提示输入密码。 但是如果经常要登录，每次都输入密码显然很麻烦。于是我们可以配置免密登录，方法如下： 1、在客户端上输入下">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-02-13T06:52:14.000Z">
+<meta property="article:modified_time" content="2023-04-23T02:06:33.448Z">
+<meta property="article:author" content="Warren Zhang">
+<meta property="article:tag" content="ssh">
+<meta property="article:tag" content="免密登录">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/02/13/linux%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88ssh%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2023/02/13/linux%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88ssh%EF%BC%89/","path":"2023/02/13/linux客户机和服务器之间配置免密登录（ssh）/","title":"Linux客户机和服务器之间配置免密登录（SSH）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux客户机和服务器之间配置免密登录（SSH） | Warren's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%9C%A8%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8A%E8%BE%93%E5%85%A5%E4%B8%8B%E5%88%97%E6%8C%87%E4%BB%A4%EF%BC%8C%E7%94%9F%E6%88%90%E5%AE%A2%E6%88%B7%E6%9C%BA%E7%9A%84%E5%85%AC%E9%92%A5%E5%92%8C%E5%AF%86%E9%92%A5"><span class="nav-number">1.</span> <span class="nav-text">1、在客户端上输入下列指令，生成客户机的公钥和密钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%9C%A8%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8A%E8%BE%93%E5%85%A5%E4%B8%8B%E5%88%97%E6%8C%87%E4%BB%A4%EF%BC%8C%E5%B0%86%E5%85%AC%E9%92%A5%E4%B8%8A%E4%BC%A0%E5%88%B0%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">2、在客户端上输入下列指令，将公钥上传到远程服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E6%88%90%E5%8A%9F%E5%AE%8C%E6%88%90%E9%85%8D%E7%BD%AE%E3%80%82%E6%AD%A4%E6%97%B6%E5%86%8D%E8%BF%90%E8%A1%8C%E4%B8%8B%E5%88%97%E6%8C%87%E4%BB%A4%EF%BC%8C%E6%97%A0%E9%9C%80%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81%E5%8D%B3%E5%8F%AF%E7%99%BB%E5%BD%95%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E3%80%82"><span class="nav-number">3.</span> <span class="nav-text">3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Zhang"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Zhang</p>
+  <div class="site-description" itemprop="description">一切会变好的吗？会！</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/13/linux%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88ssh%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux客户机和服务器之间配置免密登录（SSH） | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux客户机和服务器之间配置免密登录（SSH）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-02-13 14:52:14" itemprop="dateCreated datePublished" datetime="2023-02-13T14:52:14+08:00">2023-02-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>客户端通过ssh登录服务器的一般方法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>&lt;username&gt;</code>和<code>&lt;ip address&gt;</code>分别填入用户名和远程服务器的IP地址。</p>
+<p>如果没有配置免密登录，这一步之后一般会提示输入密码。</p>
+<p>但是如果经常要登录，每次都输入密码显然很麻烦。于是我们可以配置免密登录，方法如下：</p>
+<h3 id="1、在客户端上输入下列指令，生成客户机的公钥和密钥"><a href="#1、在客户端上输入下列指令，生成客户机的公钥和密钥" class="headerlink" title="1、在客户端上输入下列指令，生成客户机的公钥和密钥"></a>1、在客户端上输入下列指令，生成客户机的公钥和密钥</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
+
+<p>这个指令的输出大致如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/home/&lt;username&gt;/.ssh/id_rsa):</span><br></pre></td></tr></table></figure>
+
+<p>我们直接接受默认设置，连按三次回车键即可。</p>
+<p>此时，客户端会生成两个文件，分别是公钥（<code>~/.ssh/id_rsa.pub</code>）和密钥（<code>~/.ssh/id_rsa</code>）</p>
+<h3 id="2、在客户端上输入下列指令，将公钥上传到远程服务器"><a href="#2、在客户端上输入下列指令，将公钥上传到远程服务器" class="headerlink" title="2、在客户端上输入下列指令，将公钥上传到远程服务器"></a>2、在客户端上输入下列指令，将公钥上传到远程服务器</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>&lt;username&gt;</code>和<code>&lt;ip address&gt;</code>分别填入用户名和远程服务器的IP地址。</p>
+<p>在运行上述指令的过程中，可能会提示输入服务器登录密码。照他的提示做就行。</p>
+<h3 id="3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。"><a href="#3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。" class="headerlink" title="3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。"></a>3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Warren Zhang
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="http://example.com/2023/02/13/linux%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88ssh%EF%BC%89/" title="Linux客户机和服务器之间配置免密登录（SSH）">http://example.com/2023/02/13/linux客户机和服务器之间配置免密登录（ssh）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/ssh/" rel="tag"><i class="fa fa-tag"></i> ssh</a>
+              <a href="/tags/%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/" rel="tag"><i class="fa fa-tag"></i> 免密登录</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/02/05/html-%E6%89%93%E5%8D%B0%E6%8D%A2%E9%A1%B5%E8%BD%AC%E8%BD%BD/" rel="prev" title="html 打印换页(转载)">
+                  <i class="fa fa-chevron-left"></i> html 打印换页(转载)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/03/15/ubuntu-port-22-0-4-%E5%AE%89%E8%A3%85rstudio-server%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8E%A2%E7%B4%A2/" rel="next" title="ubuntu-port 22.0.4 安装rstudio-server的一些探索">
+                  ubuntu-port 22.0.4 安装rstudio-server的一些探索 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Zhang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -127,9 +127,17 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">63</span>
           <span class="site-state-item-name">posts</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">tags</span>
       </div>
   </nav>
 </div>
@@ -169,7 +177,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/17/notice/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/20/%E5%9C%A8windows%E4%B8%8B%E7%BC%96%E8%AF%91less-exe/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/cyclinbox.png">
@@ -187,7 +195,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/10/17/notice/" class="post-title-link" itemprop="url">博客内容迁移说明</a>
+          <a href="/2023/03/20/%E5%9C%A8windows%E4%B8%8B%E7%BC%96%E8%AF%91less-exe/" class="post-title-link" itemprop="url">在Windows下编译less.exe</a>
         </h2>
 
         <div class="post-meta-container">
@@ -198,14 +206,23 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2022-10-17 23:40:21" itemprop="dateCreated datePublished" datetime="2022-10-17T23:40:21+08:00">2022-10-17</time>
+      <time title="Created: 2023-03-20 17:28:19" itemprop="dateCreated datePublished" datetime="2023-03-20T17:28:19+08:00">2023-03-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 10:01:22" itemprop="dateModified" datetime="2023-04-23T10:01:22+08:00">2023-04-23</time>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
     </span>
 
   
@@ -218,14 +235,52 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>基于hexo的博客系统暂时停止使用。</p>
-<p>原先在此发表的文章已经迁移到了<a target="_blank" rel="noopener" href="http://zhangwanyu.anoms.top/">ANOMSの另一个小世界</a>上。后者是我的博客网站，欢迎参观留言。</p>
-<p>cyclin</p>
-<p>2022-10-17</p>
-<hr>
-<p>update 2023-4-23</p>
-<p>Wordpress已停用</p>
-<p>目前考虑迁移回hexo</p>
+          <h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p><a target="_blank" rel="noopener" href="https://www.gnu.org/savannah-checkouts/gnu/www/software/less/">GNU less</a> 是一个很好用的命令行文本查看器，在Linux系统上默认安装，其提供了包括文件查看、字符串搜索在内的许多功能，并且在打开大文件（例如1GB大小的基因组数据）时速度极快。</p>
+<p>由于工作环境限制，笔者需要经常在Windows系统的电脑下查看文本文件。windows系统自带了记事本、写字板等文本查看器，但是如上所述，打开大文件时这些软件的速度很慢。此外，笔者也安装了vscode、 <a target="_blank" rel="noopener" href="https://www.vim.org/">GVIM</a> 、<a target="_blank" rel="noopener" href="https://frippery.org/busybox/">busybox</a> 等软件，但是这些软件也不尽然能够满足笔者的需求（例如，vscode本质上是个浏览器，因此速度更慢；GVIM提供了和Linux vim一致的使用体验，但是在打开大文件时依然很慢；busybox自带了一个精简版的less，勉强可用，但诸多细节依然不及完整版less）。因此，笔者萌生了编译windows版less的想法。</p>
+<h2 id="二、材料"><a href="#二、材料" class="headerlink" title="二、材料"></a>二、材料</h2><h3 id="1、编译器安装"><a href="#1、编译器安装" class="headerlink" title="1、编译器安装"></a>1、编译器安装</h3><p>编译less需要C++编译器和perl解释器。本文将以<a target="_blank" rel="noopener" href="https://www.mingw-w64.org/downloads/">MinGW-w64</a> 为例介绍C++编译器的安装，以<a target="_blank" rel="noopener" href="https://strawberryperl.com/">Strawberry Perl</a> 为例介绍perl解释器的安装。读者也可以选择其他编译器和解释器，但大致思路是相同的。</p>
+<h4 id="（1）MinGW-64"><a href="#（1）MinGW-64" class="headerlink" title="（1）MinGW-64"></a>（1）MinGW-64</h4><p><a target="_blank" rel="noopener" href="https://www.mingw-w64.org/downloads/">MinGW-w64</a> 是一个大型项目，旨在将GNU Linux上的GCC编译器移植到Windows等系统上。熟悉Linux GCC编译器的同学应该很容易上手MinGW-64的编译器，二者在许多地方是相似的。</p>
+<p>下载地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/niXman/mingw-builds-binaries/releases">Github 存储库</a></p>
+<p>根据Windows系统的对应架构选择合适的编译器版本并下载整合包，例如笔者所下载的就是 <code>x86_64-12.2.0-release-win32-seh-msvcrt-rt_v10-rev2.7z</code> 这个文件。下载后将其解压到D盘根目录（“解压文件到目标路径”； <em>读者也可以选择其他位置，但环境变量相应的需要改动</em> ），然后编辑系统环境变量（此电脑→属性→高级系统设置→环境变量），在 <code>Path</code> 这个变量中新建一条记录 <code>D:\mingw64\bin</code> 。修改环境变量的目的是方便后续在命令行中访问MinGW编译器，<strong>其应该与MinGW的安装路径一致。</strong></p>
+<p>现在打开Windows命令提示符（也可以用Windows Powershell），输入下列指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc --version</span><br></pre></td></tr></table></figure>
+
+<p>如果看到以下输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gcc (x86_64-win32-seh-rev2, Built by MinGW-W64 project) 12.2.0</span><br><span class="line">Copyright (C) 2022 Free Software Foundation, Inc.</span><br><span class="line">This is free software; see the sourcefor copying conditions.  There is NO</span><br><span class="line">warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</span><br></pre></td></tr></table></figure>
+
+<p>则说明安装成功。</p>
+<p>如果提示“gcc不是内部或外部命令，也不是可运行的程序或批处理文件”，则检查环境变量是否设置正确，或者环境变量是否与MinGW的安装路径一致。</p>
+<h4 id="（2）Strawberry-Perl"><a href="#（2）Strawberry-Perl" class="headerlink" title="（2）Strawberry Perl"></a>（2）Strawberry Perl</h4><p><a target="_blank" rel="noopener" href="https://strawberryperl.com/">Strawberry Perl</a> 是Perl解释器在Windows系统上的实现。其安装方法很简单。只需要点击 <a target="_blank" rel="noopener" href="https://strawberryperl.com/">官网链接</a> ，下载安装包，然后运行安装包，其会自动完成安装的过程，并配置好环境变量。</p>
+<p>安装完成后，重启Windows命令提示符，输入下列指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">perl -v</span><br></pre></td></tr></table></figure>
+
+<p>如果看到类似下面的输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">This is perl 5, version 32, subversion 1 (v5.32.1) built for MSWin32-x64-multi-thread</span><br><span class="line"></span><br><span class="line">Copyright 1987-2021, Larry Wall</span><br><span class="line"></span><br><span class="line">Perl may be copied only under the terms of either the Artistic License or the</span><br><span class="line">GNU General Public License, which may be found in the Perl 5 source kit.</span><br><span class="line"></span><br><span class="line">Complete documentation for Perl, including FAQ lists, should be found on</span><br><span class="line">this system using &quot;man perl&quot; or &quot;perldoc perl&quot;.  If you have access to the</span><br><span class="line">Internet, point your browser at http://www.perl.org/, the Perl Home Page.</span><br></pre></td></tr></table></figure>
+
+<p>则说明安装成功</p>
+<h3 id="2、less程序源代码"><a href="#2、less程序源代码" class="headerlink" title="2、less程序源代码"></a>2、less程序源代码</h3><p>见 <a target="_blank" rel="noopener" href="https://www.gnu.org/savannah-checkouts/gnu/www/software/less/">GNU less的官网</a> 。网站上列出了一个FTP服务器（<a target="_blank" rel="noopener" href="http://ftp.gnu.org/gnu/less/">http://ftp.gnu.org/gnu/less/</a> ），点击访问，并下载最新版源代码压缩包。笔者所下载的版本是version 608（<a target="_blank" rel="noopener" href="http://ftp.gnu.org/gnu/less/less-608.tar.gz">http://ftp.gnu.org/gnu/less/less-608.tar.gz</a> ）。</p>
+<p>下载后在任意目录下解压，然后通过Windows命令提示符访问对应位置。整个源代码包的结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">D:\linux\gcc\source\less-608&gt;ls</span><br><span class="line">COPYING          Makefile.o2e     brac.c           configure        defines.wn       input.c          lessecho.man     line.c           mkhelp.py        output.c         regexp.h         version.c</span><br><span class="line">INSTALL          Makefile.o9c     ch.c             configure.ac     edit.c           install.sh       lessecho.nro     linenum.c        mkinstalldirs    pattern.c        screen.c         wide.uni</span><br><span class="line">LICENSE          Makefile.o9u     charset.c        cvt.c            filename.c       jump.c           lesskey.c        lsystem.c        mkutable         pattern.h        scrsize.c        xbuf.c</span><br><span class="line">Makefile.aut     Makefile.wnb     charset.h        decode.c         fmt.uni          less.h           lesskey.h        main.c           optfunc.c        pckeys.h         search.c         xbuf.h</span><br><span class="line">Makefile.dsb     Makefile.wng     cmd.h            defines.ds       forwback.c       less.hlp         lesskey.man      mark.c           option.c         position.c       signal.c</span><br><span class="line">Makefile.dsg     Makefile.wnm     cmdbuf.c         defines.h.in     funcs.h          less.man         lesskey.nro      mkfuncs.pl       option.h         position.h       tags.c</span><br><span class="line">Makefile.dsu     NEWS             command.c        defines.o2       help.c           less.nro         lesskey_parse.c  mkfuncs.py       opttbl.c         prompt.c         ttyin.c</span><br><span class="line">Makefile.in      README           compose.uni      defines.o9       ifile.c          lessecho.c       lglob.h          mkhelp.pl        os.c             regexp.c         ubin.uni</span><br></pre></td></tr></table></figure>
+
+<p>less的源代码包中提供了3个适用于windows系统的<code>Makefile</code>，分别是<code>Makefile.wnb, Makefile.wng, Makefile.wnm</code> ，他们对应于三种不同的C++编译器，分别是Bolarnd C++ 、MinGW-w64和Microsoft Visual C++ 。在这三个<code>Makefile</code>中，均标注了各自的编译方法，因此只需要按照其给出的方法编译即可。</p>
+<h2 id="三、编译方法"><a href="#三、编译方法" class="headerlink" title="三、编译方法"></a>三、编译方法</h2><p>如前所述，less的源代码包中提供了编译所需的<code>Makefile</code>文件，因此我们直接编译即可。</p>
+<p>我们使用的编译器是MinGW-w64，编译指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mingw32-make -f Makefile.wng REGEX_PACKAGE=regcomp-local</span><br></pre></td></tr></table></figure>
+
+<p>参数<code>REGEX_PACKAGE</code>指出了编译过程中应该链接到哪一个regex库。根据<code>Makefile</code>中的说明，我们指定<code>REGEX_PACKAGE=regcomp-local</code>即可，编译器会使用less源代码包自带的regex。</p>
+<p>这里还有一个小插曲：</p>
+<p>regex是一个正则表达式处理库，在Linux上自带，但是Windows上没有。默认编译选项指定<code>REGEX_PACKAGE=posix</code>，这会导致编译器从系统中链接regex库。笔者最开始采取的方法是另外安装regex，然而在网上只找到一个2.7版的regex库，编译过程中发现其与编译器不兼容。经过许多摸索，终于发现参数<code>REGEX_PACKAGE</code>的用法，遂设置<code>REGEX_PACKAGE=regcomp-local</code>，并一次编译成功。</p>
+<p>编译完成后，当前目录下会出现三个新的exe文件，分别是<code>less.exe, lessecho.exe, lesskey.exe</code> 。输入下列指令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">less.exe --version</span><br></pre></td></tr></table></figure>
+
+<p>当看到下面的输出时，表明安装成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">less 608 (Spencer V8 regular expressions)</span><br><span class="line">Copyright (C) 1984-2022  Mark Nudelman</span><br><span class="line"></span><br><span class="line">less comes with NO WARRANTY, to the extent permitted by law.</span><br><span class="line">For information about the terms of redistribution,</span><br><span class="line">see the file named README in the less distribution.</span><br><span class="line">Home page: https://greenwoodsoftware.com/less</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、使用"><a href="#四、使用" class="headerlink" title="四、使用"></a>四、使用</h2><p>我们可以将<code>less.exe, lessecho.exe, lesskey.exe</code>这几个可执行文件的路径加入到系统的环境变量PATH当中，这样以后需要打开大文件时，只需要运行 <code>less &lt;filename&gt;</code> 即可。</p>
+<p>less提供了多个参数，其中比较有用的参数有两个：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-N .........  --LINE-NUMBERS</span><br><span class="line">                Display line number at start of each line.</span><br><span class="line">-S  ........  --chop-long-lines</span><br><span class="line">                Chop (truncate) long lines rather than wrapping.</span><br></pre></td></tr></table></figure>
+
+<p>参数 <code>-N</code> 表示开启行号显示，参数 <code>-S</code> 表明长段落不换行显示（此时需要配合左右方向键进行浏览）。对于一些大文件，例如群体基因组变异文件VCF、制表符分隔的表格文件TSV等，这两个参数是极有用的。</p>
 
       
     </div>
@@ -244,6 +299,2389 @@
 
 
 
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/15/ubuntu-port-22-0-4-%E5%AE%89%E8%A3%85rstudio-server%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8E%A2%E7%B4%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/03/15/ubuntu-port-22-0-4-%E5%AE%89%E8%A3%85rstudio-server%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8E%A2%E7%B4%A2/" class="post-title-link" itemprop="url">ubuntu-port 22.0.4 安装rstudio-server的一些探索</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-03-15 22:15:14" itemprop="dateCreated datePublished" datetime="2023-03-15T22:15:14+08:00">2023-03-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>背景：想在平板电脑上原生运行<a target="_blank" rel="noopener" href="https://cran.r-project.org/">R</a>和<a target="_blank" rel="noopener" href="https://posit.co/">Rstudio</a>。前者是一个用于统计分析和作图的编程语言，后者是一个强大的代码编辑器和编程环境（IDE）。</p>
+<p>博主的平板电脑是安卓系统的，有<a target="_blank" rel="noopener" href="https://termux.dev/en/">Termux</a>这一软件可以实现对Linux终端的模拟（下载地址：<a target="_blank" rel="noopener" href="https://f-droid.org/en/packages/com.termux/">https://f-droid.org/en/packages/com.termux/</a> ）。由于这个模拟器并不是真正的Linux环境，因此许多软件并不能正常运行。幸运的是，在这一终端模拟器上，还有软件包<a target="_blank" rel="noopener" href="https://github.com/termux/proot-distro">proot-distro</a> 可以安装Linux子系统（如ubuntu-port），因此我们借助<a target="_blank" rel="noopener" href="https://github.com/termux/proot-distro">proot-distro</a>在安卓平板上安装了ubuntu-port 22.0.4的系统，并成功安装<a target="_blank" rel="noopener" href="https://anaconda.org/">miniconda</a>。</p>
+<p>有了ubuntu-port 22.0.4的系统和miniconda，安装R和Rstudio变得简单了一些。首先，我们安装了R，过程大致参考了许多网上教程，如 <a target="_blank" rel="noopener" href="https://www.plob.org/article/24073.html">《如何使用conda安装R和R包》</a>、<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2e1986296e15">《conda 安装R语言及其R包》</a> 等_（现已成功安装，可以通过命令行界面访问R）_。这之后，需要安装Rstudio。本文主要讲的是安装Rstudio时的一些探索。</p>
+<p>注意到，Linux终端只有命令行界面，因此安装本地版Rstudio不太可能。我们要做的是安装Rstudio-server，然后通过平板上安装的浏览器对其进行访问。</p>
+<h2 id="1、安装包下载地址："><a href="#1、安装包下载地址：" class="headerlink" title="1、安装包下载地址："></a>1、安装包下载地址：</h2><p>参考下列文档。Rstudio-server目前的官方版本只有x86和amd64的包，但是其beta版中有针对arm64编译的版本。</p>
+<p><a target="_blank" rel="noopener" href="https://dailies.rstudio.com/rstudio/elsbeth-geranium/server/bionic-arm64/">https://dailies.rstudio.com/rstudio/elsbeth-geranium/server/bionic-arm64/</a></p>
+<p>我们采用文章中给出的链接进行安装包下载，指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -c https://s3.amazonaws.com/rstudio-ide-build/server/bionic/arm64/rstudio-server-2022.12.1-366-arm64.deb</span><br></pre></td></tr></table></figure>
+
+<h2 id="2、安装gdebi"><a href="#2、安装gdebi" class="headerlink" title="2、安装gdebi"></a>2、安装gdebi</h2><p>参考<a target="_blank" rel="noopener" href="https://posit.co/download/rstudio-server/">官方教程</a>，我们运行下列指令安装gdebi，这是一个安装器，后面将用于rstudio-server的安装。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install gdebi-core</span><br></pre></td></tr></table></figure>
+
+<h2 id="3、安装rstudio-server"><a href="#3、安装rstudio-server" class="headerlink" title="3、安装rstudio-server"></a>3、安装rstudio-server</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gdebi rstudio-server-2022.12.1-366-arm64.deb</span><br></pre></td></tr></table></figure>
+
+<p>在ubuntu-port 22.0.4 系统上，安装rstudio-server时可能会出现找不到libssl1.0的问题（ <code>dependency is not satisfiable: libssl 1.0.0libssl1.0.2libssl 1.1</code> ）。对于这种情况，可以手动安装对应软件包 （见第4小节）</p>
+<h2 id="4、（对于“找不到libssl1-0”问题的改进）手动安装libssl1-0"><a href="#4、（对于“找不到libssl1-0”问题的改进）手动安装libssl1-0" class="headerlink" title="4、（对于“找不到libssl1.0”问题的改进）手动安装libssl1.0"></a>4、（对于“找不到libssl1.0”问题的改进）手动安装libssl1.0</h2><p>如果安装过程中<strong>没有</strong>出现“找不到libssl1.0”的问题，则可以跳过这一部分，直接进入第5小节。</p>
+<h3 id="4-1、下载"><a href="#4-1、下载" class="headerlink" title="4.1、下载"></a>4.1、下载</h3><p>libssl1.1自ubuntu18.04之后就从仓库中移除了。因此只能进行手动安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -c https://mirrors.aliyun.com/ubuntu-ports/pool/main/o/openssl/libssl1.1_1.1.1-1ubuntu2.1~18.04.21_arm64.deb</span><br></pre></td></tr></table></figure>
+
+<p>上述链接中的版本号截止到2023年3月，在此之后openssl1.1可能还会有更新，因此下载对应版本号的软件包即可。</p>
+<h3 id="4-2、安装"><a href="#4-2、安装" class="headerlink" title="4.2、安装"></a>4.2、安装</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gdebi install libssl1.1_1.1.1-1ubuntu2.1~18.04.21_arm64.deb</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3、rstudio-server安装"><a href="#4-3、rstudio-server安装" class="headerlink" title="4.3、rstudio-server安装"></a>4.3、rstudio-server安装</h3><p>参见第3小节。</p>
+<h2 id="5、rstudio-server配置"><a href="#5、rstudio-server配置" class="headerlink" title="5、rstudio-server配置"></a>5、rstudio-server配置</h2><p>Rstudio-server的配置文件保存在 <code>/etc/rstudio/</code> 下面。我们需要修改几个文件以便于服务器运行。</p>
+<ol>
+<li> <code>env-vars</code></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># set virtual environment for Rstudio server.</span><br><span class="line">PATH=/home/cyclin/wsl/anaconda3/envs/R/bin:/home/cyclin/wsl/anaconda3/condabin:$PATH</span><br></pre></td></tr></table></figure>
+
+<p>上面列出的是我自己的配置，实际安装过程中需要将R及Rscript对应的安装路径加入到<code>PATH</code>变量中。</p>
+<ol start="2">
+<li> <code>rserver.conf</code></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Server Configuration File# 更改RStudio-server使用的R版本</span><br><span class="line">rsession-which-r=/home/cyclin/wsl/anaconda3/envs/R/bin/R</span><br></pre></td></tr></table></figure>
+
+<p>上面列出的是我自己的配置，实际安装过程中需要将R及Rscript对应的安装路径加入到<code>rsession-which-r</code>变量中。</p>
+<ol start="3">
+<li> <code>rsession.conf</code></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 超时设定(单位：分钟)</span><br><span class="line">session-timeout-minutes=30</span><br><span class="line"></span><br><span class="line"># 更改R包安装地址</span><br><span class="line">r-libs-user=/home/cyclin/wsl/anaconda3/envs/R/lib/R/library</span><br></pre></td></tr></table></figure>
+
+<p>上面列出的是我自己的配置，实际安装过程中需要将R的library对应的存储路径加入到<code>r-libs-user</code>变量中。</p>
+<h2 id="6、启动与停止"><a href="#6、启动与停止" class="headerlink" title="6、启动与停止"></a>6、启动与停止</h2><ol>
+<li> 启动</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo rstudio-server start</span><br><span class="line"># 或者</span><br><span class="line">sudo service rstudio-server start</span><br></pre></td></tr></table></figure>
+
+<p>启动以后，在浏览器中访问 <code>http://localhost:8787</code> 即可使用Rstudio-server。【但是我没有走到这里，安装过程中的一些错误把我卡住了。】</p>
+<ol start="2">
+<li> 停止</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo rstudio-server stop</span><br><span class="line"># 或者</span><br><span class="line">sudo service rstudio-server stop</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-仍然没有解决的问题"><a href="#7-仍然没有解决的问题" class="headerlink" title="7. 仍然没有解决的问题"></a>7. 仍然没有解决的问题</h2><p>上述安装流程在PC端是没有问题的（系统是ubuntu 22LTS，以WSL1的形式运行于win11上）。但是在matepad上存在下列问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2023-03-15T13:06:50.037293Z [rserver] ERROR system error 1 (Operation not permitted); OCCURRED AT rstudio::core::Error rstudio::core::system::setResourceLimit(rstudio::core::system::ResourceLimit, RLimitType, RLimitType) src/cpp/core/system/PosixSystem.cpp:1568; LOGGED FROM: int main(int, char* const*) src/cpp/server/ServerMain.cpp:647</span><br></pre></td></tr></table></figure>
+
+<p>暂时没有找到这一问题的解决方法。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/13/linux%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88ssh%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/02/13/linux%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88ssh%EF%BC%89/" class="post-title-link" itemprop="url">Linux客户机和服务器之间配置免密登录（SSH）</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-02-13 14:52:14" itemprop="dateCreated datePublished" datetime="2023-02-13T14:52:14+08:00">2023-02-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>客户端通过ssh登录服务器的一般方法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>&lt;username&gt;</code>和<code>&lt;ip address&gt;</code>分别填入用户名和远程服务器的IP地址。</p>
+<p>如果没有配置免密登录，这一步之后一般会提示输入密码。</p>
+<p>但是如果经常要登录，每次都输入密码显然很麻烦。于是我们可以配置免密登录，方法如下：</p>
+<h3 id="1、在客户端上输入下列指令，生成客户机的公钥和密钥"><a href="#1、在客户端上输入下列指令，生成客户机的公钥和密钥" class="headerlink" title="1、在客户端上输入下列指令，生成客户机的公钥和密钥"></a>1、在客户端上输入下列指令，生成客户机的公钥和密钥</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
+
+<p>这个指令的输出大致如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/home/&lt;username&gt;/.ssh/id_rsa):</span><br></pre></td></tr></table></figure>
+
+<p>我们直接接受默认设置，连按三次回车键即可。</p>
+<p>此时，客户端会生成两个文件，分别是公钥（<code>~/.ssh/id_rsa.pub</code>）和密钥（<code>~/.ssh/id_rsa</code>）</p>
+<h3 id="2、在客户端上输入下列指令，将公钥上传到远程服务器"><a href="#2、在客户端上输入下列指令，将公钥上传到远程服务器" class="headerlink" title="2、在客户端上输入下列指令，将公钥上传到远程服务器"></a>2、在客户端上输入下列指令，将公钥上传到远程服务器</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>&lt;username&gt;</code>和<code>&lt;ip address&gt;</code>分别填入用户名和远程服务器的IP地址。</p>
+<p>在运行上述指令的过程中，可能会提示输入服务器登录密码。照他的提示做就行。</p>
+<h3 id="3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。"><a href="#3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。" class="headerlink" title="3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。"></a>3、成功完成配置。此时再运行下列指令，无需输入密码即可登录的服务器。</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;ip address&gt;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/05/html-%E6%89%93%E5%8D%B0%E6%8D%A2%E9%A1%B5%E8%BD%AC%E8%BD%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/02/05/html-%E6%89%93%E5%8D%B0%E6%8D%A2%E9%A1%B5%E8%BD%AC%E8%BD%BD/" class="post-title-link" itemprop="url">html 打印换页(转载)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-02-05 00:13:34" itemprop="dateCreated datePublished" datetime="2023-02-05T00:13:34+08:00">2023-02-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>wyf1022<br>于 2008-09-07 23:27:00 发布 9386<br>文章标签： html css div ie</p>
+</blockquote>
+<p>打印 HTML网页强制换页的方式：</p>
+<p>打印 HTML网页强制换页是一件很令人困惑的事，要达到这个功能其实可以通过 CSS 的 Pagebreak 来实现。</p>
+<p>强制分页大概只有两种CSS会被用到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123; page-break-after: always; /*在标签后换页*/ &#125;</span><br><span class="line">&#123; page-break-before: always; /*在标签前换页*/ &#125; </span><br></pre></td></tr></table></figure>
+
+<p>此二者中，最常用的大概就是page-break-after了，就是在指定的标签后强制换页，下面举一个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;div STYLE=&quot; page-break-after: always;&quot;&gt; 第一页 &lt;/div&gt;</span><br><span class="line">第二页</span><br></pre></td></tr></table></figure>
+
+<p>在浏览器中点击打印，给出的预览界面中这两个标签确实被分成了两页。</p>
+<p>其他相关CSS熟悉可以参考下面的网站：</p>
+<p><a target="_blank" rel="noopener" href="https://www.w3schools.com/cssref/pr_print_pageba.php">https://www.w3schools.com/cssref/pr_print_pageba.php</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.w3schools.com/cssref/pr_print_pagebb.php">https://www.w3schools.com/cssref/pr_print_pagebb.php</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.w3schools.com/cssref/pr_print_pagebi.php">https://www.w3schools.com/cssref/pr_print_pagebi.php</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/05/%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88%EF%BC%9A%E5%85%B3%E4%BA%8E%E7%BE%A4%E4%BD%93%E9%81%97%E4%BC%A0%E5%AD%A6%E7%A0%94%E7%A9%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/12/05/%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88%EF%BC%9A%E5%85%B3%E4%BA%8E%E7%BE%A4%E4%BD%93%E9%81%97%E4%BC%A0%E5%AD%A6%E7%A0%94%E7%A9%B6/" class="post-title-link" itemprop="url">一些杂谈：关于群体遗传学研究</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-12-05 23:36:07" itemprop="dateCreated datePublished" datetime="2022-12-05T23:36:07+08:00">2022-12-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%89%A9/" itemprop="url" rel="index"><span itemprop="name">生物</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%9D%82%E6%80%9D/" itemprop="url" rel="index"><span itemprop="name">杂思</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>自然选择最直接的作用就是作用在性状上。因为性状在不同程度上由基因控制，因此最终我们可以用分子遗传学的方法在基因水平上检测选择与进化。</p>
+<p>然而，对性状的选择的研究依然有他的意义，这个意义主要体现在如育种学、养殖学等的实际应用当中，例如通过群体遗传学方法，发现某些基因对增产有帮助，有些可以抗倒伏，这样的研究成果是可以进行转化应用的，其研究意义是看得见摸得着的。</p>
+<p>研究人类性状的进化历史，例如我的本科毕业设计所包含的工作，则与这个研究意义并不相同。因此我们需要用一些新的故事对相关研究工作进行包装——最重要的是，我们想要研究的问题是什么？以及，这个研究结果是否具有可解释性？（例如，如果我们经过研究，发现某地人群的身高在最近一万年内出现了增高，这样的变化究竟是环境原因造成的呢，还是别的原因造成的呢？这里需要一个假设去解释相应的现象）</p>
+<p>不管怎么说，最终的落脚点依然是群体遗传学，以及选择压力的检测——一般认为，传统的选择压力检测方法存在假阳性高的问题，而目前我们所做的很多工作旨在解决这一问题。在解决了假阳性高的问题以后，我们就可以将这样的方法应用于具体问题的解决当中了。最直接的几个问题，可能就如同<a target="_blank" rel="noopener" href="https://www.science.org/content/resource/125-questions-exploration-and-discovery">Science杂志在庆祝上海交大125周年校庆时提出的125个问题</a>那样——“哪些基因使人类与众不同？ 远古人类是否曾与其他类人祖先杂交？未来人类的外貌会有所不同吗？”</p>
+<p>以上。</p>
+<p><img src="https://pic.imgdb.cn/item/638e0f75b1fccdcd36f2c686.png"></p>
+<p><img src="https://pic.imgdb.cn/item/638e0f9cb1fccdcd36f2ffaa.png"></p>
+<p><img src="https://pic.imgdb.cn/item/638e0fb0b1fccdcd36f31d98.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/04/%E5%AD%A6%E6%9C%AF%E8%8B%B1%E8%AF%AD570/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/12/04/%E5%AD%A6%E6%9C%AF%E8%8B%B1%E8%AF%AD570/" class="post-title-link" itemprop="url">学术英语570</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-12-04 01:08:25" itemprop="dateCreated datePublished" datetime="2022-12-04T01:08:25+08:00">2022-12-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%91%98%E6%8A%84/" itemprop="url" rel="index"><span itemprop="name">摘抄</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>看到群里有人说这玩意考试有用，于是浅浅整理了一下。</p>
+<p>单词表来自新东方，释义来自有道词典。所有词汇的释义都是用一个python脚本爬取到，因此有些词组可能没有释义（所谓“not find meaning”），遇到这样的词汇就手动查询释义吧 ：）</p>
+<p>下面是单词表：</p>
+<p>word</p>
+<p>meaning</p>
+<p>derived words</p>
+<p>abandon</p>
+<p>v.抛弃，遗弃；（因危险）离开，舍弃；中止，不再有；放弃（信念、信仰或看法）；陷入，沉湎于（某种情感）<br>n.放任，放纵</p>
+<p>abstract</p>
+<p>adj.抽象的，纯概念的；（艺术）抽象派的；理论上的，不切实际的<br>n.摘要，梗概；抽象画，抽象派艺术作品；抽象的概念<br>v.抽象化，从理论上（或孤立地）考虑；提取，使分离；写……的摘要；偷走，窃取；退出</p>
+<p>复数abstracts<br>第三人称单数abstracts<br>现在分词abstracting<br>过去式abstracted<br>过去分词abstracted<br>比较级more abstract<br>最高级most abstract</p>
+<p>academic</p>
+<p>adj.学业的，学术的；学校的，学院的；学业（成绩）优秀的，善于学习的；不切实际的，空谈的<br>n.大学教师，学者；（学校或学院的）课程；大学生</p>
+<p>复数academics<br>比较级more academic<br>最高级most academic</p>
+<p>access</p>
+<p>n.入口，通道；获得的机会，使用权；（对计算机存储器的）访问，存取；（情感）爆发，发作；探视权<br>v.接近，进入；获取，访问（计算机信息）<br>adj.&lt;美&gt;（电视节目或时间等）对外公开的</p>
+<p>复数accesses<br>第三人称单数accesses<br>现在分词accessing<br>过去式accessed<br>过去分词accessed</p>
+<p>accommodation</p>
+<p>n.&lt;美&gt;住宿，膳宿；&lt;英&gt;住处，办公处，停留处；（楼房或交通工具内的）空间，座位；和解，调和；（通过改变眼球晶状体形状）自动调焦</p>
+<p>复数accommodations</p>
+<p>accompanied</p>
+<p>v.陪伴，伴随；伴奏（accompany 的过去分词）<br>adj.伴随的；相伴的</p>
+<p>accumulation</p>
+<p>n.积累，堆积；堆积物，堆积量</p>
+<p>accurate</p>
+<p>adj.准确的，精确的；（工具，方法）精密的；正确无误的；（武器、投掷）精准的</p>
+<p>比较级more accurate<br>最高级most accurate</p>
+<p>achieve</p>
+<p>v.（经努力）达到，取得，实现；获得成功</p>
+<p>第三人称单数achieves<br>现在分词achieving<br>过去式achieved<br>过去分词achieved</p>
+<p>acknowledged</p>
+<p>adj.公认的；被普遍认可的<br>v.承认；答谢；告知已收到；搭理（acknowledge 的过去式和过去分词）</p>
+<p>acquisition</p>
+<p>n.学得，习得；（金钱、财物等的）获取；购买，添置，增添物；收购，购置的产业</p>
+<p>复数acquisitions</p>
+<p>adaptation</p>
+<p>n.改编本，改写本；适应，改变；适应（性），适应力；适应性变化</p>
+<p>复数adaptations</p>
+<p>adequate</p>
+<p>adj.足够的，适当的，合乎需要的；（品质）足够好的，令人满意的；（质量）达到要求的，勉强过关的</p>
+<p>adjacent</p>
+<p>adj.邻近的，毗连的；（几何）（两个角）相邻的</p>
+<p>adjustment</p>
+<p>n.调整，校正；（行为、思想的）调节，适应；调节器</p>
+<p>复数adjustments</p>
+<p>administration</p>
+<p>n.管理，行政；管理部门，行政部门；（某一任期的）政府；执行，监管；（药的）服用，配给；遗产管理，（债务人、其他个人或破产公司的）资产管理</p>
+<p>复数administrations</p>
+<p>adults</p>
+<p>n.成年人（adult 的复数形式）</p>
+<p>advocate</p>
+<p>v.拥护，提倡<br>n.拥护者，提倡者；辩护律师；（为某一类人）谋利益者；（一项事业或个组织的）工作者</p>
+<p>复数advocates<br>第三人称单数advocates<br>现在分词advocating<br>过去式advocated<br>过去分词advocated</p>
+<p>affect</p>
+<p>v.影响；（疾病）侵袭，感染；（在感情上）深深打动，震撼；&lt;正式&gt; 假装，佯装<br>n.（尤指影响行为或行动的）情感，感情</p>
+<p>复数affects<br>第三人称单数affects<br>现在分词affecting<br>过去式affected<br>过去分词affected</p>
+<p>aggregate</p>
+<p>n.总数，合计；骨料，混凝料<br>adj.总计的，合计的；（种群）聚生的<br>v.集合，聚集；总计达到；合计</p>
+<p>复数aggregates<br>第三人称单数aggregates<br>现在分词aggregating<br>过去式aggregated<br>过去分词aggregated</p>
+<p>aid</p>
+<p>n.帮助；援助，救助；辅助物，辅助设施；助手；特别津贴，国库税<br>v.帮助，援助；促进，有助于<br>【名】 （Aid）（英、阿拉伯、印）艾德（人名）</p>
+<p>albeit</p>
+<p>conj.虽然，尽管<br>【名】 （Albeit）（美、英、马）艾乐贝特（人名）</p>
+<p>allocation</p>
+<p>n.配给量，划拨款，份额；分配，分派</p>
+<p>复数allocations</p>
+<p>alter</p>
+<p>v.改变，改动；（使）变化；改（服装）；改建（某建筑）；&lt;美&gt;阉割<br>【名】 （Alter）（美、德、俄、以色列）阿尔特（人名）</p>
+<p>第三人称单数alters<br>现在分词altering<br>过去式altered<br>过去分词altered</p>
+<p>alternate</p>
+<p>v.（使）交替，（使）轮流<br>adj.轮流的，交替的；间隔的；供选择的，备用的；（叶，芽）互生的；另类的<br>n.替补者，候补者</p>
+<p>复数alternates<br>第三人称单数alternates<br>现在分词alternating<br>过去式alternated<br>过去分词alternated</p>
+<p>alternative</p>
+<p>n.可供选择的事物，替代物<br>adj.可替代的，备选的；非传统的，另类的；（两者）互不相容的，非此即彼的</p>
+<p>复数alternatives</p>
+<p>ambiguous</p>
+<p>adj.模棱两可的，有歧义的；不明朗的，不确定的</p>
+<p>amendment</p>
+<p>n.修正，修订之处；美国宪法修正案（Amendment）；（土壤结构或肥力的）改善；（对文件或计划的）修改</p>
+<p>复数amendments</p>
+<p>analogous</p>
+<p>adj.相似的，类似的；（器官）同功的</p>
+<p>analysis</p>
+<p>n.分析；化验分析；心理分析，精神分析；分析报告</p>
+<p>复数analyses</p>
+<p>annual</p>
+<p>adj.一年一度的；年度的；（植物）一年生的<br>n.一年生植物；年刊，年鉴</p>
+<p>复数annuals</p>
+<p>anticipated</p>
+<p>adj.受期待的，让人期盼的<br>v.预期，预料；期待，盼望；先于…做，抢先…做（anticipate 的过去式和过去分词）</p>
+<p>apparent</p>
+<p>adj.显而易见的，易懂的；貌似的，表面上的</p>
+<p>appendix</p>
+<p>n.阑尾；附录</p>
+<p>复数appendixes或appendices</p>
+<p>appreciation</p>
+<p>n.欣赏，鉴赏；感激，感谢；理解，领会；升值，增值；（赞赏性的）演讲，文字</p>
+<p>复数appreciations</p>
+<p>approach</p>
+<p>v.靠近，临近；接洽，交谈；对付，处理；近似，接近于<br>n.方法，态度；靠近，接近；接洽，要求；通道，路径；进场着陆；近似物</p>
+<p>复数approaches<br>第三人称单数approaches<br>现在分词approaching<br>过去式approached<br>过去分词approached</p>
+<p>appropriate</p>
+<p>adj.合适的，相称的<br>v.拨出（款项）；私占，挪用</p>
+<p>第三人称单数appropriates<br>现在分词appropriating<br>过去式appropriated<br>过去分词appropriated<br>比较级more appropriate<br>最高级most appropriate</p>
+<p>approximated</p>
+<p>adj.接近的；估计的<br>v.接近；约等于（approximate 的过去式和过去分词）</p>
+<p>arbitrary</p>
+<p>adj.任意的，随心所欲的；专横的，武断的</p>
+<p>area</p>
+<p>n.地区，区域；场地，地方；领域；面积；部位；罚球区<br>【名】 （Area）（西）阿雷亚（人名）</p>
+<p>复数areas</p>
+<p>aspects</p>
+<p>n.方面；方位；面貌（aspect 的复数）</p>
+<p>assembly</p>
+<p>n.议会，代表大会；集会，集会者；装配，组装；（计算机）汇编</p>
+<p>复数assemblies</p>
+<p>assessment</p>
+<p>n.评估，评价；估价，估计</p>
+<p>复数assessments</p>
+<p>assigned</p>
+<p>adj.指定的；已分配的<br>v.分配（assign 的过去分词）；指定；委派</p>
+<p>assistance</p>
+<p>n.帮助，援助</p>
+<p>assume</p>
+<p>v.假定，假设，认为；装出，做出；承担，就职；呈现，具有；夺取，篡夺</p>
+<p>第三人称单数assumes<br>现在分词assuming<br>过去式assumed<br>过去分词assumed</p>
+<p>assurance</p>
+<p>n.自信，把握；（人寿）保险；保证，确保</p>
+<p>复数assurances</p>
+<p>attached</p>
+<p>adj.非常喜欢……的，热爱……的；为……工作的；隶属于……，附属的；连接的，附加的<br>v.系上，贴上；赋予，认为……具有（attach 的过去式和过去分词形式）</p>
+<p>attained</p>
+<p>vt.取得，得到，获得（attain 的过去式）</p>
+<p>attitudes</p>
+<p>n.态度，看法（attitude 复数）</p>
+<p>attributed</p>
+<p>v.归于（attribute 的过去式，过去分词）；属性化</p>
+<p>author</p>
+<p>n.作者，著者；作家；发起者，创始人；作品<br>v.撰写，写作；发起，创造</p>
+<p>复数authors<br>第三人称单数authors<br>现在分词authoring<br>过去式authored<br>过去分词authored</p>
+<p>authority</p>
+<p>n.专家，权威人士；行政管理机构；权利，权限；权威，威信；许可，授权；当局，官方</p>
+<p>复数authorities</p>
+<p>automatically</p>
+<p>adv.自然地，必然地；不假思索地，无意识地；自动地</p>
+<p>available</p>
+<p>adj.可用的，可获得的；有空的，有闲暇的；未婚的，单身的</p>
+<p>aware</p>
+<p>adj.知道的，明白的；察觉到的，意识到的；有……意识的，有……知识的<br>【名】 （Aware）（阿拉伯、索）阿瓦雷（人名）</p>
+<p>behalf</p>
+<p>n.代表（on behalf of）；因为，为了……的利益（in/on behalf of）；就……而言，在……一方（on behalf of）</p>
+<p>复数behalves</p>
+<p>benefit</p>
+<p>n.好处，益处；救济金，补助金；额外奖励，保险金；慈善活动<br>v.对（某人）有用，使受益；得益于，得利于</p>
+<p>复数benefits<br>第三人称单数benefits<br>现在分词benefiting或benefitting<br>过去式benefited或benefitted<br>过去分词benefited或benefitted</p>
+<p>bias</p>
+<p>n.偏见，成见；偏好，天赋；倾向，趋势；斜纹；（统计）偏差，偏倚；偏重心球形；偏压，偏统<br>v.使有偏见，使偏心；加偏压（或偏流）于<br>adj.偏斜的<br>adv.偏斜地<br>【名】 （Bias）（英）拜厄斯，（法、德、葡、喀）比亚斯（人名）</p>
+<p>复数biases<br>第三人称单数biases或biasses<br>现在分词biasing或biassing<br>过去式biased或biassed<br>过去分词biased或biassed</p>
+<p>bond</p>
+<p>n.纽带，联系；公债，债券；结合，黏合；承诺，契约；枷锁，桎梏<br>v.（使）建立亲密关系；与……黏合（或连接）<br>【名】 （Bond）（英、德、西、瑞典）邦德（人名）</p>
+<p>复数bonds<br>第三人称单数bonds<br>现在分词bonding<br>过去式bonded<br>过去分词bonded</p>
+<p>brief</p>
+<p>adj.短暂的；简短的；（衣服）很短的<br>v.给……指示，向……介绍情况；&lt;英&gt;向（辩护律师）提供案情摘要<br>n.指示，任务简介；摘要，概要；短内裤（briefs）；辩护状；辩护律师；&lt;英&gt;委托辩护<br>【名】 （Brief）（英）布里夫（人名）</p>
+<p>复数briefs<br>第三人称单数briefs<br>现在分词briefing<br>过去式briefed<br>过去分词briefed<br>比较级briefer<br>最高级briefest</p>
+<p>bulk</p>
+<p>n.主体，大部分；庞大的身躯，肥硕的体形；（巨大的）容积，体积<br>adj.大批的，大宗的<br>v.使（产品）数量显得很大；结合（待售的股票或商品）<br>【名】 （Bulk）（土）布尔克（人名）</p>
+<p>复数bulks<br>第三人称单数bulks<br>现在分词bulking<br>过去式bulked<br>过去分词bulked</p>
+<p>capable</p>
+<p>adj.有能力的；有本领的，能干的；可以……的，容许……的</p>
+<p>capacity</p>
+<p>n.能力，才能；容积，容纳能力；职位，职责；功率，容积；生产量，生产能力<br>adj.无虚席的，满场的</p>
+<p>复数capacities</p>
+<p>categories</p>
+<p>n.种类，分类； 范畴（category 的复数）</p>
+<p>ceases</p>
+<p>n.停止（cease 的复数形式）<br>v.停止（cease 的第三人称单数）；终了</p>
+<p>challenge</p>
+<p>n.挑战，难题；挑战书，比赛邀请；质疑，质询；喝停盘查<br>v.挑战，向……下战书；质疑，拒绝接受；盘问，查问；考验</p>
+<p>复数challenges<br>第三人称单数challenges<br>现在分词challenging<br>过去式challenged<br>过去分词challenged</p>
+<p>channel</p>
+<p>n.频道，电视频道；管道，通道，航道；渠道，手段；沟渠，沟槽；河床；海峡；信道；电子沟道；输液道<br>v.引导，把……用于；输送，传送；通灵；努力赶上，受启发；形成凹槽<br>【名】 （Channel）（美）沙内乐（人名）</p>
+<p>复数channels<br>第三人称单数channels<br>现在分词channelling或channeling<br>过去式channelled或channeled<br>过去分词channelled或channeled</p>
+<p>chapter</p>
+<p>n.章，回，篇；阶段，时期；分会，分部；议会法案；一系列，一连串（a chapter of）；全体教士；宗教团体理事会<br>v.把……分成章节</p>
+<p>复数chapters<br>第三人称单数chapters<br>现在分词chaptering<br>过去式chaptered<br>过去分词chaptered</p>
+<p>chart</p>
+<p>n.图表，曲线图；海图，星位图；排行榜<br>v.绘制；记录，跟踪；制定（行动计划）；进榜，上榜<br>【名】 （Chart）（泰）察（人名）</p>
+<p>复数charts<br>第三人称单数charts<br>现在分词charting<br>过去式charted<br>过去分词charted</p>
+<p>chemical</p>
+<p>adj.化学的，与化学有关的<br>n.化学品，化学制品；成瘾的药物</p>
+<p>复数chemicals</p>
+<p>circumstances</p>
+<p>n.环境，状况；（尤指经济上的）境况；原委（circumstance 的复数）</p>
+<p>cited</p>
+<p>v.引用（cite 的过去分词）</p>
+<p>civil</p>
+<p>adj.公民的，国民的，国内的；平民的，民用的；文明的，有礼貌的；民法的（非刑法的），民事的；习俗规定的，历法规定的<br>【名】 （Civil）（土）吉维尔，（法）西维尔（人名）</p>
+<p>clarity</p>
+<p>n.清晰易懂；思路清晰；（画面或声音的）清晰，清楚；清澈，明净<br>【名】 （Clarity）（英）克拉里蒂（人名）</p>
+<p>classical</p>
+<p>adj.经典的，传统的；和古希腊与古罗马文化相关的；（音乐）古典的；文科的，人文科学的；典型的，有代表性的；相对论和量子力学理论前的概念、理论的，古典力学的</p>
+<p>clause</p>
+<p>n.从句，分句；（法律文件的）条款<br>【名】 （Clause）（法）克洛斯（人名）</p>
+<p>复数clauses</p>
+<p>code</p>
+<p>n.密码，暗码；（邮政）编码，（电话）区号；（计算机）编码；道德准则，行为规范；法典，法规<br>v.把……编码（或编号）；把……译成密码；（给计算机）编写指令<br>【名】 （Code）（英、法、西）科德（人名）</p>
+<p>复数codes<br>第三人称单数codes<br>现在分词coding<br>过去式coded<br>过去分词coded</p>
+<p>coherence</p>
+<p>n.连贯性，条理性；凝聚，凝聚力</p>
+<p>coincide</p>
+<p>v.巧合，同时发生；一致，相符；相交，重叠</p>
+<p>第三人称单数coincides<br>现在分词coinciding<br>过去式coincided<br>过去分词coincided</p>
+<p>collapse</p>
+<p>v.倒塌，塌下；崩溃，瓦解；突然倒下，昏倒；瘫倒；突然贬值，暴跌；萎陷，瘪掉；折叠<br>n.倒塌，塌陷；突然失败，崩溃；病倒，垮掉；突然贬值，暴跌</p>
+<p>复数collapses<br>第三人称单数collapses<br>现在分词collapsing<br>过去式collapsed<br>过去分词collapsed</p>
+<p>colleagues</p>
+<p>n.同事；同行（colleague 的复数）</p>
+<p>commenced</p>
+<p>v.开始（commence 的过去分词）</p>
+<p>comments</p>
+<p>n.评论；注解（comment 的复数）<br>v.评论；解释（comment 的第三人称单数）</p>
+<p>commission</p>
+<p>n.考察团，委员会；佣金，回扣；犯罪；委托，命令；（军队中的）官职，军衔；（尤指艺术品）委托制作；&lt;古&gt;所授之权，代办权<br>v.委托撰写，委托制作；委任，任命……为军官；（使军舰）正式使用，服现役</p>
+<p>复数commissions<br>第三人称单数commissions<br>现在分词commissioning<br>过去式commissioned<br>过去分词commissioned</p>
+<p>commitment</p>
+<p>n.忠诚，献身；承诺，保证；奉献，投入；热情，决心；义务，责任；花费，使用（资金、时间、人力）；需要定期支付的款项</p>
+<p>复数commitments</p>
+<p>commodity</p>
+<p>n.商品，货物；有用的东西，必需品</p>
+<p>复数commodities</p>
+<p>communication</p>
+<p>n.表达，交流，交际；信息，书信，电话；通讯，交通联系；传播学</p>
+<p>复数communications</p>
+<p>community</p>
+<p>n.社区，社会；（由同国籍、同宗教等构成的）群体，界；（多个国家的）共同体；归属感；（动植物的）群落</p>
+<p>复数communities</p>
+<p>compensation</p>
+<p>n.赔偿金，补偿金；弥补，抵消；报酬，薪水</p>
+<p>compiled</p>
+<p>adj.编译的<br>v.编辑（compile 的过去分词）</p>
+<p>complement</p>
+<p>v.补充，补足<br>n.补足物，衬托物；足数，足额；补语；余角；补体，防御素</p>
+<p>复数complements<br>第三人称单数complements<br>现在分词complementing<br>过去式complemented<br>过去分词complemented</p>
+<p>complex</p>
+<p>adj.复杂的，难懂的；组合的，合成的；（句子）复合的；复数的，复的；配合的，络合的<br>n.综合大楼，建筑群；复合体，综合体；情结；强烈（或过度）的关心（或忧虑）；配合物，络合物</p>
+<p>复数complexes<br>第三人称单数complexes<br>现在分词complexing<br>过去式complexed<br>过去分词complexed<br>比较级more complex<br>最高级most complex</p>
+<p>components</p>
+<p>n.部件；组件；成分；分力（component 的复数）</p>
+<p>compounds</p>
+<p>n.混合物，化合物；大院（compound的复数形式）</p>
+<p>comprehensive</p>
+<p>adj.综合性的，全面的；有理解力的<br>n.综合中学；专业综合测验</p>
+<p>复数comprehensives<br>比较级more comprehensive<br>最高级most comprehensive</p>
+<p>comprise</p>
+<p>v.包括，包含；构成，组成</p>
+<p>第三人称单数comprises<br>现在分词comprising<br>过去式comprised<br>过去分词comprised</p>
+<p>computer</p>
+<p>n.计算机；电脑；电子计算机</p>
+<p>复数computers</p>
+<p>conceived</p>
+<p>v.构思；设想；怀孕（conceive 的过去式和过去分词）</p>
+<p>concentration</p>
+<p>n.专心，专注；关注，重视；集中，聚集；含量，浓度</p>
+<p>复数concentrations</p>
+<p>concept</p>
+<p>n.概念，观念<br>adj.（围绕）某主题的；为表达一种想法而创造的<br>v.&lt;非正式&gt;想象，设想</p>
+<p>复数concepts<br>第三人称单数concepts<br>现在分词concepting<br>过去式concepted<br>过去分词concepted</p>
+<p>conclusion</p>
+<p>n.结论，推论；结局，结尾；缔结，商定；（根据所给前提得出的）命题</p>
+<p>复数conclusions</p>
+<p>concurrent</p>
+<p>adj.并存的，同时发生的；同意的，一致的；（两个或两个以上徒刑判决）同时执行的；（三条或三条以上线）共点的，会合的<br>n.共点；同时发生的事件</p>
+<p>conduct</p>
+<p>v.实施，进行；指挥；带领，引导；举止，表现；传导<br>n.行为，举止；经营方式，管理方法</p>
+<p>第三人称单数conducts<br>现在分词conducting<br>过去式conducted<br>过去分词conducted</p>
+<p>conference</p>
+<p>n.（大型、正式的）会议，研讨会；（小型正式的）商讨，讨论；体育协会（或联合会）</p>
+<p>复数conferences<br>第三人称单数conferences<br>现在分词conferencing<br>过去式conferenced<br>过去分词conferenced</p>
+<p>confined</p>
+<p>adj.（空间或面积）有限的，狭窄的；受限制的，被限定的；（因残疾或生病）受困于……的；幽禁的；在分娩中的<br>v.限制，使局限；关押，监禁；使离不开（或受困于床、轮椅等）（confine 的过去式和过去分词）</p>
+<p>confirmed</p>
+<p>adj.坚定的，根深蒂固的；已被证实的<br>v.确定；证实；使确信（confirm 的过去式和过去分词形式）</p>
+<p>conflict</p>
+<p>n.争执，争论，分歧；战斗，战争；抵触，矛盾<br>v.冲突，抵触</p>
+<p>复数conflicts<br>第三人称单数conflicts<br>现在分词conflicting<br>过去式conflicted<br>过去分词conflicted</p>
+<p>conformity</p>
+<p>n.遵守，依照；随大流，循规蹈矩；符合，一致；信奉英国国教</p>
+<p>复数conformities</p>
+<p>consent</p>
+<p>n.许可，允许；同意，赞同；正式批准文件，批文<br>v.赞同，准许，同意<br>【名】 （Consent）（美、法、荷）孔桑（人名）</p>
+<p>复数consents<br>第三人称单数consents<br>现在分词consenting<br>过去式consented<br>过去分词consented</p>
+<p>consequences</p>
+<p>n.后果，结果；影响（consequence 的复数）</p>
+<p>considerable</p>
+<p>adj.相当大的，相当重要的；（人）显要的，值得尊敬的</p>
+<p>比较级more considerable<br>最高级most considerable</p>
+<p>consistent</p>
+<p>adj.始终如一的，一贯的；持续的，连续的；固守的，坚持的；一致的，吻合的</p>
+<p>比较级more consistent<br>最高级most consistent</p>
+<p>constant</p>
+<p>adj.持续不断的，经常发生的；恒定的，不变的；忠诚的，忠实的<br>n.常数，恒量；不变的事物<br>【名】 （Constant） （德）康斯坦特（人名）</p>
+<p>复数constants<br>比较级more constant<br>最高级most constant</p>
+<p>constitutional</p>
+<p>adj.宪法的；宪法规定的，合乎宪法的；体质的，体格的；本性的，天性的<br>n.&lt;旧&gt;保健散步</p>
+<p>复数constitutionals</p>
+<p>constraints</p>
+<p>n.[数]约束；限制；约束条件（constraint 的复数形式）</p>
+<p>construction</p>
+<p>n.建造，建筑；创立，构建；构造，结构；建筑物；语法结构；解释，理解</p>
+<p>复数constructions</p>
+<p>consultation</p>
+<p>n.商讨，磋商，磋商会议；咨询，就诊；查找，查阅</p>
+<p>复数consultations</p>
+<p>consumer</p>
+<p>n.消费者，顾客，用户；食用者，使用者，消耗者</p>
+<p>复数consumers</p>
+<p>contact</p>
+<p>n.联系，联络；接触，触摸；联络人，熟人，社会关系；会见，往来，接触；传染病接触者；隐形眼镜；接通电，触点，接头；（无线电）通信<br>v.联系，联络；接触<br>adj.供联络的；接触性的，通过接触而起作用的</p>
+<p>复数contacts<br>第三人称单数contacts<br>现在分词contacting<br>过去式contacted<br>过去分词contacted</p>
+<p>contemporary</p>
+<p>adj.当代的，现代的；同时期的，同时代的<br>n.同时代的人；同龄人，同辈</p>
+<p>复数contemporaries<br>比较级more contemporary<br>最高级most contemporary</p>
+<p>context</p>
+<p>n.背景，环境；上下文，语境</p>
+<p>复数contexts</p>
+<p>contract</p>
+<p>n.合同，契约；&lt;非正式&gt;暗杀协议；（桥牌）定约墩数；婚约，订婚<br>v.（使）收缩，缩小；签合同，订立契约；患上，感染；订立婚约（或盟约）；欠负（债）</p>
+<p>复数contracts<br>第三人称单数contracts<br>现在分词contracting<br>过去式contracted<br>过去分词contracted</p>
+<p>contradiction</p>
+<p>n.矛盾，不一致；反驳，驳斥</p>
+<p>复数contradictions</p>
+<p>contrary</p>
+<p>adj.相反的，相对的；乖戾的，好与人作对的；逆向的，逆行的<br>n.相反的事实（或事情、情况）；对立命题，反对命题<br>adv.相反地</p>
+<p>复数contraries</p>
+<p>contrast</p>
+<p>n.差异，对比；对照物，明显不同的事物；（摄影或绘画中的）颜色反差，明暗对比；（电视屏幕的）图像明暗对比度，反差<br>v.对比，对照；显出明显的差异，形成对比</p>
+<p>复数contrasts<br>第三人称单数contrasts<br>现在分词contrasting<br>过去式contrasted<br>过去分词contrasted</p>
+<p>contribution</p>
+<p>n.贡献，促成作用；捐款，捐助；（保险金、养老金等的）定期缴款；稿件，投稿</p>
+<p>复数contributions</p>
+<p>controversy</p>
+<p>n.争论，争议</p>
+<p>复数controversies</p>
+<p>convention</p>
+<p>n.习俗，惯例；大会，集会；公约，协定；（文学、艺术上的）传统手法，传统风格</p>
+<p>复数conventions</p>
+<p>conversely</p>
+<p>adv.相反地，反过来说</p>
+<p>converted</p>
+<p>adj.修改的；改变信仰的<br>v.转变；改变信仰（convert 的过去式和过去分词形式）</p>
+<p>convinced</p>
+<p>adj.确信的，信服的；坚信不疑的，有坚定信仰的<br>v.使确信，使信服；说服，劝服（convince 的过去式和过去分词形式）</p>
+<p>cooperative</p>
+<p>adj.合作的，协作的；乐于配合的；（企业或其他组织）合作性的<br>n.合作性组织</p>
+<p>复数cooperatives<br>比较级more cooperative<br>最高级most cooperative</p>
+<p>coordination</p>
+<p>n.协调，配合；身体的协调性；配位；同一等级（或类别）</p>
+<p>core</p>
+<p>n.果核；中心部分；核心，要点；骨干，核心成员；地核，天体的核心；核反应堆堆芯；芯体<br>v.给……去核<br>adj.核心的，最重要的；基础的，必修的<br>【名】 （Core）（英）科尔，（西、意）科雷（人名）</p>
+<p>复数cores<br>第三人称单数cores<br>现在分词coring<br>过去式cored<br>过去分词cored</p>
+<p>corporate</p>
+<p>adj.公司的；法人的；共同的，全体的<br>n.公司，集团</p>
+<p>corresponding</p>
+<p>adj.相应的，相关的<br>v.类似于，相当于；通信；相一致，符合（correspond 的现在分词形式）</p>
+<p>couple</p>
+<p>n.两个，几个；一对夫妇，一对情侣<br>v.加上，结合；（把设备等）连接；形成一双，配成一对；&lt;旧&gt;交配，交媾；（用电磁感应，静电荷或光学通信线路）将（电路元件）耦合<br>【名】 （Couple）（法）库普勒（人名）</p>
+<p>复数couples<br>第三人称单数couples<br>现在分词coupling<br>过去式coupled<br>过去分词coupled</p>
+<p>create</p>
+<p>v.创造，创建；设计，创作；造成，引起；授予，册封；&lt;英，非正式&gt;大惊小怪，抱怨</p>
+<p>第三人称单数creates<br>现在分词creating<br>过去式created<br>过去分词created</p>
+<p>credit</p>
+<p>n.信用，信贷，赊购；赞扬，信誉，声望；存款金额，余额；补助；退税，抵免；学分；带来荣耀的人（或事）；作品（指影片、电视节目、戏剧等）；信任，相信<br>v.把（钱）记入总账，把钱存入（账户）；相信，信任；认为是……的功劳，给予承认；认为……有特定品质（或效果）</p>
+<p>复数credits<br>第三人称单数credits<br>现在分词crediting<br>过去式credited<br>过去分词credited</p>
+<p>criteria</p>
+<p>n.（评判或做决定的）标准，准则，尺度 （criterion 的复数）</p>
+<p>crucial</p>
+<p>adj.至关重要的，决定性的；&lt;非正式&gt;极好的</p>
+<p>比较级more crucial<br>最高级most crucial</p>
+<p>cultural</p>
+<p>adj.文化的，与文化有关的；艺术的，文艺的</p>
+<p>currency</p>
+<p>n.通货，货币；通用，流行；现时性</p>
+<p>复数currencies</p>
+<p>cycle</p>
+<p>n.自行车，摩托车；循环，周期；组诗，组歌；整套，系列；自行车骑行；一段时间<br>v.骑自行车；循环</p>
+<p>复数cycles<br>第三人称单数cycles<br>现在分词cycling<br>过去式cycled<br>过去分词cycled</p>
+<p>data</p>
+<p>n.数据，资料；（储存在计算机中的）数据资料<br>【名】 （Data）（日）驮太，（印、葡）达塔（人名）</p>
+<p>debate</p>
+<p>n.讨论，辩论<br>v.反复思考，斟酌；讨论，辩论</p>
+<p>复数debates<br>第三人称单数debates<br>现在分词debating<br>过去式debated<br>过去分词debated</p>
+<p>decades</p>
+<p>n.数十年（decade 的复数）</p>
+<p>decline</p>
+<p>v.下降，衰退；拒绝，谢绝；变格，词形变化<br>n.减少，衰退</p>
+<p>复数declines<br>第三人称单数declines<br>现在分词declining<br>过去式declined<br>过去分词declined</p>
+<p>deduction</p>
+<p>n.演绎，推论；扣除，扣除额</p>
+<p>复数deductions</p>
+<p>definite</p>
+<p>adj.清晰的，明晰的；确定的，不会改变的；肯定的，一定的<br>n.确定之事</p>
+<p>definition</p>
+<p>n.定义，释义；榜样，典范；清晰，清晰度，鲜明度</p>
+<p>复数definitions</p>
+<p>demonstrate</p>
+<p>v.证明；示范，演示；表露；游行，示威</p>
+<p>第三人称单数demonstrates<br>现在分词demonstrating<br>过去式demonstrated<br>过去分词demonstrated</p>
+<p>denote</p>
+<p>v.标志，预示；表示，意指</p>
+<p>第三人称单数denotes<br>现在分词denoting<br>过去式denoted<br>过去分词denoted</p>
+<p>deny</p>
+<p>v.否认；拒绝承认；拒绝给予</p>
+<p>第三人称单数denies<br>现在分词denying<br>过去式denied<br>过去分词denied</p>
+<p>depression</p>
+<p>n.抑郁，沮丧；萧条（期），不景气；低气压；凹陷，浅坑；俯角，俯视角</p>
+<p>复数depressions</p>
+<p>derived</p>
+<p>adj.导出的；衍生的，派生的<br>v.从……衍生出，源于；（从……中）得到，提取；导出（derive 的过去式和过去分词）</p>
+<p>design</p>
+<p>n.设计，布局，安排；设计艺术，构思；设计图，图纸；图案，花纹；计划，意图<br>v.设计，制图，构思；筹划，制订；预定，指定<br>【名】 （Design）（俄、巴、印）迪赛（人名）</p>
+<p>复数designs<br>第三人称单数designs<br>现在分词designing<br>过去式designed<br>过去分词designed</p>
+<p>despite</p>
+<p>prep.尽管，即使；不由自主地，忍不住地<br>n.&lt;古&gt;亵渎；&lt;古&gt;轻蔑，鄙视<br>v.&lt;古&gt;蔑视；&lt;古&gt;激怒</p>
+<p>第三人称单数despites<br>现在分词despiting<br>过去式despited<br>过去分词despited</p>
+<p>detected</p>
+<p>adj.检测到的<br>v.（尤指用特殊方法）发现，识别；（通常指用特殊设备）探测，检测；查明，调查（罪犯，罪行）；察觉（细微或不易察觉的东西）（detect 的过去式和过去分词）</p>
+<p>deviation</p>
+<p>n.偏离，违背；离差，偏差</p>
+<p>复数deviations</p>
+<p>device</p>
+<p>n.装置，设备；手段，方法；花招，诡计；炸弹，爆炸装置；图画，设计；&lt;古&gt;（某物的）样式，外表</p>
+<p>复数devices</p>
+<p>devoted</p>
+<p>adj.挚爱的，忠诚的；热衷的；专用于……的<br>v.献身，致力；用于（devote 的过去式和过去分词形式）</p>
+<p>differentiation</p>
+<p>n.区分，差异化</p>
+<p>dimensions</p>
+<p>n.方面；空间，大小；维度，层面（dimension 的复数）<br>v.将……做成特定尺寸；（在图表上）标出尺寸（dimension 的第三人称单数）</p>
+<p>diminished</p>
+<p>adj.减弱的；减退了的<br>v.减少；削弱（diminish 的过去分词）</p>
+<p>discretion</p>
+<p>n.自行决定权，判断力；谨慎，慎重</p>
+<p>discrimination</p>
+<p>n.歧视，区别对待；区分，辨别；辨别力，鉴赏力</p>
+<p>复数discriminations</p>
+<p>displacement</p>
+<p>n.被迫迁徙，流亡；取代，代替； 排水量；情感转移；电位移</p>
+<p>复数displacements</p>
+<p>display</p>
+<p>v.展示，陈列；显露，表现；（计算机）显示；（为求偶）作炫耀行为<br>n.展览，陈列；表演；（计算机屏幕上的）显示，显示器；流露，表现；炫耀行为</p>
+<p>复数displays<br>第三人称单数displays<br>现在分词displaying<br>过去式displayed<br>过去分词displayed</p>
+<p>disposal</p>
+<p>n.处理，清除；（土地、财产等的）变卖，转让；&lt;文&gt;安排，安置；&lt;美&gt;污物碾碎器</p>
+<p>复数disposals</p>
+<p>distinction</p>
+<p>n.差别，区分；杰出，卓越；特点；荣誉</p>
+<p>复数distinctions</p>
+<p>distortion</p>
+<p>n.歪曲，曲解；变形，失真</p>
+<p>复数distortions</p>
+<p>distribution economic</p>
+<p>(not find meaning.)</p>
+<p>diversity</p>
+<p>n.多样性，多样化；不同，差异</p>
+<p>复数diversities</p>
+<p>document</p>
+<p>n.文件，公文，文献；证件，单据；（计算机）文件，文档<br>v.记录，记载（详情）</p>
+<p>复数documents<br>第三人称单数documents<br>现在分词documenting<br>过去式documented<br>过去分词documented</p>
+<p>domain</p>
+<p>n.领域，范围；领土，势力范围；（因特网上的）域；（函数的）定义域；地产<br>【名】 （Domain）（英、法）多曼（人名）</p>
+<p>复数domains</p>
+<p>domestic</p>
+<p>adj.国内的，本国的；家用的，家庭的；喜爱家庭生活的，乐于操持家务的；非野生的，驯养的<br>n.家庭纠纷，家庭矛盾；佣人，家仆；&lt;美&gt;国货，本地产品</p>
+<p>复数domestics<br>比较级more domestic<br>最高级most domestic</p>
+<p>dominant</p>
+<p>adj.占支配地位的，占优势的；（基因）显性的<br>n.显性（性状），显性基因</p>
+<p>复数dominants<br>比较级more dominant<br>最高级most dominant</p>
+<p>draft</p>
+<p>n.草稿，草案；汇票；&lt;美&gt;通风气流，穿堂风（=draught）；征兵；&lt;美&gt;（职业球队的）选拔队员制<br>v.起草，草拟；选派，派遣；&lt;美&gt;征召，征召……入伍；&lt;美&gt;挑选，选拔（运动员）；作草图，绘样<br>adj.（动物）驮重物的，负重的；（啤酒）散装的；草拟的</p>
+<p>复数drafts<br>第三人称单数drafts<br>现在分词drafting<br>过去式drafted<br>过去分词drafted</p>
+<p>dramatic</p>
+<p>adj.巨大而突然的，急剧的；激动人心的，引人注目的，给人深刻印象的；有关戏剧的，戏剧表演的；夸张的</p>
+<p>duration</p>
+<p>n.持续，持续时间</p>
+<p>复数durations</p>
+<p>dynamic</p>
+<p>adj.充满活力的，精力充沛的；动态的，发展变化的；力的，动力的<br>n.动力，活力；相互作用，动态；动力学</p>
+<p>复数dynamics<br>比较级more dynamic<br>最高级most dynamic</p>
+<p>edition</p>
+<p>n.版本，版次；一集，一期</p>
+<p>复数editions</p>
+<p>elements</p>
+<p>n.要素；元素；（群体或社会中的）一伙；（恶劣的）天气；基本原理（element 的复数）</p>
+<p>eliminate</p>
+<p>v.剔除，根除；对……不予考虑，把……排除在外；（比赛中）淘汰；铲除，杀害；（生理）排除，排泄；消去</p>
+<p>第三人称单数eliminates<br>现在分词eliminating<br>过去式eliminated<br>过去分词eliminated</p>
+<p>emerged</p>
+<p>vt.出现，浮现；暴露；显现，显露（emerge 的过去式和过去分词）</p>
+<p>emphasis</p>
+<p>n.重要性，重点强调；重读，强调；（表达的）强有力</p>
+<p>复数emphases</p>
+<p>empirical</p>
+<p>adj.经验主义的，以经验为依据的</p>
+<p>enable</p>
+<p>v.使能够，使可能；激活，启动；准许，授权</p>
+<p>第三人称单数enables<br>现在分词enabling<br>过去式enabled<br>过去分词enabled</p>
+<p>encountered</p>
+<p>v.遇到；曾遭遇（encounter 的过去式）</p>
+<p>energy</p>
+<p>n.能力，力气；精力，活力；能源；能，能量</p>
+<p>复数energies</p>
+<p>enforcement</p>
+<p>n.执行，实施</p>
+<p>enhanced</p>
+<p>v.提高，增强（enhance 的过去式及过去分词）<br>adj.提高的，增强的</p>
+<p>比较级more enhanced<br>最高级most enhanced</p>
+<p>enormous</p>
+<p>adj.巨大的，极大的；&lt;古&gt;凶暴的，极恶的</p>
+<p>ensure</p>
+<p>v.确保，保证；保护，使安全</p>
+<p>第三人称单数ensures<br>现在分词ensuring<br>过去式ensured<br>过去分词ensured</p>
+<p>entities</p>
+<p>n.实体；存在（entity 的复数形式）；字符实体</p>
+<p>environment established</p>
+<p>(not find meaning.)</p>
+<p>equation</p>
+<p>n.等式，方程（式）；等同（看待）；（必须考虑多种因素的）复杂局面（或问题）</p>
+<p>复数equations</p>
+<p>equipment</p>
+<p>n.设备，用具；（对某人或某物的）装备过程；（做某事应具备的）素质，才能</p>
+<p>equivalent</p>
+<p>adj.等同的，等效的<br>n.对等的人（或事物），对应的人（或事物）；当量（equivalent weight）</p>
+<p>复数equivalents</p>
+<p>erosion</p>
+<p>n.侵蚀，腐蚀；削弱，降低；糜烂，溃疡</p>
+<p>error</p>
+<p>n.错误，差错；（棒球、网球等运动中的）失误</p>
+<p>复数errors</p>
+<p>estate</p>
+<p>n.财产，遗产；大片私有土地，庄园；&lt;英&gt;住宅区，工业区；&lt;旧&gt;社会阶层；（生活）状况，条件</p>
+<p>复数estates</p>
+<p>estimate</p>
+<p>v.估计；判断，评价<br>n.估计，估价；估价单；看法，判断</p>
+<p>复数estimates<br>第三人称单数estimates<br>现在分词estimating<br>过去式estimated<br>过去分词estimated</p>
+<p>ethical</p>
+<p>adj.道德的，伦理的；合乎道德的；有益于人（类）的，环保的；（药品）凭处方出售的</p>
+<p>ethnic</p>
+<p>adj.（有关）种族的，民族的；少数民族的；具有民族特色的，异国风味的；既非基督教亦非犹太教的，异教徒的<br>n.少数民族成员，某民族群体的人</p>
+<p>复数ethnics</p>
+<p>evaluation</p>
+<p>n.评价，评估</p>
+<p>复数evaluations</p>
+<p>eventually</p>
+<p>adv.最终，结果</p>
+<p>evidence</p>
+<p>n.根据，证明；（呈上法庭的）证据，证词；迹象，痕迹<br>v.证实，证明</p>
+<p>第三人称单数evidences<br>现在分词evidencing<br>过去式evidenced<br>过去分词evidenced</p>
+<p>evolution</p>
+<p>n.进化（论）；演变，发展；（气体的）释放，（热量的）散发；队形变换，位置变换；&lt;旧&gt;开方</p>
+<p>复数evolutions</p>
+<p>exceed</p>
+<p>v.超过，超出；超越（限制）；优于，胜过</p>
+<p>第三人称单数exceeds<br>现在分词exceeding<br>过去式exceeded<br>过去分词exceeded</p>
+<p>excluded</p>
+<p>adj.排除的<br>v.排除（exclude 的过去式和过去分词）；驱逐；拒绝接纳</p>
+<p>exhibit</p>
+<p>v.表现出；卖弄，炫耀；提出（证据等）；展览，展出<br>n.展品；（法庭上出示的）证物；&lt;美&gt;展览，展出</p>
+<p>复数exhibits<br>第三人称单数exhibits<br>现在分词exhibiting<br>过去式exhibited<br>过去分词exhibited</p>
+<p>expansion</p>
+<p>n.扩大，扩张；扩充，展开；扩张物；膨胀</p>
+<p>复数expansions</p>
+<p>expert</p>
+<p>n.专家，能手，权威<br>adj.专业的，熟练的<br>v.当专家<br>【名】 （Expert）（法、印、俄、罗、巴、荷）埃克斯佩（人名）</p>
+<p>复数experts<br>第三人称单数experts<br>现在分词experting<br>过去式experted<br>过去分词experted<br>比较级more expert<br>最高级most expert</p>
+<p>explicit</p>
+<p>adj.清楚明白的，明确的，详述的；直截了当的，坦率的；赤裸裸表现性爱（或暴力）的，露骨的<br>n.（手稿、早期印刷品或礼拜仪式上唱诗的）结束语</p>
+<p>exploitation</p>
+<p>n.剥削，压榨；开发，开采；（出于私利、不公正的）利用</p>
+<p>export</p>
+<p>v.出口；传播，输出；（在计算机中）导出，输出<br>n.出口，输出；出口物，输出品；出口量，出口收入<br>adj.出口的</p>
+<p>复数exports<br>第三人称单数exports<br>现在分词exporting<br>过去式exported<br>过去分词exported</p>
+<p>exposure</p>
+<p>n.暴露，接触；曝光，揭发；报道，宣传；单张胶片；曝光时间，曝光量；受冻；朝向</p>
+<p>复数exposures</p>
+<p>external</p>
+<p>adj.外部的，外面的；对外的，与外国有关的；外来的，外聘的；（药品等类似物质）外用的<br>n.外表，外部特征</p>
+<p>复数externals</p>
+<p>extract</p>
+<p>n.选段，引文；提取物，汁<br>v.提取，提炼；取出，拔出；摘录；索取，设法得到；开（方），求（根）</p>
+<p>复数extracts<br>第三人称单数extracts<br>现在分词extracting<br>过去式extracted<br>过去分词extracted</p>
+<p>facilitate</p>
+<p>v.使更容易，使便利；促进，推动</p>
+<p>第三人称单数facilitates<br>现在分词facilitating<br>过去式facilitated<br>过去分词facilitated</p>
+<p>factors</p>
+<p>n.因素（factor 的复数）<br>v.做代理商；分解……的因子；把……作为因素考虑（factor 的第三人称单数）</p>
+<p>features</p>
+<p>n.产品特点，特征；容貌；嘴脸（feature 的复数）<br>v.是……的特色，使突出（feature 的第三人称单数）</p>
+<p>federal</p>
+<p>adj.联邦（制）的；（与）联邦政府（有关的）的；中央集权式的；（美国内战时期）北部联邦政府的<br>n.联邦探员，联邦政府官员；（美国南北战争时期）北部联邦政府支持者<br>【名】 （Federal）（英）费德勒尔（人名）</p>
+<p>复数federals</p>
+<p>fees</p>
+<p>n.[会计]费用（fee 的复数）；规费<br>n.（Fees）人名；（德、法）费斯</p>
+<p>file</p>
+<p>n.文件夹（或箱、柜等）；（计算机的）文档；档案；纵列；锉刀；（与某政策领域相关的）议题，职责<br>v.（把文件等）归档，存档；提起（诉讼），提出（申请）；发送（消息或报道）给报社；列队行进；锉平<br>【名】 （File）（匈、塞）菲莱（人名）</p>
+<p>复数files<br>第三人称单数files<br>现在分词filing<br>过去式filed<br>过去分词filed</p>
+<p>final</p>
+<p>adj.最终的，结束的；(出现次序)最后的，末尾的；决定性的，不可变更的；无比的，极度的<br>n.决赛；期末考试，课程终结考试；主调音；当日报纸的末版；（飞机进入着陆跑道的）最终边，第五边</p>
+<p>复数finals</p>
+<p>financial</p>
+<p>adj.财政的，金融的；&lt;澳新，非正式&gt;有钱的；&lt;澳新&gt;（俱乐部或社团成员）已缴费的<br>n.（组织或个人的）财务状况；金融公司股票</p>
+<p>finite</p>
+<p>adj.有限的，有限制的；限定的<br>n.有限之物</p>
+<p>flexibility</p>
+<p>n.灵活性；弹性，柔性</p>
+<p>fluctuations</p>
+<p>n.[物]波动（fluctuation 的复数）；变动；起伏现象</p>
+<p>focus</p>
+<p>n.重点，中心点；关注，注意；震源；目的，意图；焦距；病灶；调焦装置；目的明确，专注；（椭圆、抛物线等曲线的）焦点<br>v.集中，关注；聚焦，调焦；&lt;语言学&gt;以（句子的一部分）为焦点（或重心）<br>【名】 （Focus）（瑞典）福库斯 (人名)</p>
+<p>复数focuses或foci<br>第三人称单数focuses或focusses<br>现在分词focusing或focussing<br>过去式focused或focussed<br>过去分词focused或focussed</p>
+<p>format</p>
+<p>n.总体安排，计划，设计；（书或杂志的）开本，版式；（录像、激光唱片、磁带等的）格式<br>v.为……编排格式；格式化</p>
+<p>复数formats<br>第三人称单数formats<br>现在分词formatting<br>过去式formatted<br>过去分词formatted</p>
+<p>formula</p>
+<p>n.计划，方案；配方，处方；公式，方程式；分子式，结构式；配方奶，代乳品；（特定场合的）惯用词语，套话；（影片、书籍等的）套路</p>
+<p>复数formulas或formulae</p>
+<p>forthcoming</p>
+<p>adj.即将发生的；乐于提供信息的，愿意提供帮助的；现成的，可得到的<br>n.来临</p>
+<p>foundation</p>
+<p>n.地基，基础；基本原理，根据；基金会；建立，创办；（化妆打底用的）粉底霜</p>
+<p>复数foundations</p>
+<p>founded</p>
+<p>adj.有基础的<br>v.建立；创立（found 的过去式和过去分词）</p>
+<p>framework</p>
+<p>n.(建筑物或物体的）构架，结构；参照标准，准则；(社会、法律、政治等）框架</p>
+<p>复数frameworks</p>
+<p>function</p>
+<p>n.功能，职责；宴会，典礼；函数，应变量；由其他事情造成的结果；子例行程序，子例程；官能团，功能团<br>v.工作，运转；行使职责，发挥功能</p>
+<p>复数functions<br>第三人称单数functions<br>现在分词functioning<br>过去式functioned<br>过去分词functioned</p>
+<p>fundamental</p>
+<p>adj.根本的，基本的；必需的，必不可少的；不能再分的<br>n.基本原理；基音，基频</p>
+<p>复数fundamentals<br>比较级more fundamental<br>最高级most fundamental</p>
+<p>funds</p>
+<p>n.[会计]资金，现金（fund 的复数）；基金<br>v.资助（fund 的三单形式）；提供资金</p>
+<p>furthermore</p>
+<p>adv.此外，而且</p>
+<p>gender</p>
+<p>n.性别；（语法中的）性；（总称）男性，女性</p>
+<p>复数genders<br>第三人称单数genders<br>现在分词gendering<br>过去式gendered<br>过去分词gendered</p>
+<p>generated</p>
+<p>v.产生；引发；生成（generate 的过去式及过去分词）</p>
+<p>generation</p>
+<p>n.一代（人）；一代人的时间；（产品发展的）代；产生</p>
+<p>复数generations</p>
+<p>global</p>
+<p>adj.全球的，全世界的；全面的，整体的；（计算机）全局的；球形的</p>
+<p>goals</p>
+<p>n.目标，[心理] 目的；进球，射中次数</p>
+<p>grade</p>
+<p>n.等级，品级；（工作岗位，官衔等的）级别，职别；成绩，分数；（美国学制）年级；斜坡，坡度；（疾病的）程度，阶段；与纯种杂交改良的牛<br>v.按照级别安排或分配，分类；给……评分；设定（路面）坡度；（尤指色彩）从一个等级逐渐进入另一个等级；（家畜）与优良品种杂交<br>【名】 （Grade）（英）格雷德，（法、德、西、葡、塞、瑞典）格拉德（人名）</p>
+<p>复数grades<br>第三人称单数grades<br>现在分词grading<br>过去式graded<br>过去分词graded</p>
+<p>granted</p>
+<p>adv.的确，诚然<br>conj.因为（granted that）<br>v.授予，给予；承认（grant 的过去式和过去分词形式）</p>
+<p>guarantee</p>
+<p>v.确保，保证；担保，为……作保；保修，包换<br>n.保证，担保；保修单，质量保证书；担保金，抵押品</p>
+<p>复数guarantees<br>第三人称单数guarantees<br>现在分词guaranteeing<br>过去式guaranteed<br>过去分词guaranteed</p>
+<p>guidelines</p>
+<p>n.指导方针<br>参考</p>
+<p>hence</p>
+<p>adv.因此；之后</p>
+<p>hierarchical</p>
+<p>adj.分等级的，等级制度的</p>
+<p>highlighted</p>
+<p>v.突出，强调；使显著，醒目；用荧光笔标记；挑染（highlight 的过去式和过去分词）</p>
+<p>hypothesis</p>
+<p>n.假说，假设；（凭空的）猜想，猜测；前提</p>
+<p>复数hypotheses</p>
+<p>identical</p>
+<p>adj.完全相同的；同一的；（双胞胎）同卵的；恒等的</p>
+<p>identified</p>
+<p>adj.被识别的；经鉴定的；被认同的<br>v.鉴定；辨认（identify 的过去式和过去分词）</p>
+<p>ideology</p>
+<p>n.意识形态，思想体系；&lt;古&gt;观念学；&lt;古&gt;空想</p>
+<p>复数ideologies</p>
+<p>ignored</p>
+<p>v.忽略；不顾；不理会（ignore 的过去式和过去分词）</p>
+<p>illustrated</p>
+<p>v.加插图于……；（用示例、图画等）说明；表明……的真实（或存在）；为……例证（illustrate 的过去式及过去分词）<br>adj.有插图的</p>
+<p>image</p>
+<p>n.形象，印象；影像，映像，图像；比喻，意象；画像，塑像，雕像；酷似另一个人的人；（人或事物）外形，外表；像点；硬盘备份；（圣经）偶像<br>v.作……的像，描绘……的形象；（以探测器或电磁束）扫描出……的直观图；幻想，想像<br>【名】 （Image）（法）伊马热（人名）</p>
+<p>复数images<br>第三人称单数images<br>现在分词imaging<br>过去式imaged<br>过去分词imaged</p>
+<p>immigration</p>
+<p>n.移民（入境）；移民人数；移民局入境检查，移民局入境检查处</p>
+<p>impact</p>
+<p>n.撞击，冲击力；巨大影响，强大作用<br>v.冲击，撞击；挤入，压紧；（对……）产生影响</p>
+<p>implementation</p>
+<p>n.实施，执行</p>
+<p>implications</p>
+<p>n.暗指，暗示；蕴含，含义；（可能带来的）影响（implication 的复数）</p>
+<p>implicit</p>
+<p>adj.含蓄的，未言明的；内含的，固有的；无疑问的，无保留的；（函数）隐式的，隐的</p>
+<p>implies</p>
+<p>v.意味着；蕴含；暗指（imply 的第三人称单数）</p>
+<p>imposed</p>
+<p>v.欺骗；把……强加于（impose 的过去式和过去分词）</p>
+<p>incentive</p>
+<p>n.激励，刺激</p>
+<p>复数incentives</p>
+<p>incidence</p>
+<p>n.发生率；入射</p>
+<p>复数incidences</p>
+<p>inclination</p>
+<p>n.倾向，意愿；趋向，趋势；斜坡，斜度；轻微向下的动作；轨道交角</p>
+<p>复数inclinations</p>
+<p>income</p>
+<p>n.收入，收益</p>
+<p>复数incomes</p>
+<p>incompatible</p>
+<p>adj.不相容的，不能共存的；不能和谐相处的，合不来的；不兼容的，互斥的<br>n.互不相容的人或事物</p>
+<p>incorporated</p>
+<p>adj.组成公司的，股份有限的；合并的<br>v.包含，合并；组成公司；掺和，混合（成分）（incorporate 的过去式和过去分词）</p>
+<p>index</p>
+<p>n.索引；（物价和工资等）指数；指标，量度；幂，根指数；指针<br>v.为……编索引，将……编入索引；使指数化，将（工资）等与（物价水平等）挂钩；（机器，部件）转位</p>
+<p>复数indexes或indices<br>第三人称单数indexes<br>现在分词indexing<br>过去式indexed<br>过去分词indexed</p>
+<p>indicate</p>
+<p>v.表明，标示；象征，暗示；间接提及，示意；指示，指出；&lt;英&gt;（用灯光或手臂）打行车转向信号；有必要，被建议</p>
+<p>第三人称单数indicates<br>现在分词indicating<br>过去式indicated<br>过去分词indicated</p>
+<p>individual</p>
+<p>adj.单独的，个别的；个人的；独特的，与众不同的<br>n.个人，个体；与众不同的人，有个性的人；某种类型的人</p>
+<p>复数individuals<br>比较级more individual<br>最高级most individual</p>
+<p>induced</p>
+<p>adj.感应的；诱发型<br>v.引诱；说服（induce 的过去分词）</p>
+<p>inevitably</p>
+<p>adv.不可避免地，必然地；意料之中</p>
+<p>inferred</p>
+<p>adj.推论的；推测出的<br>v.推测（infer 的过去式和过去分词）</p>
+<p>infrastructure</p>
+<p>n.下面结构；永久性军事设施；基础设施，基础建设</p>
+<p>复数infrastructures</p>
+<p>inherent</p>
+<p>adj.内在的，固有的；&lt;法律&gt;（权利，特权）固定属于（某人）的；（形容词）作定语和表语时意义相同的</p>
+<p>inhibition</p>
+<p>n.拘谨，拘束感；阻止，抑制；&lt;法律&gt;（尤指对处理指明土地或财产的）禁令</p>
+<p>复数inhibitions</p>
+<p>initial</p>
+<p>adj.开始的，最初的；（字母）位于词首的<br>n.（姓名的）首字母<br>v.用姓名的首字母作标记（或签名）于</p>
+<p>复数initials<br>第三人称单数initials<br>现在分词initialling或initialing<br>过去式initialled或initialed<br>过去分词initialled或initialed</p>
+<p>initiatives</p>
+<p>n.积极性；主动权（initiative 的复数）；创始</p>
+<p>injury</p>
+<p>n.（身体上的）伤，损害；&lt;法律&gt;（对感情的）伤害，挫伤</p>
+<p>复数injuries</p>
+<p>innovation</p>
+<p>n.新事物，新方法；革新，创新</p>
+<p>复数innovations</p>
+<p>input</p>
+<p>n.投入，输进；输入的信息；（为帮助某人做出决定而提供的）建议，意见；讯息输入端；（输入机器供其使用的）电力；输入框<br>v.输入（信息）</p>
+<p>复数inputs<br>第三人称单数inputs<br>现在分词inputting<br>过去式input或inputted<br>过去分词input或inputted</p>
+<p>insert</p>
+<p>v.插入，嵌入；（在文章中）添加，加插；使参与（活动）；（肌肉或其他器官）附着于（尤指移动部分）<br>n.插入物；（尤指）插页，附加页；（电影等的）插入镜头</p>
+<p>复数inserts<br>第三人称单数inserts<br>现在分词inserting<br>过去式inserted<br>过去分词inserted</p>
+<p>insights</p>
+<p>n.洞察力；眼力；深刻见解（insight 的复数）</p>
+<p>inspection</p>
+<p>n.视察；检查，审视</p>
+<p>复数inspections</p>
+<p>instance</p>
+<p>n.例子，实例<br>v.举……为例</p>
+<p>复数instances<br>第三人称单数instances<br>现在分词instancing<br>过去式instanced<br>过去分词instanced</p>
+<p>institute</p>
+<p>n.研究所，学院，协会；（尤指与法律相关的）注释，论述<br>v.制定（制度、规则等）；提出（诉讼）；任命，授予……职位（尤指圣职）</p>
+<p>复数institutes<br>第三人称单数institutes<br>现在分词instituting<br>过去式instituted<br>过去分词instituted</p>
+<p>instructions</p>
+<p>n.指令；说明（instruction 的复数形式）</p>
+<p>integral</p>
+<p>adj.必需的，必要的；作为组成部分的；完整的；整的，积分的<br>n.积分；完整</p>
+<p>复数integrals<br>比较级more integral<br>最高级most integral</p>
+<p>integration</p>
+<p>n.结合，融合；取消种族隔离；（数）积分法，求积分；（心理分析）整合</p>
+<p>integrity</p>
+<p>n.正直，诚实；完整，完全；职业操守；（电子数据的）集成度</p>
+<p>复数integrities</p>
+<p>intelligence</p>
+<p>n.智力，才智；智能；情报，谍报；情报机构</p>
+<p>intensity</p>
+<p>n.强烈，剧烈；（光、声音等的）强度</p>
+<p>复数intensities</p>
+<p>interaction</p>
+<p>n.互动，交流；相互影响，相互作用</p>
+<p>复数interactions</p>
+<p>intermediate</p>
+<p>adj.居中的，中间的；中等程度的，中级的<br>n.中级水平者，中级学生；中间事物；（化合物）中间体<br>v.充当调解人，斡旋</p>
+<p>复数intermediates<br>第三人称单数intermediates<br>现在分词intermediating<br>过去式intermediated<br>过去分词intermediated</p>
+<p>internal</p>
+<p>adj.内部的，体内的；内政的，国内的；本身的，本质的；内心的；&lt;英&gt;（大学生）本校生的<br>n.内部部件，内部特征；内脏</p>
+<p>interpretation</p>
+<p>n.解释，理解；表演，演奏，艺术处理；口译</p>
+<p>复数interpretations</p>
+<p>interval</p>
+<p>n.间隔，间隙；幕间休息，中场休息；音程</p>
+<p>复数intervals</p>
+<p>intervention</p>
+<p>n.干预，介入；调停，斡旋；（为改善情况尤指病痛采取的）措施，做法</p>
+<p>复数interventions</p>
+<p>intrinsic</p>
+<p>adj.内在的，固有的</p>
+<p>investigation</p>
+<p>n.调查，审查；科学研究，学术研究</p>
+<p>复数investigations</p>
+<p>investment</p>
+<p>n.投资；值得买的东西；（时间、精力的）投入；&lt;旧&gt;包围，封锁</p>
+<p>复数investments</p>
+<p>invoked</p>
+<p>v.叫唤（invoke 的过去式，过去分词）</p>
+<p>involved</p>
+<p>adj.复杂的；与……关系密切的；专心于……的，忙于……的；卷入的，参与的<br>v.牵涉，包含（involve 的过去式和过去分词形式）</p>
+<p>isolated</p>
+<p>adj.遥远的，偏僻的；与世隔绝的，孤寂的；单独的，只出现一次的<br>v.使……孤立；使……分离；将……剔出（isolate 的过去式和过去分词）</p>
+<p>issues</p>
+<p>n.议题，问题；债券；争点（issue 的复数）<br>v.发行；分发；流出（issue 的第三人称单数）</p>
+<p>items</p>
+<p>n.项目；条目；（电视、广播或报纸上的一条）新闻（item 的复数）<br>v.&lt;古&gt;估算；逐条记载（item 的第三人称单数）</p>
+<p>job</p>
+<p>n.工作，职业；零工，任务；职责，责任；&lt;非正式&gt;罪行，（尤指）盗窃；&lt;非正式&gt; 东西，物件；费力的事；幸运的事；刺，捅；&lt;非正式&gt;东西，物件<br>v.刺，捅；（尤指经纪人小规模操作）买卖股票；&lt;非正式&gt;欺骗，出卖；假公济私，营私舞弊<br>【名】 （Job）（英）乔布，（法、葡）若布，(?-1605)约伯&lt;俄&gt;俄罗斯正教会莫斯科牧首，（德、塞、捷、荷、意）约布（人名)</p>
+<p>复数jobs<br>第三人称单数jobs<br>现在分词jobbing<br>过去式jobbed<br>过去分词jobbed</p>
+<p>journal</p>
+<p>n.杂志，期刊，报纸；日记，日志；（会计）日记账</p>
+<p>复数journals<br>第三人称单数journals<br>现在分词journaling<br>过去式journaled<br>过去分词journaled</p>
+<p>justification</p>
+<p>n.正当理由，合理解释；证明为正当，辩护；齐行，整版；（上帝眼中的）称义</p>
+<p>复数justifications</p>
+<p>label</p>
+<p>n.标签，标牌；称号，绰号；商标，品牌；唱片公司；（计算机）标记；示踪剂；带垂饰的横带<br>v.贴标签；把……不公正地称为；用示踪剂使（物质等）示踪<br>【名】 （Label）（美、法、巴）拉贝尔（人名）</p>
+<p>复数labels<br>第三人称单数labels<br>现在分词labelling或labeling<br>过去式labelled或labeled<br>过去分词labelled或labeled</p>
+<p>labour</p>
+<p>n.劳动；任务，（一段时间的）工作；劳工，工人，劳动力；分娩，临盆；工会；（英国）工党<br>v.劳动，劳作；努力做（困难的事）；费力地行进；误以为，为……所蒙蔽；一再重申，反复说明；&lt;古&gt;耕（地）<br>adj.工党的，支持工党的</p>
+<p>复数labours<br>第三人称单数labours<br>现在分词labouring<br>过去式laboured<br>过去分词laboured</p>
+<p>layer</p>
+<p>n.层；层次，等级；摆放者，铺设者，产卵者；压条<br>v.分层放置；把（头发）分层剪短；用压条培育（植物）</p>
+<p>复数layers<br>第三人称单数layers<br>现在分词layering<br>过去式layered<br>过去分词layered</p>
+<p>lecture</p>
+<p>n.讲座，讲课，演讲；训斥，告诫<br>v.（尤指在大学里）开讲座，讲课；训斥，告诫</p>
+<p>复数lectures<br>第三人称单数lectures<br>现在分词lecturing<br>过去式lectured<br>过去分词lectured</p>
+<p>legal</p>
+<p>adj.法律允许的，合法的；与法律有关的，法律的；（与衡平法相对）普通法或成文法确认的；神学律法的，与神学律法有关的；&lt;美&gt;（纸张）标准大小的<br>【名】 （Legal）（法）勒加尔（人名）</p>
+<p>legislation</p>
+<p>n.法规，法律；立法，制订法律</p>
+<p>levy</p>
+<p>v.征收（罚款、税款等）；扣押财产（以执行判决）；&lt;古&gt;征兵；发动（战争）<br>n.征收额，税款；（为执行判决而进行的）财产扣押；征兵<br>【名】 （Levy）（英、以）利维，（西、意、葡、芬、法、瑞典）莱维（人名）</p>
+<p>复数levies<br>第三人称单数levies<br>现在分词levying<br>过去式levied<br>过去分词levied</p>
+<p>liberal</p>
+<p>adj.思想开明的；自由主义的，支持变革的；（加拿大、英国等国）自由党的；慷慨的，大量给予的；通识（教育）的，文科的；不确切的，不拘泥字面的；自由主义神学的<br>n.思想开明的人；自由主义者，支持变革的人；（加拿大、英国等国的）自由党党员，自由党支持者<br>【名】 （Liberal）（葡）利贝拉尔（人名）</p>
+<p>复数liberals<br>比较级more liberal<br>最高级most liberal</p>
+<p>licence</p>
+<p>n.许可证，执照；许可，准许；（言论或行动的）自由，不受拘束；（做错事的）诱因，借口<br>v.给……发许可证，批准；就……发许可证；按协议特许，授权</p>
+<p>复数licences<br>第三人称单数licences<br>现在分词licencing<br>过去式licenced<br>过去分词licenced</p>
+<p>likewise</p>
+<p>adv.同样地，类似地；（表示感觉相同）我也是，我有同感；也，还</p>
+<p>link</p>
+<p>v.连接；与……有关联；挽住，钩住<br>n.（事物间的）联系，关系；（交通上的）联系；（链状物的）环，节；（超文本）链接；&lt;美&gt;一节香肠；令（长度单位，1令等于1测链的百分之一，即7.92英寸）；（行路时照明用）沥青和麻屑火把<br>【名】 （Link）（英、德、塞、捷、匈、瑞典）林克（人名）</p>
+<p>复数links<br>第三人称单数links<br>现在分词linking<br>过去式linked<br>过去分词linked</p>
+<p>location</p>
+<p>n.地点，位置；（电影的）外景拍摄地；定位；（计算机内存里的）地址</p>
+<p>复数locations</p>
+<p>logic</p>
+<p>n.逻辑，（做某事的）道理；推理方法，逻辑学；（事实或事件的）规律，相互联系；（计算机或电器的）逻辑操作</p>
+<p>复数logics</p>
+<p>maintenance</p>
+<p>n.维护，保养；保持，维持；（依法应负担的）生活费，抚养费；包揽诉讼罪，非法资助诉讼罪</p>
+<p>major</p>
+<p>adj.重大的，主要的；严重的；大调的，大音阶的； &lt;旧&gt;（公立学校中置于学生姓氏后，表示两兄弟中）大的，年长的；主修的；大（项）的<br>n.主修科目，专业；陆军少校，（美国）空军少校；（某专业的）主修学生；&lt;美，非正式&gt;职业棒球大联盟；大型公司，重要企业；成年人，已达到法定年龄者；（军乐队中主管某一乐器部的）乐器长；大调，大音程； 大项，大前提；主要世界性组织（或公司、比赛）<br>v.（在美国大学）主修，专攻<br>【名】 (Major) （英）梅杰，（西）马霍尔，（法）马若尔，（捷、德、塞、瑞典）马约尔（人名）</p>
+<p>复数majors<br>第三人称单数majors<br>现在分词majoring<br>过去式majored<br>过去分词majored</p>
+<p>manipulation</p>
+<p>n.操纵；推拿；（熟练的）控制，使用；（对账目等的）伪造，篡改；（对储存在计算机上的信息的）操作，处理</p>
+<p>manual</p>
+<p>adj.手工的，体力的；手动的，用手操作的<br>n.使用手册，说明书；手动换挡的车辆；风琴键盘；（牧师主持圣礼时用）礼仪书</p>
+<p>复数manuals</p>
+<p>marginal</p>
+<p>adj.小的，微不足道的；（活动、花费、税项等）边际的；非主流的，边缘的；以相差无几的票数获胜（或失败）的；写在页边空白的；贫瘠的<br>n.岸边水生植物；边缘席位</p>
+<p>复数marginals<br>比较级more marginal<br>最高级most marginal</p>
+<p>mature</p>
+<p>adj.成熟的，理智的；成年的，发育完全的；发酵成熟的，酿成的；中老年的；技艺精湛的，技巧娴熟的；审慎考虑的，深思熟虑的；到期（应该支付）的；（某些食品或饮料）可立即食用的；（经济，行业，市场）成熟的，发展余地不大的<br>v.（使）成熟，（使）长成；变理智，（举止）变成熟；酿成，制成；到期</p>
+<p>第三人称单数matures<br>现在分词maturing<br>过去式matured<br>过去分词matured<br>比较级maturer或more mature<br>最高级maturest或most mature</p>
+<p>maximum</p>
+<p>adj.最大限度的；（数量）极大的，极多的<br>n.最大量，最大限度<br>adv.最多，充其量</p>
+<p>复数maxima或maximums</p>
+<p>mechanism</p>
+<p>n.机械装置，机件；途径，方法；（生物体内的）机制，构造；机械论；（产生自然现象等的）物理过程</p>
+<p>复数mechanisms</p>
+<p>media</p>
+<p>n.新闻媒体，传媒（medium的复数形式）；媒体工作者；（尤指血管壁的）中间层（复数mediae）；浊塞音；中脉</p>
+<p>mediation</p>
+<p>n.调解，仲裁</p>
+<p>medical</p>
+<p>adj.医学的，医疗的；内科的<br>n.体格检查，健康检查</p>
+<p>复数medicals</p>
+<p>medium</p>
+<p>n.媒介，媒体；方法，手段；（艺术创作）材料，素材；灵媒，巫师；培养基；环境；中等，中号；存储（或打印）介质；（颜料）溶剂（如油或水）；（品质、状态）中等，中庸<br>adj.中等的，中间的，适中的；五分熟的，半熟的；（程度、强度或数量）平均的；（颜色）不深不浅的，适中的；（投球，投球手）中速的</p>
+<p>复数media或mediums</p>
+<p>mental</p>
+<p>adj.存在于大脑中的，思考的；精神的，思想的，智力的；精神病治疗的，精神健康的；&lt;非正式&gt;疯癫的，不正常的</p>
+<p>migration</p>
+<p>n.移民，迁徙；（计算机系统的）改变，（程序或硬件的）迁移，转移</p>
+<p>复数migrations</p>
+<p>military</p>
+<p>adj.军事的，军队的；陆军的；军人般的，军人作风的<br>n.军人，军方</p>
+<p>复数militaries或military</p>
+<p>minimal</p>
+<p>adj.极小的，极少的；极简抽象艺术的；简朴的，朴实无华的；极简的（指短小乐句不断重复并逐渐变化）；最小差别的</p>
+<p>minimised</p>
+<p>vt.使缩到最小；成极小；求最小值</p>
+<p>minimum</p>
+<p>adj.最小的，最低限度的<br>n.最小值，最低限度<br>adv.最低，至少</p>
+<p>复数minima或minimums</p>
+<p>ministry</p>
+<p>n.（政府的）部，部办公楼；（全体）牧师；神职，神职任期；一任首相的执政期；照料，服务</p>
+<p>复数ministries</p>
+<p>minorities</p>
+<p>n.少数（minority 的复数形式）；少数民族；少数族裔</p>
+<p>mode</p>
+<p>n.方式，做法；（机器、设备的）运行方式，状态；（衣着、艺术等的）形式，风格；&lt;非正式&gt;（思想、情感或行为的）状态，状况；（音乐的）调式；众数（一组数字中出现次数最多的数）；（逻）（模态命题的）式，形式；（物理）模（式），波型；（模态命题的）式，形式<br>【名】 （Mode）（英、德、法、乍、瑞典）莫德（人名）</p>
+<p>复数modes</p>
+<p>modified</p>
+<p>adj.改进的，修改的；改良的<br>v.修改；缓和（modify 的过去式和过去分词）</p>
+<p>monitoring</p>
+<p>n.监视，[自]监控；检验，检查<br>v.监视，[通信][军]监听，监督（monitor 的 ing 形式）</p>
+<p>motivation</p>
+<p>n.动力，诱因；积极性，干劲；&lt;南非&gt;（支持请求或倡议的）事实与理由</p>
+<p>复数motivations</p>
+<p>mutual</p>
+<p>adj.相互的，彼此的；共同的，共有的；（保险公司、建筑协会等）互助的<br>n.互助公司</p>
+<p>negative</p>
+<p>adj.否定的，拒绝的；有害的，不良的；悲观的，消极的；否定形式的，否定词的；（实验或测试的结果）阴性的；阴极的，负极的；负电的（电子比质子多）；负的，小于零的；&lt;美&gt;根本不；亏损的；（常用于军事语境）不，没有；（照片）负像的，底片的；（天文）负的；&lt;英&gt;（议会）（立法）自动生效的；Rh阴性的<br>n.底片，负片；否定词，否定句；坏处，害处；（化验或科学试验中的）阴性结果；（语法）否定语，否定词缀；（逻）（对命题的）否定；负电；负数<br>v.否绝，拒绝；否定，推翻（一种理论或说法）；消除，抵消</p>
+<p>复数negatives<br>第三人称单数negatives<br>现在分词negativing<br>过去式negatived<br>过去分词negatived<br>比较级more negative<br>最高级most negative</p>
+<p>network</p>
+<p>n.网络，网状系统；人际关系网，联络网；计算机网络，互联网；广播网，电视网<br>v.使（计算机）联网；（尤指工作中）建立关系网，建立人脉；对（电视或广播节目）进行联播</p>
+<p>neutral</p>
+<p>adj.中立的，不偏不倚的；中性的，不带感情色彩的；暗淡的，素净的；（化学中）中性的，非酸非碱的；不带电的<br>n.（车辆排挡的）空挡；中立者，中立国；素净色，中和色；不活动，停滞；不带电的接触点</p>
+<p>复数neutrals<br>比较级more neutral<br>最高级most neutral</p>
+<p>nevertheless</p>
+<p>adv.然而，不过</p>
+<p>nonetheless</p>
+<p>adv.然而，尽管如此</p>
+<p>normal</p>
+<p>adj.正常的，标准的；（身心）健康的，（人）普通的；（线或线性特征）正交的，垂直的；（盐溶液）与血液的盐浓度相同的；正（断层）的；平常的，通常的<br>n.常态，通常标准；&lt;非正式&gt;正常人，循规蹈矩者；法线，正交<br>【名】 （Normal）（德）诺马尔（人名）</p>
+<p>复数normals<br>比较级more normal<br>最高级most normal</p>
+<p>norms</p>
+<p>n.[标准]标准，规范；基准（norm 复数形式）</p>
+<p>notion</p>
+<p>n.概念，想法；缝纫用品；一时的念头，突发的奇想</p>
+<p>复数notions</p>
+<p>notwithstanding</p>
+<p>prep.虽然，尽管<br>adv.尽管如此<br>conj.虽然，尽管</p>
+<p>nuclear</p>
+<p>adj.核子的，原子核的；核武器的；原子能的，核能的；核心的，中心的；细胞核的，构成细胞核的</p>
+<p>objective</p>
+<p>n.目的，目标；出击目标（尤指在军事攻击中)；（望远镜或显微镜中的）物镜；出击目标（尤指在军事攻击中）；宾格<br>adj.客观的，不带个人情感的；客观存在的；宾格的；目标的</p>
+<p>复数objectives<br>比较级more objective<br>最高级most objective</p>
+<p>obtained</p>
+<p>v.获得（obtain 的过去分词）</p>
+<p>obvious</p>
+<p>adj.明显的，显然的；明确表示的，毫不掩饰的；平淡无奇的，缺乏想象力的；合情合理的，当然的</p>
+<p>occupational</p>
+<p>adj.职业的，由职业引起的；占领的</p>
+<p>occur</p>
+<p>v.（尤指意外地）发生；存在，出现；（想法）产生</p>
+<p>第三人称单数occurs<br>现在分词occurring<br>过去式occurred<br>过去分词occurred</p>
+<p>odd</p>
+<p>adj.奇怪的，反常的；偶然出现的，偶尔发生的；奇形怪状的，各种各样的；不成对的，不同类的；奇数的；可得到的，可用的；少量的，不重要的；（尤指在双方至少各进一球的情况下）一球险胜的<br>adv.（用于数字后）大约，左右<br>【名】 （Odd）（英、西、挪、瑞典）奥德（人名）</p>
+<p>offset</p>
+<p>v.补偿，抵销；衬托出；使偏离直线方向，使与…不在一条直线上；（墨水，刚印好的页面）转印下一页<br>n.抵消物，补偿；偏离量，偏离距离；（测绘）支距；（电压或电流的）偏离；侧枝，短匐茎；（山的）支脉；（建筑）壁阶；胶印法<br>adj.胶印的，平版印刷的；偏离中心的，偏置的</p>
+<p>复数offsets<br>第三人称单数offsets<br>现在分词offsetting<br>过去式offset<br>过去分词offset</p>
+<p>ongoing</p>
+<p>adj.持续存在的，仍在进行的，不断发展的</p>
+<p>option</p>
+<p>n.可选择的事物；选择，选择权；（将来的）买卖选择权利，期权；（计算机程序中的）选项；&lt;英&gt;选修课；（购买新设备，尤其是汽车时提供的）附件，配件<br>v.买卖（某物的）期权</p>
+<p>复数options<br>第三人称单数options<br>现在分词optioning<br>过去式optioned<br>过去分词optioned</p>
+<p>orientation</p>
+<p>n.目标，定位；方向，朝向；（基本的）态度，倾向；（岗前、学前、课前等的）情况介绍，培训；适应，熟悉</p>
+<p>复数orientations</p>
+<p>outcomes</p>
+<p>n.产出，结局；效果（outcome 的复数）</p>
+<p>output</p>
+<p>n.产量，作品；产生，生产过程；输出功率；（计算机的）输出信息；输出端<br>v.输出</p>
+<p>复数outputs<br>第三人称单数outputs<br>现在分词outputting<br>过去式outputted或output<br>过去分词outputted或output</p>
+<p>overall</p>
+<p>adj.总的，全面的；所有的，包括一切的<br>adv.全部，总共； 总的说来，大体上<br>n.&lt;英&gt;（工作时穿的）罩衣；&lt;英&gt;（上下连身的）工作服，防护服（overalls）；&lt;美&gt;背带工装裤（overalls）；&lt;英&gt;骑马裤，紧身制服裤（overalls）</p>
+<p>复数overalls</p>
+<p>overlap</p>
+<p>v.（与……）互搭，（与……）复叠；（在关注的问题、承担的责任等方面）部分地重叠，部分相同；（与……）同时发生<br>n.（物体的）重叠部分，重叠量；（范围方面的）重叠部分；（两事发生的）重叠时间，交接时期</p>
+<p>复数overlaps<br>第三人称单数overlaps<br>现在分词overlapping<br>过去式overlapped<br>过去分词overlapped</p>
+<p>overseas</p>
+<p>adj.外国的，海外的<br>adv.在国外，在海外</p>
+<p>panel</p>
+<p>n.专家咨询组，专题讨论小组；（门等的）镶板，嵌板；控制板，仪表盘；（车身的）金属板；（衣服上的）镶条，饰片；画板；&lt;美&gt;陪审团；&lt;英&gt;国民保健制度（原国民健康保险）医师名单；&lt;苏格兰，法律&gt;被告<br>v.用（木板、金属板等）覆盖，镶<br>【名】 （Panel）帕内尔（人名）</p>
+<p>复数panels<br>第三人称单数panels<br>现在分词panelling或paneling<br>过去式panelled或paneled<br>过去分词panelled或paneled</p>
+<p>paradigm</p>
+<p>n.典范，范例；样板，范式；词形变化表；纵聚合关系语言项</p>
+<p>复数paradigms</p>
+<p>paragraph</p>
+<p>n.（文章的）段，段落；段落符号；短评<br>v.把（文章）分段</p>
+<p>复数paragraphs<br>第三人称单数paragraphs<br>现在分词paragraphing<br>过去式paragraphed<br>过去分词paragraphed</p>
+<p>parallel</p>
+<p>adj.平行的；相似的，同时发生的；（计算机）并行的；并联的<br>n.（人或事物的）相似的手法，共同点；相似的人（或物）；（地球的）纬线，纬圈；（印刷）平行符号<br>v.与……相似；与……同时发生；与……并行；与……相当，比得上<br>adv.与……平行</p>
+<p>复数parallels<br>第三人称单数parallels<br>现在分词paralleling或parallelling<br>过去式paralleled或parallelled<br>过去分词paralleled或parallelled</p>
+<p>parameters</p>
+<p>n.决定因素，规范；参数；人口参数；界限（parameter 的复数）</p>
+<p>participation</p>
+<p>n.参加，参与</p>
+<p>partnership</p>
+<p>n.合伙（关系），合股；合伙企业；合伙人；（两个人、组织或国家之间的）合作关系，伙伴关系；合伙契约；（板球）（回合结束前或其中一人被迫退场前）一对击球手的跑动得分数</p>
+<p>复数partnerships</p>
+<p>passive</p>
+<p>adj.消极的，被动的；被动语态的；（抵抗）非暴力的；（电路，装置）无源的；（金属）经表面钝化处理的，钝化的<br>n.（动词的）被动语态形式；被动语态（the passive）</p>
+<p>复数passives<br>比较级more passive<br>最高级most passive</p>
+<p>perceived</p>
+<p>adj.感知到的；感观的<br>v.感知；认为；领会（perceive 的过去式和过去分词）</p>
+<p>percent</p>
+<p>n.百分之……；部分<br>adj.百分之……的<br>adv.以百分之……地，每一百中有……地</p>
+<p>复数percent或percents</p>
+<p>period</p>
+<p>n.一段时间，时期；（人生或国家历史的）阶段，时代；（地质年代划分的）纪；课时，节；（练习、训练或学习的）时段；（妇女的）月经，经期；（体育比赛的）局；&lt;美&gt;句号，句点；（物理）（振动或循环的）周期；（天文）自转（或公转）周期；（数学）（周期函数的）周期；（化学）周期元素；（修辞）完整句；（乐）乐段，乐节<br>adj.具有某个时代特征的<br>adv.&lt;美&gt;到此为止，不再说了</p>
+<p>复数periods</p>
+<p>persistent</p>
+<p>adj.执意的，坚持不懈的；持续的，反复出现的；（化学品，放射性）作用持久的，挥发慢的；（动植物某部位，如角、叶等）宿存的，不落的</p>
+<p>比较级more persistent<br>最高级most persistent</p>
+<p>perspective</p>
+<p>n.（观察问题的）视角，观点；透视（画）法；（几何）透视关系，投影比例；洞察力，判断力；景观，远景；角度；（声音）立体效果<br>adj.透视的</p>
+<p>复数perspectives</p>
+<p>phase</p>
+<p>n.（发展或变化的）阶段，时期；做出某种行为的短时期；（动物生活周期或年周期的）阶段，期；（月亮的）位相，盈亏；同步，协调；（化）相；（动）（由遗传或季节引起的）动物颜色变化（期）；（物理）相位，相角；（线圈的）匝，（多相电机或电路的）连接；（语言学）（系统语法用语）相（指链接动词与后续动词的关系）；相结构（含有链接动词和后续动词的结构）<br>v.分阶段进行；（物理）使相位同步，使定相</p>
+<p>复数phases<br>第三人称单数phases<br>现在分词phasing<br>过去式phased<br>过去分词phased</p>
+<p>phenomenon</p>
+<p>n.现象；杰出的人，非凡的人（或事物）；（哲学）现象</p>
+<p>复数phenomena或phenomenons</p>
+<p>philosophy</p>
+<p>n.哲学；哲学体系，思想体系；人生哲学，生活（工作）准则；（某一知识或经验领域的）理论基础研究，基本原理</p>
+<p>复数philosophies</p>
+<p>physical</p>
+<p>adj.身体的，肉体的；物质的，有形的；外形的，外在的；物理的，物理学的；根据自然规律的，符合自然法则的；粗暴的，粗野的；性欲的，肉欲的；（人）喜欢动手动脚的；肢体活动的<br>n.体格检查；（股票）（与期货相对的）现货股票</p>
+<p>复数physicals<br>比较级more physical<br>最高级most physical</p>
+<p>plus</p>
+<p>prep.加；外加，而且；（温度）零上<br>adj.（在数字后）多，余；略高于标准的；零上的，正的；有利的；正电的<br>n.加号，正号；（数字的）加法；好处<br>conj.而且；加上<br>【名】 （Plus）（印、巴、法）普卢斯（人名）</p>
+<p>复数pluses或plusses</p>
+<p>policy</p>
+<p>n.政策，方针；(处事) 原则，策略；保险单</p>
+<p>复数policies</p>
+<p>portion</p>
+<p>n.（某物的）一部分；（尤指餐馆中食物的）一份，一客；（责任、过失、职责等的）一份，一部分；&lt;法律&gt;（根据法律赠与或遗留给继承人的）一份财产；&lt;古&gt; 命运，天数<br>v.分配；&lt;古&gt; 给（新娘）嫁妆</p>
+<p>posed</p>
+<p>v.形成（pose 的过去分词）；摆姿势；主张；装模作样</p>
+<p>positive</p>
+<p>adj.乐观的，有信心的；积极的，建设性的；赞成的，支持的；确信的，肯定的；&lt;非正式&gt;完全的，绝对的；证据确凿的，明确的；阳性的；良好的，有助益的；正数的，大于零的；正电的，正极的；（摄影）正片的，正像的；赢利的；（语法）（形容词，副词）原级的；（主哲）实证的，实在的；（占星）（风宫，火宫）积极的<br>n.优势，优点；正片；阳性结果；正数；（语法）原级形容词，原级副词</p>
+<p>复数positives<br>比较级more positive<br>最高级most positive</p>
+<p>potential</p>
+<p>adj.潜在的，可能的<br>n.（事物的）潜力，可能性；（人的）潜能，潜力；电势，电位，电压</p>
+<p>复数potentials</p>
+<p>practitioners</p>
+<p>n.实践者；开业者；实习者（practitioner 的复数）</p>
+<p>preceding</p>
+<p>adj.先前的，前面的<br>v.在……之前发生（或出现）；走在……前面（precede 的现在分词形式）</p>
+<p>precise</p>
+<p>adj.精确的，准确的；恰好的，确切的；（人）严格的，一丝不苟的</p>
+<p>比较级more precise<br>最高级most precise</p>
+<p>predicted</p>
+<p>v.预测，预言，预报（predict 的过去式和过去分词）</p>
+<p>predominantly</p>
+<p>adv.绝大多数，主要地</p>
+<p>preliminary</p>
+<p>adj.初步的，预备的<br>n.初步行动，准备工作；预赛，预试</p>
+<p>复数preliminaries</p>
+<p>presumption</p>
+<p>n.推测，设想；（法律上的）假定，推定；放肆，冒昧</p>
+<p>复数presumptions</p>
+<p>previous</p>
+<p>adj.以前的，先前的；（时间或顺序上）稍前的；&lt;非正式&gt;过早的，过急的<br>n.&lt;英，非正式&gt;前科，犯罪记录</p>
+<p>primary</p>
+<p>adj.主要的，首要的；&lt;英&gt;小学教育的，初级教育的；初级的，原发性的；最基本的，最根本的；第一手的，直接的；（有机化合物）连上一个碳原子的；（多指胺）（氨基酸顺序）一级的<br>n.（选举过程中的党内）初选（=primary election）；原色；初级飞羽；主星；初级线圈，原线圈</p>
+<p>复数primaries</p>
+<p>prime</p>
+<p>adj.主要的，首要的；优质的，第一流的；最可能的，最适合的；最理想的，最典型的；最初的，原始的；素（或质）数的（如2，3，5，7，11）；互为素或质数的<br>v.事先指点，使（某人）做好准备；把（某事物）准备好，使备用；给（表面）涂上底色<br>n.盛年，壮年时期；质数，素数；上标符号（’），（数字后）分钟（或英尺）符号；（八个防御姿势的）第一姿势；（自行车比赛中设特别奖的）特设行程；&lt;古&gt;起始，原初；晨经，晨祷（传统上于白天中的第一个小时即早晨六点所做的祈祷，现罕用）<br>【名】 （Prime）（英）普赖姆，（德）普里梅（人名）</p>
+<p>复数primes<br>第三人称单数primes<br>现在分词priming<br>过去式primed<br>过去分词primed</p>
+<p>principal</p>
+<p>adj.最重要的，首要的；本金的，母金的<br>n.&lt;美&gt;（美国公立中小学的）校长；&lt;英&gt;（英国的）大学校长，学院院长；（企业或机构的）负责人；（音乐会、戏剧、芭蕾舞剧、歌剧中的）主角演员；（管弦乐队每一乐器组的）首席演奏者；（有利息的）本金，资金；（法律和商业事务中的）当事人，委托人；关键人物；（某些行业）完全合格的开业者；&lt;英&gt;（负责某一部门的）高级公务员；主犯，首犯；&lt;史&gt;决斗者；（支撑檩的）主椽；（管风琴的）主音栓</p>
+<p>复数principals</p>
+<p>principle</p>
+<p>n.（行为）准则，（道德）原则；道义，正直；基本原则，基本法则；（机器等或自然界的）原理，定律；（宗教或政治的）主义，信条；起源，本原；本质，实质；（化）成分，要素</p>
+<p>复数principles</p>
+<p>prior</p>
+<p>adj.先前的，事先的；&lt;正式&gt;优先的，更重要的；&lt;正式&gt;在前面的（prior to）<br>n.&lt;美，非正式&gt;犯罪前科；小修道院院长；大修道院副院长；托钵会会长<br>【名】 （Prior）（美）普廖尔（人名）</p>
+<p>复数priors</p>
+<p>priority</p>
+<p>n.优先事项，最重要的事；优先，优先权，重点；&lt;英&gt;优先通行权<br>adj.优先的</p>
+<p>复数priorities</p>
+<p>procedure</p>
+<p>n.手续，步骤；（商业、法律或政治上的）程序；外科手术；（电脑的）应用程式</p>
+<p>复数procedures</p>
+<p>process</p>
+<p>n.步骤，程序；（自然或偶然的）变化过程；（为达到某目标的）过程，进程；制作方法，加工方法；&lt;法律&gt;传票；（生，剖）端突，突起<br>adj.（印刷）三原色的，三色版的； 经过特殊加工的；照相板的<br>v.（用化学物品或机器）处理，加工；审核，受理（正式文件或请求）；（计算机）处理（数据）；冲洗（照片）；加工（食品）；&lt;正式&gt;列队行进；把（头发）弄成直发</p>
+<p>复数processes<br>第三人称单数processes<br>现在分词processing<br>过去式processed<br>过去分词processed</p>
+<p>professional</p>
+<p>adj.职业的，专业的；非常内行的，极为称职的；（人）职业性的，非业余的；由职业人员参加的；&lt;非正式，贬&gt;（人）坚持某种活动特征（或特点）的<br>n.专业人员，专业人士；内行，专家；职业选手；（受雇于高尔夫或网球协会的）职业教练</p>
+<p>复数professionals<br>比较级more professional<br>最高级most professional</p>
+<p>prohibited</p>
+<p>v.禁止（prohibit的过去分词形式）<br>adj.被禁止的</p>
+<p>project</p>
+<p>n.项目，计划；（学校的）课题，研究项目；&lt;美&gt;廉租房区，公共房屋区<br>v.预计，推算；计划，规划；伸出，突出；投掷，喷射；投射，投影；展现，表现；使（声音，尤指嗓音）扩及远处；传播；想像（自己、场景等）在另一地点或时间；（尤指无意地把情感、愿望）投射转移（给别人）；使（某人）迅速成功，让（某人）获得更好的工作；作（曲线）的射影图；把（地球，天空等）投影在平面上</p>
+<p>复数projects<br>第三人称单数projects<br>现在分词projecting<br>过去式projected<br>过去分词projected</p>
+<p>promote</p>
+<p>v.促进，提倡；升职，晋升；促销，推广； 将（运动队）晋级；使（学生）升年级；负责筹办，主办（大型活动，如音乐会或体育比赛）；促使（议会私法议案）通过；使（卒）升格为（尤指后等）；&lt;英&gt;（先打大牌）使（小牌）赢得一墩；使（催化剂）更活泼</p>
+<p>第三人称单数promotes<br>现在分词promoting<br>过去式promoted<br>过去分词promoted</p>
+<p>proportion</p>
+<p>n.部分，份额；比例；正确的比例，均衡；大小，程度（proportions）；（事情的）重要性，严重性；等比关系<br>v.&lt;正式&gt; 使（某物）成比例，使相称；分摊</p>
+<p>复数proportions<br>第三人称单数proportions<br>现在分词proportioning<br>过去式proportioned<br>过去分词proportioned</p>
+<p>prospect</p>
+<p>n.可能性，希望；预期，展望；（尤指事业的）成功机会，前景；有望成功的人，有前途的人；可能的顾客，潜在的主顾；&lt;正式&gt;（尤指从高处看到的）景象，景色；潜在矿藏或矿床<br>v.勘探，勘察；寻找（商业机会）</p>
+<p>复数prospects<br>第三人称单数prospects<br>现在分词prospecting<br>过去式prospected<br>过去分词prospected</p>
+<p>protocol</p>
+<p>n.礼仪，礼节；国际议定书，协议；条约草案，（协议或条约的）附件；（协定，公约）修正案（或增补）；（数据传递的）协议，规约；科学实验计划，医疗方案；（科学实验结果的）官方记录<br>v.以协议形式发布；拟定</p>
+<p>复数protocols<br>第三人称单数protocols<br>现在分词protocolling或protocoling<br>过去式protocolled或protocoled<br>过去分词protocolled或protocoled</p>
+<p>psychology</p>
+<p>n.心理学；心理特点，心理状态；心理影响；心计，善解人意</p>
+<p>复数psychologies</p>
+<p>publication</p>
+<p>n.出版，发行；出版物，发行物；（信息的） 刊登，公布</p>
+<p>复数publications</p>
+<p>published</p>
+<p>adj.已发布的<br>v.出版；发行（publish 的过去式和过去分词）</p>
+<p>purchase</p>
+<p>n.&lt;正式&gt;购买，采购；&lt;正式&gt;购买的东西；&lt;法律&gt;（非继承性的）财产置得；&lt;正式&gt;紧握，牢牢抓住；（移动重物的）滑轮（或类似装置）<br>v.&lt;正式&gt; 购买，采购；&lt;古&gt;（努力或艰难地）获得，得到；（航海）（用滑轮或杠杆）升起，举起（绳，索，锚）</p>
+<p>复数purchases<br>第三人称单数purchases<br>现在分词purchasing<br>过去式purchased<br>过去分词purchased</p>
+<p>pursue</p>
+<p>v.追求，致力于，执行；继续探讨（或追究、从事）；追逐，跟踪，追赶；沿着……前行；追求（某人）；力劝（某人）接受聘用</p>
+<p>第三人称单数pursues<br>现在分词pursuing<br>过去式pursued<br>过去分词pursued</p>
+<p>qualitative</p>
+<p>adj.质量的，定性的，性质的</p>
+<p>quotation</p>
+<p>n.引语，引文；音乐（或艺术品）片段的引用；引用，引述；报价单，估价；（股票）报价，牌价；（股票）上市许可登记</p>
+<p>复数quotations</p>
+<p>radical</p>
+<p>adj.根本的，彻底的；激进的，极端的；&lt;美，非正式&gt; 顶呱呱的；全新的，不同凡响的；（增减）急剧的，大幅度的；（人，物）原本的，与生俱来的；（外科，医疗）根治的；&lt;英，史&gt;（19世纪）自由党激进派的；（数）根式的，根号的；词根的；（植）根生的<br>n.激进分子； 游离基，自由基；词根；（汉字）偏旁，部首；（数）根式；根号</p>
+<p>复数radicals<br>比较级more radical<br>最高级most radical</p>
+<p>random</p>
+<p>adj.任意的，随机的，胡乱的；（砖石建筑）石头大小不一的；&lt;非正式&gt;奇怪的，不同寻常的<br>n.随意，随机；&lt;非正式&gt;不认识的人，陌生人<br>adv.随机地，胡乱地</p>
+<p>range</p>
+<p>n.（变动或浮动的）范围，界限；视觉（或听觉）范围；射程，射击距离；一系列；成套产品，系列商品；山脉；牧场，牧区；靶场，射击场，炸弹试验场；（尤指旧时的）炉灶；一排建筑物；&lt;古&gt;方向，走向；（飞机等交通工具的）续航距离<br>v.（在一定的范围内）变化，变动；（按一定位置或顺序）排列，排序；徘徊，四处移动；（文章或讲话）涉及，包括 ；（枪、炮、射击后校准）测距，（用雷达或激光）测距；支持，反对；自然生长，分布；与……联合起来，加入……行列<br>adj.&lt;文&gt;（生活方式）有秩序的，安定的</p>
+<p>复数ranges<br>第三人称单数ranges<br>现在分词ranging<br>过去式ranged<br>过去分词ranged</p>
+<p>ratio</p>
+<p>n.比率，比例</p>
+<p>复数ratios</p>
+<p>rational</p>
+<p>adj.（想法、决定等）合理的，基于理性的；（人）理性的，理智的；富有理性的；（数）有理的，有理数的<br>n.有理数</p>
+<p>复数rationals<br>比较级more rational<br>最高级most rational</p>
+<p>reaction</p>
+<p>n.反应，回应；反应能力（reactions）；（药物或食物引起的）不良反应；化学反应；反作用力；（对旧观念等的）抗拒；反动，守旧</p>
+<p>复数reactions</p>
+<p>recovery</p>
+<p>n.康复，痊愈；戒除；恢复，复苏；（供刚做完手术的病人使用的）监护室；（被拿走或失去的东西的）复得，找回；收回的物品（资金）；（破损车辆或坠毁飞机）回收修理；（高尔夫）挽回败局之击，复原之击（击回球道或球穴区）；（美橄）重新获球；（划船，自行车赛，游泳）还原至预备姿势（如回桨等）；回收利用（能源、化工品等）</p>
+<p>复数recoveries</p>
+<p>refine</p>
+<p>v.精炼，提纯；改进，改善；使……文雅</p>
+<p>第三人称单数refines<br>现在分词refining<br>过去式refined<br>过去分词refined</p>
+<p>regime</p>
+<p>n.（尤指独裁的）政府，政权；（机构、公司、经济等的）管理制度，组织方法；饮食起居制度，养生法</p>
+<p>复数regimes</p>
+<p>region</p>
+<p>n.地区，区域；行政区；&lt;英&gt;（首都以外的）地方（the regions）；身体部位；领域，界</p>
+<p>复数regions</p>
+<p>registered</p>
+<p>adj.已登记的，已注册的；（信或包裹）挂号的；（家畜等）附有血统证明的<br>v.登记，注册；（仪器上）显出，显示；表示，表达（意见或情感）（register 的过去式和过去分词形式）</p>
+<p>regulations</p>
+<p>n.规则，规章，条例，法规（regulation 的复数）</p>
+<p>reinforced</p>
+<p>v.加强；巩固；（使）更结实；增援，（使）更强大；增进，加深（reinforce 的过去式及过去分词）<br>adj.加固的；增强的</p>
+<p>rejected</p>
+<p>v.拒绝，驳回；不同意；不录用；不用，不出版；嫌弃，厌弃；排斥（移植器官）；不够关心，慢待（reject 的过去式和过去分词）<br>adj.被拒绝的</p>
+<p>relaxed</p>
+<p>adj.放松的，轻松的；舒适的，自在的；不加以拘束的，随便的；（肌肉或其他身体部位）放松的；（头发）拉直的；（衣服）宽松的，肥大的<br>v.休息，（使）放松；放心，镇定；松开，（使）松弛（relax 的过去式和过去分词）</p>
+<p>release</p>
+<p>v.释放，放走；使出院；把（动物）放生；解救；放开；拉开，松开（装置）；发射，投（弹）；公布，发布；发行，上映；表达，发泄；释放，排放（物质）； 解除（职务或工作），解雇；放弃，让予；使不紧张；开放，解禁<br>n.（人或动物的）释放，放出；排放，泄漏；（设备的）松开，拉开；释放装置（如按、拉的装置）；表达，宣泄；解脱，轻松感；放松的机会；新发行的东西；公开，发布；公映；（责任等的）免除，解除；免责书；&lt;法律&gt; 放弃，让予；放弃文书；&lt;美&gt; 传球</p>
+<p>复数releases<br>第三人称单数releases<br>现在分词releasing<br>过去式released<br>过去分词released</p>
+<p>relevant</p>
+<p>adj.有关的，切题的；正确的，适宜的；有价值的，有意义的</p>
+<p>比较级more relevant<br>最高级most relevant</p>
+<p>reliance</p>
+<p>n.依靠，信任；&lt;古&gt;被依赖的人（或物）</p>
+<p>reluctant</p>
+<p>adj.勉强的，不情愿的</p>
+<p>比较级more reluctant<br>最高级most reluctant</p>
+<p>removed</p>
+<p>adj.（亲属关系）隔代的，隔辈的；不同的；（时间或空间上）遥远的；（对某一课题、问题、情况等）知之甚少的<br>v.移开，拿开；除去，废除；把……免职，开除（remove 的过去式和过去分词）</p>
+<p>required</p>
+<p>adj.必需的，规定的；理想的<br>v.需要；要求做（某事），规定（require 的过去式和过去分词形式）；要求做（某事），规定（require 的过去式和过去分词）</p>
+<p>research</p>
+<p>n.（尤指大学或科研机构进行的）研究，探讨；研究工作，调查工作<br>v.研究，探索；为……收集资料，调查</p>
+<p>复数researches<br>第三人称单数researches<br>现在分词researching<br>过去式researched<br>过去分词researched</p>
+<p>resident</p>
+<p>n.居民，住户；（旅馆的）住宿者；&lt;美&gt;住院医生；&lt;美&gt; 寄宿制学校学生；&lt;史&gt;（英国政府派驻半独立国家的） 特派代表；驻外特工；留鸟，无迁徙习性的蝴蝶（或其他动物）<br>adj.（在某地）居住的，居留的；常驻的；属于（某个群体）的；（鸟、蝴蝶等）非迁徙性的；（计算机程序、文件等在存储器中）驻留的</p>
+<p>复数residents</p>
+<p>resolution</p>
+<p>n.决议，正式决定；（冲突、问题等的）解决，解决办法；决心，决定；坚决，果断；（电视、照相机、显微镜等的）清晰度，分辨率；（故事中主要矛盾的）冲突解开；（乐）解决（指和声中不协和音向协和音的进行）；（医）（炎症或其他症状的）消散，消退；（化）分解；（物理）（力或其他矢量的）分解</p>
+<p>复数resolutions</p>
+<p>resources</p>
+<p>n.[计][环境] 资源；物力（resource 的复数）<br>v.向……提供资金（resource 的第三人称单数）</p>
+<p>responserole</p>
+<p>(not find meaning.)</p>
+<p>restore</p>
+<p>v.恢复（某种情况或感受）；使复原，使复位；修复，整修；重新采用，恢复使用；归还</p>
+<p>第三人称单数restores<br>现在分词restoring<br>过去式restored<br>过去分词restored</p>
+<p>restraints</p>
+<p>n.限制，禁止（restraint 的复数）</p>
+<p>restricted</p>
+<p>adj.（大小或数量）有限的，很小的；（指能做的事）有限的，受限制的；受（法规）制约的，受控制的；不对公众开放的；（文件）保密的，限于内部传阅的；（病毒繁殖速率）被限制的；（DNA）因限制酶酶切的<br>v.限制，限定（数量、范围等）；约束，限制（行动或活动）；（以法规）限制（restrict 的过去式和过去分词）</p>
+<p>retained</p>
+<p>adj.保留的<br>v.保留；保存（retain 的过去式形式）</p>
+<p>revealed</p>
+<p>v.揭露，透露；显示（reveal 的过去式和过去分词）</p>
+<p>revenue</p>
+<p>n.（企业、组织的）收入，收益；（政府的）税收；税务局，税务署（the revenue）</p>
+<p>复数revenues</p>
+<p>reverse</p>
+<p>v.逆转，彻底改变（决定、政策、趋势等）；撤销，推翻（法庭判决）；颠倒，反转；交换，互换（位置、功能）；&lt;美&gt;承认错误，放弃（立场）；倒（车）；（发动机）反向运转；&lt;英&gt;打对方付费的电话；使（铅字，图案）印成白或浅色<br>n.相对，相反（the reverse）；逆向，逆转；倒车挡；&lt;正式&gt;失败，挫折；反面，背面；（翻开的书）左手页，（活页文件的）背面；（硬币或奖牌）反面图案（或刻字）；（美式橄榄球）反向传球，变位传球<br>adj.相反的，反向的；背面的，反面的；（半导体结的外加电压）反向的；（地层）逆断的，冲断的；反身的</p>
+<p>复数reverses<br>第三人称单数reverses<br>现在分词reversing<br>过去式reversed<br>过去分词reversed</p>
+<p>revision</p>
+<p>n.修改，修订；修订本，订正版；复习，温习</p>
+<p>复数revisions</p>
+<p>revolution</p>
+<p>n.（思想、工作方式等的）彻底变革；（使用武力、暴力的）革命；旋转；旋转一周；（马克思主义）共产主义革命（The Revolution）；循环</p>
+<p>复数revolutions</p>
+<p>rigid</p>
+<p>adj.（方法、体制等）严格死板的，僵化的；（人）顽固的，不通融的；刚硬的，不易弯曲的；（因强烈的感情而）僵硬的，僵直的；精确的<br>n.未铰接的货车</p>
+<p>复数rigids<br>比较级more rigid<br>最高级most rigid</p>
+<p>route</p>
+<p>n.路线，航线；道路，路途；常规路线，固定路线；&lt;美&gt;（尤指作为送货工作的）例行拜访，递送路线；途径，方法；（用于美国城市间干线公路编号前）公路（Route）<br>v.按特定路线发送（车辆、货物或乘客）；以……线路发送（电话或其他电子信号）</p>
+<p>复数routes<br>第三人称单数routes<br>现在分词routing或routeing<br>过去式routed<br>过去分词routed</p>
+<p>scenario</p>
+<p>n.设想，可能发生的情况 ；（电影、戏剧等的）剧情梗概；（艺术或文学作品中的）场景</p>
+<p>复数scenarios</p>
+<p>schedule</p>
+<p>n.计划（表），进度表；&lt;美&gt;（公共汽车、火车等的）时间表；（价目、费用等的）清单，一览表；（电视或电台的）节目表；&lt;美&gt;（学校的）课程表；&lt;法律&gt; 附件（尤指表格、单据等）；（英国所得税制的）报税单<br>v.安排，预定；列入，收进（正式目录、清单等中）；&lt;英&gt; 把（建筑物）列为文物保护单位</p>
+<p>复数schedules<br>第三人称单数schedules<br>现在分词scheduling<br>过去式scheduled<br>过去分词scheduled</p>
+<p>scheme</p>
+<p>n.&lt;英&gt;（政府或其他组织的）计划，方案；（用于组织或整理信息的）系统，体系；组合，布局；阴谋，诡计；&lt;苏格兰，非正式&gt;社会住宅区<br>v.密谋，策划；&lt;南非，非正式&gt;认为，猜想；按色调布置<br>【名】 （Scheme）（瑞典）谢默（人名）</p>
+<p>复数schemes<br>第三人称单数schemes<br>现在分词scheming<br>过去式schemed<br>过去分词schemed</p>
+<p>scope</p>
+<p>n.范围，领域；（发挥能力的）机会，施展余地；视野，眼界；观测仪器（如望远镜、显微镜等）；（船抛锚时的）缆绳长度；特定论点的数量<br>v.评估，调查（scope sth. out）；确定（规划项目）的范围；&lt;非正式&gt;仔细看，彻底检查</p>
+<p>复数scopes<br>第三人称单数scopes<br>现在分词scoping<br>过去式scoped<br>过去分词scoped</p>
+<p>section</p>
+<p>n.段，部分；散件，部件；（书、报等的）节，栏；一部分人；（乐队的）组；断面图，剖面图；（数学中的）截面；（手术中的）开刀，切开；（供研究用的动物或植物的）切片；&lt;美&gt; 一平方英里的土地；&lt;美&gt;（柑橘类水果的）一瓣；（法律文件的）款，项；路段；区域；部门，科；&lt;新西兰&gt; 建房用地；（军队的）特定单位；分排，小队；（生物）组（尤指亚属）<br>v.&lt;英&gt; 把……关进精神病院；（手术中）把……切开；将……制成切片；切开，切断；被切割成片，被分成部分</p>
+<p>复数sections<br>第三人称单数sections<br>现在分词sectioning<br>过去式sectioned<br>过去分词sectioned</p>
+<p>sector</p>
+<p>n.区域，部分；（尤指商业、贸易等的）部门，行业；小群体；（尤指军队控制的）分区，防区；（磁盘上的）扇区； 扇形，扇形面；函数尺，象限仪<br>v.把……分成扇形</p>
+<p>复数sectors<br>第三人称单数sectors<br>现在分词sectoring<br>过去式sectored<br>过去分词sectored</p>
+<p>security</p>
+<p>n.保护措施，安全工作；保安部门；安检处；保障，保证；安全，安全感；抵押品，保证金；证券，债券</p>
+<p>复数securities</p>
+<p>select</p>
+<p>v.选择，挑选；（在计算机屏幕上）选定；（进化）决定（特征，生物）是否继续存在<br>adj.精选的，优等的；高级的，奢华的<br>【名】 （Select）（美、印）塞阿克特（人名）</p>
+<p>第三人称单数selects<br>现在分词selecting<br>过去式selected<br>过去分词selected<br>比较级more select<br>最高级most select</p>
+<p>sequence</p>
+<p>n.顺序，次序；连续事件（或动作、事物）；（电影中表现同一主题或场面的）一组镜头；（生物学中分子或基因的排列）顺序；模进；（纸牌的）同花顺；序列；（天主教弥撒中圣歌与福音之间的）继续经<br>v.按顺序排列；测定（整套基因或分子成分的）序列；用音序器播放（或录制）音乐</p>
+<p>复数sequences<br>第三人称单数sequences<br>现在分词sequencing<br>过去式sequenced<br>过去分词sequenced</p>
+<p>series</p>
+<p>n.连续，一系列（事件）；（电视、广播等的）系列片，系列节目；丛书，系列出版物；（两队之间的）系列比赛；（电路的）串联；（同时发行的）一套邮票（或货币、硬币）；（由某一公司推出的）系列产品，（尤指）汽车系列；（年代地层学用语）统；（元素的）系；级数，序列项的总和；有共同特征的一组语音，系列（音）；音列</p>
+<p>复数series</p>
+<p>sex</p>
+<p>n.性行为，性交；性，性别；雄性，雌性；性器官（用于小说中避免更粗俗或更露骨的措词）<br>v.辨别……的性别，辨识……的雌雄；&lt;非正式&gt; 引起……的性欲</p>
+<p>复数sexes<br>第三人称单数sexes<br>现在分词sexing<br>过去式sexed<br>过去分词sexed</p>
+<p>shift</p>
+<p>v.（使）移动，（使）转移；（使）转换到（另一个人或另一事物）；（使）改变意见（或信仰等）；&lt;英，非正式&gt;赶快；&lt;美&gt;换（挡）；（计算机）移位；按（计算机键盘上的）Shift 键；&lt;英，非正式&gt;摆脱，消除；&lt;英，非正式&gt;（尤指大量）销售，出售；&lt;英，非正式&gt;狼吞虎咽地吃；&lt;古&gt;含糊其辞，拐弯抹角<br>n.改变，转变；轮班工作时间；轮班工作的人；（计算机键盘上的）Shift 键；（计算机）移位；&lt;美&gt;（机动车的）换挡装置；宽松直筒连衣裙（=shift dress）；&lt;史&gt;长而宽松的内衣；（建筑）错位；（美橄）（开赛前）球员位置的变换；（天文）（光谱线的）偏移；语音演变（sound shift 的简称）；&lt;古&gt;计谋，诡计</p>
+<p>复数shifts<br>第三人称单数shifts<br>现在分词shifting<br>过去式shifted<br>过去分词shifted</p>
+<p>significant source</p>
+<p>重要的来源</p>
+<p>simulation</p>
+<p>n.模拟，仿造物；假装，冒充</p>
+<p>site</p>
+<p>n.（建筑的）工地，用地；（某事发生的）地点，现场；（作某种用途的）场所，场地；网站，站点（=website）；（身体的某个）部位；（城镇、建筑物或纪念碑的）地基，选址；遗址，原址；（帐篷或大篷车内）歇脚的地方<br>v.使坐落在，为……选址</p>
+<p>复数sites<br>第三人称单数sites<br>现在分词siting<br>过去式sited<br>过去分词sited</p>
+<p>so-called</p>
+<p>adj.（表示不认同）所谓的；叫做……的，号称……的</p>
+<p>solely</p>
+<p>adv.单独地，仅有地</p>
+<p>somewhat</p>
+<p>adv.稍微，有点<br>pron.几分；某物</p>
+<p>sought</p>
+<p>v.寻找（seek 的过去式和过去分词）</p>
+<p>specific</p>
+<p>adj.明确的，具体的；特定的；特有的，独特的；有特殊功能的，有特效的；（生物）种的；（关税，税）按数量（根据固定税率）征取而非按货价征取的；（物理）（与参照物同一性质成）比率的<br>n.细节，详情；特效药</p>
+<p>复数specifics<br>比较级more specific<br>最高级most specific</p>
+<p>specified</p>
+<p>adj.规定的；详细说明的<br>v.指定；详细说明（specify 的过去分词）</p>
+<p>sphere</p>
+<p>n.（活动、兴趣、专业知识的）范围，领域；球体，球，球形；社会阶层；势力范围；&lt;文&gt;苍穹，天，天空；&lt;文&gt;天体；天体外壳；地球仪<br>vt.使……成球形；包围；放入球内</p>
+<p>复数spheres<br>第三人称单数spheres<br>现在分词sphering<br>过去式sphered<br>过去分词sphered</p>
+<p>stability</p>
+<p>n.稳定（性），稳固（性）；坚定，恒心</p>
+<p>复数stabilities</p>
+<p>statistics</p>
+<p>n.统计学；统计数字（statistic 的复数形式）</p>
+<p>status</p>
+<p>n.法律地位（或身份）；（尤指在社会中的）地位，身份；高级职位，社会上层地位；重视（或崇尚）程度；状况，情形</p>
+<p>复数statuses</p>
+<p>straightforward</p>
+<p>adj.简单的，易懂的；（人）诚实的，坦率的<br>adv.直截了当地，坦率地</p>
+<p>strategies</p>
+<p>n.策略，战略（strategy 的复数）</p>
+<p>stress</p>
+<p>n.精神压力，紧张；压力，应力；强调，重要性；（单词）重音，重读，（音乐）加强音；压强；环境恶劣引起的疾病<br>v.强调，着重；重读；焦虑，紧张；使受压力，使受重压<br>【名】 （Stress）（意）斯特雷斯 （人名）</p>
+<p>复数stresses<br>第三人称单数stresses<br>现在分词stressing<br>过去式stressed<br>过去分词stressed</p>
+<p>structure</p>
+<p>n.结构，构造；结构体，（尤指）大型建筑物；周密安排，精心组织；机构，组织，体系<br>v.计划，组织，安排</p>
+<p>复数structures<br>第三人称单数structures<br>现在分词structuring<br>过去式structured<br>过去分词structured</p>
+<p>styles</p>
+<p>n.风格；样式；模式（style 的复数形式）<br>n.（Styles）人名；（英）斯泰尔斯</p>
+<p>submitted</p>
+<p>v.递交；主张；屈服（submit 的过去分词）</p>
+<p>subordinate</p>
+<p>n.部属，下级；从属，次要<br>v.使从属于，使处于次要地位；使隶属，使服从<br>adj.从属的，下级的；次要的</p>
+<p>复数subordinates<br>第三人称单数subordinates<br>现在分词subordinating<br>过去式subordinated<br>过去分词subordinated</p>
+<p>subsequent</p>
+<p>adj.随后的，接着的；（河，谷）后成的</p>
+<p>subsidiary</p>
+<p>n.子公司，附属公司；辅助者<br>adj.次要的，附属的；子公司的</p>
+<p>复数subsidiaries</p>
+<p>substitution</p>
+<p>n.代替，替换；代替物；（数） 置换</p>
+<p>复数substitutions</p>
+<p>successive</p>
+<p>adj.连续的，依次的；接替的，继承的</p>
+<p>sufficient</p>
+<p>adj.足够的，充足的；（理由、条件）充足的，充分的</p>
+<p>sum</p>
+<p>n.金额，款项；算术，简单计算；总数，总和；全部，一切（尤指数量不大）；&lt;英&gt;计算失误；&lt;英&gt;计算费用<br>v.概括，总结；求……的和，计算……的总数<br>【名】 （Sum）（英）萨姆，（柬）孙，（俄、德、捷）苏姆，（越）森（人名）</p>
+<p>复数sums或sumy<br>第三人称单数sums<br>现在分词summing<br>过去式summed<br>过去分词summed</p>
+<p>summary</p>
+<p>n.总结，概要<br>adj.总结性的，概括的；（司法程序）即决的，简易的</p>
+<p>复数summaries</p>
+<p>supplementary</p>
+<p>adj.补充的，附加的；（角）互补的<br>n.补充者，增补物；&lt;英&gt;补充提问</p>
+<p>复数supplementaries</p>
+<p>survey</p>
+<p>n.民意调查，民意测验；考察，调查；（对课题或情况的）全面考察，概述；测量，勘测；测绘图，勘测记录；测量部门；&lt;英&gt; （尤指为欲购房者所做的）房屋鉴定；查勘报告<br>v.做民意测验，做民意调查；（尤指认真地）审视，检查；测量，勘测；&lt;英&gt; （尤指为可能的买家）查勘，检视（建筑物的状况）；全面评述，概述</p>
+<p>复数surveys<br>第三人称单数surveys<br>现在分词surveying<br>过去式surveyed<br>过去分词surveyed</p>
+<p>survive</p>
+<p>v.（经历事故、战争或疾病后）活下来，幸存；比……活得久，比……长寿；挺过，艰难度过；幸免于难，留存；（靠很少的钱）继续维持生活；设法对付（困难或令人不愉快的事）</p>
+<p>第三人称单数survives<br>现在分词surviving<br>过去式survived<br>过去分词survived</p>
+<p>suspended</p>
+<p>v.悬挂；停止，暂停，中止；（因犯错而）暂令停职；暂令停学；暂令停止参加活动；悬浮，漂浮（suspend 的过去式和过去分词）</p>
+<p>sustainable</p>
+<p>adj.（计划、方法、体制）可持续的，持续性的；（自然资源）可持续的，不破坏环境的 ；站得住脚的</p>
+<p>symbolic</p>
+<p>adj.用作象征的，被认为是象征的；有象征意义的；（行为举动）象征性的，没有甚么实际影响的；符号的，使用象征的</p>
+<p>tapes</p>
+<p>n.录音带，胶纸带；条带，边带</p>
+<p>target</p>
+<p>n.目标，指标；（攻击的）目标；（批评、嘲笑等的）对象；靶子；目标受众，受影响的人（或群体）；&lt;史&gt; 圆形小盾；（语音）目标<br>v.把……作为攻击目标，把……作为批评的对象；面向，把……对准（某群体）；将（钱款或援助）用于</p>
+<p>task</p>
+<p>n.（尤指困难的或必须定期做的）工作，任务；（尤指语言教学中旨在帮助达到某一学习目的的）活动<br>v.派给……任务；对（手段，能力）要求极高，考验</p>
+<p>复数tasks<br>第三人称单数tasks<br>现在分词tasking<br>过去式tasked<br>过去分词tasked</p>
+<p>team</p>
+<p>n.（游戏或体育运动的）队，小组；工作队，工作组；（套在一起拉车的）一组牲口（尤指马）<br>v.协作，合作；使（颜色、布料、衣服）相配；（套在一起拉车的）一组牲口（尤指马）</p>
+<p>复数teams<br>第三人称单数teams<br>现在分词teaming<br>过去式teamed<br>过去分词teamed</p>
+<p>technical</p>
+<p>adj.工艺的，技术的；专业的，专门的；严格按照法律意义的，严格按字面解释的；（尤指体育或艺术等活动）技巧（上）的；与机器（或系统）运行相关的，技术性的<br>n.&lt;美&gt;（车后架设有机枪的）小卡车</p>
+<p>复数technicals<br>比较级more technical<br>最高级most technical</p>
+<p>techniques</p>
+<p>n.技术；方法；技巧（technique 的复数）</p>
+<p>technology</p>
+<p>n.科技，技术；技术设备，先进机器；技术学，工艺学；术语</p>
+<p>复数technologies</p>
+<p>temporary</p>
+<p>adj.暂时的，临时的；短期的，短暂的<br>n.临时雇员，临时工</p>
+<p>复数temporaries</p>
+<p>tension</p>
+<p>n.紧张，焦虑；紧张关系，紧张局势；矛盾，冲突；（电线、绳子、肌肉等的）拉紧，绷紧；拉力，张力；（电影、书籍中的）紧张情绪，恐怖气氛；（编织的）针织密度；电压<br>v.使拉紧，使紧张</p>
+<p>复数tensions<br>第三人称单数tensions<br>现在分词tensioning<br>过去式tensioned<br>过去分词tensioned</p>
+<p>termination</p>
+<p>n.终止妊娠，人工流产；结束，终止；&lt;美&gt;解聘，解雇；&lt;美&gt;暗杀；词尾（尤指屈折变化或派生词的词尾）；&lt;古&gt;结局</p>
+<p>复数terminations</p>
+<p>text</p>
+<p>n.（书、杂志等中区别于图片的）正文，文字材料；（演说等的）原文；（学习某课程必读的）课本，教科书；（供讨论或回答问题的）文本，文章；（讨论等的）题目，主题；（尤指科学或学术方面的）文献；（计算机、手机等）文档；短信；（尤指引作布道主题的）圣经经文；（尤指用于手稿的）粗体正楷<br>v.（用手机）给……发短信</p>
+<p>复数texts<br>第三人称单数texts<br>现在分词texting<br>过去式texted<br>过去分词texted</p>
+<p>theme</p>
+<p>n.（谈话、书籍、电影等的）题目，主题；（音乐的）主旋律；（电影、电视节目、广播节目的）主题音乐，主题曲；（学生的）作文；（聚会、房间等的）风格；（句子的）主位；（名词、动词等的）词干；&lt;史&gt;（拜占庭帝国的）行政区<br>adj.以奇想主题布置的<br>v.（休闲场所、活动）以……主题</p>
+<p>复数themes</p>
+<p>theory</p>
+<p>n.学说，理论；（某一学科基于的）理论，原理；观点，见解</p>
+<p>复数theories</p>
+<p>thereby</p>
+<p>adv.因此，从而</p>
+<p>thesis</p>
+<p>n.论文，毕业（或学位）论文；论题，论点；（文章的）主题；（黑格尔哲学用语）正题；（诗韵）扬音节</p>
+<p>复数theses</p>
+<p>topic</p>
+<p>n.题目，主题；一般规则，总论</p>
+<p>复数topics</p>
+<p>trace</p>
+<p>v.查出，发现，追踪；追溯，追究；描绘（事物的过程或发展），记述；（尤指用手指、脚趾）画（图，线）；勾画……的轮廓，勾勒；（用透明纸覆盖在地图、绘画等上）复制，描摹；（手指、嘴唇等）沿着……移动<br>n.痕迹，遗迹，踪迹；微量，少许；描记图，扫描线；挽绳，缰绳；跟踪，追查；（大脑上的学习或记忆）痕迹，印迹；&lt;西印度，美&gt;小径，小道；交线，迹线；（数）迹<br>【名】 （Trace）（美）塔斯（人名）</p>
+<p>复数traces<br>第三人称单数traces<br>现在分词tracing<br>过去式traced<br>过去分词traced</p>
+<p>traditional</p>
+<p>adj.传统的；根据传统而制造（或使用）的；因袭的，守旧的；（活动）惯例的，经常从事的；典型的；（爵士乐）具20世纪早期风格的</p>
+<p>比较级more traditional<br>最高级most traditional</p>
+<p>transfer</p>
+<p>v.（使）转移，搬迁；转移（感情），传染（疾病），转让（权力等）；（使）调动，转职；转会，使转会（尤指职业足球队）；（将所得学分）转到（另一所学校）；转接（电话）；将（钱）转到（另一个账户上）；转让（财产，权利），移交（责任）；转用；转存，转录（资料、音乐等），改编；（旅途中）转乘，换乘；转印（图画，图案）；（通过延伸、隐喻）转变（词义，短语义）<br>n.转移，转让，调动；（运动员）转会；转换，过渡；已调动的人，已转移的东西；（旅行中）转乘，转搭；&lt;美&gt;转车票，换乘票；纸上可转印的图画或图案；迁移（将已习得的行为在新的情况下应用）</p>
+<p>复数transfers<br>第三人称单数transfers<br>现在分词transferring<br>过去式transferred<br>过去分词transferred</p>
+<p>transformation</p>
+<p>n.（彻底或重大的）改观，变化，转变；（用于南非）民主改革；舞台场景的突变；（动物生命周期中的）变态；（物理）嬗变，核的转换；（数，逻）变换；（语言学）转换；（生）遗传转化；（生）细胞转化</p>
+<p>复数transformations</p>
+<p>transition</p>
+<p>n.过渡，转变；（分子生物）转换；（乐）临时转调；（物理）跃迁，转变<br>v.转变，过渡</p>
+<p>复数transitions<br>第三人称单数transitions<br>现在分词transitioning<br>过去式transitioned<br>过去分词transitioned</p>
+<p>transmission</p>
+<p>n.（无线电、电视等信号的）播送，发送；（电台或电视等的）信息，广播；传递，传播，传染；（车辆的）传动装置，变速器</p>
+<p>复数transmissions</p>
+<p>transport</p>
+<p>n.运输，运送；交通工具，运输方式；交通运输系统；（运送部队、给养等的）运输船，运输机；强烈的感情，狂喜；&lt;史&gt;流放犯<br>v.（用交通工具）运输，运送；（以自然方式）运输，传播；使产生身临其境的感觉；流放，放逐（犯人）；使狂喜，使（某人）充满强烈情感（尤指快乐）</p>
+<p>复数transports<br>第三人称单数transports<br>现在分词transporting<br>过去式transported<br>过去分词transported</p>
+<p>trend</p>
+<p>n.趋势，动态；时尚，风尚；热门话题<br>v.&lt;美&gt;趋向，倾向；（尤指地理特征的）走向；成为热门话题</p>
+<p>复数trends<br>第三人称单数trends<br>现在分词trending<br>过去式trended<br>过去分词trended</p>
+<p>trigger</p>
+<p>n.（枪械等的）扳机；（尤指引发不良反应或发展的）起因，诱因；（炸弹的）引爆器，触发器<br>v.引发，激发；起动，触发；引爆（炸弹）<br>【名】 （Trigger）特里杰（人名）</p>
+<p>复数triggers<br>第三人称单数triggers<br>现在分词triggering<br>过去式triggered<br>过去分词triggered</p>
+<p>ultimately</p>
+<p>adv.最终，最后；根本上，最重要地</p>
+<p>undergo</p>
+<p>v.经历，经受</p>
+<p>第三人称单数undergoes<br>现在分词undergoing<br>过去式underwent<br>过去分词undergone</p>
+<p>underlying</p>
+<p>adj.根本的，潜在的；表面下的，下层的；优先的；（数量或水平）实际的<br>v.位于…的下面；构成…的基础（underlie 的现在分词形式）</p>
+<p>undertaken</p>
+<p>v.从事；开始进行（undertake 的过去分词）</p>
+<p>unified</p>
+<p>adj.一致的，统一的；联合的，一体的<br>v.（使）联合，（使）统一；使协调（unify 的过去式和过去分词）</p>
+<p>uniform</p>
+<p>n.制服，校服；&lt;非正式&gt;穿制服的警官；（某一群体的人穿的）典型服装，特有服装；（无线电通讯）字母 U 的代码<br>adj.全部相同的，始终如一的；制服式的<br>v.使一致；使穿制服</p>
+<p>复数uniforms<br>第三人称单数uniforms<br>现在分词uniforming<br>过去式uniformed<br>过去分词uniformed<br>比较级more uniform<br>最高级most uniform</p>
+<p>unique</p>
+<p>adj.独一无二的，独特的；非常特别的，极不寻常的；（某人、地或事物）独具的，特有的<br>n.&lt;古&gt;独一无二的人（或事）<br>【名】 （Unique）尤妮克（人名）</p>
+<p>utility</p>
+<p>n.（煤气、水、电等的）公共服务，公用事业；（供电、供水等的）公用事业单位；应用程序，实用程序；实用，有用；&lt;澳&gt;小卡车，轻型货车；（博弈论，经济学）效用<br>adj.有用的，多功能的；（体育运动）多面手的；实用的</p>
+<p>复数utilities</p>
+<p>utility</p>
+<p>n.（煤气、水、电等的）公共服务，公用事业；（供电、供水等的）公用事业单位；应用程序，实用程序；实用，有用；&lt;澳&gt;小卡车，轻型货车；（博弈论，经济学）效用<br>adj.有用的，多功能的；（体育运动）多面手的；实用的</p>
+<p>复数utilities</p>
+<p>validity</p>
+<p>n.（法律上的）有效，合法，认可；真实性，正确性</p>
+<p>variable</p>
+<p>adj.易变的，多变的；时好时坏的；可变的，可调节的；（数）（数字）变量的；（植，动）变异的，变型的；（齿轮）变速的<br>n.可变性，可变因素；（数学中的）变量，变元；（计算机）变量（元）；（天文）变星的简称；（东北信风带以北或南半球的东南信风带与西风带之间的）变风区</p>
+<p>复数variables<br>比较级more variable<br>最高级most variable</p>
+<p>vehicle</p>
+<p>n.交通工具，车辆；（实现目的的）工具，媒介；（为展露主演者才华而）度身定制的创作（电影、电视节目、歌曲等）；赋形药，调漆料；（个人，组织从事经营、尤指投资的）公司</p>
+<p>复数vehicles</p>
+<p>version</p>
+<p>n.（同一种物件稍有不同的）样式，型号；（从不同角度的）说法，描述；（电影、剧本、乐曲等的）版本，改编形式；《圣经》译本；胎位倒转术<br>v.创制……的新版本，更新……的版本</p>
+<p>复数versions</p>
+<p>via</p>
+<p>prep.经由，经过（某一地方）；通过，借助于（某种手段或人）</p>
+<p>violation</p>
+<p>n.（对法律、协议、原则等的）违背，违反；侵权行为，（对人权的）侵犯；</p>
+<p>（对某物的）损毁，（对圣地的）亵渎；强奸</p>
+<p>复数violations</p>
+<p>virtually</p>
+<p>adv.事实上，几乎；虚拟地，模拟地</p>
+<p>visible</p>
+<p>adj.看得见的；明显的，引人注目的；（进出口贸易）有形商品的；（物理）（光）可见的；现有的，可得到的<br>n.有形进出口货物（visibles）</p>
+<p>复数visibles<br>比较级more visible<br>最高级most visible</p>
+<p>vision</p>
+<p>n.幻想，想象；幻觉，幻象；构想，展望；眼力，远见卓识；视力，视觉；视野；美好的人（或事物）；（电视或电影的）图像<br>v.&lt;罕&gt;想像</p>
+<p>复数visions<br>第三人称单数visions<br>现在分词visioning<br>过去式visioned<br>过去分词visioned</p>
+<p>visual</p>
+<p>adj.视觉的，视力的；栩栩如生的<br>n.视觉资料（指说明性的图片、影片等）</p>
+<p>复数visuals</p>
+<p>volume</p>
+<p>n.体积，容积；总数，总量；音量，响度；（控制音量的）旋钮，控制杆；（成套图书中的）卷，册；（期刊）合订本；书籍；&lt;史&gt;（写在羊皮纸或纸草纸上的）书卷；（尤指头发的）厚，多<br>adj.大量的<br>v.以卷的形式发出；成团卷起</p>
+<p>复数volumes<br>第三人称单数volumes<br>现在分词voluming<br>过去式volumed<br>过去分词volumed</p>
+<p>voluntary</p>
+<p>adj.自愿的，自发的，主动的；（机构或组织）志愿的，义务性的；（工作）志愿的，无偿的，义务的；（工作者）志愿的，无偿服务的；（人体活动）随意的，可以控制的；&lt;法律&gt;（让与）自愿的，无偿的<br>n.（教堂里管风琴演奏的）仪式终始曲；&lt;史&gt;（尤指作为其他作品的序曲，或自由创作的）即兴曲，自由调；（比赛中的）自选表演；自愿行动；志愿者</p>
+<p>复数voluntaries</p>
+<p>welfare</p>
+<p>n.幸福，安康；福利救济，社会福利；（给失业者和穷人的）福利救济金<br>adj.福利的；接受社会救济的</p>
+<p>whereas</p>
+<p>conj.（表示对比）但是，然而；鉴于（用于文件的开头）<br>n.序言，开场白；条件语句</p>
+<p>复数whereases</p>
+<p>whereby</p>
+<p>adv.凭此，借以<br>conj.凭此，借以，与……一致；&lt;非正式&gt;在……的情况下，处于……的位置</p>
+<p>widespread</p>
+<p>adj.普遍的，广泛的</p>
+<p>比较级more widespread<br>最高级most widespread</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/07/%E5%BD%92%E6%A1%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/07/%E5%BD%92%E6%A1%A3/" class="post-title-link" itemprop="url">归档</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-11-07 23:22:00" itemprop="dateCreated datePublished" datetime="2022-11-07T23:22:00+08:00">2022-11-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:32" itemprop="dateModified" datetime="2023-04-23T10:06:32+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/uncategorized/" itemprop="url" rel="index"><span itemprop="name">uncategorized</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/04/%E6%97%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/04/%E6%97%A0%E9%A2%98/" class="post-title-link" itemprop="url">无题</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-11-04 10:30:55" itemprop="dateCreated datePublished" datetime="2022-11-04T10:30:55+08:00">2022-11-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%9D%82%E6%80%9D/" itemprop="url" rel="index"><span itemprop="name">杂思</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>晚上好啊，朋友。</p>
+<p>又一次这么晚了才开始写日记。今天晚上睡不着，总是想心事，辗转反侧许久，最后决定写下来。</p>
+<p>有多久没和人有过正儿八经的聊天了呢？又有多久，没有和人认真谈论过过人生了呢？</p>
+<p>晚上和室友讨论到社交和恋爱的话题，再一次被伤到了。室友是有对象的。他以为我是母单，却没有想到我曾经谈过恋爱——对，去年那三个月勉强算是恋爱的感情经历。室友还说你打算什么时候谈，你得走出去，得多创造机会，得让女生对你感兴趣，如此种种。</p>
+<p>其实有点沮丧。沮丧的是很多问题没有答案。例如室友强调了创造和其他人认识的机会最重要，我说我也在尽可能的走出去，尽可能的积极地参与社交活动，积极地创造机会了啊，室友又说你得提高自己的吸引力，不然就算加上了好友也是白搭。</p>
+<p>其实很多浅显的道理不用他说我也看得明白。机会确实很重要，不然连认识足够多的人都做不到，从何谈起交朋友甚至找对象呢？可是，谈恋爱也得靠吸引，不然人家凭啥和你交往？</p>
+<p>但是光明白这些道理管啥用。没有方法论的指导，一切都是白搭。光知道要创造机会，要提高吸引力，可怎么tmd创造机会，怎么tmd提高吸引力？</p>
+<p>讲道理，我一直都觉得自己社交能力存在问题。在北京实习的一年多的快乐经历算是意外，碰巧和一群很social的人遇到了一起，碰巧这群非常social的小伙伴对我也很包容，这让我产生了一种错觉，一种以为自己变得不那么社恐的错觉。但是到了新环境，没有social的人找你交朋友，才发现，原来最不会社交的人竟是我自己。</p>
+<p>更加令我受挫的一点是，我并不知道如何提高社交能力。yxy确实教了我很多，但她那些东西远不能总结为一套成熟的方法论体系。此外，我渐渐意识到，正确解读聊天中的非语言信息和各种隐喻暗示是正常社交的基础（我想我应该是错过了不少暗示，不然也不至于像今天这样）。室友说我很直，我能感觉到言下之意可能是说我不太会考虑他人的感受（所谓共情能力很糟糕？）。可是，我也想有很好的共情能力啊😭而且我特别希望拥有看穿别人内心想法的能力😭如果我的想法常常被人看穿，而我却看穿不了其他人的思想，这本身就是一种不公平。</p>
+<p>纠结于这些问题，以致辗转反侧，竟难以入眠。作为非典型小镇做题家的一员，遇到不会的问题总想要想明白，可是人际交往的问题我怎么想都想不明白。谁来告诉我正确答案？</p>
+<p>也可能这些问题并没有答案。擅长social的人可以在同学们中混得风生水起，不擅长social的人如果专攻某一行也可以得到人们的尊敬。就怕啥都不行还想摆烂，最后输的一定是你。</p>
+<p>以上。共勉。</p>
+<p>11月4日夜。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/27/%E4%BD%BF%E7%94%A8%E9%AB%98%E6%96%AF%E6%B6%88%E5%85%83%E6%B3%95%E6%B1%82%E8%A7%A3%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/10/27/%E4%BD%BF%E7%94%A8%E9%AB%98%E6%96%AF%E6%B6%88%E5%85%83%E6%B3%95%E6%B1%82%E8%A7%A3%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84/" class="post-title-link" itemprop="url">使用高斯消元法求解线性方程组</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-10-27 00:23:25" itemprop="dateCreated datePublished" datetime="2022-10-27T00:23:25+08:00">2022-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>作为矩阵运算的一个应用，高斯消元法在线性方程组求解中发挥着重要的作用。高斯消元法的本质，是通过一系列线性变换，将线性方程组的系数矩阵变为上三角矩阵或者下三角矩阵，进而通过回代的方法得到所有变量的值。本文作为一篇抛砖引玉的介绍，将简要说一下如何在一个具体的线性方程组上应用高斯消元法，并给出一个python程序用于展示编程求解线性方程组的方法。</p>
+<h2 id="一、矩阵、矩阵的线性变换"><a href="#一、矩阵、矩阵的线性变换" class="headerlink" title="一、矩阵、矩阵的线性变换"></a>一、矩阵、矩阵的线性变换</h2><p>矩阵的本质是一个数据表。例如，下面的这个上三角矩阵（主对角线以下都是零的矩阵）就是一个3×3的数据表。 $$ \left[ \begin{matrix} 1 &amp; 2 &amp; 3 \\ 0 &amp; 5 &amp; 6 \\ 0 &amp; 0 &amp; 9\\ \end{matrix} \right] $$ 矩阵的线性变化包括初等行变换和初等列变换。初等行变换包括三种变换：（1）对换两行（例如，对换矩阵中\(i\)和\(j\)两行，记作\(r_i \leftrightarrow r_j\)）；（2）以一个非零实数乘某一行的所有元素（例如，第\(i\)行乘\(k\)，记作\(r_i\times k\)）；（3）把某一行的所有元素的\(k\)倍加到另一行上（例如第\(j\)行的\(k\)倍加到第\(i\)行，记作\(r_i+kr_j\)）。列变换也包括三种变化，将上述行变换的“行”换成“列”，就得到了初等列变换。</p>
+<h2 id="二、高斯消元法"><a href="#二、高斯消元法" class="headerlink" title="二、高斯消元法"></a>二、高斯消元法</h2><p>高斯消元法(Gaussian elimination)是求解线性方阵组的一种算法。它通过逐步消除未知数来将原始线性系统转化为另一个更简单的等价的系统。它的实质是通过初等行变化，将线性方程组的增广矩阵转化为行阶梯矩阵。 我们举一个例子： $$ \begin{align} 2x +y -z &amp; =8 \\ -3x -y +2z &amp; =-11\\ -2x +y +2z &amp; =-3 \end{align} $$ 我们构造增广矩阵，也就是上述线性方程组的系数矩阵\(A\)加上常数向量\(b\)。 $$ \left[ \begin{matrix} 2 &amp; 1 &amp; -1&amp; 8 \\ -3&amp; -1&amp; 2 &amp; -11\\ -2&amp; 1 &amp; 2 &amp; -3\\ \end{matrix} \right] $$ 经过初等变换\(r_2-(-3/2)r_1,\ r_3-(-1)r_2\)得到 $$ \left[ \begin{matrix} 2 &amp; 1 &amp; -1&amp; 8 \\ 0 &amp; 1/2&amp;1/2&amp; 1 \\ 0 &amp; 2 &amp; 1 &amp; 5 \\ \end{matrix} \right] $$ 再经初等变换\(r_3-4r_2\)得到 $$ \left[ \begin{matrix} 2 &amp; 1 &amp; -1&amp; 8 \\ 0 &amp; 1/2&amp;1/2&amp; 1 \\ 0 &amp; 0 &amp; -1&amp; 1 \\ \end{matrix} \right] $$ 于是我们得到了一个简化的三角方程组。在这个三角方程组中，首先就可以得到变量z的值，进而得到y的值，最后得到x的值。 $$ \left( \begin{align} 2x +y -z &amp; =8 \\ 1/2y +1/2z &amp; = 1\\ -z &amp; = 1 \end{align} \right) \\ \Rightarrow z=-1,\ y=3,\ x=2 $$</p>
+<h2 id="三、程序实现"><a href="#三、程序实现" class="headerlink" title="三、程序实现"></a>三、程序实现</h2><p>这里我们使用Python实现一个线性方程组的求解程序。这个程序的思想来自文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/lzyws739307453/article/details/89816311">《高斯消元法详解》</a>，并结合Python的一些特性进行了修改。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/python3</span><br><span class="line">#coding=utf-8</span><br><span class="line"></span><br><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line">## ======== 以下为高斯消元法的算法部分 ========</span><br><span class="line"># 参考代码：https://blog.csdn.net/lzyws739307453/article/details/89816311</span><br><span class="line"></span><br><span class="line"># 打印矩阵的内容</span><br><span class="line">def printM(a):</span><br><span class="line">    m = len(a)</span><br><span class="line">    n = len(a[0])</span><br><span class="line">    for i in range(0,m):</span><br><span class="line">        for j in range(0,n):</span><br><span class="line">            print(&quot;%10f,\t&quot;%a[i][j],end=&quot;&quot;)</span><br><span class="line">        print()</span><br><span class="line"></span><br><span class="line"># 选择列主元并消元</span><br><span class="line">def SelectColE(a): #a:2-dimension matrix; n:int </span><br><span class="line">    n = len(a) # 参数n应该代表的是矩阵的行数，也就是线性方程组的方程个数</span><br><span class="line">    for i in range(0,n): # 循环处理每一行的信息</span><br><span class="line">        r = i</span><br><span class="line">        for j in range(i,n):</span><br><span class="line">            if(abs(a[j][i])&gt;abs(a[r][i])): r=j</span><br><span class="line">        if(r!=i): # 当r!=i时，交换两行的内容。这里的操作基于以下逻辑：</span><br><span class="line">            # 由于单纯的高斯消元法会将矩阵化为梯形矩阵，靠下方的行中系数为0的项更多</span><br><span class="line">            # 而非0项也会有很多分母，在除法运算中会导致精度降低</span><br><span class="line">            # 因此将系数大的项尽可能的往前移动，可以提高精度</span><br><span class="line">            tmp  = a[r]</span><br><span class="line">            a[r] = a[i]</span><br><span class="line">            a[i] = tmp</span><br><span class="line">        for j in range(i+1,n): # 消元</span><br><span class="line">            temp = a[j][i]/a[i][i]</span><br><span class="line">            for k in range(i,n+1):</span><br><span class="line">                a[j][k] -= a[i][k]*temp</span><br><span class="line"></span><br><span class="line"># 高斯消元法</span><br><span class="line">def Gauss(a): </span><br><span class="line">    n = len(a) # 参数n应该代表的是矩阵的行数，也就是线性方程组的方程个数</span><br><span class="line">    SelectColE(a)</span><br><span class="line">    for i in range(n-1,-1,-1): # 回代求解</span><br><span class="line">        # i 从 n-1递减循环到0，可以取到0</span><br><span class="line">        # 从第n-1行循环到第0行。由于前面已经对矩阵进行了变换，得到了一个倒三角矩阵</span><br><span class="line">        # 所以n-1行可以直接求得第n-1个未知数的值（未知数的下标从0开始）</span><br><span class="line">        # 而前面的行则需要经过一些迭代</span><br><span class="line">        for j in range(i+1,n):  # 对行矩阵进行回代</span><br><span class="line">            # 在此行的最后一个元素处存储回代后的值</span><br><span class="line">            # a[i][n]是行矩阵的最后一个元素，是存储回代后的数值的地方</span><br><span class="line">            # a[i][i]是本行对应的未知数的系数。一共i行，那么就是i个未知数</span><br><span class="line">            # 例如一个3*4的矩阵，有3个变量分别是x0,x1,x2，那么当i=1时，</span><br><span class="line">            # 对应位置就是变量x1的系数</span><br><span class="line">            # 同样的，a[i][j]是本行第j个未知数的系数，</span><br><span class="line">            # 而第j个未知数的值刚刚我们已经求过了，是a[j][n]，</span><br><span class="line">            # 所以a[i][n]减去他俩相乘的值就行</span><br><span class="line">            a[i][n] -= a[i][j]*a[j][n]</span><br><span class="line">        # 回代结束后，对系数进行化简，使得第i个未知数的系数变为1，即可</span><br><span class="line">        # 于是第i个未知数的值就等于a[i][n]/a[i][i]。我们把它存储在a[i][n]的位置上</span><br><span class="line">        a[i][n] /= a[i][i]</span><br><span class="line"></span><br><span class="line">## ======== 以上为高斯消元法的算法部分 ========</span><br><span class="line"></span><br><span class="line"># 传入一个线性方程组的增广矩阵，这个函数将会调用高斯消元法的求解程序，并打印出求解结果。</span><br><span class="line">def run(A):</span><br><span class="line">    # 下面的内容是高斯消元法求解线性方程组的测试</span><br><span class="line">    # 最终的方程组的解为a[:,-1]</span><br><span class="line">    a = A.copy()</span><br><span class="line">    print(&#x27;a=\n&#x27;,np.array(a))</span><br><span class="line">    Gauss(a.copy())</span><br><span class="line">    print(&quot;求解结果：&quot;)</span><br><span class="line">    printM(a)</span><br><span class="line">    print(&quot;数据结构：&quot;)</span><br><span class="line">    printM(a)</span><br><span class="line">    for i in range(0,len(a)):</span><br><span class="line">        print(&quot;X%d = %9f&quot;%(i,a[i][3]))</span><br><span class="line">    print(np.array(a)[:,-1])</span><br><span class="line">    print(&#x27;\n\n&#x27;)</span><br><span class="line"></span><br><span class="line"># 主函数。此处展示了4个线性方程组的求解过程</span><br><span class="line">if(__name__==&#x27;__main__&#x27;):</span><br><span class="line">    print(&quot;Gauss_Elimination_Method.py&quot;)</span><br><span class="line">    A1 =[[ 1,-1,-1, 2 ],</span><br><span class="line">        [ 2,-1,-3, 1 ],</span><br><span class="line">        [ 3, 2,-5, 0 ]]</span><br><span class="line">    run(A1)</span><br><span class="line">    </span><br><span class="line">    A2= [[ 1, 2, 1, 8],</span><br><span class="line">         [ 4, 0, 0,16],</span><br><span class="line">         [ 0, 4, 0,12]]</span><br><span class="line">    run(A2)</span><br><span class="line"></span><br><span class="line">    A3= [[ 1, 2, 0, 8],</span><br><span class="line">         [ 4, 0, 1,16],</span><br><span class="line">         [ 0, 4, 0,12]]</span><br><span class="line">    run(A3)</span><br><span class="line"></span><br><span class="line">    A4= [[ 2, 0, 0, 8],</span><br><span class="line">         [ 0, 1, 0,16],</span><br><span class="line">         [ 4, 0, 1,12]]</span><br><span class="line">    run(A4)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/21/%E5%9C%A8%E7%BD%91%E9%A1%B5%E4%B8%AD%E5%BC%95%E5%85%A5mathjax/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Zhang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="一切会变好的吗？会！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/10/21/%E5%9C%A8%E7%BD%91%E9%A1%B5%E4%B8%AD%E5%BC%95%E5%85%A5mathjax/" class="post-title-link" itemprop="url">在网页中引入MathJax</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-10-21 14:15:03" itemprop="dateCreated datePublished" datetime="2022-10-21T14:15:03+08:00">2022-10-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-23 10:06:33" itemprop="dateModified" datetime="2023-04-23T10:06:33+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>这篇文章尝试探究如何在页面中引入MathJax以进行公式渲染。</p>
+<h2 id="一、示例"><a href="#一、示例" class="headerlink" title="一、示例"></a>一、示例</h2><p>一段示例代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">  &lt;script src=&quot;https://polyfill.io/v3/polyfill.min.js?features=es6&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script id=&quot;MathJax-script&quot; async</span><br><span class="line">          src=&quot;https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js&quot;&gt;</span><br><span class="line">  &lt;/script&gt;</span><br><span class="line">&lt;p&gt;</span><br><span class="line">对于一元二次方程\(ax^2+bx+c=0\)，在\(a\ne 0\)的情况下，其解为：</span><br><span class="line"></span><br><span class="line">$$</span><br><span class="line">x = \frac&#123;-b \pm \sqrt&#123;b^2-4ac&#125; &#125;&#123;2a&#125;</span><br><span class="line">$$</span><br><span class="line"></span><br><span class="line">  When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are</span><br><span class="line">  \[x = &#123;-b \pm \sqrt&#123;b^2-4ac&#125; \over 2a&#125;.\]</span><br><span class="line">&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码的效果如下</p>
+<hr>
+<p>对于一元二次方程\(ax^2+bx+c=0\)，在\(a\ne 0\)的情况下，其解为： $$ x = \frac{-b \pm \sqrt{b^2-4ac} }{2a} $$ When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]</p>
+<hr>
+<h2 id="二、使用方法简介"><a href="#二、使用方法简介" class="headerlink" title="二、使用方法简介"></a>二、使用方法简介</h2><p>MathJax是一个<strong>开放源代码的JavaScript显示引擎</strong>，适用于所有现代浏览器中的LaTeX、MathML和AsciMath表示法。Mathjax的官网见 <a target="_blank" rel="noopener" href="https://www.mathjax.org/">https://www.mathjax.org</a> 。</p>
+<p>要使用MathJax，首先需要引入它：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script src=&quot;https://polyfill.io/v3/polyfill.min.js?features=es6&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script id=&quot;MathJax-script&quot; async=&quot;&quot; src=&quot;https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js&quot;&gt;</span><br><span class="line">  &lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>之后，有两种方式在正文中编写公式。</p>
+<p>对于行内公式，使用<code>\(...\)</code> 作为数学公式的标记。一个公式以<code>\(</code>开始，以<code>\)</code>结束。注意这和markdown语法略有不同，markdown语法中，行内公式以$…$进行标记。这种设计的目的是防止和网页内容中的美元符号（$）混淆。</p>
+<p>对于行间公式，可以和markdown一样，以<code>$$...$$</code>进行标记，也可以使用<code>\[...\]</code>标记一个行间公式。</p>
+<p>MathJax的公式编写语法和\(L^AT_EX\)的公式语法兼容。因此，在两个<code>$$</code>之间，或者在<code>\(</code>和<code>\)</code>之间，直接按照\(L^AT_EX\)语法进行编写就可以了。</p>
+<h2 id="另："><a href="#另：" class="headerlink" title="另："></a>另：</h2><p>如果博客系统是使用hexo搭建的，并不需要这种方法编写公式。hexo自带了MathJax模块，只需要在<code>_config.yml</code>中开启相应的功能即可。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
 
 </div>
   </main>
