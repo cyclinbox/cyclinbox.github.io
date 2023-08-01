@@ -27,7 +27,7 @@
 <meta property="og:description" content="本文讲述了开启win10 sshd服务并配置内网穿透的方法。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-08-01T07:56:50.000Z">
-<meta property="article:modified_time" content="2023-08-01T13:13:25.774Z">
+<meta property="article:modified_time" content="2023-08-01T13:21:20.580Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="sshd">
@@ -227,7 +227,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2023-08-01 15:56:50 / Modified: 21:13:25" itemprop="dateCreated datePublished" datetime="2023-08-01T15:56:50+08:00">2023-08-01</time>
+      <time title="Created: 2023-08-01 15:56:50 / Modified: 21:21:20" itemprop="dateCreated datePublished" datetime="2023-08-01T15:56:50+08:00">2023-08-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -269,11 +269,12 @@
 <h2 id="二、基于nps的内网穿透"><a href="#二、基于nps的内网穿透" class="headerlink" title="二、基于nps的内网穿透"></a>二、基于nps的内网穿透</h2><blockquote>
 <p>参考：</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://ehang-io.github.io/nps/#/">nps文档</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/ehang-io/nps/">nps源代码</a></li>
+<li><a target="_blank" rel="noopener" href="https://ehang-io.github.io/nps/#/">nps使用文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ehang-io/nps/">nps程序代码</a></li>
 </ul>
 </blockquote>
 <p>基于nps的内网穿透需要一台云服务器，如果没有则可以考虑使用花生壳等即开即用平台。</p>
+<p>下面是针对已有云服务器的情况进行的说明：</p>
 <p>假设我们已经有了一台Linux系统的云服务器，并且在云安全组中开放了需要的端口（nps需要8080、8024等端口）。我们现在需要从<a target="_blank" rel="noopener" href="https://github.com/ehang-io/nps/releases">github的release界面</a>中下载nps的客户端和服务端，前者下载windows版，并在前述内网主机上运行；后者则下载Linux版，在云服务器端运行。</p>
 <p>启动nps服务端，在任意浏览器上通过8080端口访问云服务器，将会进入nps的控制面板。在这里，新建一个客户端实例，并添加tcp隧道，填写内网ip地址和端口号（sshd服务走22端口）。随后，在客户端列表中能够看到相应的客户端以及启动指令，例如<code>./npc -server=[url]:[port] -vkey=[vkey] -type=tcp</code> 这样。</p>
 <p>接下来，在内网主机中，用命令提示符程序打开nps客户端的安装目录，使用上述命令启动npc（命令中的<code>./npc</code>改为<code>.\npc.exe</code>）。当输出的INFO中提示连接成功时，既可使用云服务器访问前述内网主机了。</p>
