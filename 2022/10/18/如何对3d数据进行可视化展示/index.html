@@ -26,20 +26,20 @@
 <meta property="og:site_name" content="Warren&#39;s Blog">
 <meta property="og:description" content="很多时候，我们要对三维空间中的数据进行可视化展示和分析。然而，由于三维空间内的数据可视化涉及透视、投影等操作，其复杂性远高于平面内的数据可视化。因此我花了一下午的时间，调研了一下相关工具，汇总成本文。文中一些疏漏之处，还请多多指教。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_1.png">
-<meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_11.png">
-<meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_1-error-fig-of-matplot3d.png">
-<meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_2-fig-in-mayavi.png">
-<meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_2-fig-of-2-mesh-in-mayavi.png">
-<meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_3-pyvista.png">
-<meta property="og:image" content="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_4-matlab.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/65411f13c458853aefd4509f.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/65411f3ec458853aefd58842.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/65411f65c458853aefd67eec.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/65411fb7c458853aefd88e56.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/65411fe5c458853aefd9baad.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/65412029c458853aefdb6df5.jpg">
+<meta property="og:image" content="https://pic.imgdb.cn/item/654120a9c458853aefdebe21.png">
 <meta property="article:published_time" content="2022-10-18T09:46:48.000Z">
-<meta property="article:modified_time" content="2023-04-23T03:04:06.160Z">
+<meta property="article:modified_time" content="2023-10-31T15:48:06.617Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="三维数据可视化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_1.png">
+<meta name="twitter:image" content="https://pic.imgdb.cn/item/65411f13c458853aefd4509f.png">
 
 
 <link rel="canonical" href="https://wz.anoms.top/2022/10/18/%E5%A6%82%E4%BD%95%E5%AF%B93d%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B1%95%E7%A4%BA/">
@@ -94,7 +94,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-friends"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa-solid fa-user-group fa-fw"></i>friends</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa-solid fa-circle-info fa-fw"></i>About</a></li>
   </ul>
 </nav>
 
@@ -140,18 +140,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-count">59</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-count">66</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -240,7 +240,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-23 11:04:06" itemprop="dateModified" datetime="2023-04-23T11:04:06+08:00">2023-04-23</time>
+      <time title="Modified: 2023-10-31 23:48:06" itemprop="dateModified" datetime="2023-10-31T23:48:06+08:00">2023-10-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -269,16 +269,16 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导入三维工具包mplot3dfrom mpl_toolkits import mplot3d</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment">#从三个维度构建</span></span><br><span class="line">z = np.linspace(<span class="number">0</span>, <span class="number">1</span>, <span class="number">100</span>)</span><br><span class="line">x = z * np.sin(<span class="number">20</span> * z)</span><br><span class="line">y = z * np.cos(<span class="number">20</span> * z)</span><br><span class="line"><span class="comment">#创建3d绘图区域</span></span><br><span class="line">ax = plt.axes(projection=<span class="string">&#x27;3d&#x27;</span>)</span><br><span class="line">ax.plot3D(x, y, z, <span class="string">&#x27;gray&#x27;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 <p>结果如下图所示：</p>
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_1.png"></p>
+<p><img src="https://pic.imgdb.cn/item/65411f13c458853aefd4509f.png" alt="figure1"></p>
 <p>当然，也可也创建三维曲面：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#求向量积(outer()方法又称外积)</span></span><br><span class="line">x = np.outer(np.linspace(-<span class="number">2</span>, <span class="number">2</span>, <span class="number">30</span>), np.ones(<span class="number">30</span>))</span><br><span class="line"><span class="comment">#矩阵转置</span></span><br><span class="line">y = x.copy().T </span><br><span class="line"><span class="comment">#数据z</span></span><br><span class="line">z = np.cos(x ** <span class="number">2</span> + y ** <span class="number">2</span>)</span><br><span class="line"><span class="comment">#绘制曲面图</span></span><br><span class="line">ax = plt.axes(projection=<span class="string">&#x27;3d&#x27;</span>)</span><br><span class="line">ax.plot_surface(x, y, z,cmap=<span class="string">&#x27;viridis&#x27;</span>, edgecolor=<span class="string">&#x27;none&#x27;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_11.png"></p>
+<p><img src="https://pic.imgdb.cn/item/65411f3ec458853aefd58842.png" alt="figure2"></p>
 <p>然而，上述方法也有缺点。<strong>maplotlib的三维绘图工具本质上只是将三维结构中的点 “拍扁”</strong> <strong>到二维空间中，因此如果两个三维结构有相交，这种绘图方法会导致两个图形的空间位置错乱</strong>，而且根本看不出相交线。</p>
 <p>一个例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#求向量积(outer()方法又称外积)</span></span><br><span class="line">x = np.outer(np.linspace(-<span class="number">2</span>, <span class="number">2</span>, <span class="number">30</span>), np.ones(<span class="number">30</span>))</span><br><span class="line"><span class="comment">#矩阵转置</span></span><br><span class="line">y = x.copy().T </span><br><span class="line"><span class="comment">#数据z</span></span><br><span class="line">z1 = x**<span class="number">2</span>+y</span><br><span class="line">z2 = x**<span class="number">2</span>-y</span><br><span class="line"><span class="comment">#绘制曲面图</span></span><br><span class="line">ax = plt.axes(projection=<span class="string">&#x27;3d&#x27;</span>)</span><br><span class="line">ax.plot_surface(x, y, z1,cmap=<span class="string">&#x27;viridis&#x27;</span>, edgecolor=<span class="string">&#x27;none&#x27;</span>)</span><br><span class="line">ax.plot_surface(x, y, z2,cmap=<span class="string">&#x27;plasma&#x27;</span>,  edgecolor=<span class="string">&#x27;none&#x27;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_1-error-fig-of-matplot3d.png"></p>
+<p><img src="https://pic.imgdb.cn/item/65411f65c458853aefd67eec.png" alt="figure3"></p>
 <p>可以从上图中看到，函数z2的图像全部遮盖住了z1的图像。然而从函数表达式中我们可以得知，z1与z2有一个相交的曲线（<code>y=0, z=x^2</code>），这并不能从图中体现出来。通过这个例子我们可以知道，使用matplotlib绘制三维函数图像，虽然可行（_真的吗？_），但是总归不严谨。</p>
 <h3 id="（二）Mayavi"><a href="#（二）Mayavi" class="headerlink" title="（二）Mayavi"></a>（二）Mayavi</h3><p>Mayavi是一个3-D科学数据可视化工具，其官网为<a target="_blank" rel="noopener" href="https://mayavi.readthedocs.io/">https://mayavi.readthedocs.io/</a>。可以通过下列的conda指令进行安装：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">conda install -c conda-forge pyqt <span class="comment"># PyQt5为Mayavi所依赖，因此需要预先安装</span></span><br><span class="line">conda install -c conda-forge mayavi</span><br></pre></td></tr></table></figure>
@@ -288,11 +288,11 @@
 <p>使用mayavi进行数据可视化展示的一个示例：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> mayavi <span class="keyword">import</span> mlab</span><br><span class="line">x, y = np.ogrid[-<span class="number">2</span>:<span class="number">2</span>:<span class="number">20j</span>, -<span class="number">2</span>:<span class="number">2</span>:<span class="number">20j</span>]</span><br><span class="line">z = x * np.exp( - x**<span class="number">2</span> - y**<span class="number">2</span>)</span><br><span class="line">pl = mlab.surf(x, y, z, warp_scale=<span class="string">&quot;auto&quot;</span>)</span><br><span class="line">mlab.axes(xlabel=<span class="string">&#x27;x&#x27;</span>, ylabel=<span class="string">&#x27;y&#x27;</span>, zlabel=<span class="string">&#x27;z&#x27;</span>)</span><br><span class="line">mlab.outline(pl)</span><br><span class="line">mlab.show()</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_2-fig-in-mayavi.png"></p>
+<p><img src="https://pic.imgdb.cn/item/65411fb7c458853aefd88e56.png" alt="figure4"></p>
 <p>对于多个相交的曲面，Mayavi的展示效果要强于matplotlib，其可以很好的反映两个曲面的相交情况。下图展示一个例子（仍然以上一小节中的函数z1和z2为例）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> mayavi <span class="keyword">import</span> mlab</span><br><span class="line">x, y = np.ogrid[-<span class="number">2</span>:<span class="number">2</span>:<span class="number">20j</span>, -<span class="number">2</span>:<span class="number">2</span>:<span class="number">20j</span>]</span><br><span class="line">z1 = x**<span class="number">2</span> + y</span><br><span class="line">z2 = x**<span class="number">2</span> - y</span><br><span class="line">pl1 = mlab.surf(x, y, z1, warp_scale=<span class="string">&quot;auto&quot;</span>, colormap=<span class="string">&#x27;autumn&#x27;</span>)</span><br><span class="line">pl2 = mlab.surf(x, y, z2, warp_scale=<span class="string">&quot;auto&quot;</span>, colormap=<span class="string">&#x27;winter&#x27;</span>)</span><br><span class="line">mlab.axes(xlabel=<span class="string">&#x27;x&#x27;</span>, ylabel=<span class="string">&#x27;y&#x27;</span>, zlabel=<span class="string">&#x27;z&#x27;</span>)</span><br><span class="line">mlab.outline(pl1)</span><br><span class="line">mlab.outline(pl2)</span><br><span class="line">mlab.show()</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_2-fig-of-2-mesh-in-mayavi.png"></p>
+<p><img src="https://pic.imgdb.cn/item/65411fe5c458853aefd9baad.png" alt="figure5"></p>
 <h3 id="（三）PyVista"><a href="#（三）PyVista" class="headerlink" title="（三）PyVista"></a>（三）PyVista</h3><p>PyVista是另一个基于Python的三维数据可视化软件。其官网为<a target="_blank" rel="noopener" href="https://docs.pyvista.org/index.html">https://docs.pyvista.org/index.html</a>。安装方法也很简单，直接执行指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install -c conda-forge pyvista</span><br></pre></td></tr></table></figure>
 
@@ -300,12 +300,20 @@
 <p>使用PyVista绘图的一个示例如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pyvista <span class="keyword">as</span> pv</span><br><span class="line"><span class="keyword">from</span> pyvista <span class="keyword">import</span> examples</span><br><span class="line"><span class="comment"># Make data</span></span><br><span class="line">x = np.arange(-<span class="number">2</span>, <span class="number">2</span>, <span class="number">0.05</span>)</span><br><span class="line">y = np.arange(-<span class="number">2</span>, <span class="number">2</span>, <span class="number">0.05</span>)</span><br><span class="line">x, y = np.meshgrid(x, y)</span><br><span class="line">z1 = x**<span class="number">2</span> + y </span><br><span class="line">z2 = x**<span class="number">2</span> - y</span><br><span class="line">grid1 = pv.StructuredGrid(x, y, z1) <span class="comment"># 绘制函数z1的多边形模型</span></span><br><span class="line">grid2 = pv.StructuredGrid(x, y, z2) <span class="comment"># 绘制函数z2的多边形模型</span></span><br><span class="line">pl = pv.Plotter() <span class="comment"># 创建绘图对象</span></span><br><span class="line">pl.add_mesh(grid1, color=<span class="string">&quot;#5599aa&quot;</span>) <span class="comment"># 将函数z1的多边形模型加入绘图对象中，并设置颜色</span></span><br><span class="line">pl.add_mesh(grid2, color=<span class="string">&quot;#aa9965&quot;</span>) <span class="comment"># 将函数z2的多边形模型加入绘图对象中，并设置颜色</span></span><br><span class="line">pl.add_axes(line_width=<span class="number">5</span>, labels_off=<span class="literal">False</span>) <span class="comment"># 左下角展示坐标轴</span></span><br><span class="line">pl.show() <span class="comment"># 图像展示</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_3-pyvista.png"></p>
+<p><img src="https://pic.imgdb.cn/item/65412029c458853aefdb6df5.jpg" alt="figure6"></p>
 <h2 id="二、基于matlab的方法"><a href="#二、基于matlab的方法" class="headerlink" title="二、基于matlab的方法"></a>二、基于matlab的方法</h2><p>前面我们讲了三种基于python的三维结构展示方法，但是其实很多科学计算软件内置了三维数据可视化方法，例如matlab。下面举一个例子</p>
 <figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">clear;<span class="comment">%清除之前所有已有的变量</span></span><br><span class="line">X=[<span class="number">-2</span>:<span class="number">0.05</span>:<span class="number">2</span>];</span><br><span class="line">Y=[<span class="number">-2</span>:<span class="number">0.05</span>:<span class="number">2</span>];</span><br><span class="line">[x,y] = <span class="built_in">meshgrid</span>(X,Y);</span><br><span class="line">z1 = x.^<span class="number">2</span> + y; <span class="comment">% 函数z1</span></span><br><span class="line">z2 = x.^<span class="number">2</span> - y; <span class="comment">% 函数z2</span></span><br><span class="line"></span><br><span class="line">mesh(x,y,z1);</span><br><span class="line"><span class="built_in">hold</span> on; <span class="comment">% 保持上一个图形不消失，继续绘制</span></span><br><span class="line">mesh(x,y,z2);</span><br><span class="line">xlabel(<span class="string">&#x27;x&#x27;</span>), ylable(<span class="string">&#x27;y&#x27;</span>), zlabel(<span class="string">&#x27;z&#x27;</span>)</span><br><span class="line">show()</span><br></pre></td></tr></table></figure>
 
 <p>结果如下图所示：</p>
-<p><img src="http://www.anoms.top:84/wp-content/uploads/2022/10/Figure_4-matlab.png"></p>
+<p><img src="https://pic.imgdb.cn/item/654120a9c458853aefdebe21.png" alt="figure7"></p>
+<hr>
+<hr>
+<blockquote>
+<p>旧评论系统备份：</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Hazel(2022-10-19 14:53:41):</span><br><span class="line">	咱就说，可以每周讲一个用法吗？可以别人定那种？</span><br><span class="line">	我还挺好奇内积的，以及希望矩阵的一点点用法多搞一下</span><br><span class="line">	或者是偏数学的东西，比如多元线性回归、最大似然估计啦之类的？</span><br><span class="line"></span><br><span class="line">Hazel(2022-10-19 14:56:40):</span><br><span class="line">	还有就是，可以直接pip install 去安装吗？为什么要conda install 呀</span><br><span class="line"></span><br><span class="line">&gt; WarrenZhang(2022-10-19 15:09:40):</span><br><span class="line">&gt;	可以的哈哈哈，那我试一下，下周写一点数学方面的文章（不过以前没写过这种类型的文章，不保证质量😂）</span><br><span class="line">&gt;</span><br><span class="line">&gt; WarrenZhang(2022-10-19 15:14:32):</span><br><span class="line">&gt;	也可以的，不过我用conda装习惯了，这次也就用了conda，没有踩pip install的坑。</span><br><span class="line">&gt;	或许你可以试试用pip install？这几个工具的文档都很全，里面列了pip的安装方法，例如mayavi就可以用</span><br><span class="line">&gt;		pip install mayavi</span><br><span class="line">&gt;		pip install PyQt5</span><br><span class="line">&gt;	来安装（但是貌似这种安装方法需要手动安装vtk，然而vtk好像要用conda安装）</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
+
 
     </div>
 
