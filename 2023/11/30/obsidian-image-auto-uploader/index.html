@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文介绍了obsidian图片自动上传插件Image auto upload plugin的配置与使用方法，并配置了腾讯云对象存储服务器作为上传图床。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="配置obsidian的自动上传图床">
+<meta property="og:url" content="https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="本文介绍了obsidian图片自动上传插件Image auto upload plugin的配置与使用方法，并配置了腾讯云对象存储服务器作为上传图床。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imgdb.cn/item/656c7bf6c458853aef7f6f76.jpg">
+<meta property="og:image" content="https://pic.imgdb.cn/item/656c7c36c458853aef80ac0d.jpg">
+<meta property="article:published_time" content="2023-11-30T12:33:43.000Z">
+<meta property="article:modified_time" content="2023-12-03T14:04:45.592Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="obsidian">
+<meta property="article:tag" content="图片自动上传">
+<meta property="article:tag" content="nodejs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imgdb.cn/item/656c7bf6c458853aef7f6f76.jpg">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/","path":"2023/11/30/obsidian-image-auto-uploader/","title":"配置obsidian的自动上传图床"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>配置obsidian的自动上传图床 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">一、安装插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%BC%80%E9%80%9A%E8%85%BE%E8%AE%AF%E4%BA%91%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.</span> <span class="nav-text">二、开通腾讯云对象存储服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%AE%89%E8%A3%85PicGO-core%E4%B8%8A%E4%BC%A0%E5%99%A8%EF%BC%8C%E5%B9%B6%E9%85%8D%E7%BD%AE%E8%B4%A6%E5%8F%B7"><span class="nav-number">3.</span> <span class="nav-text">三、安装PicGO-core上传器，并配置账号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E5%AE%89%E8%A3%85node-js"><span class="nav-number">3.1.</span> <span class="nav-text">（一）安装node.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%AE%89%E8%A3%85PicGo-core"><span class="nav-number">3.2.</span> <span class="nav-text">（二）安装PicGo-core</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Image-auto-upload-plugin%E6%8F%92%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">四、Image auto upload plugin插件配置</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">95</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="配置obsidian的自动上传图床 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          配置obsidian的自动上传图床
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-11-30 20:33:43" itemprop="dateCreated datePublished" datetime="2023-11-30T20:33:43+08:00">2023-11-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-12-03 22:04:45" itemprop="dateModified" datetime="2023-12-03T22:04:45+08:00">2023-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文介绍了obsidian图片自动上传插件Image auto upload plugin的配置与使用方法，并配置了腾讯云对象存储服务器作为上传图床。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>参考： <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/565218725">https://zhuanlan.zhihu.com/p/565218725</a></p>
+</blockquote>
+<p>obsidian是一个界面很好看的markdown笔记软件。</p>
+<p>markdown文档，其本质上是一个文本文件，虽然其中可以插入图片、链接等外部资源，但是这些资源本质上是通过链接到其他资源实现的。对于obsidian来说，插入文档中的图片会在本地存储，并在markdown文档中新增一条指向这张图片文件的链接。</p>
+<p>然而有时候，我们会有分享markdown源代码，或者对markdown文档进行迁移的需求。如果分享文档或迁移文档时时还需要连同图片文件一起移动，则会非常麻烦。幸运的是，有一种方法可以免去这一烦恼，这就是使用互联网图床。</p>
+<ul>
+<li>图床：互联网中存储图片的空间。举个例子说明：假设你在微博分享一张图片，你的粉丝可以通过互联网看到你分享的图片，那么他是去访问你的手机的相册吗？其实不是的，你分享图片，也就是把图片上传到微博的服务器，微博将为你生成一个独一无二的访问链接，这个链接指向的空间其实就是图床。</li>
+</ul>
+<p>obsidian提供了一款名为Image auto upload plugin的插件，可以实现自动将图片上传到图床的功能。下面是一些探索。</p>
+<h2 id="一、安装插件"><a href="#一、安装插件" class="headerlink" title="一、安装插件"></a>一、安装插件</h2><p>在插件商城中搜索这一插件然后点击安装即可。</p>
+<p>插件设置界面如下：</p>
+<p><img src="https://pic.imgdb.cn/item/656c7bf6c458853aef7f6f76.jpg" alt="config panel"></p>
+<h2 id="二、开通腾讯云对象存储服务"><a href="#二、开通腾讯云对象存储服务" class="headerlink" title="二、开通腾讯云对象存储服务"></a>二、开通腾讯云对象存储服务</h2><p>这款插件支持PicGo和PicGo-core两款图片上传器。先不着急安装图片上传器，我们看看PicGo的文档，确定可以使用的图床范围。</p>
+<ul>
+<li>PicGo: <a target="_blank" rel="noopener" href="https://picgo.github.io/PicGo-Doc/zh/guide/#picgo-is-here">https://picgo.github.io/PicGo-Doc/zh/guide/#picgo-is-here</a><ul>
+<li>一个用于快速上传图片并获取图片 URL 链接的工具，基于electron架构开发。</li>
+</ul>
+</li>
+<li>PicGO-core： <a target="_blank" rel="noopener" href="https://picgo.github.io/PicGo-Core-Doc/zh/guide/">https://picgo.github.io/PicGo-Core-Doc/zh/guide/</a><ul>
+<li>PicGO的内核程序，通过命令行调用，基于nodejs开发</li>
+</ul>
+</li>
+</ul>
+<p>PicGo 本体支持如下图床：</p>
+<ul>
+<li>七牛图床 v1.0</li>
+<li>腾讯云 COS v4\v5 版本 v1.1 &amp; v1.5.0</li>
+<li>又拍云 v1.2.0</li>
+<li>GitHub v1.5.0</li>
+<li>SM.MS V2 v2.3.0-beta.0</li>
+<li>阿里云 OSS v1.6.0</li>
+<li>Imgur v1.6.0</li>
+</ul>
+<p>PicGo本体不再增加默认的图床支持。可以自行开发第三方图床插件（但为了方便，本文没有对此进行探索）。</p>
+<p>第三方图床服务存在跑路风险，为了数据安全性我们尽量选择腾讯云或阿里云的对象存储服务，大企业更放心一点。</p>
+<p>由于阿里云的服务比腾讯云略贵，这里我们选择腾讯云在线存储服务。访问腾讯云COS服务购买页面（网址 <a target="_blank" rel="noopener" href="https://cloud.tencent.com/product/cos%EF%BC%89%EF%BC%8C%E7%84%B6%E5%90%8E%E9%80%89%E6%8B%A9%E5%9F%BA%E7%A1%80%E7%89%88%E6%9C%8D%E5%8A%A1%EF%BC%8C%E4%BB%98%E8%B4%B9%E5%BC%80%E9%80%9A%E5%8D%B3%E5%8F%AF%E3%80%82%E4%B8%80%E5%B9%B4%E7%9A%84%E8%B4%B9%E7%94%A8%E5%A4%A7%E7%BA%A6%E4%B8%8D%E5%88%B010%E5%85%83%EF%BC%8C%E5%9B%9B%E8%88%8D%E4%BA%94%E5%85%A5%E5%8F%AA%E6%9C%89%E4%B8%80%E9%A1%BF%E6%97%A9%E9%A5%AD%E9%92%B1%EF%BC%8C%E5%9B%A0%E6%AD%A4%E5%BB%BA%E8%AE%AE%E5%BC%80%E9%80%9A%E4%BD%BF%E7%94%A8%EF%BC%88%E5%A6%82%E6%9E%9C%E8%A7%89%E5%BE%97%E5%8F%AA%E7%94%A8%E6%9D%A5%E5%81%9A%E5%9B%BE%E5%BA%8A%E6%9C%89%E7%82%B9%E7%A9%BA%E9%97%B4%E6%B5%AA%E8%B4%B9%EF%BC%8C%E8%BF%98%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8%E8%BF%99%E4%B8%AA%E5%AD%98%E5%82%A8%E6%9C%8D%E5%8A%A1%E5%AD%98%E4%B8%80%E4%BA%9B%E5%88%AB%E7%9A%84%E4%B8%9C%E8%A5%BF%EF%BC%89%E3%80%82">https://cloud.tencent.com/product/cos），然后选择基础版服务，付费开通即可。一年的费用大约不到10元，四舍五入只有一顿早饭钱，因此建议开通使用（如果觉得只用来做图床有点空间浪费，还可以使用这个存储服务存一些别的东西）。</a></p>
+<h2 id="三、安装PicGO-core上传器，并配置账号"><a href="#三、安装PicGO-core上传器，并配置账号" class="headerlink" title="三、安装PicGO-core上传器，并配置账号"></a>三、安装PicGO-core上传器，并配置账号</h2><p>接下来，我们安装上传器。根据官网介绍，如果使用PicGO作为上传器，则在使用obsidian编写文档时需要在后台开启PicGO的服务，并会占用一些系统资源，非常不方便。因此，这里我选择PicGO-core作为上传程序。PicGO-core是一个命令行程序，配置好安装路径后就可以不管它了。</p>
+<h3 id="（一）安装node-js"><a href="#（一）安装node-js" class="headerlink" title="（一）安装node.js"></a>（一）安装node.js</h3><p>PicGo-core基于JavaScript语言开发，需要使用node.js这一代码解释器运行。（“node.js之于JavaScript，就如python.exe之于python程序”）</p>
+<p>因此，要安装PicGO-core，首先需要安装node.js，并将node.js的可执行文件路径加入系统环境变量。</p>
+<p>node.js官方网站： <a target="_blank" rel="noopener" href="https://nodejs.org/en/download/">https://nodejs.org/en/download/</a></p>
+<ul>
+<li>对于Windows用户，从上述链接中下载exe格式的安装包，并按照提示完成安装即可。</li>
+<li>对于macOS用户，除了使用上述链接中提供的pkg格式的安装包外，还可以使用homebrew包管理器进行安装： <code>brew install node</code> 。</li>
+<li>对于Linux用户，可以在 <a target="_blank" rel="noopener" href="https://nodejs.org/en/download/package-manager">“Installing Node.js via package manager”</a> 文档中寻找特定发行版对应的安装指令，也可以从上述链接中下载tar.gz格式的源代码包从头编译（但不建议这么做）。</li>
+</ul>
+<p>使用指令<code>node -v</code>和<code>npm -v</code>测试node.js安装结果，如果顺利输出版本号（例如下面这样），则表明安装成功。 （“npm之于JavaScript，就如pip和conda之于python程序”）</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cyclin@desktop:~$ node -v</span><br><span class="line">v18.9.0</span><br><span class="line">cyclin@desktop:~$ npm -v</span><br><span class="line">8.19.1</span><br></pre></td></tr></table></figure>
+
+<h3 id="（二）安装PicGo-core"><a href="#（二）安装PicGo-core" class="headerlink" title="（二）安装PicGo-core"></a>（二）安装PicGo-core</h3><p>下一步，使用指令安装PicoGo-core：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install picgo -g</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>picgo --version</code>检查安装结果。如果输出了对应的版本号（例如1.5.6），则表明安装成功。</p>
+<p>PicGO-core支持的图床有很多，但是需要配置账号。这里参考官方文档的说明（网址： <a target="_blank" rel="noopener" href="https://picgo.github.io/PicGo-Core-Doc/zh/guide/config.html">https://picgo.github.io/PicGo-Core-Doc/zh/guide/config.html</a> ）</p>
+<p>使用<code>picgo set uploader</code>指令可以进入一个交互式的设置界面，按照提示一步一步填写腾讯云存储服务的APPID、secretID等信息，即可完成配置。腾讯云存储服务的这些ID可以在账户设置的API密钥管理页面中新建（ <a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cam/capi">https://console.cloud.tencent.com/cam/capi</a> ），记得新建密钥后记录一下APPID、SecretId和SecretKey三个信息。存储桶信息（bucket）可以在存储桶列表（ <a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cos/bucket">https://console.cloud.tencent.com/cos/bucket</a> ）中查询，如果这里没有存储桶的话可以新建一个。其他信息可以参考 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/565218725">https://zhuanlan.zhihu.com/p/565218725</a> 这篇文章的设置。</p>
+<p>picGO-core的默认配置文件存储路径如下</p>
+<ul>
+<li>picgo 的默认配置文件为 <code>~/.picgo/config.json</code> 。其中 <code>~</code> 为用户目录。不同系统的用户目录不太一样。</li>
+<li>linux 和 macOS 均为 <code>~/.picgo/config.json</code> 。</li>
+<li>windows 则为 <code>C:\Users\你的用户名\.picgo\config.json</code> 。</li>
+</ul>
+<p>如果在完成上述设置以后，对配置文件还需要修改，可以访问上述路径下的<code>config.json</code>文件进行手动修改。</p>
+<p>接下来，我们可以在terminal中上传一张图片测试一下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">picgo upload test.png <span class="comment"># test.png换成任何一张测试图片的名称都行，但必须在当前目录中真实存在</span></span><br></pre></td></tr></table></figure>
+
+<p>如果收到<code>[PicGo SUCCESS]</code>的标签，则表明上传成功。此外，还可以检查腾讯云下面的存储桶文件列表，看一看这张图片是否正确上传。</p>
+<h2 id="四、Image-auto-upload-plugin插件配置"><a href="#四、Image-auto-upload-plugin插件配置" class="headerlink" title="四、Image auto upload plugin插件配置"></a>四、Image auto upload plugin插件配置</h2><p>如下图。将默认上传器设置为picGO-core，然后填写picGO-core path即可（可以在terminal中用<code>which picgo</code>指令获得picGO-core的path）<br>其他项目使用默认设置即可。</p>
+<p><img src="https://pic.imgdb.cn/item/656c7c36c458853aef80ac0d.jpg" alt="config panel 2"></p>
+<p>如果插件无法上传图片，尝试关闭obsidian主程序并重启。一般来说重启后上传功能就能正常。<br>如果依然有问题，可以尝试打开obsidian软件的开发工具（dev Tools），并查询console输出以定位问题。</p>
+<ul>
+<li>devtools打开方式：<ul>
+<li>Linux and Windows: <code>Ctrl + Shift + I</code></li>
+<li>macOS: <code>cmd+ option + i</code></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/" title="配置obsidian的自动上传图床">https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/obsidian/" rel="tag"><i class="fa fa-tag"></i> obsidian</a>
+              <a href="/tags/%E5%9B%BE%E7%89%87%E8%87%AA%E5%8A%A8%E4%B8%8A%E4%BC%A0/" rel="tag"><i class="fa fa-tag"></i> 图片自动上传</a>
+              <a href="/tags/nodejs/" rel="tag"><i class="fa fa-tag"></i> nodejs</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/11/24/zotero-obsidian-interaction/" rel="prev" title="zotero和obsidian联动的一些探索（一）">
+                  <i class="fa fa-chevron-left"></i> zotero和obsidian联动的一些探索（一）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/12/01/python%E8%A7%A3%E5%86%B3%E5%BC%80%E7%9B%B2%E7%9B%92%E9%97%AE%E9%A2%98/" rel="next" title="python解决开盲盒问题">
+                  python解决开盲盒问题 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
