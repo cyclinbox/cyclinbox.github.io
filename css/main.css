@@ -2890,3 +2890,27 @@ body {
 .footer a {
   color: #fff !important;
 }
+.back-to-top {
+  padding: 24px !important;
+}
+.post-body a {
+  text-decoration: none;
+  font-weight: bold;
+}
+/* 文字链接取消下划线 */
+.post-body a:link {
+  color: #297eff;
+}
+/* 未访问的链接 */
+.post-body a:visited {
+  color: #297eff;
+}
+/* 已访问的链接 */
+.post-body a:hover {
+  color: #1e58be;
+}
+/* 鼠标移动到链接上 */
+.post-body a:active {
+  color: #1e58be;
+}
+/* 选定的链接 */
