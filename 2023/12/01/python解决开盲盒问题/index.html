@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="这个问题是某天我们年级的一位同学提出的，感觉很有意思，就在这里记录一下。 本题算是数学方法应用在生活中的一个小例子了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python解决开盲盒问题">
+<meta property="og:url" content="https://wz.anoms.top/2023/12/01/python%E8%A7%A3%E5%86%B3%E5%BC%80%E7%9B%B2%E7%9B%92%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="这个问题是某天我们年级的一位同学提出的，感觉很有意思，就在这里记录一下。 本题算是数学方法应用在生活中的一个小例子了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-01T07:10:12.000Z">
+<meta property="article:modified_time" content="2023-12-03T13:56:51.606Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="线性规划">
+<meta property="article:tag" content="生活小妙招">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2023/12/01/python%E8%A7%A3%E5%86%B3%E5%BC%80%E7%9B%B2%E7%9B%92%E9%97%AE%E9%A2%98/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2023/12/01/python%E8%A7%A3%E5%86%B3%E5%BC%80%E7%9B%B2%E7%9B%92%E9%97%AE%E9%A2%98/","path":"2023/12/01/python解决开盲盒问题/","title":"python解决开盲盒问题"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>python解决开盲盒问题 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">一、问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%80%9D%E8%B7%AF%E4%B8%8E%E4%BB%A3%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">二、思路与代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E7%89%A9%E5%93%81%E4%BD%8D%E7%BD%AE%E7%8A%B6%E6%80%81%E8%A1%A8%E7%9A%84%E8%8E%B7%E5%8F%96"><span class="nav-number">2.1.</span> <span class="nav-text">（一）物品位置状态表的获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E6%A6%82%E7%8E%87%E5%80%BC%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-number">2.2.</span> <span class="nav-text">（二）概率值的计算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%A3%E7%A0%81%E8%BE%93%E5%87%BA%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">三、代码输出：</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">104</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2023/12/01/python%E8%A7%A3%E5%86%B3%E5%BC%80%E7%9B%B2%E7%9B%92%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="python解决开盲盒问题 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python解决开盲盒问题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-12-01 15:10:12" itemprop="dateCreated datePublished" datetime="2023-12-01T15:10:12+08:00">2023-12-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-12-03 21:56:51" itemprop="dateModified" datetime="2023-12-03T21:56:51+08:00">2023-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>这个问题是某天我们年级的一位同学提出的，感觉很有意思，就在这里记录一下。</p>
+<p>本题算是数学方法应用在生活中的一个小例子了。</p>
+<span id="more"></span>
+
+<h2 id="一、问题描述"><a href="#一、问题描述" class="headerlink" title="一、问题描述"></a>一、问题描述</h2><p>开盲盒问题：现在有 12 个盒子，里面分别装了物品A-L。每个盒子都装有一个物品；每个物品都装在一个盒子中。</p>
+<p>在开盲盒之前，有一次透视机会，可以知道其中任意一个盒子里是什么（例如开了 3 号盒子可以得知里面是物品 C）。</p>
+<p>现在每个盒子有3次提示的机会，提示内容分别是“该盒子中不是 X”（X是物品编号），同一个盒子中的3次提示内容不会重复，但盒子之间的提示是会重复的。此外，还有额外的6次机会，可以随机选 6个盒子，得到第四条提示。</p>
+<p>例如：目前开了1个盒子，并对另外两个盒子的物品进行了提示，情况如下：</p>
+<table>
+<thead>
+<tr>
+<th>盒子编号</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>第一次提示</td>
+<td>非 A</td>
+<td>非 A</td>
+<td>是 C</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>第二次提示</td>
+<td>非 B</td>
+<td>非 D</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>第三次提示</td>
+<td>非 C</td>
+<td>非 E</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>额外的提示</td>
+<td>非 K</td>
+<td>非 L</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>编写程序，当输入所有已知条件时，输出物品A-L在每个盒子里的概率。</p>
+<h2 id="二、思路与代码"><a href="#二、思路与代码" class="headerlink" title="二、思路与代码"></a>二、思路与代码</h2><h3 id="（一）物品位置状态表的获取"><a href="#（一）物品位置状态表的获取" class="headerlink" title="（一）物品位置状态表的获取"></a>（一）物品位置状态表的获取</h3><p>题干中的表格给了我们很大的提示，我们也可以建立一张表来展示各个物品在不同盒子中的概率。如下表所示，我们建立了一个12x12的状态表，其中每一行代表一个物品（A-L对应第0-11行），每一列代表一个盒子（1-12号盒子对应第0-11列）。</p>
+<p>我们定义数字 1代表物品可能在盒子中，0代表物品不可能在盒子中。因此根据题目已知条件，这样的表格如下：</p>
+<table>
+<thead>
+<tr>
+<th>盒子编号</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>B</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>C</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>D</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>E</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>F</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>G</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>H</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>I</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>J</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>K</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>L</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>通过代码得到上面的表格并不难，即使输入条件有变化，我们也可以根据输入条件的不同进行改变。</p>
+<p>下面是我们的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立一个12x12的状态表</span></span><br><span class="line"><span class="comment"># 每一行代表一个物品（A-L对应第0-11行）</span></span><br><span class="line"><span class="comment"># 每一列代表一个盒子（1-12号盒子对应第0-11列）</span></span><br><span class="line"><span class="comment"># 1代表物品可能在盒子中，0代表物品不可能在盒子中</span></span><br><span class="line">status_table = np.ones([<span class="number">12</span>,<span class="number">12</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment">#print(status_table)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 在一次透视机会中看到的盒子与内容</span></span><br><span class="line"><span class="comment">#----------------------------------#</span></span><br><span class="line"><span class="comment"># 此处根据看到的具体情况进行赋值   #</span></span><br><span class="line"><span class="comment">#----------------------------------#</span></span><br><span class="line">inspect_box  = <span class="number">2</span> <span class="comment"># 3号盒子对应的列下标</span></span><br><span class="line">inspect_item = <span class="number">2</span> <span class="comment"># 物品C对应的行下标</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新状态表</span></span><br><span class="line">status_table[inspect_item,:] = <span class="number">0</span> <span class="comment"># 这个物品在其他盒子中不可能出现，因此状态赋值为0</span></span><br><span class="line">status_table[:,inspect_box]  = <span class="number">0</span> <span class="comment"># 这个盒子中也不会有其他物品，因此状态赋值为0</span></span><br><span class="line">status_table[inspect_item,inspect_box] = <span class="number">1</span> <span class="comment"># 只有这个物品一定存在，因此赋值为1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过对其他盒子的提示（包括6次额外机会），得到的提示内容</span></span><br><span class="line"><span class="comment">#----------------------------------#</span></span><br><span class="line"><span class="comment"># 此处根据看到的具体情况进行赋值   #</span></span><br><span class="line"><span class="comment">#----------------------------------#</span></span><br><span class="line">tips_table=[</span><br><span class="line">        [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">10</span>], <span class="comment"># 1号盒子中不可能出现的物品下标</span></span><br><span class="line">        [<span class="number">0</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">11</span>], <span class="comment"># 2号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 3号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 4号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 5号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 6号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 7号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 8号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 9号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 10号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 11号盒子中不可能出现的物品下标</span></span><br><span class="line">        [], <span class="comment"># 12号盒子中不可能出现的物品下标</span></span><br><span class="line">        ]</span><br><span class="line"><span class="comment"># 更新状态表</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">    <span class="comment"># i 是盒子的下标。</span></span><br><span class="line">    <span class="comment"># 下面读取tips_table，获取盒子中不可能出现的物品下标</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> tips_table[i]:</span><br><span class="line">        <span class="comment"># 更新状态表</span></span><br><span class="line">        status_table[j][i] = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印状态表</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;状态表=&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(status_table)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印每个物品可能出现的盒子编号（盒子编号=盒子下标+1）</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">    status_array = status_table[i]</span><br><span class="line">    boxes = []</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(status_array)):</span><br><span class="line">        <span class="keyword">if</span>(status_array[j]==<span class="number">1</span>):boxes.append(j+<span class="number">1</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;物品&#123;&#125;可能出现在盒子&#123;&#125;中&quot;</span>.<span class="built_in">format</span>(<span class="built_in">chr</span>(i+<span class="number">65</span>),boxes))</span><br></pre></td></tr></table></figure>
+
+<p>输入条件在代码的 <code>inspect_box</code>, <code>inspect_item</code>, <code>tips_table</code> 三个变量中定义（见上述代码“此处根据看到的具体情况进行赋值”的提示语句）。</p>
+<ul>
+<li><code>inspect_box</code> ： 在一次透视机会中，查看的盒子的下标。盒子的下标等于盒子编号减1。</li>
+<li><code>inspect_item</code> ：在一次透视机会中，看到的物品的下标。物品编号A-L分别对应物品下标0-11。</li>
+<li><code>tips_table</code> ：通过每个盒子的3次提示机会，和6次随机盒子的提示机会，得到的所有信息。这些信息按二维数组进行组织（见代码），其中外层数组的下标对应盒子下标，内层数组的元素代表不会出现的物品的下标。内层数组可以是空数组。</li>
+</ul>
+<h3 id="（二）概率值的计算"><a href="#（二）概率值的计算" class="headerlink" title="（二）概率值的计算"></a>（二）概率值的计算</h3><p>上面得到的仅仅是一个状态表。我们需要知道每个物品出现在各个盒子中的概率。而这个概率，可以用线性规划的方法解出来。</p>
+<p>具体来说，当我们把12x12的状态表变成12x12的概率表以后，表格中的每个格子就变成了对应物品在对应盒子中出现的概率。一共144个格子（144个待求解概率），因此线性规划的变量个数为144个。</p>
+<p>除此之外，我们需要明确两点事实：</p>
+<ul>
+<li>任意一个盒子中，各个物品出现概率的总和为1。（也就是说对于一个特定的盒子，从物品A到物品L，不论每个物品各自出现的概率有多大，这些物品出现概率的总和一定是1）</li>
+<li>任意一个物品，出现在每个盒子中的概率的总和为1。（也就是说对于一个特定物品，它在盒子1到盒子12中出现的概率值加在一起也是1）</li>
+</ul>
+<p>放到12x12的概率表上，就是这个概率表的每一行的元素总和全为1，每一列的元素总和也全为1。由此可以得到12×12=24个约束条件函数。</p>
+<p>此外，每个变量也有自己的边界条件。概率的取值范围为 $\in[0,1]$ ，然而对于不可能出现的物品来说，概率值一定为0。这是另外144个条件。</p>
+<p>我们的目标函数是概率总和最大；然而对于这个问题来说，目标函数是什么其实无所谓，因为上面的这些约束条件足以求出我们所要的结果。</p>
+<p>求解线性规划问题的方法有很多，此处我们使用scipy进行求解</p>
+<blockquote>
+<p>参考： <a href="https://wz.anoms.top/2022/09/29/%E4%BD%BF%E7%94%A8python%E5%92%8Cscipy%E8%A7%A3%E5%86%B3%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98/">使用Python和SciPy解决线性规划问题</a></p>
+</blockquote>
+<p>代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这段代码需要接在上面那段代码的后面</span></span><br><span class="line"><span class="comment"># 因为需要用到status_table这个变量，以确定概率值的边界条件</span></span><br><span class="line"><span class="keyword">from</span> scipy.optimize <span class="keyword">import</span> linprog</span><br><span class="line">c = -np.ones(<span class="number">144</span>) <span class="comment"># 目标函数的系数向量。总共144个变量（12x12），因此向量长度为144.</span></span><br><span class="line">A_eq = [] <span class="comment"># 等式约束条件的系数矩阵。下面对这个系数矩阵进行赋值</span></span><br><span class="line"><span class="comment"># 矩阵每行的概率总和均为1，总共12个方程</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">    a_eq = np.zeros(<span class="number">144</span>)</span><br><span class="line">    a_eq[i*<span class="number">12</span>:(i+<span class="number">1</span>)*<span class="number">12</span>]=<span class="number">1</span></span><br><span class="line">    A_eq.append(a_eq)</span><br><span class="line"><span class="comment"># 矩阵每列的概率总和均为1，总共12个方程</span></span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">    a_eq = np.zeros(<span class="number">144</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>): a_eq[i*<span class="number">12</span>+j]=<span class="number">1</span></span><br><span class="line">    A_eq.append(a_eq)</span><br><span class="line">B_eq = np.ones(<span class="number">24</span>) <span class="comment"># 等式约束条件的常数项。总共24个方程，因此向量长度为24</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 变量的边界条件</span></span><br><span class="line"><span class="comment"># 其中，状态表的状态值=0的位置，对应边界条件为p=0</span></span><br><span class="line"><span class="comment"># 除此之外的位置，边界条件为 p ∈ (0,1]</span></span><br><span class="line">p0 = (<span class="number">0</span>,<span class="number">0</span>)</span><br><span class="line">p1 = (<span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line">bounds = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">        <span class="keyword">if</span>(status_table[i][j]==<span class="number">0</span>):</span><br><span class="line">            bounds.append(p0)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            bounds.append(p1)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算线性规划的结果</span></span><br><span class="line">result = linprog(c,A_eq=A_eq,b_eq=B_eq,bounds=bounds)</span><br><span class="line">x = np.array(result.x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印结果</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Prob table=&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\t&quot;</span>.join([<span class="string">&quot;Item&quot;</span>,<span class="string">&quot;1&quot;</span>,<span class="string">&quot;2&quot;</span>,<span class="string">&quot;3&quot;</span>,<span class="string">&quot;4&quot;</span>,<span class="string">&quot;5&quot;</span>,<span class="string">&quot;6&quot;</span>,<span class="string">&quot;7&quot;</span>,<span class="string">&quot;8&quot;</span>,<span class="string">&quot;9&quot;</span>,<span class="string">&quot;10&quot;</span>,<span class="string">&quot;11&quot;</span>,<span class="string">&quot;12&quot;</span>]))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">chr</span>(<span class="number">65</span>+i),end=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;%.4f&quot;</span>%x[i*<span class="number">12</span>+j],end=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>()</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、代码输出："><a href="#三、代码输出：" class="headerlink" title="三、代码输出："></a>三、代码输出：</h2><p>全部的代码输出如下，其中程序首先输出了12×12状态表，并打印出各个物品可能出现在哪些盒子中，最后输出了12×12的概率表，从概率表中我们可以选择每个物品出现概率最大的盒子，以确定要开哪一个盲盒。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">状态表=</span><br><span class="line">[[0. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [0. 1. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0.]</span><br><span class="line"> [1. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [1. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [1. 1. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [1. 1. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [1. 1. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [1. 1. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [1. 1. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [0. 1. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]</span><br><span class="line"> [1. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1.]]</span><br><span class="line">物品A可能出现在盒子[4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品B可能出现在盒子[2, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品C可能出现在盒子[3]中</span><br><span class="line">物品D可能出现在盒子[1, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品E可能出现在盒子[1, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品F可能出现在盒子[1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品G可能出现在盒子[1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品H可能出现在盒子[1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品I可能出现在盒子[1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品J可能出现在盒子[1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品K可能出现在盒子[2, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">物品L可能出现在盒子[1, 4, 5, 6, 7, 8, 9, 10, 11, 12]中</span><br><span class="line">D:\linux\py\开盲盒问题.py:128: OptimizeWarning: A_eq does not appear to be of full row rank. To improve performance, check the problem formulation for redundant equality constraints.</span><br><span class="line">  result = linprog(c,A_eq=A_eq,b_eq=B_eq,bounds=bounds)</span><br><span class="line">Prob table=</span><br><span class="line">Item    1       2       3       4       5       6       7       8       9       10      11      12</span><br><span class="line">A       0.0000  0.0000  0.0000  0.1111  0.1111  0.1111  0.1111  0.1111  0.1111  0.1111  0.1111  0.1111</span><br><span class="line">B       0.0000  0.1563  0.0000  0.0937  0.0937  0.0937  0.0937  0.0937  0.0937  0.0937  0.0937  0.0937</span><br><span class="line">C       0.0000  0.0000  1.0000  0.0000  0.0000  0.0000  0.0000  0.0000  0.0000  0.0000  0.0000  0.0000</span><br><span class="line">D       0.1371  0.0000  0.0000  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959</span><br><span class="line">E       0.1371  0.0000  0.0000  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959</span><br><span class="line">F       0.1177  0.1375  0.0000  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828</span><br><span class="line">G       0.1177  0.1375  0.0000  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828</span><br><span class="line">H       0.1177  0.1375  0.0000  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828</span><br><span class="line">I       0.1177  0.1375  0.0000  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828</span><br><span class="line">J       0.1177  0.1375  0.0000  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828  0.0828</span><br><span class="line">K       0.0000  0.1563  0.0000  0.0937  0.0937  0.0937  0.0937  0.0937  0.0937  0.0937  0.0937  0.0937</span><br><span class="line">L       0.1371  0.0000  0.0000  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959  0.0959</span><br></pre></td></tr></table></figure>
+
+<p>由于已知条件的限制，我们得到的概率表中不同盒子之间的概率差异还是有点小，不足以判断一个物品最有可能出现在哪个盒子中。当已知条件足够多（例如使用完全部36次提示机会和6次额外机会），则得到的概率值会更加精确。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2023/12/01/python%E8%A7%A3%E5%86%B3%E5%BC%80%E7%9B%B2%E7%9B%92%E9%97%AE%E9%A2%98/" title="python解决开盲盒问题">https://wz.anoms.top/2023/12/01/python解决开盲盒问题/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92/" rel="tag"><i class="fa fa-tag"></i> 线性规划</a>
+              <a href="/tags/%E7%94%9F%E6%B4%BB%E5%B0%8F%E5%A6%99%E6%8B%9B/" rel="tag"><i class="fa fa-tag"></i> 生活小妙招</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/11/30/obsidian-image-auto-uploader/" rel="prev" title="obsidian探索小记（二）——配置obsidian的自动上传图床">
+                  <i class="fa fa-chevron-left"></i> obsidian探索小记（二）——配置obsidian的自动上传图床
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/12/03/attention_architecture_1/" rel="next" title="Attention机制与self-attention详解（一）——基础知识">
+                  Attention机制与self-attention详解（一）——基础知识 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

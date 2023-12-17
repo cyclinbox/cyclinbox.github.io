@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一个基于pytorch、transformers等基础库的离线翻译程序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【转载+修改】一个PC端的离线翻译程序">
+<meta property="og:url" content="https://wz.anoms.top/2023/11/03/%E3%80%90%E8%BD%AC%E8%BD%BD-%E4%BF%AE%E6%94%B9%E3%80%91%E4%B8%80%E4%B8%AAPC%E7%AB%AF%E7%9A%84%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91%E7%A8%8B%E5%BA%8F/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="一个基于pytorch、transformers等基础库的离线翻译程序">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-11-03T14:24:35.000Z">
+<meta property="article:modified_time" content="2023-11-19T14:35:08.240Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="huggingface">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="自然语言处理">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2023/11/03/%E3%80%90%E8%BD%AC%E8%BD%BD-%E4%BF%AE%E6%94%B9%E3%80%91%E4%B8%80%E4%B8%AAPC%E7%AB%AF%E7%9A%84%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91%E7%A8%8B%E5%BA%8F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2023/11/03/%E3%80%90%E8%BD%AC%E8%BD%BD-%E4%BF%AE%E6%94%B9%E3%80%91%E4%B8%80%E4%B8%AAPC%E7%AB%AF%E7%9A%84%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91%E7%A8%8B%E5%BA%8F/","path":"2023/11/03/【转载-修改】一个PC端的离线翻译程序/","title":"【转载+修改】一个PC端的离线翻译程序"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>【转载+修改】一个PC端的离线翻译程序 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0-%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0. 引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">1. 环境配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BB%A3%E7%A0%81%E4%B8%8E%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">2. 代码与原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%E5%B1%95%E7%A4%BA"><span class="nav-number">4.</span> <span class="nav-text">3. 使用方法展示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E6%BF%80%E6%B4%BBconda%E7%8E%AF%E5%A2%83"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 激活conda环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 第一次运行代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 日常使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%B8%AE%E5%8A%A9%E7%95%8C%E9%9D%A2"><span class="nav-number">4.3.1.</span> <span class="nav-text">3.1 帮助界面</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E7%BF%BB%E8%AF%91%E4%B8%8E%E5%88%87%E6%8D%A2%E7%BF%BB%E8%AF%91%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.3.2.</span> <span class="nav-text">3.2 翻译与切换翻译模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E9%80%80%E5%87%BA%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.3.3.</span> <span class="nav-text">3.3 退出程序</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">104</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2023/11/03/%E3%80%90%E8%BD%AC%E8%BD%BD-%E4%BF%AE%E6%94%B9%E3%80%91%E4%B8%80%E4%B8%AAPC%E7%AB%AF%E7%9A%84%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91%E7%A8%8B%E5%BA%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="【转载+修改】一个PC端的离线翻译程序 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【转载+修改】一个PC端的离线翻译程序
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-11-03 22:24:35" itemprop="dateCreated datePublished" datetime="2023-11-03T22:24:35+08:00">2023-11-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-19 22:35:08" itemprop="dateModified" datetime="2023-11-19T22:35:08+08:00">2023-11-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>一个基于pytorch、transformers等基础库的离线翻译程序</p>
+<span id="more"></span>
+
+<blockquote>
+<p>参考:</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/weskynet/p/16740041.html">https://www.cnblogs.com/weskynet/p/16740041.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://huggingface.co/Helsinki-NLP">https://huggingface.co/Helsinki-NLP</a></p>
+</blockquote>
+<h2 id="0-引言"><a href="#0-引言" class="headerlink" title="0. 引言"></a>0. 引言</h2><p>文本翻译是我们在科研生活中常常要碰到的事情。<br>诸如Google translate、百度翻译、chatGPT等在内的在线翻译工具（包括大语言模型）都能够很好的完成翻译工作。<br>然而，当网络环境不佳时，选用离线翻译程序就成了一个自然的需求。</p>
+<p>虽然包括有道翻译在内的许多翻译软件都提供了离线翻译插件的功能，但本着“自己动手，丰衣足食”的原则，我们打算从开源模型出发搭建一个翻译程序。</p>
+<p>HuggingFace上托管了赫尔辛基大学开发的一系列自然语言翻译模型（ <a target="_blank" rel="noopener" href="https://huggingface.co/Helsinki-NLP">Helsinki-NLP</a> ），涵盖1440对语言之间的转换，包括中译英和英译中。我们可以基于此，开发一个离线翻译工具</p>
+<h2 id="1-环境配置"><a href="#1-环境配置" class="headerlink" title="1. 环境配置"></a>1. 环境配置</h2><p>需要提前安装好python3。此外，还应安装好下列python模块：</p>
+<ul>
+<li>transformers</li>
+</ul>
+<p>（<code>transformer</code>是谷歌团队提出的一种机器学习算法，利用注意力机制进行序列的编码和解码处理，常被用于自然语言处理。chatGPT和GPT-4所依赖的底层技术也是transformer）</p>
+<p>推荐使用conda完成上述模块的安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install -c conda-forge transformers</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-代码与原理"><a href="#2-代码与原理" class="headerlink" title="2. 代码与原理"></a>2. 代码与原理</h2><p>以下代码修改自文章 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/weskynet/p/16740041.html">《手把手搭建基于Hugging Face模型的离线翻译系统，并通过C#代码进行访问》</a> 。这篇文章使用Helsinki-NLP模型搭建了一个windows服务器，并嵌入到了.NET应用程序当中。我们并不需要这么麻烦，只需要开发一个控制台版本的程序即可。</p>
+<p>原理很简单。Transformer模型很复杂，但是具体的实现细节已经封装在了<code>Transformers</code>模块当中。我们加载预训练好的翻译模型，然后调用对应的函数接口，即可使用相关的功能。</p>
+<p>下面是我们的代码，复制粘贴到一个文本文件中，并将文本文件命名为<code>HelsinkiTranslation.py</code>即可。在第三小节中我们将介绍如何使用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline, AutoModelWithLMHead, AutoTokenizer</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">&#x27;ignore&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;+------------+&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;|  pyNLP-MT  |&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;+------------+&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Offline translation program&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载必要的模型。此处我们选择中译英和英译中两个模型</span></span><br><span class="line"><span class="comment"># 下面的代码将从HuggingFace网站上下载对应的模型，并存储在`$HOME/.cache/huggingface/hub/`文件夹下。</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Loading model: Chinese -&gt; English ...&#x27;</span>)</span><br><span class="line">    model_zh2en = AutoModelWithLMHead.from_pretrained(<span class="string">&#x27;Helsinki-NLP/opus-mt-zh-en&#x27;</span>)</span><br><span class="line">    token_zh2en =       AutoTokenizer.from_pretrained(<span class="string">&#x27;Helsinki-NLP/opus-mt-zh-en&#x27;</span>)</span><br><span class="line">    trans_zh2en = pipeline(<span class="string">&#x27;translation_zh_to_en&#x27;</span>, </span><br><span class="line">                            model     = model_zh2en, </span><br><span class="line">                            tokenizer = token_zh2en)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Loading model: English -&gt; Chinese ...&#x27;</span>)</span><br><span class="line">    model_en2zh = AutoModelWithLMHead.from_pretrained(<span class="string">&#x27;Helsinki-NLP/opus-mt-en-zh&#x27;</span>)</span><br><span class="line">    token_en2zh =       AutoTokenizer.from_pretrained(<span class="string">&#x27;Helsinki-NLP/opus-mt-en-zh&#x27;</span>)</span><br><span class="line">    trans_en2zh = pipeline(<span class="string">&#x27;translation_en_to_zh&#x27;</span>, </span><br><span class="line">                            model     = model_en2zh, </span><br><span class="line">                            tokenizer = token_en2zh)</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;A exceptence occurred when loading model...&#x27;</span>)</span><br><span class="line">    sys.exit(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义一个函数，通过字符串中的ASCII字符比例，判断语句是中文还是英文</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">isChinese</span>(<span class="params">text</span>):</span><br><span class="line">    l = <span class="built_in">len</span>(text)</span><br><span class="line">    n = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> c <span class="keyword">in</span> text:</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">ord</span>(c)&lt;<span class="number">256</span>):n+=<span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span>(n&gt;<span class="number">0.5</span>*l): <span class="comment">#ASCII字符占了所有字符的50%以上比例，判定为英文</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义一个翻译过程的函数，传入要翻译的字符串和翻译模式，返回翻译后的字符串</span></span><br><span class="line"><span class="comment"># 参数`mod`代表翻译模式，默认为自动检测。仅支持中译英和英译中。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">translate</span>(<span class="params">text, mod=<span class="string">&quot;auto&quot;</span></span>): <span class="comment"># 参数mod的可选值：&quot;auto&quot;(default),&quot;zh2en&quot;,&quot;en2zh&quot;</span></span><br><span class="line">    <span class="keyword">if</span>(mod == <span class="string">&#x27;zh2en&#x27;</span>):</span><br><span class="line">        result = trans_zh2en(text, max_length=<span class="number">81920</span>)[<span class="number">0</span>][<span class="string">&#x27;translation_text&#x27;</span>]</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    <span class="keyword">if</span>(mod == <span class="string">&#x27;en2zh&#x27;</span>):</span><br><span class="line">        result = trans_en2zh(text, max_length=<span class="number">81920</span>)[<span class="number">0</span>][<span class="string">&#x27;translation_text&#x27;</span>]</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    <span class="keyword">if</span>(mod == <span class="string">&#x27;auto&#x27;</span>):</span><br><span class="line">        <span class="keyword">if</span>(isChinese(text)):</span><br><span class="line">            result = trans_zh2en(text, max_length=<span class="number">81920</span>)[<span class="number">0</span>][<span class="string">&#x27;translation_text&#x27;</span>]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = trans_en2zh(text, max_length=<span class="number">81920</span>)[<span class="number">0</span>][<span class="string">&#x27;translation_text&#x27;</span>]</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置一个函数，用于调整翻译模式</span></span><br><span class="line">Mod = <span class="string">&quot;auto&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">setmod</span>(<span class="params">mod</span>):</span><br><span class="line">    <span class="keyword">global</span> Mod</span><br><span class="line">    available_mod = [<span class="string">&quot;auto&quot;</span>,<span class="string">&quot;zh2en&quot;</span>,<span class="string">&quot;en2zh&quot;</span>]</span><br><span class="line">    <span class="keyword">if</span>(mod <span class="keyword">in</span> available_mod):</span><br><span class="line">        Mod = mod</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Unavailable mod: &#123;&#125;\n&quot;</span>.<span class="built_in">format</span>(mod))</span><br><span class="line"></span><br><span class="line"><span class="comment"># “帮助”函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">help</span>():</span><br><span class="line">    help_text=<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">All available commands:</span></span><br><span class="line"><span class="string">    /?      print this information</span></span><br><span class="line"><span class="string">    /help   print this information</span></span><br><span class="line"><span class="string">    /exit   quit program</span></span><br><span class="line"><span class="string">    /quit   quit program</span></span><br><span class="line"><span class="string">    /mod [mode]</span></span><br><span class="line"><span class="string">            set translation mode. </span></span><br><span class="line"><span class="string">            Available value: </span></span><br><span class="line"><span class="string">                &quot;auto&quot;(default): Automatically select translation mode.</span></span><br><span class="line"><span class="string">                &quot;zh2en&quot;: Chinese translate into English.</span></span><br><span class="line"><span class="string">                &quot;en2zh&quot;: English translate into Chinese.</span></span><br><span class="line"><span class="string">    /clear  clean screen</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">If you want to translate any sentence, just type it after prompt.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(help_text)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 解析并执行指令的函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">command</span>(<span class="params">cmd</span>):</span><br><span class="line">    <span class="keyword">if</span>  (cmd==<span class="string">&quot;/exit&quot;</span>):     sys.exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">elif</span>(cmd==<span class="string">&quot;/quit&quot;</span>):     sys.exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">elif</span>(cmd==<span class="string">&quot;/help&quot;</span>):     <span class="built_in">help</span>()</span><br><span class="line">    <span class="keyword">elif</span>(cmd==<span class="string">&quot;/?&quot;</span>   ):     <span class="built_in">help</span>()</span><br><span class="line">    <span class="keyword">elif</span>(cmd[<span class="number">0</span>:<span class="number">4</span>]==<span class="string">&quot;/mod&quot;</span>): setmod(cmd[<span class="number">5</span>:])</span><br><span class="line">    <span class="keyword">elif</span>(cmd==<span class="string">&quot;/clear&quot;</span>):</span><br><span class="line">        <span class="keyword">if</span>(sys.platform==<span class="string">&quot;win32&quot;</span>):os.system(<span class="string">&quot;cls&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>: os.system(<span class="string">&quot;clear&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;&#123;&#125; is not recognized as an command.&quot;</span>.<span class="built_in">format</span>(cmd))</span><br><span class="line">        <span class="built_in">help</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主函数。</span></span><br><span class="line"><span class="comment"># 我们构建的是一个交互式的翻译程序，进入程序后可以连续输入待翻译字符串，直到用户输入`/exit`指令退出。</span></span><br><span class="line"><span class="keyword">if</span>(__name__==<span class="string">&#x27;__main__&#x27;</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;input `/help` for help&quot;</span>)</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">True</span>):</span><br><span class="line">        word = <span class="built_in">input</span>(<span class="string">&#x27;(&#123;&#125;) &gt;&gt;&gt; &#x27;</span>.<span class="built_in">format</span>(Mod))</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">len</span>(word)==<span class="number">0</span>):<span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span>(word[<span class="number">0</span>]==<span class="string">&#x27;/&#x27;</span>):</span><br><span class="line">            command(word)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                text = translate(word, mod=Mod)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;\nTranslation:&quot;</span>)</span><br><span class="line">                <span class="built_in">print</span>(text)</span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;Cannot translate!&quot;</span>)</span><br><span class="line">            <span class="keyword">finally</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;\n\n&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="3-使用方法展示"><a href="#3-使用方法展示" class="headerlink" title="3. 使用方法展示"></a>3. 使用方法展示</h2><h3 id="3-1-激活conda环境"><a href="#3-1-激活conda环境" class="headerlink" title="3.1 激活conda环境"></a>3.1 激活conda环境</h3><p>要注意，激活的环境是装了transformers模块的那个环境。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda activate</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-第一次运行代码"><a href="#3-2-第一次运行代码" class="headerlink" title="3.2 第一次运行代码"></a>3.2 第一次运行代码</h3><p>在终端或命令提示符程序中运行如下指令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python HelsinkiTranslation.py</span><br></pre></td></tr></table></figure>
+
+<p>第一次运行代码时需要联网（必要时需要连上代理服务器），程序会从huggingface上下载对应的翻译模型，这些模型会保存在本地，未来再运行时可以直接调用。</p>
+<p>程序输出如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">+------------+</span><br><span class="line">|  pyNLP-MT  |</span><br><span class="line">+------------+</span><br><span class="line">Offline translation program</span><br><span class="line"></span><br><span class="line">Loading model: Chinese -&gt; English ...</span><br><span class="line">Downloading (…)lve/main/config.json: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████| 1.39k/1.39k [00:00&lt;00:00, 562kB/s]</span><br><span class="line">Downloading pytorch_model.bin: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 312M/312M [00:14&lt;00:00, 22.2MB/s]</span><br><span class="line">Downloading (…)neration_config.json: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 293/293 [00:00&lt;00:00, 192kB/s]</span><br><span class="line">Downloading (…)okenizer_config.json: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 44.0/44.0 [00:00&lt;00:00, 38.5kB/s]</span><br><span class="line">Downloading (…)olve/main/source.spm: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 805k/805k [00:00&lt;00:00, 2.70MB/s]</span><br><span class="line">Downloading (…)olve/main/target.spm: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 807k/807k [00:00&lt;00:00, 3.11MB/s]</span><br><span class="line">Downloading (…)olve/main/vocab.json: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████| 1.62M/1.62M [00:00&lt;00:00, 5.01MB/s]</span><br><span class="line">Loading model: English -&gt; Chinese ...</span><br><span class="line">Downloading (…)lve/main/config.json: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████| 1.40k/1.40k [00:00&lt;00:00, 898kB/s]</span><br><span class="line">Downloading pytorch_model.bin: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 312M/312M [00:14&lt;00:00, 22.2MB/s]</span><br><span class="line">Downloading (…)neration_config.json: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 293/293 [00:00&lt;00:00, 254kB/s]</span><br><span class="line">Downloading (…)okenizer_config.json: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 44.0/44.0 [00:00&lt;00:00, 28.2kB/s]</span><br><span class="line">Downloading (…)olve/main/source.spm: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 806k/806k [00:00&lt;00:00, 3.15MB/s]</span><br><span class="line">Downloading (…)olve/main/target.spm: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 805k/805k [00:00&lt;00:00, 2.71MB/s]</span><br><span class="line">Downloading (…)olve/main/vocab.json: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████| 1.62M/1.62M [00:00&lt;00:00, 4.99MB/s]</span><br><span class="line">input `/help` for help</span><br><span class="line">(auto) &gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>当看到所有模型全部下载成功，并且加载出交互式程序提示符<code>(auto) &gt;&gt;&gt;</code>时，代表激活成功。</p>
+<h3 id="3-3-日常使用"><a href="#3-3-日常使用" class="headerlink" title="3.3 日常使用"></a>3.3 日常使用</h3><p>在终端或命令提示符程序中运行指令<code>python HelsinkiTranslation.py</code>即可进入交互式的翻译程序界面</p>
+<p>程序主界面如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">+------------+</span><br><span class="line">|  pyNLP-MT  |</span><br><span class="line">+------------+</span><br><span class="line">Offline translation program</span><br><span class="line">(created by Wesky, modified by WZ on Dec 9th, 2022)</span><br><span class="line"></span><br><span class="line">Loading model: Chinese -&gt; English ...</span><br><span class="line">Loading model: English -&gt; Chinese ...</span><br><span class="line">input `/help` for help</span><br><span class="line">(auto) &gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-1-帮助界面"><a href="#3-1-帮助界面" class="headerlink" title="3.1 帮助界面"></a>3.1 帮助界面</h4><p>在交互式模式下，输入<code>/help</code>即可得到帮助。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">(auto) &gt;&gt;&gt; /help</span><br><span class="line"></span><br><span class="line">All available commands:</span><br><span class="line">    /?      print this information</span><br><span class="line">    /help   print this information</span><br><span class="line">    /exit   quit program</span><br><span class="line">    /quit   quit program</span><br><span class="line">    /mod [mode]</span><br><span class="line">            set translation mode.</span><br><span class="line">            Available value:</span><br><span class="line">                &quot;auto&quot;(default): Automatically select translation mode.</span><br><span class="line">                &quot;zh2en&quot;: Chinese translate into English.</span><br><span class="line">                &quot;en2zh&quot;: English translate into Chinese.</span><br><span class="line">    /clear  clean screen</span><br><span class="line"></span><br><span class="line">If you want to translate any sentence, just type it after prompt.</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-翻译与切换翻译模式"><a href="#3-2-翻译与切换翻译模式" class="headerlink" title="3.2 翻译与切换翻译模式"></a>3.2 翻译与切换翻译模式</h4><p>自动检测语言并翻译（默认）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(auto) &gt;&gt;&gt; Sleep is an integral part of our daily routine, and, among the myriad functions attributed to this state, emotional processing stands out as a crucial aspect. Everyone has experienced at least once how a poor night’s sleep can wreak havoc on our emotions.</span><br><span class="line"></span><br><span class="line">Translation:</span><br><span class="line">睡眠是我们日常工作不可分割的一部分,在这种状态造成的众多功能中,情感处理是一个至关重要的方面。 每个人至少都经历过一次晚上睡得不好会给我们的情绪带来破坏。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(auto) &gt;&gt;&gt; 现在我们知道，每个文明的历程都是这样：从一个狭小的摇篮世界中觉醒，蹒跚地走出去，飞起来，越飞越快，越飞越远，最后与宇宙的命运融为一体。</span><br><span class="line"></span><br><span class="line">Translation:</span><br><span class="line">Now we know that every civilization goes through this: awakening from a tiny cradle world, walking out, flying, flying faster, flying further away, and finally integrating with the fate of the universe.</span><br></pre></td></tr></table></figure>
+
+<p>将翻译模式改为仅英译中：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(auto) &gt;&gt;&gt; /mod en2zh</span><br><span class="line">(en2zh) &gt;&gt;&gt; For markets to achieve biodiversity conservation, biodiversity must endure. A “buy and forget” model, where credits exist forever regardless of whether the biodiversity persists, would lead to perverse outcomes.</span><br><span class="line"></span><br><span class="line">Translation:</span><br><span class="line">为了实现生物多样性保护,市场必须保持生物多样性。 一种“买和忘”模式 — — 不论生物多样性是否持续存在 — — 永远存在信贷,会导致错误的结果。</span><br></pre></td></tr></table></figure>
+
+<p>将翻译模式改为仅中译英：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(auto) &gt;&gt;&gt; /mod zh2en</span><br><span class="line">(zh2en) &gt;&gt;&gt; 由于水体失去约束大量蒸发，小宇宙中云雾迷漫，太阳在云后朦胧地照耀着，出现了一道横跨宇宙的绚丽彩虹。</span><br><span class="line"></span><br><span class="line">Translation:</span><br><span class="line">Due to the loss of water bodies, which binds large amounts of evaporation, clouds in the small universe evaporate, the sun glitters behind them, and there is a beautiful rainbow across the universe.</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-退出程序"><a href="#3-3-退出程序" class="headerlink" title="3.3 退出程序"></a>3.3 退出程序</h4><p>在交互式模式下，输入<code>/exit</code>或<code>/quit</code>即可退出。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2023/11/03/%E3%80%90%E8%BD%AC%E8%BD%BD-%E4%BF%AE%E6%94%B9%E3%80%91%E4%B8%80%E4%B8%AAPC%E7%AB%AF%E7%9A%84%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91%E7%A8%8B%E5%BA%8F/" title="【转载+修改】一个PC端的离线翻译程序">https://wz.anoms.top/2023/11/03/【转载-修改】一个PC端的离线翻译程序/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/huggingface/" rel="tag"><i class="fa fa-tag"></i> huggingface</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/" rel="tag"><i class="fa fa-tag"></i> 自然语言处理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/11/03/%E4%B8%80%E7%82%B9%E8%87%AA%E6%88%91%E5%8F%8D%E6%80%9D/" rel="prev" title="一点自我反思">
+                  <i class="fa fa-chevron-left"></i> 一点自我反思
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/11/04/20231104_updatelog/" rel="next" title="更新日志（2023-11-04）">
+                  更新日志（2023-11-04） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

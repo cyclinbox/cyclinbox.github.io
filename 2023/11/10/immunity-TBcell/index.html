@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文为中科院上海分院Bio2000系列课程之《T&#x2F;B细胞适应性免疫》的复习资料，整理于今年6月。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【复习资料】T&#x2F;B细胞的适应性免疫">
+<meta property="og:url" content="https://wz.anoms.top/2023/11/10/immunity-TBcell/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="本文为中科院上海分院Bio2000系列课程之《T&#x2F;B细胞适应性免疫》的复习资料，整理于今年6月。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imgdb.cn/item/654f9028c458853aefaabcc2.jpg">
+<meta property="article:published_time" content="2023-11-10T13:57:03.000Z">
+<meta property="article:modified_time" content="2023-11-11T14:33:31.014Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="免疫">
+<meta property="article:tag" content="T细胞">
+<meta property="article:tag" content="B细胞">
+<meta property="article:tag" content="复习资料">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imgdb.cn/item/654f9028c458853aefaabcc2.jpg">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2023/11/10/immunity-TBcell/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2023/11/10/immunity-TBcell/","path":"2023/11/10/immunity-TBcell/","title":"【复习资料】T/B细胞的适应性免疫"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>【复习资料】T/B细胞的适应性免疫 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%B6%E3%80%81%E5%85%8D%E7%96%AB%E5%BA%94%E7%AD%94%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">零、免疫应答的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81T%E7%BB%86%E8%83%9E%E6%8A%97%E5%8E%9F%E8%AF%86%E5%88%AB%E5%92%8C%E6%B4%BB%E5%8C%96%E9%98%B6%E6%AE%B5"><span class="nav-number">2.</span> <span class="nav-text">一、T细胞抗原识别和活化阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-T%E7%BB%86%E8%83%9E%E5%AF%B9%E6%8A%97%E5%8E%9F%E7%9A%84%E8%AF%86%E5%88%AB"><span class="nav-number">2.1.</span> <span class="nav-text">1. T细胞对抗原的识别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-T-B%E7%BB%86%E8%83%9E%E5%8F%8C%E6%B4%BB%E5%8C%96%E4%BF%A1%E5%8F%B7"><span class="nav-number">2.2.</span> <span class="nav-text">2. T&#x2F;B细胞双活化信号</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81T%E7%BB%86%E8%83%9E%E5%A2%9E%E6%AE%96%E4%B8%8E%E5%88%86%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">二、T细胞增殖与分化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81T%E7%BB%86%E8%83%9E%E5%A2%9E%E6%AE%96"><span class="nav-number">3.1.</span> <span class="nav-text">1、T细胞增殖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81CD4-T%E7%BB%86%E8%83%9E%E4%BA%9A%E7%BE%A4%E5%88%86%E5%8C%96"><span class="nav-number">3.2.</span> <span class="nav-text">2、CD4+T细胞亚群分化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81CD8-T%E7%BB%86%E8%83%9E%E4%BA%9A%E7%BE%A4%E5%88%86%E5%8C%96"><span class="nav-number">3.3.</span> <span class="nav-text">3、CD8+T细胞亚群分化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81T%E7%BB%86%E8%83%9E%E7%9A%84%E5%85%8D%E7%96%AB%E6%95%88%E5%BA%94"><span class="nav-number">4.</span> <span class="nav-text">三、T细胞的免疫效应</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E7%BB%86%E8%83%9E%E5%85%8D%E7%96%AB%E5%BA%94%E7%AD%94%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%BF%87%E7%A8%8B"><span class="nav-number">4.1.</span> <span class="nav-text">1、细胞免疫应答的基本过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81T%E7%BB%86%E8%83%9E%E4%BB%8B%E5%AF%BC%E7%9A%84%E5%85%8D%E7%96%AB%E6%95%88%E5%BA%94"><span class="nav-number">4.2.</span> <span class="nav-text">2、T细胞介导的免疫效应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81B%E7%BB%86%E8%83%9E%E7%9A%84%E5%85%8D%E7%96%AB%E8%B0%83%E8%8A%82%E4%BD%9C%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">四、B细胞的免疫调节作用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E6%8A%97%E5%8E%9F"><span class="nav-number">5.1.</span> <span class="nav-text">1、抗原</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E6%8A%97%E4%BD%93"><span class="nav-number">5.2.</span> <span class="nav-text">2、抗体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E4%BD%93%E6%B6%B2%E5%85%8D%E7%96%AB%E5%BA%94%E7%AD%94%EF%BC%88humoral-immunity%EF%BC%89"><span class="nav-number">5.3.</span> <span class="nav-text">3、体液免疫应答（humoral immunity）</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">104</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2023/11/10/immunity-TBcell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="【复习资料】T/B细胞的适应性免疫 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【复习资料】T/B细胞的适应性免疫
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-11-10 21:57:03" itemprop="dateCreated datePublished" datetime="2023-11-10T21:57:03+08:00">2023-11-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-11 22:33:31" itemprop="dateModified" datetime="2023-11-11T22:33:31+08:00">2023-11-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%89%A9/" itemprop="url" rel="index"><span itemprop="name">生物</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文为中科院上海分院Bio2000系列课程之《T/B细胞适应性免疫》的复习资料，整理于今年6月。</p>
+<span id="more"></span>
+
+
+<h2 id="零、免疫应答的概念"><a href="#零、免疫应答的概念" class="headerlink" title="零、免疫应答的概念"></a>零、免疫应答的概念</h2><p>指机体受抗原刺激后，体内抗原特异性淋巴细胞对抗原分子的识别、活化、增殖、分化，并表现出一定生物学效应的全过程</p>
+<p>免疫应答的基本过程（三个要素）：</p>
+<ol>
+<li>识别抗原</li>
+<li>活化增殖和分化阶段（其中T/B细胞活化需要双信号）</li>
+<li>效应阶段</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>识别阶段</th>
+<th>活化增殖和分化</th>
+<th>效应阶段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>抗原（antigen,Ag）与免疫细胞间的相互作用</td>
+<td>免疫细胞间的相互作用</td>
+<td>效应细胞和效应分子与靶细胞（或靶分子）间的相互作用</td>
+</tr>
+<tr>
+<td>抗原的摄取、处理、加工、提呈、识别</td>
+<td>膜受体交联、膜信号产生与传递、细胞活化增殖与分化、生物活性介质的合成与释放</td>
+<td>效应细胞/分子对靶细胞/分子的排异作用、引起组织的损伤作用（炎症）、免疫应答调节</td>
+</tr>
+<tr>
+<td>抗原→APC、T细胞、B细胞</td>
+<td>T/B细胞增殖与分化、抗体产生、细胞因子产生、效应T细胞产生、记忆细胞产生（这是免疫记忆产生的条件）</td>
+<td>抗体/效应T细胞的排异或排己：免疫保护（抗感染、抗肿瘤）、免疫病理（自身免疫、变态反应、移植排斥、移植物抗宿主反应）。<br/>免疫增强系统：补体、细胞因子、NK细胞、肥大细胞、Macrophage（MΦ）、粒细胞系红细胞、血小板</td>
+</tr>
+</tbody></table>
+<h2 id="一、T细胞抗原识别和活化阶段"><a href="#一、T细胞抗原识别和活化阶段" class="headerlink" title="一、T细胞抗原识别和活化阶段"></a>一、T细胞抗原识别和活化阶段</h2><p><strong>★重点掌握：T细胞活化的双信号要求,包括signal 2的CD28,CTLA‐4,PD‐1的功能。</strong></p>
+<h3 id="1-T细胞对抗原的识别"><a href="#1-T细胞对抗原的识别" class="headerlink" title="1. T细胞对抗原的识别"></a>1. T细胞对抗原的识别</h3><ul>
+<li>APC与MHC<ul>
+<li>三类APC：树突状细胞（DC）、MΦ、B细胞</li>
+<li>MHC I 提呈CD8+T细胞（胞毒T细胞）</li>
+<li>MHC II提呈CD4+T细胞（助T细胞）</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>MHC I</th>
+<th>MHC II</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>抗原来源</td>
+<td>内源性抗体</td>
+<td>外源性抗体</td>
+</tr>
+<tr>
+<td>加工抗原位置</td>
+<td>蛋白酶体</td>
+<td>溶酶体</td>
+</tr>
+<tr>
+<td>加工抗原细胞</td>
+<td>所有有核细胞</td>
+<td>专职性APC</td>
+</tr>
+<tr>
+<td>抗原与MHC发生结合的位置</td>
+<td>内质网</td>
+<td>溶酶体与胞内体</td>
+</tr>
+<tr>
+<td>提呈对象</td>
+<td>CD8+T细胞（CTL）</td>
+<td>CD4+T细胞（Th）</td>
+</tr>
+</tbody></table>
+<h3 id="2-T-B细胞双活化信号"><a href="#2-T-B细胞双活化信号" class="headerlink" title="2. T/B细胞双活化信号"></a>2. T/B细胞双活化信号</h3><p> </p>
+<ul>
+<li>T细胞活化的双信号要求<ul>
+<li>（1）TCR信号：TCR-CD3，以及来自APC的MHC-antigen分子。</li>
+<li>（2）共刺激分子：T细胞表面的CD28，以及APC表面的B7家族（CD80/86）信号等</li>
+<li>此外还有其他信号：细胞因子信号（IL-2、IL-R……）、黏附分子（CD2、CD48、CD58……）。</li>
+</ul>
+</li>
+<li>B细胞活化双信号：<ul>
+<li>（1）BCR；CD19（CAR-T治疗血液肿瘤）；</li>
+<li>（2）B7.1/B7.2、CD40、ICOS-L、PDL-1</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>T细胞表面分子</th>
+<th>APC表面分子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CD40</td>
+<td>CD40L</td>
+</tr>
+<tr>
+<td>CD4/CD8、CD3、TCR</td>
+<td>MHC II/I-抗原肽</td>
+</tr>
+<tr>
+<td>CD28</td>
+<td>CD80/86</td>
+</tr>
+<tr>
+<td>CD2</td>
+<td>LFA-3</td>
+</tr>
+<tr>
+<td>LFA-1</td>
+<td>ICAM-1</td>
+</tr>
+</tbody></table>
+<p>双信号上调了T细胞的IL-2的表达量以及IL-2受体的亲和力，使得T细胞进入细胞周期，进行多轮增殖和分化。</p>
+<p>双信号决定了T细胞命运：</p>
+<ul>
+<li>（1）只有TCR信号，T细胞无反应或克隆无能（clonal anergy）</li>
+<li>（2）TCR信号+共刺激分子（如T细胞表面CD28）：正常克隆扩增</li>
+<li>（3）TCR信号+负调控分子（如T细胞表面CTLA-4）：细胞周期捕获（克隆扩增被抑制）</li>
+<li> <strong>注意：</strong> CD28和CTLA-4都接受CD80/86信号，具体走向克隆扩增还是克隆抑制取决于T细胞表达哪一种分子<ul>
+<li> CD28：是CD80（B7.1）和CD86（B7.2）的受体</li>
+<li> CTLA-4：在静息T细胞中低表达，在激活的T细胞中表达增强。是细胞免疫的负调控分子。</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://pic.imgdb.cn/item/654f9028c458853aefaabcc2.jpg" alt="CD28与CTLA-4分子的作用机制（医学免疫学.第三版,p201）"></p>
+<p>负调控受体：PD-1与CTLA-4（二者都在T细胞上表达，与之对应的APC细胞表面配体分别是B7和PD-L2）。</p>
+<ul>
+<li>阻断PD-L1与PD-1的相互作用，可以维持T细胞杀伤能力，从而消灭肿瘤。</li>
+</ul>
+<h2 id="二、T细胞增殖与分化"><a href="#二、T细胞增殖与分化" class="headerlink" title="二、T细胞增殖与分化"></a>二、T细胞增殖与分化</h2><p><strong>★重点：掌握T细胞亚群的分化条件，各亚群的特征性细胞因子和功能。</strong></p>
+<h3 id="1、T细胞增殖"><a href="#1、T细胞增殖" class="headerlink" title="1、T细胞增殖"></a>1、T细胞增殖</h3><p>   <br>双信号活化上调了IL-2表达量以及IL-2受体亲和力，T细胞进入细胞周期。</p>
+<ul>
+<li>一些分化为效应细胞，一些分化为记忆细胞。</li>
+</ul>
+<p> <br>IL-2R信号激活PI3K并活化NF-κB；IL-2还活化Lck。蛋白酪氨酸激酶JAK1/3也一并活化。<br>   <br>IL-2还刺激有丝分裂原（Mitogen）激活的T淋巴细胞中的ERK信号和/或p38</p>
+<p>免疫突触（Immunological synapse）：APC和淋巴细胞之间的界面。</p>
+<ul>
+<li>c‐SMAC（中心-SMAC）由蛋白激酶c（PKC）、CD4、CD8、CD28、Lck和Fyn组成。</li>
+<li>p‐SMAC（外周‐SMAC）含有淋巴细胞功能相关抗原-1（LFA‐1）和细胞骨架蛋白talin。</li>
+<li>d‐SMAC（远端‐SMAC）富含CD43和CD45分子。</li>
+</ul>
+<p>   <br>整合素（Integrins，主要是LFA-1分子）也调控T细胞活化与增殖</p>
+<ul>
+<li>整合素参与免疫突触的形成，增强T细胞活化。</li>
+<li>Inside-out信号通路促进整合素活化和T细胞活化增殖。<ul>
+<li>LFA-1表达在T细胞上，其配体为APC上的ICAM分子。</li>
+</ul>
+</li>
+<li>整合素活化模型：Affinity &amp; Avidity<ul>
+<li>（1）LFA-1构象变化：亲和力变化（affinity changes）</li>
+<li>（2）LFA-1聚类：亲合力变化（avidity changes）</li>
+</ul>
+</li>
+</ul>
+<h3 id="2、CD4-T细胞亚群分化"><a href="#2、CD4-T细胞亚群分化" class="headerlink" title="2、CD4+T细胞亚群分化"></a>2、CD4+T细胞亚群分化</h3><table>
+<thead>
+<tr>
+<th>细胞</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Th1</td>
+<td>IFN-γ(增强T,NK和巨噬细胞杀伤，增强MHC表达，促进T细胞分化), <br/>IL-2 (促进T细胞增殖）</td>
+</tr>
+<tr>
+<td>Th2</td>
+<td>IL-4和IL-13 (Th2分化、诱导B细胞产生IgE, 上调内皮细胞表达VCAM-1和MCP-1),<br/> IL-5(促进嗜酸性粒细胞分化，杀伤寄生虫)</td>
+</tr>
+<tr>
+<td>Treg</td>
+<td>抑炎型细胞因子TGF-β(抑制T和巨噬细胞和B细胞的效应功能、抑制T细胞增殖),<br/>IL-10（抑制细胞因子生成、Th1功能、巨噬细胞呈递抗原、B细胞产生抗体）</td>
+</tr>
+<tr>
+<td>Th17</td>
+<td>IL-17(招募中性粒细胞,促细胞增殖,促炎症因子产生, 抑制肿瘤),<br/> IL-23(促T细胞增殖,APC产生IFN-γ和IL-12,DC 共刺激功能抑制肿瘤)</td>
+</tr>
+<tr>
+<td>Tfh</td>
+<td>Follicular helper T cells，辅助B细胞增殖和产生抗体，参与体液免疫，特别是针对感染疾病、自身免疫病</td>
+</tr>
+</tbody></table>
+<p>CD4+T细胞分化为不同亚群时需要不同转录因子</p>
+<ul>
+<li>Th1：STAT1、STAT4、T-bet</li>
+<li>Th2：STAT6、GATA-3</li>
+<li>Th17：RORγt、STAT3</li>
+</ul>
+<p>CD4+T细胞在自身免疫病中的作用</p>
+<ul>
+<li>多发性硬化症（Multiple Sclerosis，MS）：自身反应性淋巴细胞引起神经元损伤。</li>
+<li>类风湿性关节炎（Rheumatoid Arthritis，RA）：CD4+T细胞分化为Th1和Th17，分泌IFN-γ、IL-17等细胞因子。<ul>
+<li>炎性细胞因子（TNF-α、IL-6、IL-1β等）过度释放，破坏骨和软骨。</li>
+</ul>
+</li>
+<li>炎症性肠炎（IBD）：CD4+T细胞分化为Th1和Th17，分泌IFN-γ、IL-17等细胞因子。<ul>
+<li>TGF-β分泌型Th3细胞、IL-10分泌型Tr1细胞和Treg细胞可以降低IBD发生。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3、CD8-T细胞亚群分化"><a href="#3、CD8-T细胞亚群分化" class="headerlink" title="3、CD8+T细胞亚群分化"></a>3、CD8+T细胞亚群分化</h3><p>（PPT中无相关内容）</p>
+<h2 id="三、T细胞的免疫效应"><a href="#三、T细胞的免疫效应" class="headerlink" title="三、T细胞的免疫效应"></a>三、T细胞的免疫效应</h2><p><strong>★重点：CD8+T细胞介导的免疫效应功能,杀伤的机制。</strong></p>
+<h3 id="1、细胞免疫应答的基本过程"><a href="#1、细胞免疫应答的基本过程" class="headerlink" title="1、细胞免疫应答的基本过程"></a>1、细胞免疫应答的基本过程</h3><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>CD4+T cell</th>
+<th>CD8+T cell</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>识别阶段</td>
+<td>识别抗原（APC细胞，MHC II）</td>
+<td>识别抗原（任何表达MHC I的细胞）</td>
+</tr>
+<tr>
+<td>活化、增殖、分化</td>
+<td>IL-2和IL-2R的信号促进增殖</td>
+<td>双信号+各种细胞因子</td>
+</tr>
+<tr>
+<td>效应阶段</td>
+<td>效应Th1释放CKs介导DTH（迟发型超敏反应）</td>
+<td>效应CTL杀伤靶细胞</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>naive T cell</th>
+<th>效应T细胞</th>
+<th>记忆T细胞</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>迁移</td>
+<td>外周淋巴组织</td>
+<td>炎症组织</td>
+<td>炎症组织、黏膜组织</td>
+</tr>
+<tr>
+<td>对特定抗原的响应</td>
+<td>极低</td>
+<td>高</td>
+<td>低</td>
+</tr>
+<tr>
+<td>效应</td>
+<td>无</td>
+<td>细胞因子分泌、细胞毒性</td>
+<td>抗原记忆性</td>
+</tr>
+<tr>
+<td>细胞周期</td>
+<td>无</td>
+<td>有</td>
+<td>+/-</td>
+</tr>
+<tr>
+<td>IL-2R亲和力</td>
+<td>低</td>
+<td>高</td>
+<td>低</td>
+</tr>
+<tr>
+<td>外周淋巴结归巢受体（L-selectin，CD62L）</td>
+<td>高</td>
+<td>低</td>
+<td>低或者可变</td>
+</tr>
+<tr>
+<td>黏附分子（整合素，CD44）</td>
+<td>低</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>趋化因子受体CCR7</td>
+<td>高</td>
+<td>低</td>
+<td>可变</td>
+</tr>
+<tr>
+<td>主要CD45构型</td>
+<td>CD45RA</td>
+<td>CD45RO</td>
+<td>CD45RO；可变</td>
+</tr>
+<tr>
+<td>形态学</td>
+<td>小，胞质少</td>
+<td>大，胞质多</td>
+<td>小</td>
+</tr>
+</tbody></table>
+<p>记忆T细胞：基于归巢特性和效应功能分类：</p>
+<ul>
+<li>（1）中心记忆T细胞：表达CCR7和L-selectin，归巢到淋巴结。<ul>
+<li>在遇到抗原时展示出的效应功能有限。</li>
+<li>一旦出现抗原挑战，产生许多效应细胞。</li>
+</ul>
+</li>
+<li>（2）效应记忆T细胞：不表达CCR7和L-selectin，归巢到外周组织，特别是粘膜。<ul>
+<li>一旦受到抗原刺激，产生效应细胞因子。</li>
+<li>增殖能力差。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2、T细胞介导的免疫效应"><a href="#2、T细胞介导的免疫效应" class="headerlink" title="2、T细胞介导的免疫效应"></a>2、T细胞介导的免疫效应</h3><p>   <br>（1）抗感染作用</p>
+<ul>
+<li>两种引起靶细胞死亡的方式：<ul>
+<li>穿孔素（Perforin）-颗粒酶（丝氨酸蛋白酶serine protease）依赖性杀伤</li>
+<li>Fas依赖性杀伤</li>
+</ul>
+</li>
+</ul>
+<p>   <br>（2）抗肿瘤作用  </p>
+<ul>
+<li>杀伤突触（killing synapse）：CD8+CTL-tumor互作。<ul>
+<li>CTL与靶细胞结合→靶细胞表面被打孔→靶细胞凋亡/坏死</li>
+</ul>
+</li>
+<li>CTL再循环：连续杀死多个靶细胞。</li>
+<li>基于树突状细胞（DC）的疫苗诱导CD8+CTL，增强抗肿瘤响应。</li>
+</ul>
+<p>   <br>（3）免疫病理作用</p>
+<h2 id="四、B细胞的免疫调节作用"><a href="#四、B细胞的免疫调节作用" class="headerlink" title="四、B细胞的免疫调节作用"></a>四、B细胞的免疫调节作用</h2><p><strong>★重点掌握：B细胞活化的第一、第二信号；抗体介导的免疫效应（CDC、ADCC、免疫调理）</strong></p>
+<p>（1） B细胞作为抗原递呈细胞：</p>
+<ul>
+<li>当抗原浓度低时， B细胞则由高亲合力的BCR直接识别处理抗原，供Th细胞识别，可补偿其他APC对低浓度抗原递呈无能的不足。</li>
+</ul>
+<p>（2） B细胞活化分化成浆细胞，产生抗体：体液免疫</p>
+<h3 id="1、抗原"><a href="#1、抗原" class="headerlink" title="1、抗原"></a>1、抗原</h3><p>一类能刺激机体免疫系统产生特异性免疫应答，并能与相应免疫应答产物即抗体和致敏淋巴细胞在体内或体外发生特异性结合的物质 。两个性质：免疫原性（immunogenicity）、反应原性（reactiogenicity）
+   </p>
+<ul>
+<li>非己性： 即外源性，抗原来自系统发育距离越远的物种，其外源性越突出，免疫原性就越强。<ul>
+<li>不仅包括来自体外的物质，还应包括某些改变或隐蔽的自身抗原。</li>
+</ul>
+</li>
+<li>抗原剂量：过低将导致免疫无反应，过高则可产生免疫耐受(immune tolerance)</li>
+<li>注射次数：在数周内反复注射同一抗原比一次性注射效果好</li>
+<li>抗原表位（epitope）：存在于抗原分子表面由几个氨基酸残基组成的特殊序列及空间结构。<ul>
+<li>决定抗原特异性，也是免疫反应具有高度特异性的物质基础。</li>
+<li>抗原分子量越大，表位就越多，越能有效刺激免疫系统产生免疫应答。</li>
+<li>大分子物质抗原形成胶体，在体内不易被破坏和清除，停留时间较长。</li>
+</ul>
+</li>
+<li>佐剂（adjuvant）：与抗原一起或先于抗原注入机体后，增强机体对该抗原的免疫应答能力或改变免疫应答类型的物质。<ul>
+<li>作用：增强免疫原性， 提高抗体滴度；</li>
+<li>种类：<ul>
+<li>无机佐剂：如氢氧化铝等</li>
+<li>有机佐剂：如微生物（如分枝杆菌）</li>
+<li>合成佐剂：如双链多聚腺苷酸（Poly A）</li>
+<li>油剂：如弗氏佐剂、矿物油、植物油等</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2、抗体"><a href="#2、抗体" class="headerlink" title="2、抗体"></a>2、抗体</h3><p>是机体免疫细胞被抗原激活后，由分化成熟的浆细胞合成分泌的一类与相应抗原特异性结合的具有免疫功能的球蛋白。主要存在于血液、组织液和粘膜分泌液，因此将抗体介导的免疫称为体液免疫(humoral immunity)。
+ </p>
+<ul>
+<li>按位置分两种Ig：分泌型（sIg）、膜结合型（mIg）</li>
+<li>按分子结构分五种Ig：IgG（γ）、IgA（α）、IgM（μ）、IgE（ε）和IgD（δ）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Ig种类</th>
+<th>分子结构与位置</th>
+<th>功能与特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IgG</td>
+<td>单体，血清含量最高（75%-85%）</td>
+<td>半衰期最长（≈23d），抗感染，唯一能通过胎盘的抗体</td>
+</tr>
+<tr>
+<td>IgM</td>
+<td>膜结合型五聚体（“巨球蛋白”）</td>
+<td>最早出现，但半衰期短（先锋免疫作用，可用于早诊）。激活补体、结合抗原、免疫调理。天然血型抗体是IgM</td>
+</tr>
+<tr>
+<td>IgA</td>
+<td>血清型（肠系膜浆细胞分泌，单体）、分泌型（呼吸道、消化道等处浆细胞分泌，sIgA双体）</td>
+<td>sIgA存在于唾液、泪液、以及呼吸道、消化道和泌尿生殖道黏膜表面的分泌液中</td>
+</tr>
+<tr>
+<td>IgD</td>
+<td>膜结合型单体，位于B细胞表面（BCR成分）</td>
+<td>在mIgM之后出现，标志着B细胞成熟。对防止免疫耐受有一定作用</td>
+</tr>
+<tr>
+<td>IgE</td>
+<td>单体，主要由呼吸道和胃肠道粘膜固有层中的浆细胞产生</td>
+<td>血清中含量最低（0.002%），可与肥大细胞、嗜碱性粒细胞上的高亲和力Fcε受体结合，引起I型超敏反应</td>
+</tr>
+</tbody></table>
+<p>  <br>抗体介导的免疫效应</p>
+<ul>
+<li>（1） 中和反应</li>
+<li>（2） 抗体依赖的细胞介导的细胞毒性作用（ADCC）<ul>
+<li>抗体与靶细胞表面抗原结合后，通过Fc段与CTL表面Tc受体结合，促进对靶细胞的杀伤。</li>
+</ul>
+</li>
+<li>（3） 免疫调理或促吞噬作用<ul>
+<li>IgG结合颗粒性抗原（细菌、病毒等）后，Fc段与MΦ、中性粒细胞表面的IgGFc受体结合⇨</li>
+<li>促进对颗粒抗原的吞噬⇨免疫调理（opsonization）</li>
+</ul>
+</li>
+<li>（4） 分泌型IgA的局部抗感染作用</li>
+<li>（5） 免疫病理作用</li>
+</ul>
+<p>   <br>补体依赖的细胞毒性（complement-dependent cytotoxicity， CDC）:</p>
+<ul>
+<li>通过特异性抗体与细胞膜表面相应抗原结合，形成复合物而激活补体经典途径，所形成的攻膜复合物对靶细胞发挥裂解效应。</li>
+</ul>
+<h3 id="3、体液免疫应答（humoral-immunity）"><a href="#3、体液免疫应答（humoral-immunity）" class="headerlink" title="3、体液免疫应答（humoral immunity）"></a>3、体液免疫应答（humoral immunity）</h3><p> <br>（1）B细胞对抗原的识别</p>
+<ul>
+<li>BCR信号通路：Igα/Igβ是BCR的组成成分。</li>
+<li>B细胞活化双信号：BCR和第二信号（B7、CD40、ICOSL）。其他信号：细胞因子受体IL-4R、IL-21R、IL-17R。</li>
+</ul>
+<p>   <br>（2）B细胞抗原识别信号的传导<br>   <br>（3）B细胞增殖分化为浆细胞及生发中心的形成</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2023/11/10/immunity-TBcell/" title="【复习资料】T&#x2F;B细胞的适应性免疫">https://wz.anoms.top/2023/11/10/immunity-TBcell/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%85%8D%E7%96%AB/" rel="tag"><i class="fa fa-tag"></i> 免疫</a>
+              <a href="/tags/T%E7%BB%86%E8%83%9E/" rel="tag"><i class="fa fa-tag"></i> T细胞</a>
+              <a href="/tags/B%E7%BB%86%E8%83%9E/" rel="tag"><i class="fa fa-tag"></i> B细胞</a>
+              <a href="/tags/%E5%A4%8D%E4%B9%A0%E8%B5%84%E6%96%99/" rel="tag"><i class="fa fa-tag"></i> 复习资料</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/11/04/20231104_updatelog/" rel="prev" title="更新日志（2023-11-04）">
+                  <i class="fa fa-chevron-left"></i> 更新日志（2023-11-04）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/11/11/R%E8%AF%AD%E8%A8%80GO%E5%AF%8C%E9%9B%86%E5%88%86%E6%9E%90%E8%B8%A9%E5%9D%91%E4%B9%8BHPO-db%E7%9A%84%E5%AE%89%E8%A3%85/" rel="next" title="R语言GO富集分析踩坑之HPO.db的安装">
+                  R语言GO富集分析踩坑之HPO.db的安装 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
