@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文介绍了 AppImage格式，并连带介绍了几种别的打包方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AppImage格式">
+<meta property="og:url" content="https://wz.anoms.top/2023/12/31/AppImage%E6%A0%BC%E5%BC%8F/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="本文介绍了 AppImage格式，并连带介绍了几种别的打包方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20231231120110.png">
+<meta property="article:published_time" content="2023-12-31T05:00:19.000Z">
+<meta property="article:modified_time" content="2023-12-31T05:13:52.538Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="AppImage">
+<meta property="article:tag" content="跨平台技术">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20231231120110.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2023/12/31/AppImage%E6%A0%BC%E5%BC%8F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2023/12/31/AppImage%E6%A0%BC%E5%BC%8F/","path":"2023/12/31/AppImage格式/","title":"AppImage格式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>AppImage格式 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#AppImage-%E4%B8%8D%E4%BB%A5%E4%BC%A0%E7%BB%9F%E6%96%B9%E5%BC%8F%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">AppImage 不以传统方式安装软件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-Linux-%E4%B8%AD%E4%BD%BF%E7%94%A8-AppImage"><span class="nav-number"></span> <span class="nav-text">在 Linux 中使用 AppImage</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppImage-%E6%96%87%E4%BB%B6%E7%9A%84%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="nav-number"></span> <span class="nav-text">AppImage 文件的内部结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number"></span> <span class="nav-text">其他注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%89%93%E5%8C%85%E4%B8%8D%E5%A5%BD%E7%9A%84AppImage%E5%8D%B3%E4%BD%BF%E6%9C%89%E6%89%A7%E8%A1%8C%E6%9D%83%E9%99%90%E4%B9%9F%E4%B8%8D%E4%BC%9A%E8%BF%90%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">1. 打包不好的AppImage即使有执行权限也不会运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%A1%8C%E9%9D%A2%E9%9B%86%E6%88%90"><span class="nav-number">2.</span> <span class="nav-text">2.桌面集成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%93%E5%B1%95%EF%BC%9A"><span class="nav-number"></span> <span class="nav-text">拓展：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81python%E5%92%8Cjava%E7%9A%84%E6%89%93%E5%8C%85"><span class="nav-number">1.</span> <span class="nav-text">1、python和java的打包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F%E5%9C%A8Windows%E5%92%8CLinux%E4%B8%8A%E7%9A%84%E8%B7%A8%E5%B9%B3%E5%8F%B0%E6%89%A7%E8%A1%8C"><span class="nav-number">2.</span> <span class="nav-text">2、二进制程序在Windows和Linux上的跨平台执行</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2023/12/31/AppImage%E6%A0%BC%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="AppImage格式 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AppImage格式
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-12-31 13:00:19 / 修改时间：13:13:52" itemprop="dateCreated datePublished" datetime="2023-12-31T13:00:19+08:00">2023-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文介绍了 AppImage格式，并连带介绍了几种别的打包方式。</p>
+<span id="more"></span>
+
+
+<blockquote>
+<p>参考</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pipci/p/16109756.html">https://www.cnblogs.com/pipci/p/16109756.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://itsfoss.com/use-appimage-linux/">https://itsfoss.com/use-appimage-linux/</a></li>
+<li><a target="_blank" rel="noopener" href="https://doc.appimage.cn/docs/appimage/">https://doc.appimage.cn/docs/appimage/</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/AppImage">https://zh.wikipedia.org/zh-cn/AppImage</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a></li>
+</ul>
+</blockquote>
+<p>有多种方法可以在 Ubuntu或任何其他 Linux 发行版中安装软件。下载 .deb 或 .rpm 文件并双击它们以安装软件是最方便的方法之一。</p>
+<p>然而近年来出现的AppImage格式则颠覆了以往的软件安装方法。<a target="_blank" rel="noopener" href="http://appimage.org/">AppImage</a>是一种通用的软件包格式。通过将软件打包在 AppImage 中，开发人员只需提供一个文件即可“统管所有”。最终用户，可以在大多数（不一定是全部）现代 Linux 发行版中使用它。</p>
+<h3 id="AppImage-不以传统方式安装软件"><a href="#AppImage-不以传统方式安装软件" class="headerlink" title="AppImage 不以传统方式安装软件"></a>AppImage 不以传统方式安装软件</h3><p>一个典型的 Linux 软件会在不同的地方创建文件（例如<code>/usr/bin</code> 目录），需要 root 权限才能对系统进行这些更改。</p>
+<p>AppImage 不这样做。事实上，AppImage 并没有真正安装软件。它是一个压缩映像，包含运行所需软件所需的所有依赖项和库。要运行软件，只需要执行 AppImage 文件即可，站在用户视角上没有解压、提取、安装等等系列操作。卸载软件也很简单，只需要删除 AppImage 文件即可。从这点上看，AppImage和Windows系统上的<code>.exe</code>文件很像。</p>
+<p>当然，Linux系统有其特殊性，除了程序的二进制文件（称为ELF文件，可以阅读<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/21850560caf0">《PE／ELF／Mach-O之比较》</a> 了解更多）以外，还有一些特殊的文本文件也是可以执行的，后者例如shell脚本以及带有<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/627316374">shbang</a>字符串的文本文件。例如，著名的python发行版Anaconda在Linux系统平台上提供的安装包就是shell脚本格式的（文件名格式大多为<code>Anaconda3-xxxx-Linux-x86_64.sh</code>），而QQ Linux版也提供shell脚本格式的安装包。这些shell脚本格式的安装包可以直接执行，其原理是调用系统的shell脚本解释器进行解压、提取、安装等操作。</p>
+<p>既然调用系统的shell脚本解释器也可以实现这种单文件的程序，且不依赖于系统的包管理器，那么AppImage也是这么做到的吗？并不是如此。如下，我们使用 <code>xxd</code> 指令查看一个典型的AppImage文件的二进制数据编码，可以看见文件的开头4个字节是 <code>.ELF</code> ，这是ELF二进制文件的标志。也就是说，AppImage是个真真切切的二进制文件，而不是调用系统shell指令的脚本。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">~$ xxd Prospect-Mail-0.5.2.AppImage |head</span><br><span class="line">00000000: 7f45 4c46 0201 0100 4149 0200 0000 0000  .ELF....AI......</span><br><span class="line">00000010: 0200 3e00 0100 0000 9046 4000 0000 0000  ..&gt;......F@.....</span><br><span class="line">00000020: 4000 0000 0000 0000 e8d7 0200 0000 0000  @...............</span><br><span class="line">00000030: 0000 0000 4000 3800 0800 4000 2000 1f00  ....@.8...@. ...</span><br><span class="line">00000040: 0600 0000 0500 0000 4000 0000 0000 0000  ........@.......</span><br><span class="line">00000050: 4000 4000 0000 0000 4000 4000 0000 0000  @.@.....@.@.....</span><br><span class="line">00000060: c001 0000 0000 0000 c001 0000 0000 0000  ................</span><br><span class="line">00000070: 0800 0000 0000 0000 0300 0000 0400 0000  ................</span><br><span class="line">00000080: 0002 0000 0000 0000 0002 4000 0000 0000  ..........@.....</span><br><span class="line">00000090: 0002 4000 0000 0000 1c00 0000 0000 0000  ..@.............</span><br></pre></td></tr></table></figure>
+
+<p>AppImage 的一些功能或优点如下：</p>
+<ul>
+<li>发行版无关：可以在各种不同的 Linux 发行版上运行</li>
+<li>无需安装和编译软件：可一键运行</li>
+<li>无需root权限：不触及系统文件</li>
+<li>便携性：可以在任何地方运行，包括活动磁盘</li>
+<li>应用程序处于只读模式</li>
+<li>只需删除 AppImage 文件即可删除软件</li>
+</ul>
+<h2 id="在-Linux-中使用-AppImage"><a href="#在-Linux-中使用-AppImage" class="headerlink" title="在 Linux 中使用 AppImage"></a>在 Linux 中使用 AppImage</h2><p>使用 AppImage 相当简单。它通过以下 3 个简单的步骤完成：</p>
+<ul>
+<li>下载 AppImage 文件</li>
+<li>使其可执行</li>
+<li>运行</li>
+</ul>
+<p>有很多 AppImage 格式的软件可用。在<a target="_blank" rel="noopener" href="https://www.appimagehub.com/">AppImage Hub</a>网站上列出了大量的软件，直接从上面下载.appimage 包即可。GIMP、Firefox等都在其中。</p>
+<p>默认情况下，下载的 AppImage 文件没有执行权限。必须更改文件的权限才能使其可执行。在命令行中使用 <code>chmod +x &lt;file name&gt;</code> 即可赋予文件可执行权限。</p>
+<p>在这以后，只需要在命令行中输入指令 <code>./&lt;file name&gt;</code> （其中<code>&lt;file name&gt;</code> 是AppImage 文件名）即可运行。当然，在图形界面中双击运行也是可以的。</p>
+<p>必须说明的一点是，尽管AppImage在设计时就考虑兼容更多的Linux版本，但依然存在一些Linux版本无法运行AppImage的情况，此时AppImage会抛出一段错误，提示缺少的系统组件，然后退出（如下面的终端输出）。尝试根据错误提示补充这些系统库有助于解决问题。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/home/cyclin/Prospect-Mail-0.5.2$ ./Prospect-Mail-0.5.2.AppImage</span><br><span class="line">dlopen(): error loading libfuse.so.2</span><br><span class="line"></span><br><span class="line">AppImages require FUSE to run.</span><br><span class="line">You might still be able to extract the contents of this AppImage</span><br><span class="line">if you run it with the --appimage-extract option.</span><br><span class="line">See https://github.com/AppImage/AppImageKit/wiki/FUSE</span><br><span class="line">for more information</span><br></pre></td></tr></table></figure>
+
+<h2 id="AppImage-文件的内部结构"><a href="#AppImage-文件的内部结构" class="headerlink" title="AppImage 文件的内部结构"></a>AppImage 文件的内部结构</h2><p>如前面所言，我在Windows的Linux子系统（WSL1）上运行AppImage得到了一段错误提示，经过查询这个问题无法解决，因为WSL1并不是一个标准的Linux环境。但报错提示给了我们一点提醒，可以用 <code>--appimage-extract</code> 这个参数对AppImage进行解包。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/home/cyclin/Prospect-Mail-0.5.2$ ./Prospect-Mail-0.5.2.AppImage --appimage-extract</span><br><span class="line">squashfs-root/.DirIcon</span><br><span class="line">squashfs-root/AppRun</span><br><span class="line">squashfs-root/LICENSE.electron.txt</span><br><span class="line">squashfs-root/LICENSES.chromium.html</span><br><span class="line">squashfs-root/chrome-sandbox</span><br><span class="line">... ...</span><br><span class="line">squashfs-root/vk_swiftshader_icd.json</span><br></pre></td></tr></table></figure>
+
+<p>运行上述解包指令，我们得到了一个叫做 <code>squashfs-root</code> 的文件夹。Squashfs 是 Linux 的压缩只读文件系统，这里即是.AppImage文件的运行环境。其中，<code>AppRun</code>文件是软件执行的主要入口，其内部包含了一段shell脚本用于配置环境和调用可执行文件。在这个文件夹下面我们还可以看到许多以 <code>.so</code> 结尾的文件，这是Linux上的动态链接库文件，是软件运行所必须的。此外还有一些<code>.dat</code> 和 <code>.json</code> 之类的配置文件和数据文件。在 <code>/usr</code> 下面则是随软件一起打包的系统库文件，用以保证AppImage在大部分Linux系统上都可以正常执行。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">/home/cyclin/Prospect-Mail-0.5.2/squashfs-root$ ls -F</span><br><span class="line">AppRun*                  chrome_100_percent.pak*   libEGL.so*             libvulkan.so.1*         prospect-mail.png@  usr/</span><br><span class="line">LICENSE.electron.txt*    chrome_200_percent.pak*   libGLESv2.so*          locales/                resources/          v8_context_snapshot.bin*</span><br><span class="line">LICENSES.chromium.html*  chrome_crashpad_handler*  libffmpeg.so*          prospect-mail*          resources.pak*      vk_swiftshader_icd.json*</span><br><span class="line">chrome-sandbox*          icudtl.dat*               libvk_swiftshader.so*  prospect-mail.desktop*  snapshot_blob.bin*</span><br><span class="line"></span><br><span class="line">/home/cyclin/Prospect-Mail-0.5.2/squashfs-root$ head -n 20 AppRun</span><br><span class="line">#!/bin/bash</span><br><span class="line">set -e</span><br><span class="line"></span><br><span class="line">if [ ! -z &quot;$DEBUG&quot; ] ; then</span><br><span class="line">  env</span><br><span class="line">  set -x</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">THIS=&quot;$0&quot;</span><br><span class="line"># http://stackoverflow.com/questions/3190818/</span><br><span class="line">args=(&quot;$@&quot;)</span><br><span class="line">NUMBER_OF_ARGS=&quot;$#&quot;</span><br><span class="line"></span><br><span class="line">if [ -z &quot;$APPDIR&quot; ] ; then</span><br><span class="line">  # Find the AppDir. It is the directory that contains AppRun.</span><br><span class="line">  # This assumes that this script resides inside the AppDir or a subdirectory.</span><br><span class="line">  # If this script is run inside an AppImage, then the AppImage runtime likely has already set $APPDIR</span><br><span class="line">  path=&quot;$(dirname &quot;$(readlink -f &quot;$&#123;THIS&#125;&quot;)&quot;)&quot;</span><br><span class="line">  while [[ &quot;$path&quot; != &quot;&quot; &amp;&amp; ! -e &quot;$path/$1&quot; ]]; do</span><br><span class="line">    path=$&#123;path%/*&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="其他注意事项"><a href="#其他注意事项" class="headerlink" title="其他注意事项"></a>其他注意事项</h2><h3 id="1-打包不好的AppImage即使有执行权限也不会运行"><a href="#1-打包不好的AppImage即使有执行权限也不会运行" class="headerlink" title="1. 打包不好的AppImage即使有执行权限也不会运行"></a>1. 打包不好的AppImage即使有执行权限也不会运行</h3><p>AppImage 的概念是将所有依赖项都包含在包本身中。但是，如果开发人员认为他已经打包了所有依赖项但实际上并没有发生呢？</p>
+<p>在这种情况下，即使授予 AppImage 执行权限也无法运行，就像前面所说的那种情况一样。对于这种情况，用户首先可以尝试根据报错信息安装缺少的系统库；如果依然无济于事，则应该联系开发人员并告知其这个问题。</p>
+<h3 id="2-桌面集成"><a href="#2-桌面集成" class="headerlink" title="2.桌面集成"></a>2.桌面集成</h3><p>当运行 AppImage 文件时，某些软件可能会提示“安装桌面文件”。如果选择是， AppImage 将像常规安装的应用程序一样与 Linux 系统进行集成。</p>
+<p>这意味着这个AppImage软件可以通过 Unity 或 GNOME 桌面进行搜索。可以在菜单中找到它的程序图标（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20231231120110.png" alt="image.png"></p>
+<h2 id="拓展："><a href="#拓展：" class="headerlink" title="拓展："></a>拓展：</h2><h3 id="1、python和java的打包"><a href="#1、python和java的打包" class="headerlink" title="1、python和java的打包"></a>1、python和java的打包</h3><p>AppImage的这种打包方式看起来很眼熟，它相当于把一个软件要用到的所有东西全部放在了一个压缩包里，而不管其中有没有用到系统库，这一点倒是和python的Pyinstaller很像。</p>
+<p>众所周知，python是解释型语言，一段python代码必须在python解释器的处理下才能执行，无法像C++、Go这类编译型语言一样编译到原生二进制可执行文件格式。然而，如果要用python开发一个软件给很多人用，而用户电脑上不一定有python环境，该怎么办呢？总不可能一个一个用户都手把手教他们安装python吧。所以Pyinstaller应运而生，它将<code>.py</code>程序源码、程序用到的各个python模块，以及一个python解释器全部打包到一个<code>.exe</code>文件当中，从而让最终得到的<code>.exe</code>文件就像普通的软件一样开箱即用。</p>
+<p>要了解更多，可以参考文章 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/f612f13d3b2b">《pyinstaller安装与使用——那些我踩过的坑》</a> 以及 <a target="_blank" rel="noopener" href="https://pyinstaller.org/en/stable/">Pyinstaller官方文档</a>。</p>
+<p>Java也是如此。一般来说，一个java程序需要编译为字节码文件（<code>.class</code>，通常一个类生成一个文件，因此一个java程序可能会编译出多个字节码文件），这虽然也是一种二进制格式，但无法在系统上原生运行，需要一个java虚拟机（Java Runtime, jre）提供运行环境。更常见的打包方式是使用 <code>jar</code> 工具将多个 <code>.class</code> 打包为一个<code>.jar</code>文件，后者包含了java程序的所有字节码文件以及一些必要的资源文件。然而即使是 <code>.jar</code> 文件，也需要jre的运行时环境。</p>
+<p>那么，如果用户电脑上没有jre运行环境，该怎么办呢？思路和Pyinstaller一致，就是在打包的时候把jre一起打包进去。有一些公司会简单粗暴的把jre打包，然后发布版本的时候，再安装程序里写一个脚本，偷偷临时添加jre的环境变量（<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/22788689/answer/38270732">如何将Java打包成exe文件在没有JRE环境的电脑上执行？ - 知乎用户的回答</a> ）。当然，现在也有一些高级工具可以自动进行jre的打包操作，例如<a target="_blank" rel="noopener" href="https://www.ej-technologies.com/download/exe4j/files">exe4j</a> 。 要了解更多，可以参考文章 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7b17143349ba">《Java打包成exe 在没有JRE环境的电脑上运行》</a> 。</p>
+<h3 id="2、二进制程序在Windows和Linux上的跨平台执行"><a href="#2、二进制程序在Windows和Linux上的跨平台执行" class="headerlink" title="2、二进制程序在Windows和Linux上的跨平台执行"></a>2、二进制程序在Windows和Linux上的跨平台执行</h3><blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/584081943">《大新闻：C语言二进制程序同时“跨平台”在Windows和Linux上跑了》 - 空童的文章 - 知乎</a></p>
+</blockquote>
+<p>大新闻！C语言二进制程序同时“跨平台”在Windows和Linux上跑了！！！</p>
+<p>这不是标题党，而是去年在科技界真实发生的新闻。湾区大佬Justine Tunney实现了这个伟大的目标。她做了个跨平台的C标准库<a target="_blank" rel="noopener" href="https://justine.lol/cosmopolitan/index.html">Cosmopolitan Libc</a>，能够把C语言程序变成为“一次编译到处运行的语言”（build-once run-anywhere language）。没错，就是Java当年叫嚣的口号。不过，这里的C可执行文件可不需要解释器或者虚拟机，而是真正的本地运行的二进制文件，POSIX可运行的多语言格式，能够本地运行于Linux + Mac + Windows + FreeBSD + OpenBSD + NetBSD + BIOS，7大平台。</p>
+<p>为了描述这种C语言的二进制跨平台文件格式，她甚至给它取了个名字：APE，即αcτµαlly pδrταblε εxεcµταblε。官网的字体就是那样写的，但读起来感觉就是：Actually portable executable。这个名字完美的契合了“build-once run-anywhere”的口号。</p>
+<p>从官网的介绍来看，Cosmopolitan Libc打包了C语言库的很多东西，因此编译出的文件有更强的兼容性。但对于二进制文件来说，Linux平台上的ELF格式和Windows平台上的PE格式并不是一个东西，APE是怎么做到让Linux和Windows同时识别出来的呢？</p>
+<p>答案藏在文件头里。在Windows系统下，<code>exe</code>文件（<a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/win32/debug/pe-format">PE格式</a>，“portable Execute”）为了保持和DOS系统的兼容性，其文件以<code>MZ</code>两个字母开头，如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(base) C:\Users\ab124\bin&gt;xxd bunzip2.exe|head </span><br><span class="line">00000000: 4d5a 9000 0300 0000 0400 0000 ffff 0000  MZ..............</span><br><span class="line">00000010: b800 0000 0000 0000 4000 0000 0000 0000  ........@.......</span><br><span class="line">00000020: 0000 0000 0000 0000 0000 0000 0000 0000  ................</span><br><span class="line">00000030: 0000 0000 0000 0000 0000 0000 8000 0000  ................</span><br><span class="line">00000040: 0e1f ba0e 00b4 09cd 21b8 014c cd21 5468  ........!..L.!Th</span><br><span class="line">00000050: 6973 2070 726f 6772 616d 2063 616e 6e6f  is program canno</span><br><span class="line">00000060: 7420 6265 2072 756e 2069 6e20 444f 5320  t be run in DOS</span><br><span class="line">00000070: 6d6f 6465 2e0d 0d0a 2400 0000 0000 0000  mode....$.......</span><br><span class="line">00000080: 5045 0000 6486 0b00 e626 7364 0000 0000  PE..d....&amp;sd....</span><br></pre></td></tr></table></figure>
+
+<p>在Linux系统下，<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/286088470">ELF格式</a>（“Executable and Linkable Format”）的文件以 <code>.ELF</code> 三个字母开头。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">~/.local/bin$ xxd gzip |head </span><br><span class="line">00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............</span><br><span class="line">00000010: 0300 3e00 0100 0000 c042 0000 0000 0000  ..&gt;......B......</span><br><span class="line">00000020: 4000 0000 0000 0000 c0f9 0400 0000 0000  @...............</span><br><span class="line">00000030: 0000 0000 4000 3800 0d00 4000 2800 2700  ....@.8...@.(.&#x27;.</span><br><span class="line">00000040: 0600 0000 0400 0000 4000 0000 0000 0000  ........@.......</span><br><span class="line">00000050: 4000 0000 0000 0000 4000 0000 0000 0000  @.......@.......</span><br><span class="line">00000060: d802 0000 0000 0000 d802 0000 0000 0000  ................</span><br><span class="line">00000070: 0800 0000 0000 0000 0300 0000 0400 0000  ................</span><br><span class="line">00000080: 1803 0000 0000 0000 1803 0000 0000 0000  ................</span><br><span class="line">00000090: 1803 0000 0000 0000 1c00 0000 0000 0000  ................</span><br></pre></td></tr></table></figure>
+
+<p>然而APE二进制跨平台文件格式则另辟蹊径，通过hack下文件头，把pe文件头和符合 UNIX Sixth Edition shell 规范的脚本混合在了一起，Windows程序加载器识别其为PE文件，Linux程序加载器识别其为shell脚本，从而实现跨平台运行。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/home/cyclin/APE/cosmocc/bin$ xxd make |head </span><br><span class="line">00000000: 4d5a 7146 7044 3d27 0a0a 0010 00f8 0000  MZqFpD=&#x27;........</span><br><span class="line">00000010: 0000 0000 0001 0008 4000 0000 0000 0000  ........@.......</span><br><span class="line">00000020: 0000 0000 0000 0000 2720 3c3c 276a 7573  ........&#x27; &lt;&lt;&#x27;jus</span><br><span class="line">00000030: 7469 6e65 306c 6b73 6a6b 270a 580e 0100  tine0lksjk&#x27;.X...</span><br><span class="line">00000040: b240 eb00 eb14 9090 eb06 4883 ec08 31d2  .@........H...1.</span><br><span class="line">00000050: bd00 00eb 05e9 2545 0000 fc0f 1f87 3ee0  ......%E......&gt;.</span><br><span class="line">00000060: bf00 7031 c98e c1fa 8ed7 89cc fb0e 1fe8  ..p1............</span><br><span class="line">00000070: 0000 5e81 ee72 00b8 0002 5050 0731 ffb9  ..^..r....PP.1..</span><br><span class="line">00000080: 0002 f3a4 0f1f 87d2 ffea 8e20 0000 8ed9  ........... ....</span><br><span class="line">00000090: b900 1bb8 5000 8ec0 31c0 31ff f3aa 80fa  ....P...1.1.....</span><br></pre></td></tr></table></figure>
+
+<p>如上面的代码块所示，使用<code>xxd</code>指令查看APE格式的make程序前100个字节，可以看到这个程序以<code>MZqFpD</code> 开头，在 Windows PE 格式下它就是普通的 PE 格式头，但它又可以被解释为汇编指令 <code>pop %r10 ; jno 0x4a ; jo 0x4a</code> ，再加上后续的指令，就可以实现判断当前是从用户空间启动还是被 boot，从而跳转到对应的代码。这真是个精妙的设计。</p>
+<p>当然，对于这个项目，也有一些不同的声音，例如有人就将其评价为“毫无意义，在不同的系统用的是不同的系统api，合成一个畸形的执行程序根本改变不了任何事”。更有人认为APE这个项目仅仅停留在helloworld阶段，涉及更深层次系统调用时就无法解决系统兼容性的问题。不管怎么说，这个项目为我们提供了一个新的视角，可以通过一些巧妙的手法绕过系统限制实现平台之间的兼容。</p>
+<p>事实上，计算机技术发展到今天，各个操作系统都在蓬勃发展，一方面为大家带来了更多选择，另一方面则由于系统之间的不兼容造成割裂。许多跨平台技术的出现正是为了弥合系统之间的不兼容性，而这些技术，从HTML到Java，从QT到electron，从WINE再到APE，不论最终是否真正解决了软件跨平台的问题，都对今天的计算机行业造成了很深远的影响。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2023/12/31/AppImage%E6%A0%BC%E5%BC%8F/" title="AppImage格式">https://wz.anoms.top/2023/12/31/AppImage格式/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/AppImage/" rel="tag"><i class="fa fa-tag"></i> AppImage</a>
+              <a href="/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0%E6%8A%80%E6%9C%AF/" rel="tag"><i class="fa fa-tag"></i> 跨平台技术</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/12/30/%E5%90%84%E4%B8%AA%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8C%85%E6%A0%BC%E5%BC%8F%E6%B5%85%E6%9E%90/" rel="prev" title="各个系统的软件安装包格式浅析">
+                  <i class="fa fa-chevron-left"></i> 各个系统的软件安装包格式浅析
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

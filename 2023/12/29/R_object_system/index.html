@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文转载自互联网，介绍了R语言从S3到R6的对象系统特性和使用方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言的对象系统（S3-R6）">
+<meta property="og:url" content="https://wz.anoms.top/2023/12/29/R_object_system/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="本文转载自互联网，介绍了R语言从S3到R6的对象系统特性和使用方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-d53e6ef8e1faf0a88376490e9430c5d2_720w.webp">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-c5695756bc9e29c035d24d7533f16c5c_720w.webp">
+<meta property="article:published_time" content="2023-12-29T02:00:19.000Z">
+<meta property="article:modified_time" content="2023-12-31T05:16:08.921Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="对象系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic3.zhimg.com/80/v2-d53e6ef8e1faf0a88376490e9430c5d2_720w.webp">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2023/12/29/R_object_system/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2023/12/29/R_object_system/","path":"2023/12/29/R_object_system/","title":"R语言的对象系统（S3-R6）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>R语言的对象系统（S3-R6） | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.1.</span> <span class="nav-text">1. 面向对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-R-%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">2. R 的面向对象编程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#S3"><span class="nav-number">2.</span> <span class="nav-text">S3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E6%A6%82%E5%BF%B5"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%88%9B%E5%BB%BA-S3-%E5%AF%B9%E8%B1%A1"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 创建 S3 对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E5%88%9B%E5%BB%BA%E6%B3%9B%E5%9E%8B%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.</span> <span class="nav-text">1.3 创建泛型函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-S3-%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">2.4.</span> <span class="nav-text">1.4 S3 对象的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-S3-%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%BB%A7%E6%89%BF"><span class="nav-number">2.5.</span> <span class="nav-text">1.5 S3 对象的继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-%E7%BC%BA%E7%82%B9"><span class="nav-number">2.6.</span> <span class="nav-text">1.6 缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-7-%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.7.</span> <span class="nav-text">1.7 示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#S4"><span class="nav-number">3.</span> <span class="nav-text">S4</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 创建对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%82%A3%E5%A6%82%E4%BD%95%E8%AE%BF%E9%97%AE%E5%B1%9E%E6%80%A7%E5%80%BC%E5%91%A2%EF%BC%9F"><span class="nav-number">3.3.</span> <span class="nav-text">那如何访问属性值呢？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E5%80%BC"><span class="nav-number">3.4.</span> <span class="nav-text">2.3 设置默认值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5"><span class="nav-number">3.5.</span> <span class="nav-text">2.4 类型检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-%E4%BD%BF%E7%94%A8%E5%B7%B2%E6%9C%89%E5%AE%9E%E4%BE%8B%E5%88%9B%E5%BB%BA%E6%96%B0%E5%AE%9E%E4%BE%8B"><span class="nav-number">3.6.</span> <span class="nav-text">2.5 使用已有实例创建新实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-%E5%88%9B%E5%BB%BA%E5%87%BD%E6%95%B0"><span class="nav-number">3.7.</span> <span class="nav-text">2.6 创建函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.8.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-7-%E7%BB%A7%E6%89%BF"><span class="nav-number">3.9.</span> <span class="nav-text">2.7 继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-8-%E5%AE%9E%E4%BE%8B"><span class="nav-number">3.10.</span> <span class="nav-text">2.8 实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RC"><span class="nav-number">4.</span> <span class="nav-text">RC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E5%88%9B%E5%BB%BA-RC-%E7%B1%BB"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 创建 RC 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E8%AE%BF%E9%97%AE%E5%B1%9E%E6%80%A7"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 访问属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%AE%9A%E4%B9%89%E6%96%B9%E6%B3%95"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 定义方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-%E5%AE%9A%E4%B9%89%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">4.5.</span> <span class="nav-text">3.5 定义构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-%E7%BB%A7%E6%89%BF"><span class="nav-number">4.6.</span> <span class="nav-text">3.6 继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-7-RC-%E7%9A%84%E5%86%85%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="nav-number">4.7.</span> <span class="nav-text">3.7 RC 的内置方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-8-RC-%E7%B1%BB%E6%96%B9%E6%B3%95"><span class="nav-number">4.8.</span> <span class="nav-text">3.8 RC 类方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-9-%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.9.</span> <span class="nav-text">3.9 示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R6"><span class="nav-number">5.</span> <span class="nav-text">R6</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E4%BB%8B%E7%BB%8D"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E5%88%9B%E5%BB%BA-R6-%E5%AF%B9%E8%B1%A1"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 创建 R6 对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E5%85%AC%E6%9C%89%E6%88%90%E5%91%98%E4%B8%8E%E7%A7%81%E6%9C%89%E6%88%90%E5%91%98"><span class="nav-number">5.3.</span> <span class="nav-text">4.3 公有成员与私有成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E4%B8%BB%E5%8A%A8%E7%BB%91%E5%AE%9A"><span class="nav-number">5.4.</span> <span class="nav-text">4.4 主动绑定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-%E7%BB%A7%E6%89%BF"><span class="nav-number">5.5.</span> <span class="nav-text">4.5 继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-6-%E5%BC%95%E7%94%A8%E5%AF%B9%E8%B1%A1%E5%AD%97%E6%AE%B5"><span class="nav-number">5.6.</span> <span class="nav-text">4.6 引用对象字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-7-%E5%8F%AF%E7%A7%BB%E6%A4%8D%E5%92%8C%E4%B8%8D%E5%8F%AF%E7%A7%BB%E6%A4%8D%E7%B1%BB"><span class="nav-number">5.7.</span> <span class="nav-text">4.7 可移植和不可移植类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-8-%E4%B8%BA%E7%8E%B0%E6%9C%89%E7%B1%BB%E6%B7%BB%E5%8A%A0%E6%88%90%E5%91%98"><span class="nav-number">5.8.</span> <span class="nav-text">4.8 为现有类添加成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-9-%E6%89%93%E5%8D%B0%E5%AF%B9%E8%B1%A1"><span class="nav-number">5.9.</span> <span class="nav-text">4.9 打印对象</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2023/12/29/R_object_system/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="R语言的对象系统（S3-R6） | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          R语言的对象系统（S3-R6）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-12-29 10:00:19" itemprop="dateCreated datePublished" datetime="2023-12-29T10:00:19+08:00">2023-12-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-12-31 13:16:08" itemprop="dateModified" datetime="2023-12-31T13:16:08+08:00">2023-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文转载自互联网，介绍了R语言从S3到R6的对象系统特性和使用方法。</p>
+<span id="more"></span>
+
+
+<blockquote>
+<p>原文链接：</p>
+<ul>
+<li>R 面向对象编程（一） - 名本无名的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/358532080">https://zhuanlan.zhihu.com/p/358532080</a></li>
+<li>R 面向对象编程（二） - 名本无名的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/358783073">https://zhuanlan.zhihu.com/p/358783073</a></li>
+<li>R 面向对象编程（三）—— RC - 名本无名的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/359074012">https://zhuanlan.zhihu.com/p/359074012</a></li>
+<li>R 面向对象编程（四）—— R6 - 名本无名的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/359383772">https://zhuanlan.zhihu.com/p/359383772</a></li>
+</ul>
+<p>另外参考：</p>
+<ul>
+<li> 《R语言基于R6的面向对象编程》 <a target="_blank" rel="noopener" href="http://blog.fens.me/r-class-r6/">http://blog.fens.me/r-class-r6/</a></li>
+<li> 《发布gridgame游戏包》 <a target="_blank" rel="noopener" href="http://blog.fens.me/r-game-gridgame/">http://blog.fens.me/r-game-gridgame/</a></li>
+<li> 《撬动R内核的高级工具包pryr》 <a target="_blank" rel="noopener" href="http://blog.fens.me/r-pryr/">http://blog.fens.me/r-pryr/</a></li>
+<li> 《mlr3_R6对象》 <a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1775379#">https://cloud.tencent.com/developer/article/1775379#</a></li>
+</ul>
+</blockquote>
+<hr>
+<blockquote>
+<p>R 面向对象编程（一） - 名本无名的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/358532080">https://zhuanlan.zhihu.com/p/358532080</a></p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><h3 id="1-面向对象"><a href="#1-面向对象" class="headerlink" title="1. 面向对象"></a><strong>1. 面向对象</strong></h3><p>面向对象编程（<code>object-oriented programming</code>，<code>OOP</code>）是一种编程范式，它将对象作为程序的基本单元，一个对象包含了数据以及操作数据的函数。</p>
+<p>那什么是对象？对象是类（<code>class</code>）类的实例。</p>
+<p>那什么又是类呢？</p>
+<p>类是对现实事物的抽象，比如说，人类是对世界上所有人的总称，而你、我却是实实在在存在于现实中的，也就是一个个对象。</p>
+<p>类的定义包含了对数据的描述以及对应的操作方法，比如，人应该有性别、年龄、身高、体重等固有特征，但是每个对象，也就是说虽然每个人的特征千差万别，但都有这些固定的属性客观存在的。</p>
+<h3 id="2-R-的面向对象编程"><a href="#2-R-的面向对象编程" class="headerlink" title="2. R 的面向对象编程"></a><strong>2. R 的面向对象编程</strong></h3><p>之前，我们对 <code>R</code> 的理解可能都是停留在函数式编程的概念里。也就是编写一个个函数，来处理不同的对象。</p>
+<p>当然，目前 <code>R</code> 主要用于统计计算，而且代码量一般不会很大，几十或上百行。使用函数式的编程方式就可以很好的完成编程任务。</p>
+<p>一般来说，在 <code>R</code> 中，函数式编程要比面向对象编程重要得多，因为你通常是将复杂的问题分解成简单的函数，而不是简单的对象。</p>
+<p>那为什么我还要学习面向对象编程呢？</p>
+<p>面向对象编程的优势是，能够使程序便于分析、设计、理解，提高重用性、灵活性和可扩展性。</p>
+<p><code>R</code> 中的 <code>OOP</code> 系统</p>
+<ul>
+<li><code>base R</code> 提供的：<code>S3</code>, <code>S4</code> 和 <code>reference classes</code> (<code>RC</code>)      </li>
+<li><code>CRAN</code> 包提供的：<code>R6</code>、<code>R.oo</code>、<code>proto</code>      </li>
+</ul>
+<h2 id="S3"><a href="#S3" class="headerlink" title="S3"></a><strong>S3</strong></h2><h3 id="1-1-概念"><a href="#1-1-概念" class="headerlink" title="1.1 概念"></a><strong>1.1 概念</strong></h3><p><code>S3</code> 面向对象编程，是 <code>R</code> 中第一个也是最简单的 <code>OOP</code> 系统，广泛存在于早期开发的 <code>R</code> 包中，也是 <code>CRAN</code> 包最常用的系统。</p>
+<p><code>S3</code> 的实现是基于一种特殊的函数（泛型函数，根据传入对象的类型来决定调用哪个方法）</p>
+<h3 id="1-2-创建-S3-对象"><a href="#1-2-创建-S3-对象" class="headerlink" title="1.2 创建 S3 对象"></a><strong>1.2 创建 S3 对象</strong></h3><p>_注意_：下面我们会使用 <code>sloop</code> 包提供的函数来帮助我们查看对象的类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; install.packages(&#x27;sloop&#x27;)</span><br><span class="line">&gt; library(sloop)</span><br></pre></td></tr></table></figure>
+
+<p>首先，我们使用 <code>attr</code> 来创建一个 <code>S3</code> 对象</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; a &lt;- 1</span><br><span class="line">&gt; attr(a, &#x27;class&#x27;) &lt;- &#x27;bar&#x27;</span><br><span class="line">&gt; a</span><br><span class="line">[1] 1</span><br><span class="line">attr(,&quot;class&quot;)</span><br><span class="line">[1] &quot;bar&quot;</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>class</code> 或 <code>attr</code> 获取对象的类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; class(a)</span><br><span class="line">[1] &quot;bar&quot;</span><br><span class="line">&gt; attr(a, &#x27;class&#x27;)</span><br><span class="line">[1] &quot;bar&quot;</span><br></pre></td></tr></table></figure>
+
+<p>再用 <code>sloop</code> 包的 <code>otype</code> 来判断是何种对象</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; otype(a)</span><br><span class="line">[1] &quot;S3&quot;</span><br><span class="line">&gt; otype(1)</span><br><span class="line">[1] &quot;base&quot;</span><br></pre></td></tr></table></figure>
+
+<p>我们也可以使用 <code>structure</code> 来构建一个 <code>S3</code> 对象</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt; b &lt;- structure(2, class=&#x27;foo&#x27;)</span><br><span class="line">&gt; b</span><br><span class="line">[1] 2</span><br><span class="line">attr(,&quot;class&quot;)</span><br><span class="line">[1] &quot;foo&quot;</span><br><span class="line">&gt; otype(b)</span><br><span class="line">[1] &quot;S3&quot;</span><br></pre></td></tr></table></figure>
+
+<p>还可以使用为 <code>class(var)</code> 赋值的方式构建</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; x &lt;- list(a=1)</span><br><span class="line">&gt; class(x)</span><br><span class="line">[1] &quot;list&quot;</span><br><span class="line">&gt; otype(x)</span><br><span class="line">[1] &quot;base&quot;</span><br><span class="line"></span><br><span class="line">&gt; class(x) &lt;- &#x27;foo&#x27;</span><br><span class="line">&gt; class(x)</span><br><span class="line">[1] &quot;foo&quot;</span><br><span class="line">&gt; otype(x)</span><br><span class="line">[1] &quot;S3&quot;</span><br></pre></td></tr></table></figure>
+
+<p>还可以将类属性设置为向量，为 <code>S3</code> 对象指定多个类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; c &lt;- structure(3, class=c(&#x27;bar&#x27;, &#x27;foo&#x27;))</span><br><span class="line">&gt; class(c)</span><br><span class="line">[1] &quot;bar&quot; &quot;foo&quot;</span><br><span class="line">&gt; otype(c)</span><br><span class="line">[1] &quot;S3&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-创建泛型函数"><a href="#1-3-创建泛型函数" class="headerlink" title="1.3 创建泛型函数"></a><strong>1.3 创建泛型函数</strong></h3><p>通常，我们使用 <code>UseMethod()</code> 来创建一个泛型函数，例如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">person &lt;- function(x, ...) &#123;</span><br><span class="line">  UseMethod(&#x27;person&#x27;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义完泛型函数之后，可以使用以下方式</p>
+<ul>
+<li><code>person.xxx</code> 定义名为 <code>xxx</code> 的方法</li>
+<li><code>person.default</code> 定义默认方法</li>
+</ul>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">person.default &lt;- function(x, ...) &#123;</span><br><span class="line">  print(&quot;I am human.&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">person.sing &lt;- function(x, ...) &#123;</span><br><span class="line">  print(&quot;I can sing&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">person.name &lt;- function(x, ...) &#123;</span><br><span class="line">  print(paste0(&quot;My name is &quot;, x))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那如何调用这些方法呢？</p>
+<p>首先，我们定义一个 <code>class</code> 属性为 <code>&quot;sing&quot;</code> 的变量</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; a &lt;- structure(&quot;tom&quot;, class=&#x27;sing&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p>然后，将该对象 <code>a</code> 传入 <code>person</code> 中</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; person(tom)</span><br><span class="line">[1] &quot;I can sing&quot;</span><br><span class="line">&gt; person.sing(a)</span><br><span class="line">[1] &quot;I can sing&quot;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，调用了 <code>person.sing()</code> 方法。</p>
+<p>让我们再尝试其他类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; b &lt;- structure(&quot;tom&quot;, class=&#x27;name&#x27;)</span><br><span class="line">&gt; person(b)</span><br><span class="line">[1] &quot;My name is tom&quot;</span><br><span class="line">&gt; person(&quot;joy&quot;)</span><br><span class="line">[1] &quot;I am human.&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这样，我们只要使用 <code>person</code> 函数，就能够对不同类型的输入做出相应，输入不同类型的对象会自动调用相应的方法。</p>
+<p>对于未指定的类型，会调用 <code>person.default</code> 方法。这就是泛型函数。</p>
+<h3 id="1-4-S3-对象的方法"><a href="#1-4-S3-对象的方法" class="headerlink" title="1.4 S3 对象的方法"></a><strong>1.4 S3 对象的方法</strong></h3><p>我们可以使用 <code>methods()</code> 函数来获取 <code>S3</code> 对象包含的所有方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; methods(person)</span><br><span class="line">[1] person.default person.name    person.sing  </span><br></pre></td></tr></table></figure>
+
+<p>可以使用 <code>generic.function</code> 参数，传递想要查询的泛型函数</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; library(magrittr)</span><br><span class="line">&gt; methods(generic.function = print) %&gt;% head()</span><br><span class="line">[1] &quot;print.acf&quot;     &quot;print.anova&quot;   &quot;print.aov&quot;     &quot;print.aovlist&quot;</span><br><span class="line">[5] &quot;print.ar&quot;      &quot;print.Arima&quot;</span><br></pre></td></tr></table></figure>
+
+<p><code>class</code> 参数指定类名</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; methods(class = lm) %&gt;% head()</span><br><span class="line">[1] &quot;add1.lm&quot;                   &quot;alias.lm&quot;                 </span><br><span class="line">[3] &quot;anova.lm&quot;                  &quot;case.names.lm&quot;            </span><br><span class="line">[5] &quot;coerce,oldClass,S3-method&quot; &quot;confint.lm&quot;</span><br></pre></td></tr></table></figure>
+
+<p>_注意_：一些输出的函数名后缀有 <code>*</code> 号表示不可见函数，例如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; print.xtabs</span><br><span class="line">错误: 找不到对象&#x27;print.xtabs&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>可以使用 <code>getAnywhere</code> 获取</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt; getAnywhere(print.xtabs)</span><br><span class="line">A single object matching ‘print.xtabs’ was found</span><br><span class="line">It was found in the following places</span><br><span class="line">  registered S3 method for print from namespace stats</span><br><span class="line">  namespace:stats</span><br><span class="line">with value</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">function (x, na.print = &quot;&quot;, ...) </span><br><span class="line">&#123;</span><br><span class="line">    ox &lt;- x</span><br><span class="line">    attr(x, &quot;call&quot;) &lt;- NULL</span><br><span class="line">    print.table(x, na.print = na.print, ...)</span><br><span class="line">    invisible(ox)</span><br><span class="line">&#125;</span><br><span class="line">&lt;bytecode: 0x7fe1e612b9e8&gt;</span><br><span class="line">&lt;environment: namespace:stats&gt;</span><br></pre></td></tr></table></figure>
+
+<p>或者 <code>getS3method</code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt; getS3method(&quot;print&quot;, &quot;xtabs&quot;)</span><br><span class="line">function (x, na.print = &quot;&quot;, ...) </span><br><span class="line">&#123;</span><br><span class="line">    ox &lt;- x</span><br><span class="line">    attr(x, &quot;call&quot;) &lt;- NULL</span><br><span class="line">    print.table(x, na.print = na.print, ...)</span><br><span class="line">    invisible(ox)</span><br><span class="line">&#125;</span><br><span class="line">&lt;bytecode: 0x7fe1e612b9e8&gt;</span><br><span class="line">&lt;environment: namespace:stats&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-S3-对象的继承"><a href="#1-5-S3-对象的继承" class="headerlink" title="1.5 S3 对象的继承"></a><strong>1.5 S3 对象的继承</strong></h3><p><code>S3</code> 对象是通过 <code>NextMethod()</code> 方法继承的，让我们先定义一个泛型函数</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">person &lt;- function(x, ...) &#123;</span><br><span class="line">  UseMethod(&#x27;person&#x27;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">person.father &lt;- function(x, ...) &#123;</span><br><span class="line">  print(&quot;I am father.&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">person.son &lt;- function(x, ...) &#123;</span><br><span class="line">  NextMethod()</span><br><span class="line">  print(&quot;I am son.&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt; p1 &lt;- structure(1,class=c(&quot;father&quot;))</span><br><span class="line">&gt; person(p1)</span><br><span class="line">[1] &quot;I am father.&quot;</span><br><span class="line">&gt; p2 &lt;- structure(1,class=c(&quot;son&quot;,&quot;father&quot;))</span><br><span class="line">&gt; person(p2)</span><br><span class="line">[1] &quot;I am father.&quot;</span><br><span class="line">[1] &quot;I am son.&quot;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，在调用 <code>person(p2)</code> 之后，会先执行 <code>person.father()</code> 然后执行 <code>person.son()</code></p>
+<p>_注意_：需要将被继承的类型放在第二个（<code>son</code> 之后）</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; ab &lt;- structure(1, class = c(&quot;father&quot;, &quot;son&quot;))</span><br><span class="line">&gt; person(ab)</span><br><span class="line">[1] &quot;I am father.&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这样就实现了面向对象编程中的继承</p>
+<h3 id="1-6-缺点"><a href="#1-6-缺点" class="headerlink" title="1.6 缺点"></a><strong>1.6 缺点</strong></h3><ol>
+<li><code>S3</code> 并不是完全的面向对象，而是基于泛型函数模拟的面向对象</li>
+<li><code>S3</code> 用起来简单，但是对于复杂的对象关系，很难高清对象的意义</li>
+<li>缺少检查，<code>class</code> 属性可以被任意设置</li>
+</ol>
+<h3 id="1-7-示例"><a href="#1-7-示例" class="headerlink" title="1.7 示例"></a><strong>1.7 示例</strong></h3><p><code>S3</code> 对象系统广泛存在于 <code>R</code> 语言的早期开发中，因此，在 <code>base</code> 包中包含了许多 <code>S3</code> 对象。</p>
+<p>例如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; ftype(plot)</span><br><span class="line">[1] &quot;S3&quot;      &quot;generic&quot;</span><br><span class="line">&gt; ftype(print)</span><br><span class="line">[1] &quot;S3&quot;      &quot;generic&quot;</span><br></pre></td></tr></table></figure>
+
+<p>自定义 <code>S3</code> 对象</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">say &lt;- function(x, ...) &#123;</span><br><span class="line">  UseMethod(&quot;say&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">say.numeric &lt;- function(x, ...) &#123;</span><br><span class="line">  paste0(&quot;the number is &quot;, x)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">say.character &lt;- function(x, ...) &#123;</span><br><span class="line">  paste0(&quot;the character is &quot;, x)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; say(&#x27;nam&#x27;)</span><br><span class="line">[1] &quot;the character is nam&quot;</span><br><span class="line">&gt; say(12315)</span><br><span class="line">[1] &quot;the number is 12315&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>END -</li>
+</ul>
+<hr>
+<blockquote>
+<p>R 面向对象编程（二） - 名本无名的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/358783073">https://zhuanlan.zhihu.com/p/358783073</a></p>
+</blockquote>
+<h2 id="S4"><a href="#S4" class="headerlink" title="S4"></a><strong>S4</strong></h2><h3 id="2-1-介绍"><a href="#2-1-介绍" class="headerlink" title="2.1 介绍"></a><strong>2.1 介绍</strong></h3><p><code>S4</code> 是标准的 <code>R</code> 语言面向对象实现方式，比 <code>S3</code> 的定义更加严格，<code>S4</code> 对象有专门的函数用于定义类（<code>setClass</code>）、泛型函数（<code>setGeneric</code>）、方法（<code>setMethod</code>）以及实例化对象（<code>new</code>），提供了参数检查，多重继承功能。</p>
+<p><code>S4</code> 有一个重要的组件 <code>slot</code>，它是对象的属性组件，可以使用专门的运算符 <code>@</code>（发音为 <code>at</code>）来访问。</p>
+<p><code>Bioconductor</code> 社区是以 <code>S4</code> 对象作为基础框架，只接受 <code>S4</code> 定义的 <code>R</code> 包。所以，学习 <code>S4</code> 是非常有必要的</p>
+<h3 id="2-2-创建对象"><a href="#2-2-创建对象" class="headerlink" title="2.2 创建对象"></a><strong>2.2 创建对象</strong></h3><p>我们需要使用 <code>setClass</code> 来定义一个类，<code>setClass</code> 的参数为</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setClass(Class, representation, prototype, contains=character(),</span><br><span class="line">         validity, access, where, version, sealed, package,</span><br><span class="line">         S3methods = FALSE, slots)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>Class</code>: 指定类名</li>
+<li><code>slots</code>: 定义属性和属性类型，<code>list</code> 或命名向量</li>
+<li><code>prototype</code>: 设置属性的默认值</li>
+<li><code>contains=character()</code>: 指定父类（继承）</li>
+<li><code>validity</code>: 定义属性的类型检查器</li>
+<li><code>where</code>: 设置存储空间</li>
+<li><code>sealed</code>: 如果为 <code>TRUE</code>,则不能使用 <code>setClass</code> 定义相同的类名</li>
+<li><code>package</code>: 定义所属的包</li>
+</ul>
+<p><code>version</code>, <code>package</code>, <code>representation</code>, <code>S3methods</code> 这四个参数在 <code>R-3.0.0</code> 之后不推荐使用</p>
+<p>首先，定义一个对象</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setClass(&quot;Person&quot;,slots=list(name=&quot;character&quot;,age=&quot;numeric&quot;))</span><br></pre></td></tr></table></figure>
+
+<p>然后，初始化一个实例</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom &lt;- new(&quot;Person&quot;,name=&quot;tom&quot;,age=18)</span><br><span class="line">&gt; tom</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 18</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用另一种方式</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt; Person &lt;- setClass(&quot;Person&quot;,slots=list(name=&quot;character&quot;,age=&quot;numeric&quot;))</span><br><span class="line">&gt; tom &lt;- Person(name=&quot;tom&quot;, age=18)</span><br><span class="line">&gt; tom</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 18</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们可以初始化的对象实例包含两个属性（<code>slot</code>） <code>name</code> 和 <code>age</code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; class(tom)</span><br><span class="line">[1] &quot;Person&quot;</span><br><span class="line">attr(,&quot;package&quot;)</span><br><span class="line">[1] &quot;.GlobalEnv&quot;</span><br><span class="line">&gt; otype(tom)</span><br><span class="line">[1] &quot;S4&quot;</span><br></pre></td></tr></table></figure>
+
+<p><code>tom</code> 是一个 <code>S4</code> 对象，类型为 <code>Person</code></p>
+<h3 id="那如何访问属性值呢？"><a href="#那如何访问属性值呢？" class="headerlink" title="那如何访问属性值呢？"></a><strong>那如何访问属性值呢？</strong></h3><p>我们可以使用 <code>slotNames</code> 获取对象的属性，接受一个 S4 对象变量或字符串类名</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; slotNames(tom)</span><br><span class="line">[1] &quot;name&quot; &quot;age&quot; </span><br><span class="line">&gt; slotNames(&quot;Person&quot;)</span><br><span class="line">[1] &quot;name&quot; &quot;age&quot;</span><br></pre></td></tr></table></figure>
+
+<p><code>getSlots</code> 与 <code>slotNames</code> 类似，传入字符串类名，返回属性及其类型的字符串向量</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; getSlots(&quot;Person&quot;)</span><br><span class="line">       name         age </span><br><span class="line">&quot;character&quot;   &quot;numeric&quot; </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>获取属性值</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom@name</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">&gt; tom@age</span><br><span class="line">[1] 18</span><br><span class="line">&gt; slot(tom, &quot;name&quot;)</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">&gt; slot(tom, &quot;age&quot;)</span><br><span class="line">[1] 18</span><br></pre></td></tr></table></figure>
+
+<p>不同于 <code>S3</code> 使用 <code>$</code> 来访问对象的属性，在 <code>S4</code> 中使用 <code>@</code> 来获取对象的属性，或者使用 <code>slot</code> 函数</p>
+<p>当然，我们也可以更改属性的值</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom@age &lt;- 28</span><br><span class="line">&gt; tom</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 28</span><br><span class="line"></span><br><span class="line">&gt; slot(tom, &quot;age&quot;) &lt;- 21</span><br><span class="line">&gt; tom</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 21</span><br></pre></td></tr></table></figure>
+
+<p><code>getClass</code> 也接受一个 <code>S4</code> 对象变量，返回包含属性及其对应的值的 <code>list</code>；或字符串类名，返回属性名称及对应的类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt; getClass(tom)</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 18</span><br><span class="line"></span><br><span class="line">&gt; getClass(&quot;Person&quot;)</span><br><span class="line">Class &quot;Person&quot; [in &quot;.GlobalEnv&quot;]</span><br><span class="line"></span><br><span class="line">Slots:</span><br><span class="line">                          </span><br><span class="line">Name:       name       age</span><br><span class="line">Class: character   numeric</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-设置默认值"><a href="#2-3-设置默认值" class="headerlink" title="2.3 设置默认值"></a><strong>2.3 设置默认值</strong></h3><p>当我们不设置属性值时，其默认值为空（不同类型的空值），比如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom &lt;- new(&quot;Person&quot;)</span><br><span class="line">&gt; tom</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">character(0)</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">numeric(0)</span><br></pre></td></tr></table></figure>
+
+<p>那如何设置属性的默认值呢？</p>
+<p>我们可以在 <code>setClass</code> 中指定 <code>prototype</code> 参数，让我们重新定义我们的 <code>Person</code> 类</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setClass(&quot;Person&quot;,slots=list(name=&quot;character&quot;,age=&quot;numeric&quot;),</span><br><span class="line">         prototype = list(name=&#x27;Unknow&#x27;, age=18))</span><br></pre></td></tr></table></figure>
+
+<p>我们在初始化实例时，不指定属性值会返回默认的值，如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; new(&quot;Person&quot;)</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;Unknow&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 18</span><br><span class="line"></span><br><span class="line">&gt; sam &lt;- new(&quot;Person&quot;,name=&quot;sam&quot;)</span><br><span class="line">&gt; sam</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;sam&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 18</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-类型检查"><a href="#2-4-类型检查" class="headerlink" title="2.4 类型检查"></a><strong>2.4 类型检查</strong></h3><p>在上面 <code>Person</code> 类的定义中，我们指定了属性值的类型，如果我们传入的类型不一致会是什么结果呢?</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; new(&quot;Person&quot;, name=&quot;tom&quot;, age=&quot;0&quot;)</span><br><span class="line">Error in validObject(.Object) : </span><br><span class="line">  类别为“Person”的对象不对: invalid object for slot &quot;age&quot; in class &quot;Person&quot;: got class &quot;character&quot;, should be or extend class &quot;numeric&quot;</span><br></pre></td></tr></table></figure>
+
+<p>会抛出异常。</p>
+<p>但是对于 <code>age</code> 参数应该是非负值，这种非类型错误可以进行额外的检查</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">setClass(&quot;Person&quot;,</span><br><span class="line">         slots=list(name=&quot;character&quot;,age=&quot;numeric&quot;),</span><br><span class="line">         prototype = list(name=&#x27;Unknow&#x27;, age=18),</span><br><span class="line">         validity = function(object) &#123;</span><br><span class="line">           if(object@age &lt;= 0) </span><br><span class="line">             return(&quot;Age is negative.&quot;)</span><br><span class="line">           return(TRUE)</span><br><span class="line">         &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>测试</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; new(&quot;Person&quot;, name=&quot;tom&quot;, age=-1)</span><br><span class="line">Error in validObject(.Object) : </span><br><span class="line">  类别为“Person”的对象不对: Age is negative.</span><br></pre></td></tr></table></figure>
+
+<p>或者在 <code>setClass</code> 外部使用 <code>setValidity</code> 设置检查</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">setClass(&quot;Person&quot;,slots=list(name=&quot;character&quot;,age=&quot;numeric&quot;),</span><br><span class="line">         prototype = list(name=&#x27;Unknow&#x27;, age=18))</span><br><span class="line"></span><br><span class="line">setValidity(&quot;Person&quot;, function(object) &#123;</span><br><span class="line">  if(object@age &lt;= 0) </span><br><span class="line">    return(&quot;Age is negative.&quot;)</span><br><span class="line">  return(TRUE)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-使用已有实例创建新实例"><a href="#2-5-使用已有实例创建新实例" class="headerlink" title="2.5 使用已有实例创建新实例"></a><strong>2.5 使用已有实例创建新实例</strong></h3><p><code>S4</code> 对象还支持使用已经实例化的对象来创建新的实例化对象</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt; setClass(&quot;Person&quot;,slots=list(name=&quot;character&quot;,age=&quot;numeric&quot;))</span><br><span class="line">&gt; tom &lt;- new(&quot;Person&quot;,name=&quot;tom&quot;,age=18)</span><br><span class="line">&gt; jay &lt;- initialize(tom, name=&quot;jay&quot;, age=20)</span><br><span class="line">&gt; jay</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;jay&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 20</span><br><span class="line"></span><br><span class="line">&gt; tom</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 18</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-创建函数"><a href="#2-6-创建函数" class="headerlink" title="2.6 创建函数"></a><strong>2.6 创建函数</strong></h3><p>在定义了类及其属性之后，我们就可以定义与类相关联的方法了</p>
+<p><code>S4</code> 的函数定义不同于 <code>S3</code>，<code>S4</code> 将函数的定义和实现分开了，即接口和实现分离。</p>
+<p>先通过 <code>setGeneric()</code> 来定义函数的接口，然后通过 <code>setMethod()</code> 来实现函数功能。</p>
+<p>我们先定义一个函数接口</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setGeneric(name = &quot;getName&quot;,def = function(object) standardGeneric(&quot;getName&quot;))</span><br></pre></td></tr></table></figure>
+
+<p>然后，实现函数的功能并指定类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setMethod(f = &quot;getName&quot;,signature = &quot;Person&quot;,</span><br><span class="line">          definition = function(object) object@name)</span><br></pre></td></tr></table></figure>
+
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a><strong>示例</strong></h3><p>我们定义一个 <code>Person</code> 类，包含了 <code>name</code> 和 <code>age</code> 两个属性，然后分别为这两个属性定义 <code>get</code> 和 <code>set</code> 方法。</p>
+<p>通常，我们在面向对象的程序设计中，会将数据进行封装，而不是直接把数据暴露出来。如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">setClass(&quot;Person&quot;,slots=list(name=&quot;character&quot;,age=&quot;numeric&quot;),</span><br><span class="line">         prototype = list(name=&#x27;Unknow&#x27;, age=18))</span><br><span class="line"></span><br><span class="line">setGeneric(name = &quot;getName&quot;,def = function(object) standardGeneric(&quot;getName&quot;))</span><br><span class="line">setMethod(f = &quot;getName&quot;,signature = &quot;Person&quot;,</span><br><span class="line">          definition = function(object) object@name)</span><br><span class="line"></span><br><span class="line">setGeneric(name = &quot;setName&quot;,def = function(object, name) standardGeneric(&quot;setName&quot;))</span><br><span class="line">setMethod(f = &quot;setName&quot;,signature = &quot;Person&quot;,</span><br><span class="line">          definition = function(object, name) &#123;</span><br><span class="line">            object@name &lt;- name</span><br><span class="line">            return(object)</span><br><span class="line">          &#125;)</span><br><span class="line"></span><br><span class="line">setGeneric(name = &quot;getAge&quot;,def = function(object) standardGeneric(&quot;getAge&quot;))</span><br><span class="line">setMethod(f = &quot;getAge&quot;,signature = &quot;Person&quot;,</span><br><span class="line">          definition = function(object) object@age)</span><br><span class="line"></span><br><span class="line">setGeneric(name = &quot;setAge&quot;,def = function(object, age) standardGeneric(&quot;setAge&quot;))</span><br><span class="line">setMethod(f = &quot;setAge&quot;,signature = &quot;Person&quot;,</span><br><span class="line">          definition = function(object, age) &#123;</span><br><span class="line">            object@age &lt;- age</span><br><span class="line">            return(object)</span><br><span class="line">          &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>使用方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom &lt;- new(&quot;Person&quot;,name=&quot;tom&quot;,age=18)</span><br><span class="line">&gt; getName(tom)</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">&gt; getAge(tom)</span><br><span class="line">[1] 18</span><br><span class="line">&gt; setName(tom, &quot;tomi&quot;)</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;tomi&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 18</span><br><span class="line"></span><br><span class="line">&gt; setAge(tom, 22)</span><br><span class="line">An object of class &quot;Person&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 22</span><br></pre></td></tr></table></figure>
+
+<p>查看函数的类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; ftype(getName)</span><br><span class="line">[1] &quot;S4&quot;      &quot;generic&quot;</span><br></pre></td></tr></table></figure>
+
+<p>查看函数的信息</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt; getMethod(&quot;getAge&quot;, &quot;Person&quot;)</span><br><span class="line">Method Definition:</span><br><span class="line"></span><br><span class="line">function (object) </span><br><span class="line">object@age</span><br><span class="line"></span><br><span class="line">Signatures:</span><br><span class="line">        object  </span><br><span class="line">target  &quot;Person&quot;</span><br><span class="line">defined &quot;Person&quot;</span><br><span class="line"></span><br><span class="line">&gt; existsMethod(&quot;getAge&quot;, &quot;Person&quot;)</span><br><span class="line">[1] TRUE</span><br><span class="line">&gt; hasMethod(&quot;getAge&quot;, &quot;Person&quot;)</span><br><span class="line">[1] TRUE</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-7-继承"><a href="#2-7-继承" class="headerlink" title="2.7 继承"></a><strong>2.7 继承</strong></h3><p><code>S4</code> 对象的继承是通过 <code>contains</code> 参数来设置的，可接受字符串类名或字符串向量</p>
+<p>例如，我们定义 <code>chinese</code> 类并继承自 <code>Person</code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- setClass(&quot;Person&quot;,</span><br><span class="line">         slots=list(name=&quot;character&quot;,age=&quot;numeric&quot;),</span><br><span class="line">         prototype = list(name=&#x27;Unknow&#x27;, age=18),</span><br><span class="line">         validity = function(object) &#123;</span><br><span class="line">           if(object@age &lt;= 0) </span><br><span class="line">             return(&quot;Age is negative.&quot;)</span><br><span class="line">           return(TRUE)</span><br><span class="line">         &#125;)</span><br><span class="line">chinese &lt;- setClass(&quot;chinese&quot;, contains = &quot;Person&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>创建实例</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt; chinese(name=&quot;lisin&quot;, age = 38)</span><br><span class="line">An object of class &quot;chinese&quot;</span><br><span class="line">Slot &quot;name&quot;:</span><br><span class="line">[1] &quot;lisin&quot;</span><br><span class="line"></span><br><span class="line">Slot &quot;age&quot;:</span><br><span class="line">[1] 38</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-8-实例"><a href="#2-8-实例" class="headerlink" title="2.8 实例"></a><strong>2.8 实例</strong></h3><p>我们举个例子来加深对 <code>S4</code> 实现面向对象编程的理解</p>
+<ol>
+<li>我们先定义一个顶层的类：<code>Shape</code></li>
+<li>然后定义两个继承自 <code>Shape</code> 的子类：<code>Circle</code>、<code>Rectangle</code></li>
+<li>并添加对应的计算面积和周长的函数：<code>area</code>、<code>circum</code></li>
+</ol>
+<p>我们定义如下</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"># 设置父类</span><br><span class="line">Shape &lt;- setClass(&quot;Shape&quot;, slots = c(shape=&quot;character&quot;))</span><br><span class="line"># 定义父类方法，获取 shape 属性的值</span><br><span class="line">setGeneric(&quot;getShape&quot;,function(object, ...)&#123;</span><br><span class="line">  standardGeneric(&quot;getShape&quot;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">setMethod(&quot;getShape&quot;, &quot;Shape&quot;, function(object, ...) &#123;</span><br><span class="line">  return(object@shape)</span><br><span class="line">&#125;)</span><br><span class="line"># 定义 area 函数的接口</span><br><span class="line">setGeneric(&quot;area&quot;,function(object, ...)&#123;</span><br><span class="line">  standardGeneric(&quot;area&quot;)</span><br><span class="line">&#125;)</span><br><span class="line"># 定义 circum 函数的接口</span><br><span class="line">setGeneric(&quot;circum&quot;,function(object, ...)&#123;</span><br><span class="line">  standardGeneric(&quot;circum&quot;)</span><br><span class="line">&#125;)</span><br><span class="line"># 定义 Circle 类</span><br><span class="line">Circle &lt;- setClass(&quot;Circle&quot;, slots = c(radius=&quot;numeric&quot;), </span><br><span class="line">                   contains = &quot;Shape&quot;, prototype = list(radius=1, shape=&quot;circle&quot;),</span><br><span class="line">                   validity = function(object) &#123;</span><br><span class="line">                     if(object@radius &lt;= 0) stop(&quot;Radius is negative&quot;)</span><br><span class="line">                   &#125;)</span><br><span class="line"># area 函数对 Circle 类的实现</span><br><span class="line">setMethod(&quot;area&quot;, &quot;Circle&quot;, function(object, ...)&#123;</span><br><span class="line">  return(pi * object@radius^2)</span><br><span class="line">&#125;)</span><br><span class="line"># circum 函数对 Circle 类的实现</span><br><span class="line">setMethod(&quot;circum&quot;, &quot;Circle&quot;, function(object, ...)&#123;</span><br><span class="line">  return(2 * pi * object@radius)</span><br><span class="line">&#125;)</span><br><span class="line"># 定义 Rectangle 类</span><br><span class="line">Rectangle &lt;- setClass(&quot;Rectangle&quot;, slots = c(height=&quot;numeric&quot;, width=&quot;numeric&quot;), </span><br><span class="line">                   contains = &quot;Shape&quot;, prototype = list(height=1, width=1, shape=&quot;rectangle&quot;),</span><br><span class="line">                   validity = function(object) &#123;</span><br><span class="line">                     if(object@height &lt;= 0 | object@width &lt;= 0) stop(&quot;Radius is negative&quot;)</span><br><span class="line">                   &#125;)</span><br><span class="line"># area 函数对 Rectangle 类的实现</span><br><span class="line">setMethod(&quot;area&quot;, &quot;Rectangle&quot;, function(object, ...)&#123;</span><br><span class="line">  return(object@height * object@width)</span><br><span class="line">&#125;)</span><br><span class="line"># circum 函数对 Rectangle 类的实现</span><br><span class="line">setMethod(&quot;circum&quot;, &quot;Rectangle&quot;, function(object, ...)&#123;</span><br><span class="line">  return(2 * (object@height + object@width))</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>使用</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; a &lt;- Circle(radius = 3)</span><br><span class="line">&gt; area(a)</span><br><span class="line">[1] 28.27433</span><br><span class="line">&gt; circum(a)</span><br><span class="line">[1] 18.84956</span><br><span class="line">&gt; </span><br><span class="line">&gt; b &lt;- Rectangle(height = 3, width = 4)</span><br><span class="line">&gt; area(b)</span><br><span class="line">[1] 12</span><br><span class="line">&gt; circum(b)</span><br><span class="line">[1] 14</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>getShape</code> 获取 <code>shape</code> 属性</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; getShape(a)</span><br><span class="line">[1] &quot;circle&quot;</span><br><span class="line">&gt; getShape(b)</span><br><span class="line">[1] &quot;rectangle&quot;</span><br></pre></td></tr></table></figure>
+
+
+<hr>
+<blockquote>
+<p>R 面向对象编程（三）—— RC - 名本无名的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/359074012">https://zhuanlan.zhihu.com/p/359074012</a></p>
+</blockquote>
+<h2 id="RC"><a href="#RC" class="headerlink" title="RC"></a><strong>RC</strong></h2><h3 id="3-1-介绍"><a href="#3-1-介绍" class="headerlink" title="3.1 介绍"></a><strong>3.1 介绍</strong></h3><p><code>Reference Classes(RC)</code> 是在 <code>R 2.12</code> 版本开始引入的新一代的面向对象系统，也被称为 <code>R5</code>（这并不是官方的名称，只是为了和 <code>S3</code>、<code>S4</code> 保持队形<code>（￣。。￣）</code>）。</p>
+<p>这个面向对象系统不同于 <code>S3</code> 和 <code>S4</code> 使用泛型函数模型实现类和方法，<code>RC</code> 的方法被  <em>封装</em> 在类的定义中。</p>
+<p><code>RC</code> 面向对象系统在行为、风格上更像其他面向对象编程语言，如 <code>Java</code> 和 <code>C++</code> 等。</p>
+<p><code>RC</code> 使用 <code>$</code> 符号来调用方法，获取和修改对象的属性，调用方法或设置属性的值会修改对象，这种方式不同于常用的函数式编程模型。</p>
+<h3 id="3-2-创建-RC-类"><a href="#3-2-创建-RC-类" class="headerlink" title="3.2 创建 RC 类"></a><strong>3.2 创建 RC 类</strong></h3><p>首先，我们可以使用 <code>setRefClass</code> 来定义类，并返回一个生成器对象。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setRefClass(Class, fields = , contains = , methods =,</span><br><span class="line">     where =, inheritPackage =, ...)</span><br></pre></td></tr></table></figure>
+
+<p>参数列表：</p>
+<ul>
+<li><code>Class</code>: 字符串类名</li>
+<li><code>fields</code>: 定义属性名称与类型，可以是命名字符串向量或命名列表。</li>
+<li><code>contains</code>: 定义父类，多重继承传递父类向量。如果父类也是 <code>RC</code>，会继承父类的属性和方法</li>
+<li><code>methods</code>: 一个命名列表，定义对象可调用的方法。也可以使用 <code>$methods</code> 方法定义函数</li>
+<li><code>where</code>: 类定义的存储空间</li>
+<li><code>inheritPackage</code>: 是否继承父类的环境</li>
+<li><code>...</code>: 其他参数类似 <code>setClass</code></li>
+</ul>
+<p>定义一个 RC 类</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; Person &lt;- setRefClass(&quot;Person&quot;, fields = c(name=&#x27;character&#x27;,age=&#x27;numeric&#x27;,gender=&#x27;factor&#x27;))</span><br><span class="line">&gt; Person</span><br><span class="line">Generator for class &quot;Person&quot;:</span><br><span class="line"></span><br><span class="line">Class fields:</span><br><span class="line">                                    </span><br><span class="line">Name:       name       age    gender</span><br><span class="line">Class: character   numeric    factor</span><br><span class="line"></span><br><span class="line">Class Methods: </span><br><span class="line">     &quot;sing&quot;, &quot;say&quot;, &quot;field&quot;, &quot;trace&quot;, &quot;getRefClass&quot;, &quot;initFields&quot;, &quot;copy&quot;, &quot;callSuper&quot;, </span><br><span class="line">     &quot;.objectPackage&quot;, &quot;export&quot;, &quot;untrace&quot;, &quot;getClass&quot;, &quot;show&quot;, &quot;usingMethods&quot;, &quot;.objectParent&quot;, </span><br><span class="line">     &quot;import&quot;</span><br><span class="line"></span><br><span class="line">Reference Superclasses: </span><br><span class="line">     &quot;envRefClass&quot;</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>$new</code> 实例化对象，也可以直接使用类名实例化</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; genders &lt;- factor(c(&quot;F&quot;, &quot;M&quot;))</span><br><span class="line">&gt; tom &lt;- Person$new(name=&quot;tom&quot;, age=19, gender=genders[1])</span><br><span class="line"># tom &lt;- Person(name=&quot;tom&quot;, age=19, gender=genders[1])</span><br><span class="line">&gt; tom</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 19</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] F</span><br><span class="line">Levels: F M</span><br></pre></td></tr></table></figure>
+
+<p>查看类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; otype(tom)</span><br><span class="line">[1] &quot;RC&quot;</span><br><span class="line">&gt; class(tom)</span><br><span class="line">[1] &quot;Person&quot;</span><br><span class="line">attr(,&quot;package&quot;)</span><br><span class="line">[1] &quot;.GlobalEnv&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-访问属性"><a href="#3-3-访问属性" class="headerlink" title="3.3 访问属性"></a><strong>3.3 访问属性</strong></h3><p>我们可以使用 <code>$</code> 符号，访问及修改属性值</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$name</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">&gt; tom$age</span><br><span class="line">[1] 19</span><br><span class="line">&gt; tom$age &lt;- tom$age + 1</span><br><span class="line">&gt; tom$age</span><br><span class="line">[1] 20</span><br></pre></td></tr></table></figure>
+
+<p>赋值给另一个对象</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&gt; sam &lt;- tom</span><br><span class="line">&gt; sam</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 20</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] F</span><br><span class="line">Levels: F M</span><br><span class="line">&gt; sam$name &lt;- &quot;sam&quot;</span><br><span class="line">&gt; sam</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;sam&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 20</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] F</span><br><span class="line">Levels: F M</span><br><span class="line">&gt; tom</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;sam&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 20</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] F</span><br><span class="line">Levels: F M</span><br></pre></td></tr></table></figure>
+
+<p>以直接赋值的方式，只是传递了对象的引用，而不是重新构建了一个实例。</p>
+<p>可以调用内置的 <code>copy()</code> 方式，创建一份拷贝</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&gt; sam &lt;- tom$copy()</span><br><span class="line">&gt; sam$age &lt;- 28</span><br><span class="line">&gt; sam</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;sam&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 28</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] F</span><br><span class="line">Levels: F M</span><br><span class="line">&gt; tom</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;sam&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 20</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] F</span><br><span class="line">Levels: F M</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-定义方法"><a href="#3-4-定义方法" class="headerlink" title="3.4 定义方法"></a><strong>3.4 定义方法</strong></h3><p>在 <code>RC</code> 对象系统中，我们可以在创建类的同时指定对应的方法，而不需要将类和函数的定义分离。</p>
+<p>例如，我们定义 <code>Person</code> 类</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- setRefClass(&quot;Person&quot;, fields = c(name=&#x27;character&#x27;,age=&#x27;numeric&#x27;,gender=&#x27;factor&#x27;),</span><br><span class="line">                      methods = list(</span><br><span class="line">                        setName = function(x) &#123;</span><br><span class="line">                          name &lt;&lt;- x</span><br><span class="line">                        &#125;,</span><br><span class="line">                        setAge = function(x) &#123;</span><br><span class="line">                          age &lt;&lt;- x</span><br><span class="line">                        &#125;</span><br><span class="line">                      ))</span><br></pre></td></tr></table></figure>
+
+<p>然后使用方法，改变属性值</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; jay &lt;- Person(name=&quot;jay&quot;, age=21, gender=genders[2])</span><br><span class="line">&gt; jay$setAge(28)</span><br><span class="line">&gt; jay</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;jay&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 28</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] M</span><br><span class="line">Levels: F M</span><br></pre></td></tr></table></figure>
+
+<p>_注意_：我们在函数内部使用了 <code>&lt;&lt;-</code> 赋值方式。</p>
+<p>该赋值方式通常在函数中使用，会在其上层环境中搜索该变量，如果找到了，则重新为该变量赋值；否则会创建为一个全局变量</p>
+<p>如果我们将上面的代码改为</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- setRefClass(&quot;Person&quot;, fields = c(name=&#x27;character&#x27;,age=&#x27;numeric&#x27;,gender=&#x27;factor&#x27;),</span><br><span class="line">                      methods = list(</span><br><span class="line">                        setName = function(x) &#123;</span><br><span class="line">                          name &lt;- x</span><br><span class="line">                        &#125;,</span><br><span class="line">                        setAge = function(x) &#123;</span><br><span class="line">                          age &lt;- x</span><br><span class="line">                        &#125;</span><br><span class="line">                      ))</span><br></pre></td></tr></table></figure>
+
+<p>执行相同的代码</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; jay &lt;- Person(name=&quot;jay&quot;, age=21, gender=genders[2])</span><br><span class="line">&gt; jay$setAge(28)</span><br><span class="line">&gt; jay</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;jay&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 21</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] M</span><br><span class="line">Levels: F M</span><br></pre></td></tr></table></figure>
+
+<p>发现 <code>age</code> 的值并没有被修改</p>
+<p>为了不让类定义看起来很臃肿，可以将函数的定义剥离出来。</p>
+<p>我们可以使用 <code>$methods()</code> 的方式为类定义相应的方法。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- setRefClass(&quot;Person&quot;, fields = c(name=&#x27;character&#x27;,age=&#x27;numeric&#x27;,gender=&#x27;factor&#x27;))</span><br><span class="line"></span><br><span class="line">Person$methods(</span><br><span class="line">  setName = function(x) &#123;</span><br><span class="line">    name &lt;&lt;- x</span><br><span class="line">  &#125;,</span><br><span class="line">  setAge = function(x) &#123;</span><br><span class="line">    age &lt;&lt;- x</span><br><span class="line">  &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>调用方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; jay &lt;- Person(name=&quot;jay&quot;, age=21, gender=genders[2])</span><br><span class="line">&gt; jay$setAge(28)</span><br><span class="line">&gt; jay</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;jay&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 28</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] M</span><br><span class="line">Levels: F M</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-5-定义构造函数"><a href="#3-5-定义构造函数" class="headerlink" title="3.5 定义构造函数"></a><strong>3.5 定义构造函数</strong></h3><p><code>RC</code> 类在实例化对象时，会自动调用构造器函数 <code>$initialize()</code>，我们可以使用该函数来初始化属性值</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- setRefClass(&quot;Person&quot;, fields = c(name=&#x27;character&#x27;,age=&#x27;numeric&#x27;,gender=&#x27;factor&#x27;),</span><br><span class="line">                      methods = list(</span><br><span class="line">                        initialize = function(name=&quot;Unknown&quot;, age=18, gender=genders[1]) &#123;</span><br><span class="line">                          name &lt;&lt;- name</span><br><span class="line">                          age &lt;&lt;- age</span><br><span class="line">                          gender &lt;&lt;- gender</span><br><span class="line">                        &#125;</span><br><span class="line">                      ))</span><br></pre></td></tr></table></figure>
+
+<p>实例化</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt; Person()</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;Unknown&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 18</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] F</span><br><span class="line">Levels: F M</span><br><span class="line">&gt; Person(name=&quot;tom&quot;)</span><br><span class="line">Reference class object of class &quot;Person&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 18</span><br><span class="line">Field &quot;gender&quot;:</span><br><span class="line">[1] F</span><br><span class="line">Levels: F M</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-6-继承"><a href="#3-6-继承" class="headerlink" title="3.6 继承"></a><strong>3.6 继承</strong></h3><p><code>RC</code> 也是通过 <code>contains</code> 参数来指定父类</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">User &lt;- setRefClass(&quot;User&quot;, fields = c(username=&quot;character&quot;, password=&quot;character&quot;))</span><br><span class="line">User$methods(</span><br><span class="line">  getName = function() &#123;</span><br><span class="line">    return(username)</span><br><span class="line">  &#125;</span><br><span class="line">)</span><br><span class="line">VIP &lt;- setRefClass(&quot;VIP&quot;, contains = &quot;User&quot;, fields = c(level=&quot;numeric&quot;))</span><br></pre></td></tr></table></figure>
+
+<p>使用</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">tom &lt;- VIP(username=&quot;tom&quot;, password=&quot;123456&quot;, level=3)</span><br><span class="line">&gt; tom</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;123456&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">[1] 3</span><br><span class="line">&gt; tom$getName()</span><br><span class="line">[1] &quot;tom&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-7-RC-的内置方法"><a href="#3-7-RC-的内置方法" class="headerlink" title="3.7 RC 的内置方法"></a><strong>3.7 RC 的内置方法</strong></h3><p>在我们定义完类之后</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt; Person</span><br><span class="line">Generator for class &quot;Person&quot;:</span><br><span class="line"></span><br><span class="line">Class fields:</span><br><span class="line">                                    </span><br><span class="line">Name:       name       age    gender</span><br><span class="line">Class: character   numeric    factor</span><br><span class="line"></span><br><span class="line">Class Methods: </span><br><span class="line">     &quot;initialize&quot;, &quot;field&quot;, &quot;trace&quot;, &quot;getRefClass&quot;, &quot;initFields&quot;, &quot;copy&quot;, &quot;callSuper&quot;, </span><br><span class="line">     &quot;.objectPackage&quot;, &quot;export&quot;, &quot;untrace&quot;, &quot;getClass&quot;, &quot;show&quot;, &quot;usingMethods&quot;, &quot;.objectParent&quot;, </span><br><span class="line">     &quot;import&quot;</span><br><span class="line"></span><br><span class="line">Reference Superclasses: </span><br><span class="line">     &quot;envRefClass&quot;</span><br></pre></td></tr></table></figure>
+
+<p>从 <code>Class Methods</code> 输出的方法中我们可以看到，很多方法都不是我们定义的，这些都是内置的方法。像我们前面用到的 <code>copy</code> 和 <code>initialize</code> 也在其中</p>
+<p><img src="https://pic3.zhimg.com/80/v2-d53e6ef8e1faf0a88376490e9430c5d2_720w.webp"></p>
+<p>我们为上面的继承的例子，添加一些功能</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">User &lt;- setRefClass(&quot;User&quot;, fields = c(username=&quot;character&quot;, password=&quot;character&quot;))</span><br><span class="line">User$methods(</span><br><span class="line">  getName = function() &#123;</span><br><span class="line">    return(username)</span><br><span class="line">  &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">VIP &lt;- setRefClass(&quot;VIP&quot;, contains = &quot;User&quot;, fields = c(level=&quot;numeric&quot;))</span><br><span class="line">VIP$methods(</span><br><span class="line">  getName = function() &#123;</span><br><span class="line">    cat(&quot;VIP：&quot;, callSuper())</span><br><span class="line">  &#125;,</span><br><span class="line">  add = function(x, y) &#123;</span><br><span class="line">    return(x+y)</span><br><span class="line">  &#125;,</span><br><span class="line">  multiple = function(x, y) &#123;</span><br><span class="line">    return(x*y)</span><br><span class="line">  &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>我们在子类中重写了 <code>getName</code> 方法，通过 <code>callSuper()</code> 调用父类的 <code>getName</code> 方法获取 <code>name</code> 属性，并在前面添加 <code>VIP</code> 标记</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom &lt;- VIP(username=&quot;tom&quot;, password=&quot;123456&quot;, level=3)</span><br><span class="line">&gt; tom$getName()</span><br><span class="line">VIP： tom</span><br></pre></td></tr></table></figure>
+
+<p>我们重新为 <code>tom</code> 的属性赋值</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$initFields(username=&quot;sam&quot;, password=&quot;1234&quot;)</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;sam&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">[1] 3</span><br><span class="line">&gt; tom</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;sam&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">[1] 3</span><br></pre></td></tr></table></figure>
+
+<p>获取或设置某一属性</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$field(&quot;username&quot;)</span><br><span class="line">[1] &quot;sam&quot;</span><br><span class="line">&gt; tom$field(&quot;username&quot;, &quot;tom&quot;)</span><br><span class="line">&gt; tom</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">[1] 3</span><br></pre></td></tr></table></figure>
+
+<p>获取对象的类的定义</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$getClass()</span><br><span class="line">Reference Class &quot;VIP&quot;:</span><br><span class="line"></span><br><span class="line">Class fields:</span><br><span class="line">                                    </span><br><span class="line">Name:   username  password     level</span><br><span class="line">Class: character character   numeric</span><br><span class="line"></span><br><span class="line">Class Methods: </span><br><span class="line">     &quot;getName#User&quot;, &quot;multiple&quot;, &quot;add&quot;, &quot;import&quot;, &quot;.objectParent&quot;, &quot;usingMethods&quot;, &quot;show&quot;, &quot;getClass&quot;, </span><br><span class="line">     &quot;untrace&quot;, &quot;export&quot;, &quot;.objectPackage&quot;, &quot;callSuper&quot;, &quot;copy&quot;, &quot;initFields&quot;, &quot;getRefClass&quot;, &quot;trace&quot;, </span><br><span class="line">     &quot;field&quot;, &quot;getName&quot;</span><br><span class="line"></span><br><span class="line">Reference Superclasses: </span><br><span class="line">     &quot;User&quot;, &quot;envRefClass&quot;</span><br><span class="line"></span><br><span class="line">&gt; tom$getRefClass()</span><br><span class="line">Generator for class &quot;VIP&quot;:</span><br><span class="line"></span><br><span class="line">Class fields:</span><br><span class="line">                                    </span><br><span class="line">Name:   username  password     level</span><br><span class="line">Class: character character   numeric</span><br><span class="line"></span><br><span class="line">Class Methods: </span><br><span class="line">     &quot;getName#User&quot;, &quot;multiple&quot;, &quot;add&quot;, &quot;import&quot;, &quot;.objectParent&quot;, &quot;usingMethods&quot;, &quot;show&quot;, &quot;getClass&quot;, </span><br><span class="line">     &quot;untrace&quot;, &quot;export&quot;, &quot;.objectPackage&quot;, &quot;callSuper&quot;, &quot;copy&quot;, &quot;initFields&quot;, &quot;getRefClass&quot;, &quot;trace&quot;, </span><br><span class="line">     &quot;field&quot;, &quot;getName&quot;</span><br><span class="line"></span><br><span class="line">Reference Superclasses: </span><br><span class="line">     &quot;User&quot;, &quot;envRefClass&quot;</span><br><span class="line"># 查看类型</span><br><span class="line">&gt; otype(tom$getClass())</span><br><span class="line">[1] &quot;S4&quot;</span><br><span class="line">&gt; otype(tom$getRefClass())</span><br><span class="line">[1] &quot;RC&quot;</span><br></pre></td></tr></table></figure>
+
+<p><code>tom$show()</code> 和 <code>show(tom)</code> 以及直接输入 <code>tom</code> 都可以输出对象的信息</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$show()</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">[1] 3</span><br><span class="line">&gt; show(tom)</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">[1] 3</span><br></pre></td></tr></table></figure>
+
+<p>追踪方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$trace(&quot;add&quot;)</span><br><span class="line">Tracing reference method &quot;add&quot; for object from class &quot;VIP&quot;</span><br><span class="line">[1] &quot;add&quot;</span><br><span class="line">&gt; tom$add(1, 3)</span><br><span class="line">Tracing tom$add(1, 3) on entry </span><br><span class="line">[1] 4</span><br><span class="line">&gt; tom$add(4, 5)</span><br><span class="line">Tracing tom$add(4, 5) on entry </span><br><span class="line">[1] 9</span><br><span class="line">&gt; tom$untrace(&quot;add&quot;)</span><br><span class="line">Untracing reference method &quot;add&quot; for object from class &quot;VIP&quot;</span><br><span class="line">[1] &quot;add&quot;</span><br><span class="line">&gt; add(1, 1)</span><br><span class="line">[1] 2</span><br></pre></td></tr></table></figure>
+
+<p>将子类转换为父类类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$export(&#x27;User&#x27;)</span><br><span class="line">Reference class object of class &quot;User&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">&gt; tom</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">[1] 3</span><br></pre></td></tr></table></figure>
+
+<p>从上面的结果可以看到，转换为父类型之后，<code>level</code> 属性被删除了，但是原始对象并没有被修改</p>
+<p>使用一个对象给另一个对象赋值</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&gt; sam &lt;- VIP()</span><br><span class="line">&gt; sam</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">character(0)</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">character(0)</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">numeric(0)</span><br><span class="line">&gt; sam$import(tom$export(&quot;User&quot;))</span><br><span class="line">&gt; sam</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">numeric(0)</span><br><span class="line">&gt; sam$import(tom)</span><br><span class="line">&gt; sam</span><br><span class="line">Reference class object of class &quot;VIP&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">[1] &quot;1234&quot;</span><br><span class="line">Field &quot;level&quot;:</span><br><span class="line">[1] 3</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-8-RC-类方法"><a href="#3-8-RC-类方法" class="headerlink" title="3.8 RC 类方法"></a><strong>3.8 RC 类方法</strong></h3><p>我们使用 <code>setRefClass</code> 函数定义的类，会自动包含一些方法帮助我们查看类的属性和方法。</p>
+<p>比如，我们上面使用到的 <code>$new()</code> 函数，还有一些其他函数</p>
+<p>查看 <code>User</code> 类中的属性及其类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; User$fields()</span><br><span class="line">   username    password </span><br><span class="line">&quot;character&quot; &quot;character&quot;</span><br></pre></td></tr></table></figure>
+
+<p>查看 <code>User</code> 中定义的方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; User$methods()</span><br><span class="line"> [1] &quot;.objectPackage&quot; &quot;.objectParent&quot;  &quot;callSuper&quot;      &quot;copy&quot;           &quot;export&quot;        </span><br><span class="line"> [6] &quot;field&quot;          &quot;getClass&quot;       &quot;getName&quot;        &quot;getRefClass&quot;    &quot;import&quot;        </span><br><span class="line">[11] &quot;initFields&quot;     &quot;show&quot;           &quot;trace&quot;          &quot;untrace&quot;        &quot;usingMethods&quot; </span><br></pre></td></tr></table></figure>
+
+<p>查看函数的调用方式</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; VIP$help(&quot;add&quot;)</span><br><span class="line">Call:</span><br><span class="line">$add(x, y)</span><br></pre></td></tr></table></figure>
+
+<p>为 <code>User</code> 的属性增加 <code>get</code> 和 <code>set</code> 方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; User$accessors(&quot;password&quot;)</span><br><span class="line">&gt; User$methods()</span><br><span class="line"> [1] &quot;.objectPackage&quot; &quot;.objectParent&quot;  &quot;callSuper&quot;      &quot;copy&quot;           &quot;export&quot;        </span><br><span class="line"> [6] &quot;field&quot;          &quot;getClass&quot;       &quot;getName&quot;        &quot;getPassword&quot;    &quot;getRefClass&quot;   </span><br><span class="line">[11] &quot;import&quot;         &quot;initFields&quot;     &quot;setPassword&quot;    &quot;show&quot;           &quot;trace&quot;         </span><br><span class="line">[16] &quot;untrace&quot;        &quot;usingMethods&quot;</span><br></pre></td></tr></table></figure>
+
+<p>将属性固定，一旦赋值后便不可更改</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt; User$lock(&quot;username&quot;)</span><br><span class="line"># 查看被锁定的属性</span><br><span class="line">&gt; User$lock()</span><br><span class="line">[1] &quot;username&quot;</span><br><span class="line">&gt; a &lt;- User(username=&quot;fly&quot;)</span><br><span class="line">&gt; a</span><br><span class="line">Reference class object of class &quot;User&quot;</span><br><span class="line">Field &quot;username&quot;:</span><br><span class="line">[1] &quot;fly&quot;</span><br><span class="line">Field &quot;password&quot;:</span><br><span class="line">character(0)</span><br><span class="line">&gt; a$username &lt;- &quot;a&quot;</span><br><span class="line">错误: invalid replacement: reference class field ‘username’ is read-only</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-9-示例"><a href="#3-9-示例" class="headerlink" title="3.9 示例"></a><strong>3.9 示例</strong></h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- setRefClass(</span><br><span class="line">  &quot;Person&quot;, </span><br><span class="line">  fields = list(</span><br><span class="line">    name=&quot;character&quot;,</span><br><span class="line">    age=&quot;numeric&quot;</span><br><span class="line">  ),</span><br><span class="line">  methods = list(</span><br><span class="line">    initialize = function(name=&quot;Unknown&quot;, age=18) &#123;</span><br><span class="line">      name &lt;&lt;- name</span><br><span class="line">      age &lt;&lt;- age</span><br><span class="line">    &#125;,</span><br><span class="line">    talk = function() &#123;</span><br><span class="line">      return(&quot;talking...&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">Chinese &lt;- setRefClass(</span><br><span class="line">  &quot;Chinese&quot;,</span><br><span class="line">  contains = &quot;Person&quot;,</span><br><span class="line">  fields = list(</span><br><span class="line">    language=&quot;character&quot;</span><br><span class="line">  ),</span><br><span class="line">  methods = list(</span><br><span class="line">    initialize = function(name, age, language=&quot;chinese&quot;) &#123;</span><br><span class="line">      callSuper(name, age)</span><br><span class="line">      language &lt;&lt;- language</span><br><span class="line">    &#125;,</span><br><span class="line">    talk = function() &#123;</span><br><span class="line">      return(paste0(callSuper(), language))</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line">Chinese$lock(&quot;language&quot;)</span><br><span class="line"></span><br><span class="line">American &lt;- setRefClass(</span><br><span class="line">  &quot;American&quot;,</span><br><span class="line">  contains = &quot;Person&quot;,</span><br><span class="line">  fields = list(</span><br><span class="line">    language=&quot;character&quot;</span><br><span class="line">  ),</span><br><span class="line">  methods = list(</span><br><span class="line">    initialize = function(name, age, language=&quot;english&quot;) &#123;</span><br><span class="line">      callSuper(name, age)</span><br><span class="line">      language &lt;&lt;- language</span><br><span class="line">    &#125;,</span><br><span class="line">    talk = function() &#123;</span><br><span class="line">      return(paste0(callSuper(), language))</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">American$lock(&quot;language&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>使用</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&gt; a &lt;- American(&quot;lusy&quot;, 20)</span><br><span class="line">&gt; a</span><br><span class="line">Reference class object of class &quot;American&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;lusy&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 20</span><br><span class="line">Field &quot;language&quot;:</span><br><span class="line">[1] &quot;english&quot;</span><br><span class="line">&gt; a$talk()</span><br><span class="line">[1] &quot;talking...english&quot;</span><br><span class="line">&gt; b &lt;- Chinese(&quot;lisin&quot;, 18)</span><br><span class="line">&gt; b</span><br><span class="line">Reference class object of class &quot;Chinese&quot;</span><br><span class="line">Field &quot;name&quot;:</span><br><span class="line">[1] &quot;lisin&quot;</span><br><span class="line">Field &quot;age&quot;:</span><br><span class="line">[1] 18</span><br><span class="line">Field &quot;language&quot;:</span><br><span class="line">[1] &quot;chinese&quot;</span><br><span class="line">&gt; b$talk()</span><br><span class="line">[1] &quot;talking...chinese&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>END -</li>
+</ul>
+<hr>
+<blockquote>
+<p>R 面向对象编程（四）—— R6 - 名本无名的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/359383772">https://zhuanlan.zhihu.com/p/359383772</a></p>
+</blockquote>
+<h2 id="R6"><a href="#R6" class="headerlink" title="R6"></a><strong>R6</strong></h2><h3 id="4-1-介绍"><a href="#4-1-介绍" class="headerlink" title="4.1 介绍"></a><strong>4.1 介绍</strong></h3><p><code>R6</code> 是 <code>R</code> 的封装式面向对象编程的实现，比内置的 <code>RC</code> 类更简单，更快，更轻量级。</p>
+<p>与内置的 <code>R3</code>、<code>R4</code> 和 <code>RC</code> 不同，<code>R6</code> 是一个单独的 <code>R</code> 包，因此不需要依赖 <code>methods</code> 包。</p>
+<p><code>R6</code> 类支持：</p>
+<ul>
+<li>属性和方法的公有化和私有化</li>
+<li>主动绑定</li>
+<li>跨包之间的继承</li>
+</ul>
+<p>为什么这个包叫 <code>R6</code> 呢？</p>
+<p>哈哈，当然是为了保持队形了啊</p>
+<p><code>S3、S4、S5、S6</code>，虽然 <code>RC</code> 的官方名称并不是 <code>S5</code>，但不妨碍大家这么称呼。</p>
+<p>学过其他语言的面向对象编程系统的应该知道，我们前面几节讲的 <code>R</code> 中几种系统设计的并不够好，所以，需要 <code>R6</code> 这样的包。</p>
+<h3 id="4-2-创建-R6-对象"><a href="#4-2-创建-R6-对象" class="headerlink" title="4.2 创建 R6 对象"></a><strong>4.2 创建 R6 对象</strong></h3><p><code>R6</code> 是第三方包，所以记得先安装一下</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">install.packages(&quot;R6&quot;)</span><br><span class="line">library(R6)</span><br></pre></td></tr></table></figure>
+
+<p><code>R6</code> 是通过 <code>R6Class()</code> 函数创建类</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">R6Class(classname = NULL, public = list(), private = NULL,</span><br><span class="line">  active = NULL, inherit = NULL, lock_objects = TRUE, class = TRUE,</span><br><span class="line">  portable = TRUE, lock_class = FALSE, cloneable = TRUE,</span><br><span class="line">  parent_env = parent.frame(), lock)</span><br></pre></td></tr></table></figure>
+
+<p>参数列表</p>
+<p><img src="https://pic1.zhimg.com/80/v2-c5695756bc9e29c035d24d7533f16c5c_720w.webp"></p>
+<p>创建一个简单的 <code>Person</code> 类</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- R6Class(</span><br><span class="line">  &quot;Person&quot;,</span><br><span class="line">  public = list(</span><br><span class="line">    name = NA,</span><br><span class="line">    initialize = function(name) &#123;</span><br><span class="line">      self$name &lt;- name</span><br><span class="line">    &#125;,</span><br><span class="line">    say = function() &#123;</span><br><span class="line">      cat(&quot;my name is &quot;, self$name)</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>创建实例，同样使用 <code>$new</code> 方法来实例化</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom &lt;- Person$new(name = &quot;tom&quot;)</span><br><span class="line">&gt; tom</span><br><span class="line">&lt;Person&gt;</span><br><span class="line">  Public:</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    initialize: function (name) </span><br><span class="line">    name: tom</span><br><span class="line">    say: function () </span><br></pre></td></tr></table></figure>
+
+<p>查看类与实例的类型</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt; class(Person)</span><br><span class="line">[1] &quot;R6ClassGenerator&quot;</span><br><span class="line">&gt; class(tom)</span><br><span class="line">[1] &quot;Person&quot; &quot;R6&quot;    </span><br><span class="line">&gt; otype(tom)</span><br><span class="line">[1] &quot;S3&quot;</span><br><span class="line">&gt; otype(Person)</span><br><span class="line">[1] &quot;S3&quot;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，其实 <code>R6</code> 系统是基于 <code>S3</code> 构建的，这也是它不同于 <code>RC</code> 的原因</p>
+<h3 id="4-3-公有成员与私有成员"><a href="#4-3-公有成员与私有成员" class="headerlink" title="4.3 公有成员与私有成员"></a><strong>4.3 公有成员与私有成员</strong></h3><p>在 <code>R6</code> 系统的类定义中，可以设置公有成员和私有成员。这一特征与 <code>Java</code> 和 <code>C++</code> 的类很像，使用私有成员来隐藏一些数据属性和方法。</p>
+<p>在 <code>R6</code> 中公有成员的访问使用的是 <code>self</code> 对象来引用，而私有需要用 <code>private</code> 对象来引用。</p>
+<p>在前面的例子中，我们使用的是 <code>self$name</code> 来获取公有属性 <code>name</code>，现在让我们来添加私有成员</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- R6Class(</span><br><span class="line">  &quot;Person&quot;,</span><br><span class="line">  public = list(</span><br><span class="line">    name = NA,</span><br><span class="line">    initialize = function(name, money) &#123;</span><br><span class="line">      self$name &lt;- name</span><br><span class="line">      private$money &lt;- money</span><br><span class="line">    &#125;,</span><br><span class="line">    say = function() &#123;</span><br><span class="line">      cat(&quot;my name is &quot;, self$name)</span><br><span class="line">    &#125;,</span><br><span class="line">    incSalary = function(percent) &#123;</span><br><span class="line">      private$setMoney(private$money * (1 + percent))</span><br><span class="line">      invisible(self)</span><br><span class="line">    &#125;</span><br><span class="line">  ),</span><br><span class="line">  private = list(</span><br><span class="line">    money = NA,</span><br><span class="line">    setMoney = function(m) &#123;</span><br><span class="line">      cat(paste0(&quot;change &quot;, self$name, &quot;&#x27;s salary!\n&quot;))</span><br><span class="line">      private$money &lt;- m</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>我们添加了私有属性 <code>money</code> 和私有函数 <code>setMoney</code></p>
+<p>我们先创建一个实例化对象</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom &lt;- Person$new(name = &quot;tom&quot;, 1000)</span><br><span class="line">&gt; tom</span><br><span class="line">&lt;Person&gt;</span><br><span class="line">  Public:</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    incSalary: function (percent) </span><br><span class="line">    initialize: function (name, money) </span><br><span class="line">    name: tom</span><br><span class="line">    say: function () </span><br><span class="line">  Private:</span><br><span class="line">    money: 1000</span><br><span class="line">    setMoney: function (m) </span><br></pre></td></tr></table></figure>
+
+<p>然后调用对应的方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$name</span><br><span class="line">[1] &quot;tom&quot;</span><br><span class="line">&gt; tom$money</span><br><span class="line">NULL</span><br><span class="line">&gt; tom$incSalary(0.1)</span><br><span class="line">change tom&#x27;s salary!</span><br><span class="line">&gt; tom$setMoney</span><br><span class="line">NULL</span><br><span class="line">&gt; tom$setMoney()</span><br><span class="line">错误: 不适用于非函数</span><br></pre></td></tr></table></figure>
+
+<p>我们可以使用 <code>$</code> 符号正常访问公有成员，但是无法访问私有成员</p>
+<p>_注意_：我们在 <code>incSalary</code> 函数中添加了一行 <code>invisible(self)</code>，这样我们就可以对这个方法进行链式调用了，例如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom$incSalary(0.1)$incSalary(0.2)$incSalary(0.3)</span><br><span class="line">change tom&#x27;s salary!</span><br><span class="line">change tom&#x27;s salary!</span><br><span class="line">change tom&#x27;s salary!</span><br><span class="line">&gt; tom</span><br><span class="line">&lt;Person&gt;</span><br><span class="line">  Public:</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    incSalary: function (percent) </span><br><span class="line">    initialize: function (name, money) </span><br><span class="line">    name: tom</span><br><span class="line">    say: function () </span><br><span class="line">    test: function () </span><br><span class="line">  Private:</span><br><span class="line">    money: 1887.6</span><br><span class="line">    setMoney: function (m) </span><br></pre></td></tr></table></figure>
+
+<p>_注意_：我们在访问成员时都是使用了 <code>self</code> 或 <code>private</code> 对象，而不管是在 <code>public</code> 参数里面还是 <code>private</code> 参数里面</p>
+<p>我们可以测试一下 <code>self</code> 和 <code>private</code> 到底是什么，我们在上面的例子中，添加一个 <code>test</code> 公有函数</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Person &lt;- R6Class(</span><br><span class="line">  &quot;Person&quot;,</span><br><span class="line">  public = list(</span><br><span class="line">    name = NA,</span><br><span class="line">    initialize = function(name, money) &#123;</span><br><span class="line">      self$name &lt;- name</span><br><span class="line">      private$money &lt;- money</span><br><span class="line">    &#125;,</span><br><span class="line">    say = function() &#123;</span><br><span class="line">      cat(&quot;my name is &quot;, self$name)</span><br><span class="line">    &#125;,</span><br><span class="line">    incSalary = function(percent) &#123;</span><br><span class="line">      private$setMoney(private$money * (1 + percent))</span><br><span class="line">    &#125;,</span><br><span class="line">    test = function() &#123;</span><br><span class="line">      print(self)</span><br><span class="line">      print(strrep(&quot;=&quot;, 20))</span><br><span class="line">      print(private)</span><br><span class="line">      print(strrep(&quot;=&quot;, 20))</span><br><span class="line">      print(ls(envir = private))</span><br><span class="line">    &#125;</span><br><span class="line">  ),</span><br><span class="line">  private = list(</span><br><span class="line">    money = NA,</span><br><span class="line">    setMoney = function(m) &#123;</span><br><span class="line">      cat(paste0(&quot;change &quot;, self$name, &quot;&#x27;s salary!&quot;))</span><br><span class="line">      private$money &lt;- m</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>测试一下</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt; tom &lt;- Person$new(name = &quot;tom&quot;, 1000)</span><br><span class="line">&gt; tom$test()</span><br><span class="line">&lt;Person&gt;</span><br><span class="line">  Public:</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    incSalary: function (percent) </span><br><span class="line">    initialize: function (name, money) </span><br><span class="line">    name: tom</span><br><span class="line">    say: function () </span><br><span class="line">    test: function () </span><br><span class="line">  Private:</span><br><span class="line">    money: 1000</span><br><span class="line">    setMoney: function (m) </span><br><span class="line">[1] &quot;====================&quot;</span><br><span class="line">&lt;environment: 0x7fe1d2135cf0&gt;</span><br><span class="line">[1] &quot;====================&quot;</span><br><span class="line">[1] &quot;money&quot;    &quot;setMoney&quot;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的输出结果可以看出，<code>self</code> 对象更像是实例化的对象本身，而 <code>private</code> 则是一个环境空间。这个环境空间就像是变量的作用域，因此，<code>private</code> 只在类中被调用，而对于类外部是不可见的。</p>
+<h3 id="4-4-主动绑定"><a href="#4-4-主动绑定" class="headerlink" title="4.4 主动绑定"></a><strong>4.4 主动绑定</strong></h3><p>主动绑定可以让对函数调用看起来像是在访问属性，主动绑定总是公开成员，外不可见的。</p>
+<p>这与 <code>Python</code> 中的 <code>@property</code> 装饰器是一样的，有些时候，我们并不想直接把数据属性暴露在外面，被随意修改。</p>
+<p>例如，我们有一个 <code>Student</code> 类，包含一个 <code>score</code> 属性，但是不想将其暴露在外面被随意修改，所以我们将其设置为私有属性，同时定义 <code>get/set</code> 方法，并在 <code>set</code> 方法中控制有效范围</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Student &lt;- R6Class(</span><br><span class="line">  &quot;Student&quot;,</span><br><span class="line">  public = list(</span><br><span class="line">    name = NA,</span><br><span class="line">    initialize = function(name) &#123;</span><br><span class="line">      self$name &lt;- name</span><br><span class="line">    &#125;,</span><br><span class="line">    getScore = function() &#123;</span><br><span class="line">      return(private$score)</span><br><span class="line">    &#125;,</span><br><span class="line">    setScore = function(score) &#123;</span><br><span class="line">      if (score &lt; 0 || score &gt; 100) </span><br><span class="line">        stop(&quot;Score incorrect!&quot;)</span><br><span class="line">      private$score &lt;- score</span><br><span class="line">    &#125;</span><br><span class="line">  ),</span><br><span class="line">  private = list(</span><br><span class="line">    score = NA</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>使用</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; sam &lt;- Student$new(&quot;sam&quot;)</span><br><span class="line">&gt; sam$setScore(99)</span><br><span class="line">&gt; sam$getScore()</span><br><span class="line">[1] 99</span><br><span class="line">&gt; sam$setScore(101)</span><br><span class="line">Error in sam$setScore(101) : Score incorrect!</span><br></pre></td></tr></table></figure>
+
+<p>这样是可以达到我们的目的，但还是不能像属性那样用起来方便</p>
+<p>所以 <code>R6</code> 为我们提供了 <code>active</code> 参数，重新改写上面的例子</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Student &lt;- R6Class(</span><br><span class="line">  &quot;Student&quot;,</span><br><span class="line">  public = list(</span><br><span class="line">    name = NA,</span><br><span class="line">    initialize = function(name) &#123;</span><br><span class="line">      self$name &lt;- name</span><br><span class="line">    &#125;</span><br><span class="line">  ),</span><br><span class="line">  private = list(</span><br><span class="line">    .score = NA</span><br><span class="line">  ),</span><br><span class="line">  active = list(</span><br><span class="line">    score = function(s) &#123;</span><br><span class="line">      if (missing(s))</span><br><span class="line">        return(private$.score)</span><br><span class="line">      if (s &lt; 0 || s &gt; 100)</span><br><span class="line">        stop(&quot;Score incorrect!&quot;)</span><br><span class="line">      private$.score &lt;- s</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>_注意_：<code>public</code>, <code>private</code> 和 <code>active</code> 参数内的属性名必须唯一，所以我们将私有属性改为了 <code>.score</code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt; sam &lt;- Student$new(&quot;sam&quot;)</span><br><span class="line">&gt; sam</span><br><span class="line">&lt;Student&gt;</span><br><span class="line">  Public:</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    initialize: function (name) </span><br><span class="line">    name: sam</span><br><span class="line">    score: active binding</span><br><span class="line">  Private:</span><br><span class="line">    .score: NA</span><br><span class="line">&gt; sam$score</span><br><span class="line">[1] NA</span><br><span class="line">&gt; sam$score &lt;- 100</span><br><span class="line">&gt; sam$score</span><br><span class="line">[1] 100</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-5-继承"><a href="#4-5-继承" class="headerlink" title="4.5 继承"></a><strong>4.5 继承</strong></h3><p>R6 通过 <code>inherit</code> 参数指定父类，例如，我们定义一个 <code>worker</code> 类，它继承自上面的 <code>Person</code> 类</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Worker &lt;- R6Class(</span><br><span class="line">  &quot;Worker&quot;,</span><br><span class="line">  inherit = Person,</span><br><span class="line">  public = list(</span><br><span class="line">    company = &quot;Gene&quot;,</span><br><span class="line">    info = function() &#123;</span><br><span class="line">      print(&quot;NGS analysis!&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>创建对象并使用父类的方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt; siri &lt;- Worker$new(&quot;Siri&quot;, 100)</span><br><span class="line">&gt; siri$incSalary(0.1)</span><br><span class="line">change Siri&#x27;s salary!</span><br><span class="line">&gt; siri</span><br><span class="line">&lt;Worker&gt;</span><br><span class="line">  Inherits from: &lt;Person&gt;</span><br><span class="line">  Public:</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    company: Gene</span><br><span class="line">    incSalary: function (percent) </span><br><span class="line">    info: function () </span><br><span class="line">    initialize: function (name, money) </span><br><span class="line">    name: Siri</span><br><span class="line">    say: function () </span><br><span class="line">    test: function () </span><br><span class="line">  Private:</span><br><span class="line">    money: 110</span><br><span class="line">    setMoney: function (m) </span><br></pre></td></tr></table></figure>
+
+<p>我们可以使用 <code>super</code> 对象来调用父类的方法，让我们来重写 <code>incSalary</code> 方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Worker &lt;- R6Class(</span><br><span class="line">  &quot;Worker&quot;,</span><br><span class="line">  inherit = Person,</span><br><span class="line">  public = list(</span><br><span class="line">    company = &quot;Gene&quot;,</span><br><span class="line">    info = function() &#123;</span><br><span class="line">      print(&quot;NGS analysis!&quot;)</span><br><span class="line">    &#125;,</span><br><span class="line">    incSalary = function(percent) &#123;</span><br><span class="line">      super$incSalary(percent + 0.1)</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>运行与上面相同的代码</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt; siri &lt;- Worker$new(&quot;Siri&quot;, 100)</span><br><span class="line">&gt; siri$incSalary(0.1)</span><br><span class="line">change Siri&#x27;s salary!</span><br><span class="line">&gt; siri</span><br><span class="line">&lt;Worker&gt;</span><br><span class="line">  Inherits from: &lt;Person&gt;</span><br><span class="line">  Public:</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    company: Gene</span><br><span class="line">    incSalary: function (percent) </span><br><span class="line">    info: function () </span><br><span class="line">    initialize: function (name, money) </span><br><span class="line">    name: Siri</span><br><span class="line">    say: function () </span><br><span class="line">    test: function () </span><br><span class="line">  Private:</span><br><span class="line">    money: 120</span><br><span class="line">    setMoney: function (m) </span><br></pre></td></tr></table></figure>
+
+<p>可以看到，工资的增长增加了 <code>0.1</code></p>
+<h3 id="4-6-引用对象字段"><a href="#4-6-引用对象字段" class="headerlink" title="4.6 引用对象字段"></a><strong>4.6 引用对象字段</strong></h3><p>如果您的 R6 类的属性中包含其他类的实例化对象时，该对象将在 <code>R6</code> 对象的所有实例中共享。例如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">ShareClass &lt;- R6Class(</span><br><span class="line">  &quot;ShareClass&quot;,</span><br><span class="line">  public = list(</span><br><span class="line">    num = NULL</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">Common &lt;- R6Class(</span><br><span class="line">  &quot;Common&quot;,</span><br><span class="line">   public = list(</span><br><span class="line">     share = ShareClass$new()</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">&gt; c1 &lt;- Common$new()</span><br><span class="line">&gt; c1$share$num &lt;- 1</span><br><span class="line"></span><br><span class="line">&gt; c2 &lt;- Common$new()</span><br><span class="line">&gt; c2$share$num &lt;- 2</span><br><span class="line"></span><br><span class="line">&gt; c1$share$num</span><br><span class="line">[1] 2</span><br></pre></td></tr></table></figure>
+
+<p>_注意_：不能把实例化对象放在 <code>initialize</code> 方法中</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">UnCommon &lt;- R6Class(</span><br><span class="line">  &quot;Common&quot;,</span><br><span class="line">  public = list(</span><br><span class="line">    share = NULL,</span><br><span class="line">    initialize = function() &#123;</span><br><span class="line">      share &lt;&lt;- ShareClass$new()</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">n1 &lt;- UnCommon$new()</span><br><span class="line">n1$share$num &lt;- 1</span><br><span class="line"></span><br><span class="line">n2 &lt;- UnCommon$new()</span><br><span class="line">n2$share$num &lt;- 2</span><br><span class="line"></span><br><span class="line">n1$share$num</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，<code>share</code> 属性并没有改变</p>
+<h3 id="4-7-可移植和不可移植类"><a href="#4-7-可移植和不可移植类" class="headerlink" title="4.7 可移植和不可移植类"></a><strong>4.7 可移植和不可移植类</strong></h3><p><code>portable</code> 参数可以设置 <code>R6</code> 类是否为可移植类型还是不可移植类型，主要区别在于：</p>
+<ul>
+<li>可移植类支持跨包继承，但是不可移植类型的兼容性不好</li>
+<li>可移植类使用 <code>self</code> 和 <code>private</code> 来访问成员。不可移植类直接使用属性名称来访问，如 <code>share</code>，并使用 <code>&lt;&lt;-</code> 操作符对这些成员进行赋值</li>
+</ul>
+<h3 id="4-8-为现有类添加成员"><a href="#4-8-为现有类添加成员" class="headerlink" title="4.8 为现有类添加成员"></a><strong>4.8 为现有类添加成员</strong></h3><p>有时候，我们需要对已经创建的类添加新的成员，可以使用 <code>$set()</code> 方法来完成。</p>
+<p>例如，我们为 <code>Student</code> 类添加一个属性</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; Student$set(&quot;public&quot;, &quot;age&quot;, 21)</span><br><span class="line">&gt; sam &lt;- Student$new(&quot;sam&quot;)</span><br><span class="line">&gt; sam</span><br><span class="line">&lt;Student&gt;</span><br><span class="line">  Public:</span><br><span class="line">    age: 21</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    initialize: function (name) </span><br><span class="line">    name: sam</span><br><span class="line">    score: active binding</span><br><span class="line">  Private:</span><br><span class="line">    .score: NA</span><br></pre></td></tr></table></figure>
+
+<p>当然也可以使用这种方式修改属性值</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; Student$set(&quot;public&quot;, &quot;age&quot;, 18, overwrite = TRUE)</span><br><span class="line">&gt; sam &lt;- Student$new(&quot;sam&quot;)</span><br><span class="line">&gt; sam</span><br><span class="line">&lt;Student&gt;</span><br><span class="line">  Public:</span><br><span class="line">    age: 18</span><br><span class="line">    clone: function (deep = FALSE) </span><br><span class="line">    initialize: function (name) </span><br><span class="line">    name: sam</span><br><span class="line">    score: active binding</span><br><span class="line">  Private:</span><br><span class="line">    .score: NA</span><br></pre></td></tr></table></figure>
+
+<p>_注意_：我们设置了 <code>overwrite=TRUE</code></p>
+<p>添加一个方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; Student$set(&quot;public&quot;, &quot;getName&quot;, function() self$name)</span><br><span class="line">&gt; sam &lt;- Student$new(&quot;sam&quot;)</span><br><span class="line">&gt; sam$getName()</span><br><span class="line">[1] &quot;sam&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-9-打印对象"><a href="#4-9-打印对象" class="headerlink" title="4.9 打印对象"></a><strong>4.9 打印对象</strong></h3><p><code>R6</code> 对象有一个默认的 <code>print</code> 方法，列出对象的所有成员。我们可以为类自定义一个 <code>print</code> 方法，那么它将覆盖默认的方法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Student &lt;- R6Class(</span><br><span class="line">  &quot;Student&quot;,</span><br><span class="line">  public = list(</span><br><span class="line">    name = NA,</span><br><span class="line">    initialize = function(name) &#123;</span><br><span class="line">      self$name &lt;- name</span><br><span class="line">    &#125;,</span><br><span class="line">    print = function(...) &#123;</span><br><span class="line">      cat(&quot;class&quot;, class(self), &quot;\n&quot;)</span><br><span class="line">      cat(ls(self), sep = &#x27;,&#x27;)</span><br><span class="line">    &#125;</span><br><span class="line">  ),</span><br><span class="line">  private = list(</span><br><span class="line">    .score = NA</span><br><span class="line">  ),</span><br><span class="line">  active = list(</span><br><span class="line">    score = function(s) &#123;</span><br><span class="line">      if (missing(s))</span><br><span class="line">        return(private$.score)</span><br><span class="line">      if (s &lt; 0 || s &gt; 100)</span><br><span class="line">        stop(&quot;Score incorrect!&quot;)</span><br><span class="line">      private$.score &lt;- s</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">&gt; sam &lt;- Student$new(&quot;sam&quot;)</span><br><span class="line">&gt; print(sam)</span><br><span class="line">class Student R6 </span><br><span class="line">clone,initialize,name,print,score</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>END -</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2023/12/29/R_object_system/" title="R语言的对象系统（S3-R6）">https://wz.anoms.top/2023/12/29/R_object_system/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"><i class="fa fa-tag"></i> R语言</a>
+              <a href="/tags/%E5%AF%B9%E8%B1%A1%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> 对象系统</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/12/28/NFZM_2024_newyear/" rel="prev" title="【转载】 南方周末2024新年献词丨守住不惑的底线，选择做最值得的自己">
+                  <i class="fa fa-chevron-left"></i> 【转载】 南方周末2024新年献词丨守住不惑的底线，选择做最值得的自己
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/12/30/%E5%90%84%E4%B8%AA%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8C%85%E6%A0%BC%E5%BC%8F%E6%B5%85%E6%9E%90/" rel="next" title="各个系统的软件安装包格式浅析">
+                  各个系统的软件安装包格式浅析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
