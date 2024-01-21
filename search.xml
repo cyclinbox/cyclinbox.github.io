@@ -8775,4 +8775,134 @@
         <tag>macros</tag>
       </tags>
   </entry>
+  <entry>
+    <title>轻量级LaTeX环境安装与jupyter导出PDF的一些探索</title>
+    <url>/2024/01/21/install-and-use-of-tinytex-and-xelatex/</url>
+    <content><![CDATA[<p>通过R安装了TinyTeX这一LaTeX发行版，并探索了用其编译jupyter notebook的方法。</p>
+<span id="more"></span>
+
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
+<p>参考：</p>
+<p><a href="https://blog.csdn.net/Cai_deLong/article/details/113970205">【LaTex使用总结】LaTex，pdflatex，xelatex，xetex等的区别和关系</a></p>
+<p><a href="https://www.overleaf.com/learn/latex/Articles/The_TeX_family_tree%3A_LaTeX%2C_pdfTeX%2C_XeTeX%2C_LuaTeX_and_ConTeXt">Tex家族树</a></p>
+</blockquote>
+<p>TeX是一种基于宏的排版语言，早在上个世纪70年代就被发明了出来。原版的TeX语法晦涩难懂，于是有了LaTeX （或写作 $L^AT_EX$ ），后者是建立在TeX 基础上的宏语言，依然使用TeX的排版引擎但语法更加简单。</p>
+<p>随着排版语言的进一步发展，LaTeX 又出现了许多变种，如pdfLaTeX 能够将TeX代码编写的文档直接编译到PDF格式（在pdfLaTeX 诞生的年代，LaTeX只能做到将文档编译到PostScript打印机排版格式），再之后出现了XeTeX（XeLaTeX是其别名），可以原生处理utf-8编码的各种文字（例如中文），因此对于非英文编写的文档也可也正确编译。</p>
+<p>上面提到的这些都属于排版引擎，而更多情况下我们接触到的是 <code>排版引擎+宏包+格式+驱动+编辑器+...</code> 形成的一个整体，即所谓“发行版”。常见的LaTeX发行版包括MikTex、CTeX、MacTex、TeX Live等。</p>
+<blockquote>
+<p>要想深入区分排版引擎和发行版的区别，可以阅读文章 <a href="https://zhuanlan.zhihu.com/p/181557253">《LaTeX引擎、格式、宏包、发行版大梳理》 - Rabbyt的文章 - 知乎</a></p>
+</blockquote>
+<h2 id="TinyTeX"><a href="#TinyTeX" class="headerlink" title="TinyTeX"></a>TinyTeX</h2><blockquote>
+<p>参考： <a href="https://yihui.org/tinytex/">TinyTeX英文版介绍</a> 与 <a href="https://yihui.org/tinytex/cn/">中文版介绍</a></p>
+</blockquote>
+<p>TinyTeX是一个TeX Live的修改版，由R语言大佬、Rmarkdown核心开发人员谢益辉开发，主要用于R markdown文档向PDF的编译。其编译引擎是XeLaTeX。</p>
+<p>熟悉Rstudio的同学应该对Rstudio的knitr一键编译功能印象深刻，这一功能可以实现从R markdown笔记源代码编译到好看的html网页。然而knitr是可以进行设置的，通过一些高级设置，可以让R markdown笔记直接编译到PDF格式，这一功能就是通过TinyTeX实现的。不过今天我们要讲的并非TinyTeX在Rstudio里的应用，而是在系统的命令行中调用这一工具，以及借助TinyTeX将jupyter notebook转换为PDF格式的文档。</p>
+<p>TinyTex的安装方法如下（需要在R语言解释器中执行下面的代码）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">install.packages(&#x27;tinytex&#x27;) # 安装`tinytex`R包，这个包并非TinyTeX本身，而是后者的安装程序</span><br><span class="line">tinytex::install_tinytex()  # 使用`tinytex`R包安装TinyTeX发行版</span><br><span class="line"># 要卸载TinyTeX，请直接在此执行代码 `tinytex::uninstall_tinytex()`</span><br></pre></td></tr></table></figure>
+
+<p>安装完成以后，可以直接在R语言中调用tinytex进行文档渲染。</p>
+<p>当然，tinytex也提供了命令行调用的方式，即 <code>xelatex &lt;arguments&gt;</code> 。可以在命令行中使用<code>xelatex --version</code>查看版本信息（如下代码块所示）</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">~$ xelatex --version</span><br><span class="line">XeTeX 3.141592653-2.6-0.999995 (TeX Live 2023)</span><br><span class="line">kpathsea version 6.3.5</span><br><span class="line">Copyright 2023 SIL International, Jonathan Kew and Khaled Hosny.</span><br><span class="line">There is NO warranty.  Redistribution of this software is</span><br><span class="line">covered by the terms of both the XeTeX copyright and</span><br><span class="line">the Lesser GNU General Public License.</span><br><span class="line">For more information about these matters, see the file</span><br><span class="line">named COPYING and the XeTeX source.</span><br><span class="line">Primary author of XeTeX: Jonathan Kew.</span><br><span class="line">Compiled with ICU version 72.1; using 72.1</span><br><span class="line">Compiled with zlib version 1.2.13; using 1.2.13</span><br><span class="line">Compiled with FreeType2 version 2.13.0; using 2.13.0</span><br><span class="line">Compiled with Graphite2 version 1.3.14; using 1.3.14</span><br><span class="line">Compiled with HarfBuzz version 7.0.1; using 7.0.1</span><br><span class="line">Compiled with libpng version 1.6.39; using 1.6.39</span><br><span class="line">Compiled with pplib version v2.05 less toxic i hope</span><br><span class="line">Compiled with fontconfig version 2.14.2; using 2.14.2</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Pandoc"><a href="#Pandoc" class="headerlink" title="Pandoc"></a>Pandoc</h2><p>jupyter notebook可以将<code>.ipynb</code>格式的笔记本导出为各种格式，包括<code>.html</code>格式，Latex源代码格式（<code>.zip</code>），PDF格式等。其中，jupyter对<code>.html</code>格式拥有原生的支持，而其他格式则需要一些额外的工具（换句话说，pandoc）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240121174349.png" alt="image.png"></p>
+<p>当我们想将<code>.ipynb</code>格式的笔记本导出为其他各种文件格式时，jupyter会调用<a href="https://pandoc.org/index.html">pandoc</a>这一工具。当系统里面没有安装pandoc时，会出现如下的报错：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240121180822.png" alt="image.png"></p>
+<p>至于pandoc，官网对其的介绍如下：</p>
+<blockquote>
+<p>If you need to convert files from one markup format into another, pandoc is your swiss-army knife. </p>
+<p>（如果你需要将文件从一种标记语言格式转换为另一种格式，pandoc就是你的瑞士军刀）</p>
+</blockquote>
+<p>pandoc支持几十种格式之间的互转，具体支持的格式和使用方法请参考<a href="https://pandoc.org/MANUAL.html">官方文档</a>。安装方法见<a href="https://pandoc.org/installing.html">这个页面上的介绍</a> 。简单来说，在不同的系统上，可以分别使用下面的指令进行安装：</p>
+<table>
+<thead>
+<tr>
+<th>系统</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Windows</td>
+<td><code>choco install pandoc</code></td>
+</tr>
+<tr>
+<td>macOS</td>
+<td><code>brew install pandoc</code></td>
+</tr>
+<tr>
+<td>Linux(Debian,Ubuntu,etc.)</td>
+<td><code>sudo apt-get install pandoc</code></td>
+</tr>
+<tr>
+<td>Chrome OS</td>
+<td><code>crew install pandoc</code></td>
+</tr>
+</tbody></table>
+<p>除了使用指令安装以外，还可以从其GitHub仓库的<a href="https://github.com/jgm/pandoc/releases">release页面</a>上直接下载编译好的二进制版本pandoc程序或安装包。</p>
+<p>安装完成后，可以使用<code>which pandoc</code>指令检查pandoc的安装路径是否加入了系统的环境变量当中（除了Windows系统——Windows上没有which这个指令）。当然，也可也在命令行中输入<code>pandoc --version</code>查看pandoc是否安装成功。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">~$ which pandoc</span><br><span class="line">/usr/bin/pandoc</span><br><span class="line">~$ pandoc --version</span><br><span class="line">pandoc 2.9.2.1</span><br><span class="line">Compiled with pandoc-types 1.20, texmath 0.12.0.2, skylighting 0.8.5</span><br><span class="line">Default user data directory: /home/cyclin/.local/share/pandoc or /home/cyclin/.pandoc</span><br><span class="line">Copyright (C) 2006-2020 John MacFarlane</span><br><span class="line">Web:  https://pandoc.org</span><br><span class="line">This is free software; see the source for copying conditions.</span><br><span class="line">There is no warranty, not even for merchantability or fitness</span><br><span class="line">for a particular purpose.</span><br></pre></td></tr></table></figure>
+
+
+<p>借助pandoc这一外部工具，就可以实现ipython notebook导出到各种文件格式的功能，其中导出到Latex源码格式只需要pandoc支持，而导出到PDF同时需要pandoc和latex引擎。</p>
+<h2 id="从-ipynb到PDF"><a href="#从-ipynb到PDF" class="headerlink" title="从.ipynb到PDF"></a>从<code>.ipynb</code>到PDF</h2><p>大体上讲，有两种方法可以将jupyter notebook的文档导出为PDF：</p>
+<ul>
+<li>先导出为HTML，然后在浏览器中使用“打印当前网页为PDF”的功能获得PDF</li>
+<li>通过LaTeX直接编译为PDF</li>
+</ul>
+<p>两种方法各有优劣。前一种方法兼容性最强，除了浏览器外基本不需要额外的软件；后一种可以生成媲美出版物的高质量PDF。</p>
+<p>鉴于前一种方法非常简单无需多言，下面我们重点讲后一种方法的实现。</p>
+<p>当然，前排提醒，经过笔者测试，后一种方法依然存在一点小问题，不过不影响使用。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240121181423.png" alt="image.png"></p>
+<p>（上图：目前存在的一些“小问题”。貌似jupyter生成的LaTeX源代码中存在一些XeLaTeX无法识别的控制语句。）</p>
+<p>鉴于直接在jupyter里面导出到PDF可能会出错，我们可以先导出文档到latex源代码格式（File→Export and Save Notebook as→LaTeX），然后再渲染。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240121181603.png" alt="image.png"></p>
+<p>如上图，点击这个按钮后，会有一份<code>.zip</code>格式的源代码包被导出。我们首先要做的是解压这个源代码包。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">C:\Users\ab124\Downloads&gt;unzip model-test-2024-1-15.zip -d model-test-2024-1-15</span><br><span class="line">Archive:  model-test-2024-1-15.zip</span><br><span class="line">  inflating: model-test-2024-1-15.tex</span><br><span class="line">  inflating: output_18_0.png</span><br></pre></td></tr></table></figure>
+
+<p>压缩包里面的东西很少，只有一个<code>.tex</code>格式的源码文件和一些图片资源文件。</p>
+<p>接下来，只需要运行下面的指令即可进行PDF编译：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xelatex model-test-2024-1-15.tex</span><br></pre></td></tr></table></figure>
+
+<p>输出大致如下图所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240121182027.png" alt="image.png"></p>
+<p>注意到，在前面jupyter提到的一些报错信息，这里我们也遇到了。</p>
+<p>但是，但是，但是！</p>
+<p>这些报错其实是无关紧要的！（至少目前是这样，感觉是jupyter的锅。可以无视它们直接按回车键。最终会得到一份PDF文件）</p>
+<p>所以我们一路摁回车，忽略这些报错信息。最终的输出如下图，其中列出了一些信息，包括日志文件路径和最终编译生成的PDF文件名称。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240121182323.png" alt="image.png"></p>
+<p>输出的PDF最终效果展示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240121182726.png" alt="image.png"></p>
+<p>当然，这个时候juyter notebook依然无法编译PDF，因为jupyter notebook无法自动忽略上面的那些报错。目前这个问题无解。</p>
+<h2 id="一些问题的解决方法"><a href="#一些问题的解决方法" class="headerlink" title="一些问题的解决方法"></a>一些问题的解决方法</h2><h3 id="1-LaTeX缺少宏包的问题处理"><a href="#1-LaTeX缺少宏包的问题处理" class="headerlink" title="1. LaTeX缺少宏包的问题处理"></a>1. LaTeX缺少宏包的问题处理</h3><p>第一次编译latex可能会报错，这个时候可以看报错内容。有时候报错内容如下</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">! LaTeX Error: File `times.sty&#x27; not found.</span><br><span class="line"></span><br><span class="line">Type X to quit or &lt;RETURN&gt; to proceed,</span><br><span class="line">     or enter new name. (Default extension: sty)</span><br></pre></td></tr></table></figure>
+
+<p>这种类型的报错意味着宏包没有安装完整，例如上面这段报错表明<code>times.sty</code>没有安装。这个时候我们可以搜索一下缺失的<code>sty</code>文件属于哪个包。可以使用<code>tlmgr</code>指令进行查找，后者是TeX Live自带的包管理器指令。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">$ tlmgr search --global --file &quot;/times.sty&quot;</span><br><span class="line">psnfss:</span><br><span class="line">        texmf-dist/tex/latex/psnfss/times.sty</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+
+<p>如上的结果表明，<code>sty</code>文件属于<code>psnfss</code>包。于是我们可以使用下面的指令进行安装：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">tlmgr install psnfss</span><br><span class="line"># if the package contains executables (e.g., dvisvgm), run</span><br><span class="line">tlmgr path add </span><br></pre></td></tr></table></figure>
+
+<p>其他宏包的缺失问题使用同样的方法解决。</p>
+<h3 id="2-含有中文字符的LaTeX文档编译"><a href="#2-含有中文字符的LaTeX文档编译" class="headerlink" title="2. 含有中文字符的LaTeX文档编译"></a>2. 含有中文字符的LaTeX文档编译</h3><p>LaTeX原生只支持英文字符，如果文档含中文，编译出的PDF会在原本该出现中文的地方产生大片的空白。</p>
+<p>要实现latex对中文的支持，需要在latex源代码文档首部添加如下的两行代码：</p>
+<figure class="highlight latex"><table><tr><td class="code"><pre><span class="line"><span class="comment">%-- coding: UTF-8 --</span></span><br><span class="line"><span class="keyword">\usepackage</span>[UTF8]&#123;ctex&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同时安装Ctex包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tlmgr install ctex</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">D:\R\TinyTex&gt;tlmgr install ctex</span><br><span class="line">tlmgr.pl: package repository https://mirrors.jlu.edu.cn/CTAN/systems/texlive/tlnet (not verified: gpg unavailable)</span><br><span class="line">[1/43, ??:??/??:??] install: adobemapping [2128k]</span><br><span class="line">... ...</span><br><span class="line">[43/43, 01:03/01:03] install: zhnumber [9k]</span><br><span class="line">running mktexlsr ...</span><br><span class="line">done running mktexlsr.</span><br><span class="line">running updmap-sys ...</span><br><span class="line">done running updmap-sys.</span><br><span class="line">regenerating fmtutil.cnf in D:/R/TinyTex/texmf-dist</span><br><span class="line">running fmtutil-sys --byengine eptex --no-error-if-no-format --no-error-if-no-engine=luametatex,luajithbtex,luajittex,mfluajit --status-file=C:\Users\ab124\AppData\Local\Temp\x7NIOgtsGR\O4ZA3wrLcd ...</span><br><span class="line">  OK: eptex.fmt/eptex ptex.fmt/eptex</span><br><span class="line">running fmtutil-sys --byengine euptex --no-error-if-no-format --no-error-if-no-engine=luametatex,luajithbtex,luajittex,mfluajit --status-file=C:\Users\ab124\AppData\Local\Temp\x7NIOgtsGR\O4ZA3wrLcd ...</span><br><span class="line">  OK: eptex.fmt/eptex ptex.fmt/eptex euptex.fmt/euptex uptex.fmt/euptex platex.fmt/euptex uplatex-dev.fmt/euptex platex-dev.fmt/euptex uplatex.fmt/euptex</span><br><span class="line">running fmtutil-sys --byfmt mptopdf --no-error-if-no-engine=luametatex,luajithbtex,luajittex,mfluajit --status-file=C:\Users\ab124\AppData\Local\Temp\x7NIOgtsGR\O4ZA3wrLcd ...</span><br><span class="line">  OK: eptex.fmt/eptex ptex.fmt/eptex euptex.fmt/euptex uptex.fmt/euptex platex.fmt/euptex uplatex-dev.fmt/euptex platex-dev.fmt/euptex uplatex.fmt/euptex mptopdf.fmt/pdftex</span><br><span class="line">tlmgr.pl: package log updated: D:/R/TinyTex/texmf-var/web2c/tlmgr.log</span><br><span class="line">tlmgr.pl: command log updated: D:/R/TinyTex/texmf-var/web2c/tlmgr-commands.log</span><br></pre></td></tr></table></figure>
+
+<p>之后，就可以编译含中文字符的文档了。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>latex</tag>
+        <tag>jupyter</tag>
+        <tag>PDF</tag>
+      </tags>
+  </entry>
 </search>
