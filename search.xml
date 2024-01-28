@@ -8951,12 +8951,12 @@
 <tr>
 <td><code>pickle.load</code></td>
 <td>导入python对象</td>
-<td>到文件</td>
+<td>从文件</td>
 </tr>
 <tr>
 <td><code>pickle.loads</code></td>
 <td>导入python对象</td>
-<td>到一个二进制对象</td>
+<td>从一个二进制对象</td>
 </tr>
 </tbody></table>
 <p>值得注意的是，python的<code>pickle</code>模块并没有R的<code>load()</code>和<code>save()</code>那样智能，一些对象、模块或函数无法被序列化，因此需要一些额外的处理逻辑才能实现“保存整个工作区的镜像”的效果。</p>
