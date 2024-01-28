@@ -8905,4 +8905,183 @@
         <tag>PDF</tag>
       </tags>
   </entry>
+  <entry>
+    <title>基于Pickle库的Python对象序列化探索</title>
+    <url>/2024/01/27/python-pickle-usage-demo/</url>
+    <content><![CDATA[<p>R语言有<code>save()</code>和<code>save.image()</code>方法，可以保存整个工作区的镜像，用于下一次的使用。这个功能非常方便，可以节省调试过程中生成中间变量的时间。</p>
+<p>那么python可以吗？</p>
+<span id="more"></span>
+
+<p>好像是可以的，<code>pickle</code>库是python的对象序列化模块。虽然它原则上只能序列化单个对象，但我们可以探索一下如何将全局变量进行序列化处理。</p>
+<p>这里面需要用到的知识： <code>dir()</code>可以查看所有全局变量的名称。<code>globals()</code>可以以字典的方式访问所有全局变量。</p>
+<p>探索结果如下：</p>
+<h2 id="1-dir-和globals-可以查看python的所有全局变量"><a href="#1-dir-和globals-可以查看python的所有全局变量" class="headerlink" title="1. dir()和globals()可以查看python的所有全局变量"></a>1. <code>dir()</code>和<code>globals()</code>可以查看python的所有全局变量</h2><p><code>dir()</code>和<code>globals()</code>都属于python的内置函数，任何时候都能使用。其中，<code>dir()</code>用于返回当前本地作用域中的名称列表（即所有变量的名称）。而<code>globals()</code> 用于返回实现当前模块命名空间的字典，即变量的名称+变量的内容。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> struct,os,sys</span><br><span class="line">a = <span class="number">1</span></span><br><span class="line">b = <span class="string">&quot;Hello World&quot;</span></span><br><span class="line"><span class="built_in">dir</span>()   <span class="comment"># show the names in the module namespace  </span></span><br><span class="line"><span class="comment"># output: [&#x27;__annotations__&#x27;, &#x27;__builtins__&#x27;, &#x27;__doc__&#x27;, &#x27;__loader__&#x27;, &#x27;__name__&#x27;, &#x27;__package__&#x27;, &#x27;__spec__&#x27;, &#x27;a&#x27;, &#x27;b&#x27;, &#x27;os&#x27;, &#x27;struct&#x27;, &#x27;sys&#x27;]</span></span><br><span class="line"><span class="built_in">globals</span>()</span><br><span class="line"><span class="comment"># output: &#123;&#x27;__name__&#x27;: &#x27;__main__&#x27;, &#x27;__doc__&#x27;: None, &#x27;__package__&#x27;: None, &#x27;__loader__&#x27;: &lt;class &#x27;_frozen_importlib.BuiltinImporter&#x27;&gt;, &#x27;__spec__&#x27;: None, &#x27;__annotations__&#x27;: &#123;&#125;, &#x27;__builtins__&#x27;: &lt;module &#x27;builtins&#x27; (built-in)&gt;, &#x27;struct&#x27;: &lt;module &#x27;struct&#x27; from &#x27;D:\\Anaconda3\\lib\\struct.py&#x27;&gt;, &#x27;os&#x27;: &lt;module &#x27;os&#x27; from &#x27;D:\\Anaconda3\\lib\\os.py&#x27;&gt;, &#x27;sys&#x27;: &lt;module &#x27;sys&#x27; (built-in)&gt;, &#x27;a&#x27;: 1, &#x27;b&#x27;: &#x27;Hello World&#x27;&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，通过<code>dir()</code>函数可以查询到前面我们命名的变量<code>a</code>和<code>b</code>的名称，而通过<code>globals()</code>我们可以查询到变量<code>a</code>和<code>b</code>以及对应的内容。此外，还有一些名称中带有下划线的变量，如<code>__name__</code>等，这些属于python的内部变量。</p>
+<h2 id="2-pickle模块导出python对象到文件"><a href="#2-pickle模块导出python对象到文件" class="headerlink" title="2. pickle模块导出python对象到文件"></a>2. <code>pickle</code>模块导出python对象到文件</h2><blockquote>
+<p>模块 <a href="https://docs.python.org/zh-cn/3/library/pickle.html#module-pickle" title="pickle: Convert Python objects to streams of bytes and back."><code>pickle</code></a> 实现了对一个 Python 对象结构的二进制序列化和反序列化。 <em>“pickling”</em> 是将 Python 对象及其所拥有的层次结构转化为一个字节流的过程，而 <em>“unpickling”</em> 是相反的操作，会将（来自一个 <a href="https://docs.python.org/zh-cn/3/glossary.html#term-binary-file">binary file</a> 或者 <a href="https://docs.python.org/zh-cn/3/glossary.html#term-bytes-like-object">bytes-like object</a> 的）字节流转化回一个对象层次结构。</p>
+<p>——python官方文档</p>
+</blockquote>
+<p>和R语言中的<code>load</code>和<code>save</code>函数一样，<code>pickle</code>也是为了对象结构的存储。<code>pickle</code>提供了 <code>pickle.dump</code>、<code>pickle.dumps</code>、<code>pickle.load</code>、<code>pickle.loads</code> 这四个函数用于对象结构的导入导出。其中：</p>
+<ul>
+<li><code>pickle.dump</code>将对象 <em>obj</em> 封存以后的对象写入已打开的 <a href="https://docs.python.org/zh-cn/3/glossary.html#term-file-object">file object</a> _file_。</li>
+<li><code>pickle.dumps</code>将 <em>obj</em> 封存以后的对象作为 <a href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytes" title="bytes"><code>bytes</code></a> 类型直接返回，而不是将其写入到文件。</li>
+<li><code>pickle.load</code>从已打开的 <a href="https://docs.python.org/zh-cn/3/glossary.html#term-file-object">file object</a> <em>文件</em> 中读取封存后的对象，重建其中特定对象的层次结构并返回。</li>
+<li><code>pickle.loads</code>重建并返回一个对象的封存表示形式 <em>data</em> 的对象层级结构。 <em>data</em> 必须为 <a href="https://docs.python.org/zh-cn/3/glossary.html#term-bytes-like-object">bytes-like object</a>。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>导入导出</th>
+<th>文件或对象</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>pickle.dump</code></td>
+<td>导出python对象</td>
+<td>到文件</td>
+</tr>
+<tr>
+<td><code>pickle.dumps</code></td>
+<td>导出python对象</td>
+<td>到一个二进制对象</td>
+</tr>
+<tr>
+<td><code>pickle.load</code></td>
+<td>导入python对象</td>
+<td>到文件</td>
+</tr>
+<tr>
+<td><code>pickle.loads</code></td>
+<td>导入python对象</td>
+<td>到一个二进制对象</td>
+</tr>
+</tbody></table>
+<p>值得注意的是，python的<code>pickle</code>模块并没有R的<code>load()</code>和<code>save()</code>那样智能，一些对象、模块或函数无法被序列化，因此需要一些额外的处理逻辑才能实现“保存整个工作区的镜像”的效果。</p>
+<h2 id="3-python保存整个工作区的镜像"><a href="#3-python保存整个工作区的镜像" class="headerlink" title="3. python保存整个工作区的镜像"></a>3. python保存整个工作区的镜像</h2><p>如题。前几天的时候我在用jupyer lab做实验，由于想要保存一些中间结果方便未来的调试，于是探索了使用pickle导出工作区镜像的方法。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240128194015.png" alt="image.png"></p>
+<p>jupyter lab的环境中内置变量则更多（如上图），有一些类型的变量无法使用pickle进行导出。具体来说，一些module无法导出；对于一个同名的function，如果前后两次运行中修改了函数定义，这个函数也无法导出；此外，同一个类的对象，如果在实例化之后对类定义的代码也进行了修改，那么之前实例化的那些对象也无法导出。</p>
+<p>如果强制导出这些变量，会出现类似下面这样的报错：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">---------------------------------------------------------------------------</span><br><span class="line">PicklingError                             Traceback (most recent call last)</span><br><span class="line">Input In [662], in &lt;cell line: 4&gt;()</span><br><span class="line">      3 # 导出整个工作区镜像</span><br><span class="line">      4 with open(&#x27;temp-2024-01-17-ensemble_model.image.pickle&#x27;, &#x27;wb&#x27;) as f:</span><br><span class="line">----&gt; 5     pickle.dump(pipe2,f)</span><br><span class="line"></span><br><span class="line">PicklingError: Can&#x27;t pickle &lt;class &#x27;__main__.ensemblePipe&#x27;&gt;: it&#x27;s not the same object as __main__.ensemblePipe</span><br></pre></td></tr></table></figure>
+
+<p>因此，我们定义<code>global_img</code>字典用于保存可导出的变量，预先剔除这些不可导出的变量。随后使用预导出的<code>global_img</code>代替<code>globals()</code>进行文件导出。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 下面这段代码可以导出所有变量到`global_img`变量</span></span><br><span class="line">global_img = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">dir</span>():</span><br><span class="line">    obj = <span class="built_in">globals</span>()[i]</span><br><span class="line">    <span class="keyword">if</span>((<span class="built_in">type</span>(obj).__name__ <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">&#x27;module&#x27;</span>,<span class="string">&#x27;function&#x27;</span>,<span class="string">&#x27;dict_keys&#x27;</span>]) <span class="keyword">and</span> \</span><br><span class="line">       (i <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">&#x27;In&#x27;</span>,<span class="string">&#x27;Out&#x27;</span>,<span class="string">&#x27;base&#x27;</span>,<span class="string">&#x27;exit&#x27;</span>,<span class="string">&#x27;f&#x27;</span>,<span class="string">&#x27;get_ipython&#x27;</span>,<span class="string">&#x27;ensemblePipe&#x27;</span>,<span class="string">&#x27;utils&#x27;</span>,<span class="string">&#x27;pipe2&#x27;</span>,<span class="string">&#x27;pipe_5&#x27;</span>,<span class="string">&#x27;quit&#x27;</span>,<span class="string">&#x27;exit&#x27;</span>]) <span class="keyword">and</span> i[<span class="number">0</span>]!=<span class="string">&quot;_&quot;</span>):</span><br><span class="line">        global_img[i] = obj</span><br></pre></td></tr></table></figure>
+
+<p>随后，使用下面的代码就可导出<code>global_img</code>到文件当中了。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="comment"># 导出整个工作区镜像</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;temp-2024-01-17-ensemble_model.image.pickle&#x27;</span>, <span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    pickle.dump(global_img,f)</span><br></pre></td></tr></table></figure>
+
+<p>要从pickle文件中恢复这些变量，使用下面的代码即可（变量暂时存储在<code>obj</code>里面，后续可以把它们进行其他操作）：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="comment"># 将镜像文件导入到工作区</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;temp-2024-01-17-ensemble_model.image.pickle&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">	obj = pickle.load(f)</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，可以使用下面的代码段判断一个变量属于什么类型。这里使用了<code>type()</code>函数用来查看一个变量的类型。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> global_img.keys():</span><br><span class="line">    obj = <span class="built_in">globals</span>()[i]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;i&#125;</span>:\t<span class="subst">&#123;<span class="built_in">type</span>(obj)&#125;</span>&quot;</span>)    </span><br></pre></td></tr></table></figure>
+
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>pickle</tag>
+        <tag>对象序列化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux服务器维护零碎知识点整理</title>
+    <url>/2024/01/28/Linux-service-operation-notes-01/</url>
+    <content><![CDATA[<p>如题。</p>
+<p>原先的服务器快到期了，因此这周初新购进一台华为云的服务器。在配置服务器的时候，顺带温习了一下这些知识点。</p>
+<span id="more"></span>
+
+
+<h2 id="虚拟内存的分配与开启-关闭操作"><a href="#虚拟内存的分配与开启-关闭操作" class="headerlink" title="虚拟内存的分配与开启/关闭操作"></a>虚拟内存的分配与开启/关闭操作</h2><p>所谓虚拟内存，就是把硬盘上面的一部分空间当作内存来用，通过牺牲硬盘的一部分读写性能换取内存的提升。在Windows系统上，这样的技术被称为“分页文件”，而在Linux/Unix上，这样的技术被称为“交换文件”</p>
+<h3 id="1-创建虚拟内存文件（交换文件）"><a href="#1-创建虚拟内存文件（交换文件）" class="headerlink" title="1. 创建虚拟内存文件（交换文件）"></a>1. 创建虚拟内存文件（交换文件）</h3><p>使用下面的指令，可以在当前目录下创建一个名为<code>swapfile</code>的交换文件。其中，<code>dd</code>指令用来将指令写入磁盘上的一片物理空间，<code>bs=1G count=6</code> 代表创建6个1GB大小的块，也就是这个交换文件大小为6GB（可以提供大约6GB的虚拟内存空间）。虚拟内存的大小设置为服务器物理内存大小的1-2倍比较合适，例如2GB的内存可以配4GB的虚拟内存，8GB的内存可以配8-16GB的虚拟内存。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo <span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=./swapfile bs=1G count=6</span><br></pre></td></tr></table></figure>
+
+<p>上述指令的输出：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">/$ sudo dd if=/dev/zero of=./swapfile bs=1G count=6</span><br><span class="line">6+0 records in</span><br><span class="line">6+0 records out</span><br><span class="line">6442450944 bytes (6.4 GB, 6.0 GiB) copied, 51.4058 s, 125 MB/s</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-将文件设置为交换文件"><a href="#2-将文件设置为交换文件" class="headerlink" title="2. 将文件设置为交换文件"></a>2. 将文件设置为交换文件</h3><p><code>mkswap</code> 指令可以将指定的文件设置为Linux交换文件。具体而言，指令如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo mkswap swapfile</span><br></pre></td></tr></table></figure>
+
+<p>上述指令的输出：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">/$ sudo mkswap swapfile</span><br><span class="line">mkswap: swapfile: insecure permissions 0644, 0600 suggested.</span><br><span class="line">Setting up swapspace version 1, size = 6 GiB (6442446848 bytes)</span><br><span class="line">no label, UUID=13e8eb83-a3a7-4298-b5ef-9c6b3053a4ff</span><br></pre></td></tr></table></figure>
+
+<p>请注意，将一个文件设置为交换文件不代表开启了服务器的交换文件功能，还需要进一步设置。</p>
+<h3 id="3-启用交换文件（临时）"><a href="#3-启用交换文件（临时）" class="headerlink" title="3. 启用交换文件（临时）"></a>3. 启用交换文件（临时）</h3><p><code>swapon</code>和<code>swapoff</code>这两个指令用于开启和关闭服务器系统的交换文件功能。具体而言，指令如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo swapon swapfile</span><br></pre></td></tr></table></figure>
+
+<p>可以使用<code>free</code>指令查看开启这一功能前后的内存变化情况：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">/$ free -h</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:          3.6Gi       3.4Gi       129Mi       0.0Ki        89Mi        53Mi</span><br><span class="line">Swap:           0Gi         0Gi         0Gi</span><br><span class="line"></span><br><span class="line">/$ sudo swapon  swapfile # 开启交换文件</span><br><span class="line"></span><br><span class="line">/$ free -h</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:          3.6Gi       3.4Gi       129Mi       0.0Ki        89Mi        53Mi</span><br><span class="line">Swap:         6.0Gi         0Gi       6.0Gi</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-启用交换文件（永久有效）"><a href="#4-启用交换文件（永久有效）" class="headerlink" title="4. 启用交换文件（永久有效）"></a>4. 启用交换文件（永久有效）</h3><p>在<code>/etc/fstab</code> 文件中添加下面这样一行内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/swapfile swap swap defaults 0 0</span><br></pre></td></tr></table></figure>
+
+<p>其中，第一个参数代表交换文件的实际存储位置，此处的示例是<code>/swapfile</code>，在实际使用中请根据实际情况进行设置。另外5个参数的内容就按上述设置即可。</p>
+<p>完成这一设置以后，重启系统，则交换文件即可生效。</p>
+<h2 id="通过-htaccess-文件控制Apache-web-服务器文件的访问权限"><a href="#通过-htaccess-文件控制Apache-web-服务器文件的访问权限" class="headerlink" title="通过.htaccess 文件控制Apache web 服务器文件的访问权限"></a>通过<code>.htaccess</code> 文件控制Apache web 服务器文件的访问权限</h2><p><code>.htaccess</code> 文件是 Apache web 服务器中用于配置特定目录的文件。它允许开发者在目录级别上覆盖主配置文件中的一些配置，并可以用于设置权限、重定向、缓存控制等。</p>
+<p>以下是一个简单的 <code>.htaccess</code> 文件的示例，以说明其中的一些基本概念：</p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><span class="line"><span class="section">&lt;Files <span class="string">&quot;sensitive-file.txt&quot;</span>&gt;</span></span><br><span class="line">    <span class="attribute">Order</span> <span class="literal">allow</span>,<span class="literal">deny</span></span><br><span class="line">    <span class="attribute">Deny</span> from <span class="literal">all</span></span><br><span class="line"><span class="section">&lt;/Files&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="section">&lt;FilesMatch <span class="string">&quot;\.(xml|txt)$&quot;</span>&gt;</span></span><br><span class="line">    <span class="attribute">Order</span> <span class="literal">allow</span>,<span class="literal">deny</span></span><br><span class="line">    <span class="attribute">Allow</span> from <span class="literal">all</span></span><br><span class="line"><span class="section">&lt;/FilesMatch&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="section">&lt;IfModule mod_rewrite.c&gt;</span></span><br><span class="line">    <span class="attribute">RewriteEngine</span> <span class="literal">On</span></span><br><span class="line">    <span class="attribute">RewriteBase</span> /path/to/your/app</span><br><span class="line"></span><br><span class="line">    <span class="attribute">RewriteCond</span> <span class="variable">%&#123;REQUEST_FILENAME&#125;</span> !-f</span><br><span class="line">    <span class="attribute">RewriteCond</span> <span class="variable">%&#123;REQUEST_FILENAME&#125;</span> !-d</span><br><span class="line">    <span class="attribute">RewriteRule</span> ^(.*)$ index.php/$<span class="number">1</span><span class="meta"> [L]</span></span><br><span class="line"><span class="section">&lt;/IfModule&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">ErrorDocument</span> <span class="number">404</span> /errors/not-found.html</span><br></pre></td></tr></table></figure>
+
+<p>上述示例包含了几个部分：</p>
+<ol>
+<li><p><code>&lt;Files&gt;</code> 部分：这部分指定了对 <code>sensitive-file.txt</code> 文件的访问控制。在这个例子中，对这个文件的访问被拒绝。</p>
+</li>
+<li><p><code>&lt;FilesMatch&gt;</code> 部分：这里使用正则表达式指定了对以 <code>.xml</code> 或 <code>.txt</code> 结尾的文件的访问控制。在这个例子中，对这些文件的访问是允许的。</p>
+</li>
+<li><p><code>&lt;IfModule&gt;</code> 部分：这是一个条件块，只有在 Apache 服务器加载了 <code>mod_rewrite</code> 模块时才会执行其中的指令。在这个例子中，启用了 URL 重写规则，将请求重定向到 <code>index.php</code>。</p>
+</li>
+<li><p><code>ErrorDocument</code> 指令：这部分定义了当发生404错误时，将用户重定向到 <code>/errors/not-found.html</code> 页面。</p>
+</li>
+</ol>
+<p>这只是一个简单的示例，<code>.htaccess</code> 文件还可以包含其他指令，用于设置许多不同的配置选项。</p>
+<p>必须要注意的是，仅仅对<code>.htaccess</code>文件进行设置并不能保证这些访问权限设置能够生效。还需要在web服务器程序的配置文件中启用对访问权限的覆盖功能，才可以生效。</p>
+<p>web服务器程序的配置文件路径，根据服务器上具体使用的web服务程序的不同而有所不同，例如apache2的配置文件路径是<code>/etc/apache2/apache2.conf</code>，而httpd的配置文件路径是 <code>/etc/httpd/conf/httpd.conf</code> 。</p>
+<p>以apache2为例。假设我们要使用<code>.htaccess</code>文件进行访问权限保护的网页存储在<code>/var/www/html</code>路径下面，那么在apache2配置文件里面，我们需要加上下面这几行内容：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&lt;Directory /var/www/html&gt;</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">&lt;/Directory&gt;</span><br></pre></td></tr></table></figure>
+
+<p>之后，我们需要重启一下web服务程序：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service apache2 restart</span><br></pre></td></tr></table></figure>
+
+<p>这样，就可以通过<code>.htaccess</code>进行访问权限控制了。</p>
+<h2 id="Linux的cron定时任务设置与踩坑"><a href="#Linux的cron定时任务设置与踩坑" class="headerlink" title="Linux的cron定时任务设置与踩坑"></a>Linux的cron定时任务设置与踩坑</h2><p><code>crond</code>是Linux上一个用于运行定时任务的守护进程。它的配置文件路径是<code>/etc/crontab</code>，里面的内容大概长这个样子：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># /etc/crontab: system-wide crontab</span></span><br><span class="line"><span class="comment"># Unlike any other crontab you don&#x27;t have to run the `crontab&#x27;</span></span><br><span class="line"><span class="comment"># command to install the new version when you edit this file</span></span><br><span class="line"><span class="comment"># and files in /etc/cron.d. These files also have username fields,</span></span><br><span class="line"><span class="comment"># that none of the other crontabs do.</span></span><br><span class="line"></span><br><span class="line">SHELL=/bin/sh</span><br><span class="line">PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</span><br><span class="line"></span><br><span class="line"><span class="comment"># Example of job definition:</span></span><br><span class="line"><span class="comment"># .---------------- minute (0 - 59)</span></span><br><span class="line"><span class="comment"># |  .------------- hour (0 - 23)</span></span><br><span class="line"><span class="comment"># |  |  .---------- day of month (1 - 31)</span></span><br><span class="line"><span class="comment"># |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...</span></span><br><span class="line"><span class="comment"># |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat</span></span><br><span class="line"><span class="comment"># |  |  |  |  |</span></span><br><span class="line"><span class="comment"># *  *  *  *  * user-name command to be executed</span></span><br><span class="line">17 *    * * *   root    <span class="built_in">cd</span> / &amp;&amp; run-parts --report /etc/cron.hourly</span><br><span class="line">25 6    * * *   root    <span class="built_in">test</span> -x /usr/sbin/anacron || ( <span class="built_in">cd</span> / &amp;&amp; run-parts --report /etc/cron.daily )</span><br><span class="line">47 6    * * 7   root    <span class="built_in">test</span> -x /usr/sbin/anacron || ( <span class="built_in">cd</span> / &amp;&amp; run-parts --report /etc/cron.weekly )</span><br><span class="line">52 6    1 * *   root    <span class="built_in">test</span> -x /usr/sbin/anacron || ( <span class="built_in">cd</span> / &amp;&amp; run-parts --report /etc/cron.monthly )</span><br><span class="line"><span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+
+<p>每分钟，crond程序都会检查这个配置文件的更新，并在定时任务到时间时执行任务。上述配置文件中说明了添加定时任务的方法：在这个文件中新增一行内容，这一行内容需要包含任务的执行时间、以什么用户身份执行这个任务，以及要执行的任务脚本。</p>
+<p>例如，假设我们在<code>/home/warrenz/</code>下有一个爬虫程序<code>spyder.py</code>，需要每天上午9点整准时以warrenz的用户身份执行，那么就需要向<code>crontab</code>中添加下面这样的内容：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">0 9 * * * warrenz /home/warrenz/spyder.py</span><br></pre></td></tr></table></figure>
+
+<p>前五个数字分别代表定时任务的执行时间（分钟、小时、每个月的第几天、月份、每个星期的第几天），可以使用通配符<code>*</code>代表任何时间都执行。第六个参数是用户名，第七个参数是要执行的脚本内容或文件路径，必须使用完整路径。</p>
+<p>另外，<code>crond</code>在执行任务时无法处理标准输入输出（也就是通常我们写程序时的<code>print()</code>那一堆操作）。因此，可以放在定时任务里执行的程序不应该有标准输入输出，即使有，也应该使用Linux输出重定向符号<code>&gt;</code>或<code>&gt;&gt;</code>写入到一个具体文件当中。</p>
+<p><code>crond</code>执行任务没有输出，那么如何确定任务是否执行成功了呢？其中一种方法是查询<code>cron</code>服务的状态：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service cron status</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240128203011.png" alt="image.png"></p>
+<p>如果这里出现了异常的报错或异常的会话关闭（”session closed“），则有可能是任务出错。（正常情况下执行完任务也会session closed，但这里是可以看crond的任务执行时间的，如果一个任务预估需要三五分钟跑完，结果crond只花了不到一秒就session closed了，那很有可能是程序报错了）</p>
+<p>经过本人实践，造成crond定时任务出错的原因大概包括下面这样一些：</p>
+<ul>
+<li>python程序调用了未安装的模块（注意，如果使用root用户进行定时任务执行，则一些模块需要使用<code>sudo pip</code>或<code>sudo conda</code>进行全局安装）。</li>
+<li>程序中有标准输入输出且未进行文件重定向。</li>
+<li>使用非root用户身份执行定时任务时，没有给文件或目录相应的访问权限。</li>
+<li>软件或程序本身的问题。</li>
+</ul>
+<p>按照上面的思路逐个情况排查，最终可以找到原因。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux运维</tag>
+        <tag>虚拟内存</tag>
+        <tag>web服务</tag>
+        <tag>定时任务</tag>
+      </tags>
+  </entry>
 </search>
