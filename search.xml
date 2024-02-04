@@ -9084,4 +9084,106 @@
         <tag>定时任务</tag>
       </tags>
   </entry>
+  <entry>
+    <title>jupyter魔法指令的一点点探索</title>
+    <url>/2024/02/04/jupyter-magic-cmd/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+
+
+<h2 id="从-pip-install-和-pip-install-的区别说起"><a href="#从-pip-install-和-pip-install-的区别说起" class="headerlink" title="从%pip install 和 !pip install 的区别说起"></a>从<code>%pip install</code> 和 <code>!pip install</code> 的区别说起</h2><blockquote>
+<p>参考： <a href="https://stackoverflow.com/questions/65547021/difference-between-pip-and-pip-in-python-jupyter-notebook-and-colab">stackoverflow - difference between ‘%pip’ and ‘!pip’ </a></p>
+</blockquote>
+<p>在jupyter notebook中，<code>%pip install</code> 和 <code>!pip install</code> 的区别是：</p>
+<ul>
+<li><code>%pip install</code> 是一个<strong>魔法指令</strong>，它会在当前的notebook内核所运行的<strong>虚拟环境</strong>中安装模块。</li>
+<li><code>!pip install</code> 是一个<strong>shell命令</strong>，它会在<strong>基础环境</strong>中安装模块。类似的，使用<code>! &lt;command&gt;</code>允许运行<code>ls</code>或<code>pwd</code>等命令或操作系统上可用的命令。</li>
+</ul>
+<p>在安装新模块的过程中，虽然使用 <code>!pip install</code> 同样可以安装新模块，但代码编辑器会推荐使用 <code>%pip install</code> ，这样可以确保安装的模块和notebook内核是兼容的，并且不会影响到其他Notebook或系统级别的Python环境。</p>
+<h2 id="什么是jupyter魔法指令"><a href="#什么是jupyter魔法指令" class="headerlink" title="什么是jupyter魔法指令"></a>什么是jupyter魔法指令</h2><blockquote>
+<p>参考： <a href="https://ipython.readthedocs.io/en/stable/interactive/magics.html">https://ipython.readthedocs.io/en/stable/interactive/magics.html</a></p>
+</blockquote>
+<p>在Jupyter Notebook中，“魔法指令”（Magic Commands）是一组特殊的命令，它们以百分号（<code>%</code>）或双百分号（<code>%%</code>）为前缀。这些命令用于执行一些特殊的操作，如操作系统命令、调用系统工具、测量代码 执行时间等。</p>
+<p>需要注意的是，提供这些魔法指令的并非jupyter notebook本身，而是jupyter所连接到的IPython内核。<code>%</code> 符号并非python语言中的有效一元运算符，IPython内核得以对其进行重载以提供这些魔法指令；然而jupyter也可以连接到其他语言的内核（如IJulia、IRKernel等，如下图），在这些语言中 <code>%</code> 可能有功能，因此当使用其他编程语言编写jupyter notebook时，这些魔法指令可能无法使用。</p>
+<p><img src="https://pic.imgdb.cn/item/65bf96ab871b83018a32707e.png" alt="jupyter project review"></p>
+<h2 id="jupyter魔法指令有哪些，怎么用"><a href="#jupyter魔法指令有哪些，怎么用" class="headerlink" title="jupyter魔法指令有哪些，怎么用"></a>jupyter魔法指令有哪些，怎么用</h2><h3 id="两类魔法指令"><a href="#两类魔法指令" class="headerlink" title="两类魔法指令"></a>两类魔法指令</h3><p>魔法指令分为两种类型：行魔法指令和单元格魔法指令。</p>
+<ul>
+<li>前者以一个百分号 <code>%</code> 开头，只对当前行的代码有效。</li>
+<li>后者以两个百分号 <code>%%</code> 开头，必须放在单元格的第一行，其对整个单元格的代码都有效。</li>
+</ul>
+<p>可以使用 <code>%lsmagic</code> 命令来列出所有可用的魔术命令，或者使用 <code>%quickref</code> 命令来查看简要的帮助文档。</p>
+<p><img src="https://pic.imgdb.cn/item/65bf98d8871b83018a3cb75b.jpg" alt="lsmagic"></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">In [1]: %quickref</span><br><span class="line"></span><br><span class="line">IPython -- An enhanced Interactive Python - Quick Reference Card</span><br><span class="line">================================================================</span><br><span class="line"></span><br><span class="line">obj?, obj??      : Get help, or more help for object (also works as</span><br><span class="line">                   ?obj, ??obj).</span><br><span class="line">?foo.*abc*       : List names in &#x27;foo&#x27; containing &#x27;abc&#x27; in them.</span><br><span class="line">%magic           : Information about IPython&#x27;s &#x27;magic&#x27; % functions.</span><br><span class="line"></span><br><span class="line">Magic functions are prefixed by % or %%, and typically take their arguments</span><br><span class="line">without parentheses, quotes or even commas for convenience.  Line magics take a</span><br><span class="line">single % and cell magics are prefixed with two %%.</span><br><span class="line"></span><br><span class="line">The following magic functions are currently available:</span><br><span class="line"></span><br><span class="line">%alias:</span><br><span class="line">    Define an alias for a system command.</span><br><span class="line">%alias_magic:</span><br><span class="line">    ::</span><br><span class="line">%autoawait:</span><br><span class="line"></span><br><span class="line">%autocall:</span><br><span class="line">    Make functions callable without having to type parentheses.</span><br><span class="line">%autoindent:</span><br><span class="line">    Toggle autoindent on/off (deprecated)</span><br><span class="line">%automagic:</span><br><span class="line">    Make magic functions callable without having to type the initial %.</span><br><span class="line">%bookmark:</span><br><span class="line">    Manage IPython&#x27;s bookmark system.</span><br><span class="line">%cd:</span><br><span class="line">    Change the current working directory.</span><br><span class="line">%cls:</span><br><span class="line">    Clear screen.</span><br><span class="line">--- more ---</span><br></pre></td></tr></table></figure>
+
+
+<p>另外，<code>%Magics_Name?</code> 命令可以用来查看某个魔术命令的详细说明，比如 <code>%time?</code>。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">In [2]: %time?</span><br><span class="line">Docstring:</span><br><span class="line">Time execution of a Python statement or expression.</span><br><span class="line"></span><br><span class="line">The CPU and wall clock times are printed, and the value of the</span><br><span class="line">expression (if any) is returned.  Note that under Win32, system time</span><br><span class="line">is always reported as 0, since it can not be measured.</span><br><span class="line"></span><br><span class="line">This function can be used both as a line and cell magic:</span><br><span class="line"></span><br><span class="line">- In line mode you can time a single-line statement (though multiple</span><br><span class="line">  ones can be chained with using semicolons).</span><br><span class="line"></span><br><span class="line">- In cell mode, you can time the cell body (a directly</span><br><span class="line">  following statement raises an error).</span><br><span class="line"></span><br><span class="line">This function provides very basic timing functionality.  Use the timeit</span><br><span class="line">magic for more control over the measurement.</span><br><span class="line"></span><br><span class="line">.. versionchanged:: 7.3</span><br><span class="line">    User variables are no longer expanded,</span><br><span class="line">    the magic line is always left unmodified.</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h3><p>下面是一些常用的魔术命令的例子：</p>
+<ul>
+<li><code>%run</code>：运行外部Python脚本，比如 <code>%run hello.py</code>。</li>
+<li><code>%load</code>：载入外部脚本的内容到一个代码单元格中，比如 <code>%load hello.py</code>。</li>
+<li><code>%time</code>：测量单行代码的执行时间，比如 <code>%time x = sum(range(100))</code>。</li>
+<li><code>%timeit</code>：测量单行代码的平均执行时间，比如 <code>%timeit x = sum(range(100))</code>。</li>
+<li><code>%%time</code>：测量整个单元格代码的执行时间，比如：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">%%time</span><br><span class="line">x = <span class="built_in">sum</span>(<span class="built_in">range</span>(<span class="number">100</span>))</span><br><span class="line">y = <span class="built_in">sum</span>(<span class="built_in">range</span>(<span class="number">200</span>))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/65bf9b66871b83018a483585.jpg" alt="time statictis"></p>
+<ul>
+<li><code>%%writefile</code>：将当前单元格的内容写入文件中，比如：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">%%writefile hello.py</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Hello, world!&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>%%latex</code>：显示LaTeX公式，比如：</li>
+</ul>
+<figure class="highlight latex"><table><tr><td class="code"><pre><span class="line"><span class="comment">%%latex</span></span><br><span class="line"><span class="keyword">\begin</span>&#123;equation&#125;</span><br><span class="line"><span class="keyword">\int</span><span class="built_in">_</span>0<span class="built_in">^</span><span class="keyword">\infty</span> <span class="keyword">\frac</span>&#123;x<span class="built_in">^</span>3&#125; &#123;e<span class="built_in">^</span>x-1&#125;<span class="keyword">\,</span>dx = <span class="keyword">\frac</span>&#123;<span class="keyword">\pi</span><span class="built_in">^</span>4&#125; &#123;15&#125; <span class="keyword">\label</span>&#123;eq:sample&#125;</span><br><span class="line"><span class="keyword">\end</span>&#123;equation&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/65bf9a0a871b83018a421038.jpg" alt="latex"></p>
+<ul>
+<li><code>%matplotlib</code>：设置Matplotlib图形的渲染方式。比如<code>%matplotlib inline</code></li>
+<li><code>%reset</code>：清除所有变量的名称空间。</li>
+<li><code>%who</code> 和 <code>%whos</code>：显示当前命名空间中的变量。</li>
+<li><code>%pdb</code>：启用或禁用交互式调试器（pdb）。</li>
+<li><code>%history</code>：显示输入/输出历史记录。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>jupyter</tag>
+        <tag>魔法指令</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>碎碎念</title>
+    <url>/2024/02/04/%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B52024%E5%AF%92%E5%81%87/</url>
+    <content><![CDATA[<p>这几天放假回家了。</p>
+<span id="more"></span>
+
+<p>在家和在所里，氛围完全不一样。这两天过得懒洋洋的[1]，每天睡八九个小时睡到自然醒，推开窗户看看——嗬，好大的雪——然后继续回去睡。如果给我发消息半天没回复，大概率是我没看到消息。</p>
+<p>感觉放假在家，离开了往日的氛围，思考和说话的欲望也减少了很多。就，整个人很倦怠，虽然知道还有许多事情要去做，但相比做事情我更喜欢捂被窝。雪下的也是够大的，到现在也没有一丝要停的迹象。</p>
+<p>这就是冬天的感觉吗？穷冬烈风，大雪深数尺，千里冰封万里雪飘。相比之下，上海的冬天太不像冬天了。</p>
+<p>随着年的临近，各种奇奇怪怪的热搜也出现了。除开这几天下大雪封大路导致列车停运旅客滞留的消息以外，一些大学生回家的矛盾、家长催婚的压力等等鸡毛蒜皮的事情也能上新闻。虽然看到这些新闻时，更多的还是扎心——24年了，依然是个单身狗。也许在人际关系方面，需要修炼的路依然很长。套用多年前日记里的一句话，2024年了，希望遇到更好的朋友，希望变成更好的自己。</p>
+<p>最近生活不一定规律，博客的更新可能也不会像之前那样规律了，不过我会尽量保持一定的更新节奏。</p>
+<p>快过年了，也许更重要的是和家人团聚以及调整自己的状态吧。</p>
+<p>提前祝大家新年快乐~awa</p>
+<p><img src="https://pic.imgdb.cn/item/65bfa716c458853aef3826a1.jpg" alt="back home"></p>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=30148671&auto=1&height=66"></iframe>
+
+<p>注[1]：必须强调的是，其实现阶段我的工作进展一直都不怎么顺利，之前说好的驾校考试也没准备。我在心安理得的摆烂，不带一丝愧疚。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+      </tags>
+  </entry>
 </search>
