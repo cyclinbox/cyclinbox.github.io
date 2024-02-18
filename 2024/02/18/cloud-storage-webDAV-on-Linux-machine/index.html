@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="上一节中，我们介绍了几种跨设备的文件传输方案，其中提到了坚果云webDAV服务。鉴于坚果云的存储空间有限，为了获得更好的使用体验，本篇我们将要介绍在Linux云服务器上自建webDAV网盘服务的方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Linux云服务器搭建webDAV网盘服务">
+<meta property="og:url" content="https://wz.anoms.top/2024/02/18/cloud-storage-webDAV-on-Linux-machine/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="上一节中，我们介绍了几种跨设备的文件传输方案，其中提到了坚果云webDAV服务。鉴于坚果云的存储空间有限，为了获得更好的使用体验，本篇我们将要介绍在Linux云服务器上自建webDAV网盘服务的方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218223632.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225124.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225822.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225906.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218230123.png">
+<meta property="article:published_time" content="2024-02-18T15:13:34.000Z">
+<meta property="article:modified_time" content="2024-02-18T15:28:39.911Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="webDAV">
+<meta property="article:tag" content="通信协议">
+<meta property="article:tag" content="云服务器">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218223632.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/02/18/cloud-storage-webDAV-on-Linux-machine/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/02/18/cloud-storage-webDAV-on-Linux-machine/","path":"2024/02/18/cloud-storage-webDAV-on-Linux-machine/","title":"使用Linux云服务器搭建webDAV网盘服务"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用Linux云服务器搭建webDAV网盘服务 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BD%BF%E7%94%A8%E5%89%8D%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">一、使用前准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81webDAV%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">二、webDAV的安装与配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E5%AE%89%E8%A3%85"><span class="nav-number">2.1.</span> <span class="nav-text">（一）安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text">（二）修改配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E8%BF%90%E8%A1%8C"><span class="nav-number">2.3.</span> <span class="nav-text">（三）运行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9C%A8%E5%85%B6%E4%BB%96%E7%B3%BB%E7%BB%9F%E4%B8%8A%E8%AE%BF%E9%97%AE"><span class="nav-number">3.</span> <span class="nav-text">三、在其他系统上访问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E5%9C%A8windows%E4%B8%8A%E8%AE%BF%E9%97%AE"><span class="nav-number">3.1.</span> <span class="nav-text">（一）在windows上访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89-%E5%9C%A8Linux%E7%B3%BB%E7%BB%9F%E4%B8%8A%E8%AE%BF%E9%97%AE"><span class="nav-number">3.2.</span> <span class="nav-text">（二） 在Linux系统上访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E5%9C%A8macOS%E7%B3%BB%E7%BB%9F%E4%B8%8A%E8%AE%BF%E9%97%AE"><span class="nav-number">3.3.</span> <span class="nav-text">（三）在macOS系统上访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E5%88%B0-WebDAV-%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">3.3.1.</span> <span class="nav-text">连接到 WebDAV 服务器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E-WebDAV-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.3.2.</span> <span class="nav-text">从 WebDAV 服务器断开连接</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E8%AE%A8%E8%AE%BA%E4%B8%8E%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">4.</span> <span class="nav-text">四、讨论与局限性</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">150</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/02/18/cloud-storage-webDAV-on-Linux-machine/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用Linux云服务器搭建webDAV网盘服务 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Linux云服务器搭建webDAV网盘服务
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-02-18 23:13:34 / 修改时间：23:28:39" itemprop="dateCreated datePublished" datetime="2024-02-18T23:13:34+08:00">2024-02-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>上一节中，我们介绍了几种跨设备的文件传输方案，其中提到了坚果云webDAV服务。鉴于坚果云的存储空间有限，为了获得更好的使用体验，本篇我们将要介绍在Linux云服务器上自建webDAV网盘服务的方法。</p>
+<span id="more"></span>
+
+<h2 id="一、使用前准备"><a href="#一、使用前准备" class="headerlink" title="一、使用前准备"></a>一、使用前准备</h2><ul>
+<li>一台用于开启webDAV的Linux云服务器。<ul>
+<li>注意，如果想要在非默认http端口上开启服务，需要提前在云服务器提供商的网络安全组中提前放行相应端口的流量。</li>
+<li>提前记录好云服务器的公网IP。此处我用于测试的服务器IP地址为<code>47.115.222.83</code>，下面我也将使用这个IP用来演示。</li>
+</ul>
+</li>
+<li>webDAV服务端程序<ul>
+<li>此处使用 <a target="_blank" rel="noopener" href="https://github.com/hacdias/webdav">hacdias-webdav</a> 这个GitHub上的开源项目。这是一个使用Go语言实现的单文件版webDAV服务程序，配置起来相对简单</li>
+</ul>
+</li>
+</ul>
+<h2 id="二、webDAV的安装与配置"><a href="#二、webDAV的安装与配置" class="headerlink" title="二、webDAV的安装与配置"></a>二、webDAV的安装与配置</h2><h3 id="（一）安装"><a href="#（一）安装" class="headerlink" title="（一）安装"></a>（一）安装</h3><p>从 <a target="_blank" rel="noopener" href="https://github.com/hacdias/webdav/releases">https://github.com/hacdias/webdav/releases</a> 网站上下载最新版的可执行文件（注意选择合适的程序架构），然后在Linux服务器上解压：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> ~/webdav_files <span class="comment"># 创建文件夹</span></span><br><span class="line"><span class="built_in">cd</span> ~/webdav_files    <span class="comment"># 进入文件夹</span></span><br><span class="line">wget https://github.com/hacdias/webdav/releases/download/v4.2.0/linux-amd64-webdav.tar.gz <span class="comment"># 下载可执行文件。这个链接是Linux x86_64架构的可执行文件。其他架构的改一下链接</span></span><br><span class="line">tar -zxvf linux-amd64-webdav.tar.gz</span><br><span class="line"><span class="built_in">ls</span> -alh</span><br></pre></td></tr></table></figure>
+
+<p>output:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">drwxrwxr-x  2 cyclin cyclin 4.0K Feb 18 22:44 .</span><br><span class="line">drwx------ 15 cyclin cyclin 4.0K Feb 18 22:44 ..</span><br><span class="line">-rw-r--r--  1 cyclin cyclin 1.1K May 30  2022 LICENSE</span><br><span class="line">-rw-r--r--  1 apache apache 3.2M Feb 18 21:47 linux-amd64-webdav.tar.gz</span><br><span class="line">-rw-r--r--  1 cyclin cyclin 2.9K May 30  2022 README.md</span><br><span class="line">-rwxr-xr-x  1 cyclin cyclin 7.9M May 30  2022 webdav</span><br></pre></td></tr></table></figure>
+
+<h3 id="（二）修改配置文件"><a href="#（二）修改配置文件" class="headerlink" title="（二）修改配置文件"></a>（二）修改配置文件</h3><p>根据 <a target="_blank" rel="noopener" href="https://github.com/hacdias/webdav">hacdias-webdav</a> 的项目介绍，运行webDAV只需要一行指令<code>webdav</code>即可。其他的配置主要在 <code>config.yml</code>配置文件中进行设置。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218223632.png" alt="image.png"></p>
+<p>在项目附带的<code>README.md</code>文件中，作者给出了一个配置文件示例，但我们需要对其进行一些修改才能让他运行起来。下面是一份经过修改的、可以运行起来的精简版配置文件，如果需要更高级的功能，可以参考<code>README.md</code>文件添加更多字段：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Server related settings</span></span><br><span class="line"><span class="attr">address:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="attr">port:</span> <span class="number">84</span> <span class="comment"># 将webDAV服务端口设置为84。默认端口是80</span></span><br><span class="line"><span class="attr">auth:</span> <span class="literal">true</span> <span class="comment"># 需要身份验证</span></span><br><span class="line"><span class="attr">tls:</span> <span class="literal">false</span> <span class="comment"># 不使用TLS加密，也就是说我们使用http协议开启webDAV服务</span></span><br><span class="line"></span><br><span class="line"><span class="attr">users:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">username:</span> <span class="string">admin</span> <span class="comment"># 用户名。可以改成别的。</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">admin</span> <span class="comment"># 密码。可以改成别的。</span></span><br><span class="line">    <span class="attr">scope:</span> <span class="string">/home/</span></span><br></pre></td></tr></table></figure>
+
+
+<p>我们将上述文件保存为<code>config.yml</code>，并和<code>webdav</code> 的程序放在一起。这样就完成了配置</p>
+<h3 id="（三）运行"><a href="#（三）运行" class="headerlink" title="（三）运行"></a>（三）运行</h3><p>只需要一行指令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./webdav</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(base) cyclin@iZf8z0u1kbopnpeuu32nf5Z:~/webdav_files$ sudo ./webdav</span><br><span class="line">[sudo] password for cyclin:</span><br><span class="line">2024-02-18T22:50:29.854+0800    info    Listening       &#123;&quot;address&quot;: &quot;[::]:84&quot;&#125;</span><br><span class="line">2024-02-18T22:51:03.861+0800    info    login attempt   &#123;&quot;username&quot;: &quot;admin&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49744&quot;&#125;</span><br><span class="line">2024-02-18T22:51:03.861+0800    info    user authorized &#123;&quot;username&quot;: &quot;admin&quot;&#125;</span><br><span class="line">2024-02-18T22:58:33.589+0800    info    login attempt   &#123;&quot;username&quot;: &quot;&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49945&quot;&#125;</span><br><span class="line">2024-02-18T22:58:33.738+0800    info    login attempt   &#123;&quot;username&quot;: &quot;&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49946&quot;&#125;</span><br><span class="line">2024-02-18T22:58:33.872+0800    info    login attempt   &#123;&quot;username&quot;: &quot;&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49947&quot;&#125;</span><br><span class="line">2024-02-18T22:58:34.010+0800    info    login attempt   &#123;&quot;username&quot;: &quot;&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49948&quot;&#125;</span><br><span class="line">... ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、在其他系统上访问"><a href="#三、在其他系统上访问" class="headerlink" title="三、在其他系统上访问"></a>三、在其他系统上访问</h2><h3 id="（一）在windows上访问"><a href="#（一）在windows上访问" class="headerlink" title="（一）在windows上访问"></a>（一）在windows上访问</h3><p>由于我们是用http协议而非https协议建立的webDAV服务，需要在windows系统上修改一些注册表数据才能完成链接（因为win7开始微软改变了windows系统的安全策略，默认只能使用https协议连接webDAV服务器）。</p>
+<p>具体做法参考这篇文章： <a target="_blank" rel="noopener" href="https://www.cnblogs.com/cnhack/articles/17101960.html">《windows10挂载webdav》</a> 。简单来说，在注册表编辑器内寻找 <code>计算机\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WebClient\Parameters</code> 路径，然后将<code>BasicAuthLevel</code> 条目的数值数据修改为“2”。之后，在Windows服务控制面板（services.msc）中重启“WebClient”服务即可。</p>
+<p>之后的步骤和上一篇文章大抵相同。在“此电脑”-“添加一个网络位置”中输入网址： <code>http://47.115.222.83:84</code> ，然后按提示输入账号和密码（上一节<code>config.yml</code>中设置过），随后一路确认，即可完成对webDAV的添加。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225124.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225822.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225906.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218230123.png" alt="image.png"></p>
+<p>最终结果如上图所示。</p>
+<h3 id="（二）-在Linux系统上访问"><a href="#（二）-在Linux系统上访问" class="headerlink" title="（二） 在Linux系统上访问"></a>（二） 在Linux系统上访问</h3><p>步骤如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y davfs2 <span class="comment"># 首先需要安装davfs文件系统，否则无法挂载</span></span><br><span class="line"><span class="built_in">mkdir</span> ~/webDAV <span class="comment"># 新建文件夹，作为挂载点</span></span><br><span class="line"><span class="comment"># 下面这行代码用于挂载我们刚刚建立的webDAV服务器</span></span><br><span class="line"><span class="comment"># 注意，需要用sudo提权，否则会报错</span></span><br><span class="line">sudo mount -t davfs -o noexec http://47.115.222.83:84 /home/cyclin/webDAV/</span><br></pre></td></tr></table></figure>
+
+<p>output: </p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cyclin@hcss-ecs-531c:~$ sudo mount -t davfs -o noexec http://47.115.222.83:84 /home/cyclin/webDAV/</span><br><span class="line">Please enter the username to authenticate with server</span><br><span class="line">http://47.115.222.83:84 or hit enter for none.</span><br><span class="line">  Username: admin</span><br><span class="line">Please enter the password to authenticate user admin with server</span><br><span class="line">http://47.115.222.83:84 or hit enter for none.</span><br><span class="line">  Password:</span><br><span class="line">cyclin@hcss-ecs-531c:~$ ls /home/cyclin/webDAV/ # 看一下挂载的webDAV文件夹的内容</span><br><span class="line">cyclin  lost+found  warren</span><br><span class="line"># 可以看到，webDAV文件夹内的东西被正确加载了出来，说明挂载成功</span><br></pre></td></tr></table></figure>
+
+<p>如此就可以实现挂载与访问。</p>
+<h3 id="（三）在macOS系统上访问"><a href="#（三）在macOS系统上访问" class="headerlink" title="（三）在macOS系统上访问"></a>（三）在macOS系统上访问</h3><p>参考： <a target="_blank" rel="noopener" href="https://support.apple.com/zh-cn/guide/mac-help/mchlp1546/mac">https://support.apple.com/zh-cn/guide/mac-help/mchlp1546/mac</a></p>
+<p>若要在 Mac 上访问 WebDAV 服务器，请在“访达”中使用“连接服务器”命令。</p>
+<h4 id="连接到-WebDAV-服务器"><a href="#连接到-WebDAV-服务器" class="headerlink" title="连接到 WebDAV 服务器"></a>连接到 WebDAV 服务器</h4><ol>
+<li>在 Mac 上的“访达”中，选取“前往”&gt;“连接服务器”。</li>
+<li>在“服务器地址”栏中输入服务器的地址。</li>
+<li>点按“连接”。</li>
+</ol>
+<h4 id="从-WebDAV-服务器断开连接"><a href="#从-WebDAV-服务器断开连接" class="headerlink" title="从 WebDAV 服务器断开连接"></a>从 WebDAV 服务器断开连接</h4><ol>
+<li>在 Mac 上的“访达”中，选择该服务器。</li>
+<li>按住 Control 键点按，然后选取“推出”。</li>
+</ol>
+<h2 id="四、讨论与局限性"><a href="#四、讨论与局限性" class="headerlink" title="四、讨论与局限性"></a>四、讨论与局限性</h2><p>1、此方法需要一台具有公网IP的云服务器，然而租赁云服务器是一笔不小的开销。笔者也尝试过在实验室的服务器上配置此webDAV服务器，但发现换用多个端口都无法实现正常访问，推测是网络管理员配置的安全组屏蔽了服务器的大部分端口。因此，访问实验室服务器建议使用sshfs这种更加简单稳健的方法。<br>2、上面的方法中，webDAV服务程序在前台运行，一旦连接丢失则webDAV服务就会中断。为了防止这种情况发生，可以使用<code>screen</code>或<code>tmux</code>等工具将webDAV服务放在后台运行，也可也使用<code>systemctl</code>工具将其注册为系统服务，并配置开机运行。具体方法会在未来的更新中详细说明。<br>3、在Linux系统上，上述挂载方法需要root权限，因此有一定的局限性。此处笔者提出一种猜想，可以配合linux系统的<code>proot</code>功能绕过root权限的限制，不过仍有待进一步的研究。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/02/18/cloud-storage-webDAV-on-Linux-machine/" title="使用Linux云服务器搭建webDAV网盘服务">https://wz.anoms.top/2024/02/18/cloud-storage-webDAV-on-Linux-machine/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/webDAV/" rel="tag"><i class="fa fa-tag"></i> webDAV</a>
+              <a href="/tags/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/" rel="tag"><i class="fa fa-tag"></i> 通信协议</a>
+              <a href="/tags/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag"><i class="fa fa-tag"></i> 云服务器</a>
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/02/18/year-beyond-one-year-2024/" rel="prev" title="一年又一年">
+                  <i class="fa fa-chevron-left"></i> 一年又一年
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

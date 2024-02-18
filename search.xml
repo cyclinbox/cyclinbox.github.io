@@ -9463,4 +9463,79 @@
         <tag>碎碎念</tag>
       </tags>
   </entry>
+  <entry>
+    <title>使用Linux云服务器搭建webDAV网盘服务</title>
+    <url>/2024/02/18/cloud-storage-webDAV-on-Linux-machine/</url>
+    <content><![CDATA[<p>上一节中，我们介绍了几种跨设备的文件传输方案，其中提到了坚果云webDAV服务。鉴于坚果云的存储空间有限，为了获得更好的使用体验，本篇我们将要介绍在Linux云服务器上自建webDAV网盘服务的方法。</p>
+<span id="more"></span>
+
+<h2 id="一、使用前准备"><a href="#一、使用前准备" class="headerlink" title="一、使用前准备"></a>一、使用前准备</h2><ul>
+<li>一台用于开启webDAV的Linux云服务器。<ul>
+<li>注意，如果想要在非默认http端口上开启服务，需要提前在云服务器提供商的网络安全组中提前放行相应端口的流量。</li>
+<li>提前记录好云服务器的公网IP。此处我用于测试的服务器IP地址为<code>47.115.222.83</code>，下面我也将使用这个IP用来演示。</li>
+</ul>
+</li>
+<li>webDAV服务端程序<ul>
+<li>此处使用 <a href="https://github.com/hacdias/webdav">hacdias-webdav</a> 这个GitHub上的开源项目。这是一个使用Go语言实现的单文件版webDAV服务程序，配置起来相对简单</li>
+</ul>
+</li>
+</ul>
+<h2 id="二、webDAV的安装与配置"><a href="#二、webDAV的安装与配置" class="headerlink" title="二、webDAV的安装与配置"></a>二、webDAV的安装与配置</h2><h3 id="（一）安装"><a href="#（一）安装" class="headerlink" title="（一）安装"></a>（一）安装</h3><p>从 <a href="https://github.com/hacdias/webdav/releases">https://github.com/hacdias/webdav/releases</a> 网站上下载最新版的可执行文件（注意选择合适的程序架构），然后在Linux服务器上解压：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> ~/webdav_files <span class="comment"># 创建文件夹</span></span><br><span class="line"><span class="built_in">cd</span> ~/webdav_files    <span class="comment"># 进入文件夹</span></span><br><span class="line">wget https://github.com/hacdias/webdav/releases/download/v4.2.0/linux-amd64-webdav.tar.gz <span class="comment"># 下载可执行文件。这个链接是Linux x86_64架构的可执行文件。其他架构的改一下链接</span></span><br><span class="line">tar -zxvf linux-amd64-webdav.tar.gz</span><br><span class="line"><span class="built_in">ls</span> -alh</span><br></pre></td></tr></table></figure>
+
+<p>output:</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">drwxrwxr-x  2 cyclin cyclin 4.0K Feb 18 22:44 .</span><br><span class="line">drwx------ 15 cyclin cyclin 4.0K Feb 18 22:44 ..</span><br><span class="line">-rw-r--r--  1 cyclin cyclin 1.1K May 30  2022 LICENSE</span><br><span class="line">-rw-r--r--  1 apache apache 3.2M Feb 18 21:47 linux-amd64-webdav.tar.gz</span><br><span class="line">-rw-r--r--  1 cyclin cyclin 2.9K May 30  2022 README.md</span><br><span class="line">-rwxr-xr-x  1 cyclin cyclin 7.9M May 30  2022 webdav</span><br></pre></td></tr></table></figure>
+
+<h3 id="（二）修改配置文件"><a href="#（二）修改配置文件" class="headerlink" title="（二）修改配置文件"></a>（二）修改配置文件</h3><p>根据 <a href="https://github.com/hacdias/webdav">hacdias-webdav</a> 的项目介绍，运行webDAV只需要一行指令<code>webdav</code>即可。其他的配置主要在 <code>config.yml</code>配置文件中进行设置。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218223632.png" alt="image.png"></p>
+<p>在项目附带的<code>README.md</code>文件中，作者给出了一个配置文件示例，但我们需要对其进行一些修改才能让他运行起来。下面是一份经过修改的、可以运行起来的精简版配置文件，如果需要更高级的功能，可以参考<code>README.md</code>文件添加更多字段：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Server related settings</span></span><br><span class="line"><span class="attr">address:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="attr">port:</span> <span class="number">84</span> <span class="comment"># 将webDAV服务端口设置为84。默认端口是80</span></span><br><span class="line"><span class="attr">auth:</span> <span class="literal">true</span> <span class="comment"># 需要身份验证</span></span><br><span class="line"><span class="attr">tls:</span> <span class="literal">false</span> <span class="comment"># 不使用TLS加密，也就是说我们使用http协议开启webDAV服务</span></span><br><span class="line"></span><br><span class="line"><span class="attr">users:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">username:</span> <span class="string">admin</span> <span class="comment"># 用户名。可以改成别的。</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">admin</span> <span class="comment"># 密码。可以改成别的。</span></span><br><span class="line">    <span class="attr">scope:</span> <span class="string">/home/</span></span><br></pre></td></tr></table></figure>
+
+
+<p>我们将上述文件保存为<code>config.yml</code>，并和<code>webdav</code> 的程序放在一起。这样就完成了配置</p>
+<h3 id="（三）运行"><a href="#（三）运行" class="headerlink" title="（三）运行"></a>（三）运行</h3><p>只需要一行指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./webdav</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">(base) cyclin@iZf8z0u1kbopnpeuu32nf5Z:~/webdav_files$ sudo ./webdav</span><br><span class="line">[sudo] password for cyclin:</span><br><span class="line">2024-02-18T22:50:29.854+0800    info    Listening       &#123;&quot;address&quot;: &quot;[::]:84&quot;&#125;</span><br><span class="line">2024-02-18T22:51:03.861+0800    info    login attempt   &#123;&quot;username&quot;: &quot;admin&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49744&quot;&#125;</span><br><span class="line">2024-02-18T22:51:03.861+0800    info    user authorized &#123;&quot;username&quot;: &quot;admin&quot;&#125;</span><br><span class="line">2024-02-18T22:58:33.589+0800    info    login attempt   &#123;&quot;username&quot;: &quot;&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49945&quot;&#125;</span><br><span class="line">2024-02-18T22:58:33.738+0800    info    login attempt   &#123;&quot;username&quot;: &quot;&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49946&quot;&#125;</span><br><span class="line">2024-02-18T22:58:33.872+0800    info    login attempt   &#123;&quot;username&quot;: &quot;&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49947&quot;&#125;</span><br><span class="line">2024-02-18T22:58:34.010+0800    info    login attempt   &#123;&quot;username&quot;: &quot;&quot;, &quot;remote_address&quot;: &quot;58.34.59.45:49948&quot;&#125;</span><br><span class="line">... ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、在其他系统上访问"><a href="#三、在其他系统上访问" class="headerlink" title="三、在其他系统上访问"></a>三、在其他系统上访问</h2><h3 id="（一）在windows上访问"><a href="#（一）在windows上访问" class="headerlink" title="（一）在windows上访问"></a>（一）在windows上访问</h3><p>由于我们是用http协议而非https协议建立的webDAV服务，需要在windows系统上修改一些注册表数据才能完成链接（因为win7开始微软改变了windows系统的安全策略，默认只能使用https协议连接webDAV服务器）。</p>
+<p>具体做法参考这篇文章： <a href="https://www.cnblogs.com/cnhack/articles/17101960.html">《windows10挂载webdav》</a> 。简单来说，在注册表编辑器内寻找 <code>计算机\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WebClient\Parameters</code> 路径，然后将<code>BasicAuthLevel</code> 条目的数值数据修改为“2”。之后，在Windows服务控制面板（services.msc）中重启“WebClient”服务即可。</p>
+<p>之后的步骤和上一篇文章大抵相同。在“此电脑”-“添加一个网络位置”中输入网址： <code>http://47.115.222.83:84</code> ，然后按提示输入账号和密码（上一节<code>config.yml</code>中设置过），随后一路确认，即可完成对webDAV的添加。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225124.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225822.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218225906.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218230123.png" alt="image.png"></p>
+<p>最终结果如上图所示。</p>
+<h3 id="（二）-在Linux系统上访问"><a href="#（二）-在Linux系统上访问" class="headerlink" title="（二） 在Linux系统上访问"></a>（二） 在Linux系统上访问</h3><p>步骤如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install -y davfs2 <span class="comment"># 首先需要安装davfs文件系统，否则无法挂载</span></span><br><span class="line"><span class="built_in">mkdir</span> ~/webDAV <span class="comment"># 新建文件夹，作为挂载点</span></span><br><span class="line"><span class="comment"># 下面这行代码用于挂载我们刚刚建立的webDAV服务器</span></span><br><span class="line"><span class="comment"># 注意，需要用sudo提权，否则会报错</span></span><br><span class="line">sudo mount -t davfs -o noexec http://47.115.222.83:84 /home/cyclin/webDAV/</span><br></pre></td></tr></table></figure>
+
+<p>output: </p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">cyclin@hcss-ecs-531c:~$ sudo mount -t davfs -o noexec http://47.115.222.83:84 /home/cyclin/webDAV/</span><br><span class="line">Please enter the username to authenticate with server</span><br><span class="line">http://47.115.222.83:84 or hit enter for none.</span><br><span class="line">  Username: admin</span><br><span class="line">Please enter the password to authenticate user admin with server</span><br><span class="line">http://47.115.222.83:84 or hit enter for none.</span><br><span class="line">  Password:</span><br><span class="line">cyclin@hcss-ecs-531c:~$ ls /home/cyclin/webDAV/ # 看一下挂载的webDAV文件夹的内容</span><br><span class="line">cyclin  lost+found  warren</span><br><span class="line"># 可以看到，webDAV文件夹内的东西被正确加载了出来，说明挂载成功</span><br></pre></td></tr></table></figure>
+
+<p>如此就可以实现挂载与访问。</p>
+<h3 id="（三）在macOS系统上访问"><a href="#（三）在macOS系统上访问" class="headerlink" title="（三）在macOS系统上访问"></a>（三）在macOS系统上访问</h3><p>参考： <a href="https://support.apple.com/zh-cn/guide/mac-help/mchlp1546/mac">https://support.apple.com/zh-cn/guide/mac-help/mchlp1546/mac</a></p>
+<p>若要在 Mac 上访问 WebDAV 服务器，请在“访达”中使用“连接服务器”命令。</p>
+<h4 id="连接到-WebDAV-服务器"><a href="#连接到-WebDAV-服务器" class="headerlink" title="连接到 WebDAV 服务器"></a>连接到 WebDAV 服务器</h4><ol>
+<li>在 Mac 上的“访达”中，选取“前往”&gt;“连接服务器”。</li>
+<li>在“服务器地址”栏中输入服务器的地址。</li>
+<li>点按“连接”。</li>
+</ol>
+<h4 id="从-WebDAV-服务器断开连接"><a href="#从-WebDAV-服务器断开连接" class="headerlink" title="从 WebDAV 服务器断开连接"></a>从 WebDAV 服务器断开连接</h4><ol>
+<li>在 Mac 上的“访达”中，选择该服务器。</li>
+<li>按住 Control 键点按，然后选取“推出”。</li>
+</ol>
+<h2 id="四、讨论与局限性"><a href="#四、讨论与局限性" class="headerlink" title="四、讨论与局限性"></a>四、讨论与局限性</h2><p>1、此方法需要一台具有公网IP的云服务器，然而租赁云服务器是一笔不小的开销。笔者也尝试过在实验室的服务器上配置此webDAV服务器，但发现换用多个端口都无法实现正常访问，推测是网络管理员配置的安全组屏蔽了服务器的大部分端口。因此，访问实验室服务器建议使用sshfs这种更加简单稳健的方法。<br>2、上面的方法中，webDAV服务程序在前台运行，一旦连接丢失则webDAV服务就会中断。为了防止这种情况发生，可以使用<code>screen</code>或<code>tmux</code>等工具将webDAV服务放在后台运行，也可也使用<code>systemctl</code>工具将其注册为系统服务，并配置开机运行。具体方法会在未来的更新中详细说明。<br>3、在Linux系统上，上述挂载方法需要root权限，因此有一定的局限性。此处笔者提出一种猜想，可以配合linux系统的<code>proot</code>功能绕过root权限的限制，不过仍有待进一步的研究。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>webDAV</tag>
+        <tag>通信协议</tag>
+        <tag>云服务器</tag>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
 </search>
