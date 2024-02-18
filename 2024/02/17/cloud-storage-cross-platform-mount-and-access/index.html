@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="刚放寒假那几天，有位朋友问了我一个问题： 有什么不限制文件格式的、基于网络的文件互传&#x2F;同步工具或云储存，以便于代码&#x2F;文档&#x2F;图片等在不同设备之间的共享？ 这个问题之前没有仔细研究过，模模糊糊也只是知道有一些技术可以实现这样的文件共享，于是想着专门学习一下。然而，寒假期间除了休息和给长辈帮忙，就没怎么给学习留下时间。这不，趁着寒假快要结束，刚好抽出点时间来探索一下这个问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨设备、系统、网络的文件共享与文件系统挂载杂谈">
+<meta property="og:url" content="https://wz.anoms.top/2024/02/17/cloud-storage-cross-platform-mount-and-access/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="刚放寒假那几天，有位朋友问了我一个问题： 有什么不限制文件格式的、基于网络的文件互传&#x2F;同步工具或云储存，以便于代码&#x2F;文档&#x2F;图片等在不同设备之间的共享？ 这个问题之前没有仔细研究过，模模糊糊也只是知道有一些技术可以实现这样的文件共享，于是想着专门学习一下。然而，寒假期间除了休息和给长辈帮忙，就没怎么给学习留下时间。这不，趁着寒假快要结束，刚好抽出点时间来探索一下这个问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218152601.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218152740.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218163453.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218171347.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218181235.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218181313.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218180032.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218114928.png">
+<meta property="article:published_time" content="2024-02-17T10:13:34.000Z">
+<meta property="article:modified_time" content="2024-02-18T12:48:59.845Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="通信协议">
+<meta property="article:tag" content="文件共享">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218152601.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/02/17/cloud-storage-cross-platform-mount-and-access/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/02/17/cloud-storage-cross-platform-mount-and-access/","path":"2024/02/17/cloud-storage-cross-platform-mount-and-access/","title":"跨设备、系统、网络的文件共享与文件系统挂载杂谈"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>跨设备、系统、网络的文件共享与文件系统挂载杂谈 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%80%E4%BA%9B%E6%AF%94%E8%BE%83%E9%BA%BB%E7%83%A6%E7%9A%84%E5%90%8C%E6%AD%A5%E7%AD%96%E7%95%A5"><span class="nav-number">1.</span> <span class="nav-text">一、一些比较麻烦的同步策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E4%BA%8E%E7%BD%91%E7%9B%98%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">（一）基于网盘的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%9F%BA%E4%BA%8E%E5%9D%9A%E6%9E%9C%E4%BA%91%E7%AD%89%E6%9C%8D%E5%8A%A1%E5%95%86%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">（二）基于坚果云等服务商的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E5%9F%BA%E4%BA%8E%E8%87%AA%E5%BB%BAweb%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">（三）基于自建web服务器的方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8C%82%E8%BD%BD%E4%BB%BB%E6%84%8F%E7%BD%91%E7%BB%9C%E4%BD%8D%E7%BD%AE%E5%88%B0%E6%9C%AC%E5%9C%B0"><span class="nav-number">2.</span> <span class="nav-text">二、挂载任意网络位置到本地</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89NFS"><span class="nav-number">2.1.</span> <span class="nav-text">（一）NFS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%BC%80%E5%90%AFNFS%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E5%81%87%E8%AE%BE%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84IP%E5%9C%B0%E5%9D%80%E4%B8%BA192-168-184-0%EF%BC%89%EF%BC%9A"><span class="nav-number">2.1.1.</span> <span class="nav-text">服务器端开启NFS文件系统（假设客户端的IP地址为192.168.184.0）：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8C%82%E8%BD%BDNFS%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E5%81%87%E8%AE%BE%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E7%9A%84IP%E5%9C%B0%E5%9D%80%E4%B8%BA192-168-78-22%EF%BC%89%EF%BC%9A"><span class="nav-number">2.1.2.</span> <span class="nav-text">客户端挂载NFS文件系统（假设服务器端的IP地址为192.168.78.22）：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89SSHFS"><span class="nav-number">2.2.</span> <span class="nav-text">（二）SSHFS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81-%E5%9C%A8windows%E4%B8%8A%E5%90%AF%E7%94%A8SSHFS%E5%B9%B6%E6%8C%82%E8%BD%BD%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.2.1.</span> <span class="nav-text">1、 在windows上启用SSHFS并挂载远程服务器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E5%9C%A8Linux%E4%B8%8A%E5%90%AF%E7%94%A8sshfs%E5%B9%B6%E6%8C%82%E8%BD%BD%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.2.2.</span> <span class="nav-text">2、在Linux上启用sshfs并挂载远程服务器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E5%B0%8F%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">2.2.3.</span> <span class="nav-text">几个小问题：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%B6%E4%BB%96%E6%80%9D%E8%B7%AF"><span class="nav-number">3.</span> <span class="nav-text">三、其他思路</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">148</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/02/17/cloud-storage-cross-platform-mount-and-access/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="跨设备、系统、网络的文件共享与文件系统挂载杂谈 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          跨设备、系统、网络的文件共享与文件系统挂载杂谈
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-02-17 18:13:34" itemprop="dateCreated datePublished" datetime="2024-02-17T18:13:34+08:00">2024-02-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-02-18 20:48:59" itemprop="dateModified" datetime="2024-02-18T20:48:59+08:00">2024-02-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>刚放寒假那几天，有位朋友问了我一个问题： <strong>有什么不限制文件格式的、基于网络的文件互传/同步工具或云储存，以便于代码/文档/图片等在不同设备之间的共享？</strong> 这个问题之前没有仔细研究过，模模糊糊也只是知道有一些技术可以实现这样的文件共享，于是想着专门学习一下。然而，寒假期间除了休息和给长辈帮忙，就没怎么给学习留下时间。这不，趁着寒假快要结束，刚好抽出点时间来探索一下这个问题。</p>
+<span id="more"></span>
+
+<h2 id="一、一些比较麻烦的同步策略"><a href="#一、一些比较麻烦的同步策略" class="headerlink" title="一、一些比较麻烦的同步策略"></a>一、一些比较麻烦的同步策略</h2><h3 id="（一）基于网盘的方法"><a href="#（一）基于网盘的方法" class="headerlink" title="（一）基于网盘的方法"></a>（一）基于网盘的方法</h3><p>这一类方法基本没有技术含量，但是也很繁琐，适合临时分享一些小文件，不适合长期的文件同步。</p>
+<p>国内最广为人知的网盘就是百度网盘，其存储空间很大，并且有非常强悍的离线下载功能。然而极慢的下载速度和高昂的会员费用严重削弱了用户体验。近年来，一些替代品如夸克网盘、阿里云盘等的出现渐渐改善了用户体验，使用这些网盘进行文件同步，倒也不失为一种很好的选择。</p>
+<p>除了上述网盘之外，还有一些小网盘在分享文件方面也很常用，例如 <a target="_blank" rel="noopener" href="https://www.lanzou.com/">蓝奏云</a>、 <a target="_blank" rel="noopener" href="https://www.ctfile.com/">城通网盘</a> 和 <a target="_blank" rel="noopener" href="https://cowtransfer.com/">奶牛快传</a> 。这些小网盘虽然存在广告多、文件大小和存储时间有限等缺点，但在传输速度方面有着更大的优势。</p>
+<p>此外，还有一些国外的网盘服务商，如dropbox、OneDrive等，但要么在国内无法访问，要么就是上传和下载速度极慢（点名OneDrive），因此不太推荐。</p>
+<blockquote>
+<p>延伸阅读：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/65644792">《评测完国内外40个网盘，我来告诉你究竟哪个好用！（2019/05） - 阿虚同学的文章》 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/381186448">《推荐9款十分靠谱的网盘空间(网络云盘）》 - 小辣椒高效Office的文章 - 知乎</a></li>
+</ul>
+</blockquote>
+<h3 id="（二）基于坚果云等服务商的方法"><a href="#（二）基于坚果云等服务商的方法" class="headerlink" title="（二）基于坚果云等服务商的方法"></a>（二）基于坚果云等服务商的方法</h3><p>从本质上讲，坚果云也是一个网盘。但和上面那些不一样的是，坚果云提供webDAV通信协议，因此可以更好的与软件/系统进行集成。例如，在文献管理软件Zotero中，我们可以选择webDAV的同步方式以存储更多的文献。在Windows系统中，也可也通过“添加一个网络位置”的功能，实现对坚果云的挂载。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218152601.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218152740.png" alt="image.png"></p>
+<p>在Linux系统上，我们可以先安装 <code>davfs2</code> 这个软件包（<code>sudo apt install -y davfs2</code> 或 <code>suod yum install -y davfs2</code> ），然后使用下面的指令进行挂载：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mount -t davfs -o noexec https://dav.jianguoyun.com/dav/ /mnt/webDAV/</span><br></pre></td></tr></table></figure>
+
+<p>挂载过程中会要求输入坚果云的账号密码。如果出现 <code>&quot;/sbin/mount.davfs: mounting failed; the server does not support WebDAV&quot;</code> 这样的报错，可以直接修改 <code>/etc/davfs2/davfs2.conf</code> 配置文件，将 <code># ignore_dav_header 0</code> 这一行内容解注释并改为：<code>ignore_dav_header 1</code>  （参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_41452768/article/details/84560046">此文</a> ）。这样以后，即可完成对坚果云的挂载。</p>
+<p>坚果云的同步功能还是非常强大的，但有个缺点，就是免费版用户每个月上传和下载流量有限制。</p>
+<h3 id="（三）基于自建web服务器的方法"><a href="#（三）基于自建web服务器的方法" class="headerlink" title="（三）基于自建web服务器的方法"></a>（三）基于自建web服务器的方法</h3><p>自建web服务器其实也是很大的一块内容，包括了架设简单的FTP服务器/HTTP文件服务器/网盘应用/网络附加存储（NAS）组网等等，受篇幅所限无法讲完，此处仅简单讲讲它们的区别与应用。</p>
+<p>由于FTP协议的安全性问题，架设FTP服务器逐渐成为了一种过时的技术。架设FTP服务器的方法可以参考这篇文章：<a target="_blank" rel="noopener" href="https://www.linuxprobe.com/basic-learning-11.html">《使用Vsftpd服务传输文件》</a> 。目前的大多数浏览器已经放弃了对FTP协议的支持，因此无法通过浏览器访问FTP服务器上的文件，但可以使用文件管理器或filezilla等第三方软件登录FTP服务器进行文件传递。</p>
+<p>另一种思路是HTTP文件服务器，即将服务器变成网盘，并通过浏览器访问。例如， <a target="_blank" rel="noopener" href="https://tinyfilemanager.github.io/">Tiny File Manager</a> 是一个用PHP语言写就的单文件网页框架，将服务器上的某个特定目录作为网盘的存储位置，并提供了网盘的一些基本功能（如账户管理、文件浏览、文本编辑、下载管理）（如下图， <a target="_blank" rel="noopener" href="http://legacy.anoms.top/fileproxy.php">ANOMS文件代理</a> ）。这一类框架还包括Rich Filemanager、FileStash、KodExplorer等。更多内容可以参考文章 <a target="_blank" rel="noopener" href="https://medevel.com/15-web-based-file-manager/">《17个基于 Web 的免费开源云文件管理器》</a> 。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218163453.png" alt="image.png"></p>
+<p>NAS （Network Attached Storage，网络附属存储）则是另一种更复杂的技术，说白了就是在自家的局域网里面专门开一个本地网盘，允许全家人共享。组建NAS需要自行购置硬盘和NAS专用服务器（目前的市场上主要有群晖和威联通两家公司提供方案），前期投入成本比较高，但由于NAS的高可靠性（通过Raid技术保证数据安全）和可拓展性（可以加硬盘），其可以为使用者带来很多方便。关于NAS服务器的选购和配置，网络上有许多教程，此处也不再赘述。</p>
+<p>最后用一个表格来总结：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>FTP服务器</th>
+<th>HTTP文件服务器</th>
+<th>NAS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>成本</td>
+<td>低</td>
+<td>中等</td>
+<td>高</td>
+</tr>
+<tr>
+<td>易用性</td>
+<td>中等</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>低</td>
+<td>中</td>
+<td>高</td>
+</tr>
+<tr>
+<td>设备兼容性</td>
+<td>有限</td>
+<td>广泛</td>
+<td>广泛</td>
+</tr>
+<tr>
+<td>维护需求</td>
+<td>中等</td>
+<td>中等</td>
+<td>高</td>
+</tr>
+</tbody></table>
+<p>如果仅仅是为了文件共享，那么FTP服务器和HTTP文件服务器是比较方便的选择。而如果有上传文件或文件同步的需求，在成本有限的情况下可以选择HTTP文件服务器，不计成本的话NAS也挺好（手动狗头）。</p>
+<h2 id="二、挂载任意网络位置到本地"><a href="#二、挂载任意网络位置到本地" class="headerlink" title="二、挂载任意网络位置到本地"></a>二、挂载任意网络位置到本地</h2><p>这一类方法可以算是比较通用的方法了，没有云存储服务商等诸多限制。</p>
+<h3 id="（一）NFS"><a href="#（一）NFS" class="headerlink" title="（一）NFS"></a>（一）NFS</h3><p>NFS是一种基于TCP/IP传输的网络文件系统<strong>协议</strong>。通过使用NFS协议，客户机可以像访问本地目录一样访问远程服务器中的共享资源。</p>
+<p>这个协议听起来很陌生，然而在这两天的探索中我神奇地发现，其实自己早就在用它了。实验室的计算集群上，各个实验室的存储目录几乎都是靠NFS进行挂载的。这也间接证明了NFS的可靠性：挂载的NFS目录的使用体验就像本地目录一样流畅丝滑。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218171347.png" alt="image.png"></p>
+<p>下面是一些配置和使用方法：</p>
+<h4 id="服务器端开启NFS文件系统（假设客户端的IP地址为192-168-184-0）："><a href="#服务器端开启NFS文件系统（假设客户端的IP地址为192-168-184-0）：" class="headerlink" title="服务器端开启NFS文件系统（假设客户端的IP地址为192.168.184.0）："></a>服务器端开启NFS文件系统（假设客户端的IP地址为<code>192.168.184.0</code>）：</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install nfs-utils rpcbind <span class="comment"># 安装一些必要的软件包</span></span><br><span class="line"><span class="built_in">mkdir</span> /text888 <span class="comment">#创建共享目录  </span></span><br><span class="line"><span class="built_in">chmod</span> 777 /text888 <span class="comment">#修改共享目录权限  </span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;/text888 192.168.184.0/24(rw,sync,no_root_squash)&quot;</span> &gt;&gt; /etc/exports</span><br><span class="line">systemctl start rpcbind  <span class="comment"># 启动rpcbind服务</span></span><br><span class="line">systemctl start nfs      <span class="comment"># 启动nfs服务。需要在rpcbind之后启动</span></span><br><span class="line">systemctl <span class="built_in">enable</span> rpcbind  </span><br><span class="line">systemctl <span class="built_in">enable</span> nfs</span><br></pre></td></tr></table></figure>
+
+<p>其中, <code>/etc/exports</code> 是NFS的配置文件，其中的内容代表共享为NFS的文件目录以及允许连接的客户机地址，括号内的字段代表权限设置，其中<code>rw</code> 表示允许读写，<code>ro</code> 表示为只读。<code>sync</code> 表示同步写入到内存与硬盘，<code>no_root_squash</code> 表示当客户机以root身份访问时赋予本地root权限。</p>
+<h4 id="客户端挂载NFS文件系统（假设服务器端的IP地址为192-168-78-22）："><a href="#客户端挂载NFS文件系统（假设服务器端的IP地址为192-168-78-22）：" class="headerlink" title="客户端挂载NFS文件系统（假设服务器端的IP地址为192.168.78.22）："></a>客户端挂载NFS文件系统（假设服务器端的IP地址为<code>192.168.78.22</code>）：</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install nfs-utils rpcbind <span class="comment"># 安装一些必要的软件包</span></span><br><span class="line">systemctl start rpcbind  <span class="comment"># 启动rpcbind服务</span></span><br><span class="line">systemctl <span class="built_in">enable</span> rpcbind</span><br><span class="line">showmount -e 192.168.78.22 <span class="comment"># 查看 NFS 服务器端共享了哪些目录</span></span><br><span class="line"><span class="built_in">mkdir</span> /text777 <span class="comment">#客户端创建挂载目录  </span></span><br><span class="line">mount 192.168.78.22:/test888 /text777 <span class="comment"># 挂载目录  </span></span><br><span class="line"><span class="built_in">df</span> -Th <span class="comment">#确认挂载结果</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>更多内容参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Dark_Tk/article/details/114100517">《Linux NFS文件共享 | 配置流程 | 超详细》</a></li>
+<li><a target="_blank" rel="noopener" href="https://help.aliyun.com/zh/nas/user-guide/mount-an-nfs-file-system-on-a-linux-ecs-instance">《Linux系统挂载NFS协议文件系统》</a></li>
+</ul>
+</blockquote>
+<h3 id="（二）SSHFS"><a href="#（二）SSHFS" class="headerlink" title="（二）SSHFS"></a>（二）SSHFS</h3><p>SSHFS（Secure SHell FileSystem）是一个客户端，可以让我们通过 SSH 文件传输协议（SFTP）挂载远程的文件系统并且在本地机器上和远程的目录和文件进行交互。</p>
+<p>SFTP 是一种通过 SSH 协议提供文件访问、文件传输和文件管理功能的安全文件传输协议。因为 SSH 在网络中从一台电脑到另一台电脑传输文件的时候使用数据加密通道，并且 SSHFS 内置在 FUSE（用户空间的文件系统）内核模块，允许任何非特权用户在不修改内核代码的情况下创建他们自己的文件系统。</p>
+<p>相比于NFS，SSHFS对服务器的需求更低一点，不需要在服务器端额外安装程序或服务，只需要服务器端支持ssh登录即可，因此更加方便。</p>
+<h4 id="1、-在windows上启用SSHFS并挂载远程服务器"><a href="#1、-在windows上启用SSHFS并挂载远程服务器" class="headerlink" title="1、 在windows上启用SSHFS并挂载远程服务器"></a>1、 在windows上启用SSHFS并挂载远程服务器</h4><p>windows下的sshfs工具是<a target="_blank" rel="noopener" href="https://github.com/winfsp/sshfs-win">sshfs-win</a> 。根据网站上的介绍，要安装这个工具，我们可以使用下面的命令行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winget install <span class="literal">-h</span> <span class="literal">-e</span> <span class="literal">--id</span> <span class="string">&quot;WinFsp.WinFsp&quot;</span> &amp;&amp; winget install <span class="literal">-h</span> <span class="literal">-e</span> <span class="literal">--id</span> <span class="string">&quot;SSHFS-Win.SSHFS-Win&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>此后，在“此电脑”-“添加一个网络位置”中输入下面格式的路径（例如，<code>\\sshfs\cyclin@legacy.anoms.top</code>），并根据引导输入远程服务器的ssh密码，即可完成挂载</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\\sshfs\REMUSER@HOST[\PATH]</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218181235.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218181313.png" alt="image.png"></p>
+<h4 id="2、在Linux上启用sshfs并挂载远程服务器"><a href="#2、在Linux上启用sshfs并挂载远程服务器" class="headerlink" title="2、在Linux上启用sshfs并挂载远程服务器"></a>2、在Linux上启用sshfs并挂载远程服务器</h4><p>我们可以在linux上安装<code>sshfs</code>这一软件包，从而进行sshfs的挂载。</p>
+<p>下面是一个示例，我们将远程服务器<code>cyclin@anoms.top</code> 上的家目录挂载到了本地的<code>temp</code>目录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install sshfs <span class="comment"># 需要安装sshfs这个客户端才行</span></span><br><span class="line"><span class="built_in">mkdir</span> /home/cyclin/temp <span class="comment"># 新建目录作为sshfs挂载点</span></span><br><span class="line">sshfs cyclin@anoms.top:/home/cyclin /home/cyclin/temp <span class="comment"># 挂载目录</span></span><br><span class="line"><span class="built_in">df</span> -hT <span class="comment"># 查看挂载结果</span></span><br></pre></td></tr></table></figure>
+
+<p>结果如下图所示，可以看到sshfs成功实现了文件系统的挂载。使用<code>df -hT</code> 查看文件系统类型时，我们可以发现其类型被标记为<code>fuse.sshfs</code>，正是sshfs的文件系统。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218180032.png" alt="image.png"></p>
+<h4 id="几个小问题："><a href="#几个小问题：" class="headerlink" title="几个小问题："></a>几个小问题：</h4><ul>
+<li>① 在Windows WSL1上测试时发现无法进行sshfs的挂载，报错 <code>&quot;modprobe: FATAL: Module fuse not found in directory /lib/modules/4.4.0-19041-Microsoft&quot;</code> 。查询后得知，WSL1并非完整Linux内核，因此对fuse的支持存在问题，如果换成虚拟机则会好一点。不过说实话，在Windows系统上，sshfs-win完全够用了。</li>
+<li>② 朋友之前提到过，mac不能通过sshfs访问linux，似乎是mac上的sshfs已经被放弃了。由于手边没有mac设备，无法进行测试，查询一些资料后却发现在mac上使用sshfs似乎需要换源或者从源代码编译，总之是很麻烦。因此mac用户可能还需要想想其他办法。</li>
+</ul>
+<h2 id="三、其他思路"><a href="#三、其他思路" class="headerlink" title="三、其他思路"></a>三、其他思路</h2><p>因为<code>anoms.top</code> 这个域名在我手里也有好几年的时间了，利用这个域名我也琢磨过一些用于数据同步的小应用。</p>
+<ul>
+<li><p><strong>ANOMS文件代理</strong> ：使用网页框架 <a target="_blank" rel="noopener" href="https://tinyfilemanager.github.io/">Tiny File Manager</a>  建立的一个网盘，如前文所述。有时候我会在服务器上挂着一些大文件的下载的任务干别的事情，等文件下载好了就用这个网盘传到本地。算是百度网盘离线下载的平替。</p>
+</li>
+<li><p><strong>ANOMS online editor</strong> ：最初是想开发一个网页端的markdown笔记本工具，以实现在不同设备上同时记笔记的需求。那时候年少轻狂，因此没有用任何框架，直接从0开始纯手写了一个极其简陋的页面（如下图）。后来渐渐摸索出了更多的功能，例如可以把文件使用<code>base64</code>工具进行转码，然后保存在这个工具里，就可以在其他设备上访问了。</p>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218114928.png" alt="image.png"></p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/02/17/cloud-storage-cross-platform-mount-and-access/" title="跨设备、系统、网络的文件共享与文件系统挂载杂谈">https://wz.anoms.top/2024/02/17/cloud-storage-cross-platform-mount-and-access/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/" rel="tag"><i class="fa fa-tag"></i> 通信协议</a>
+              <a href="/tags/%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB/" rel="tag"><i class="fa fa-tag"></i> 文件共享</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/02/16/cloud-storage-communivation-protocals/" rel="prev" title="云存储服务常见通信协议">
+                  <i class="fa fa-chevron-left"></i> 云存储服务常见通信协议
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/02/18/year-beyond-one-year-2024/" rel="next" title="一年又一年">
+                  一年又一年 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

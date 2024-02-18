@@ -9042,12 +9042,21 @@
 <p>必须要注意的是，仅仅对<code>.htaccess</code>文件进行设置并不能保证这些访问权限设置能够生效。还需要在web服务器程序的配置文件中启用对访问权限的覆盖功能，才可以生效。</p>
 <p>web服务器程序的配置文件路径，根据服务器上具体使用的web服务程序的不同而有所不同，例如apache2的配置文件路径是<code>/etc/apache2/apache2.conf</code>，而httpd的配置文件路径是 <code>/etc/httpd/conf/httpd.conf</code> 。</p>
 <p>以apache2为例。假设我们要使用<code>.htaccess</code>文件进行访问权限保护的网页存储在<code>/var/www/html</code>路径下面，那么在apache2配置文件里面，我们需要加上下面这几行内容：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&lt;Directory /var/www/html&gt;</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">&lt;/Directory&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Directory</span> /<span class="attr">var</span>/<span class="attr">www</span>/<span class="attr">html</span>&gt;</span></span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line"><span class="tag">&lt;/<span class="name">Directory</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>之后，我们需要重启一下web服务程序：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service apache2 restart</span><br></pre></td></tr></table></figure>
 
 <p>这样，就可以通过<code>.htaccess</code>进行访问权限控制了。</p>
+<h4 id="补充：apache2服务器开启多个端口"><a href="#补充：apache2服务器开启多个端口" class="headerlink" title="补充：apache2服务器开启多个端口"></a>补充：apache2服务器开启多个端口</h4><p>在<code>/etc/apache2/sites-available/000-default.conf</code>文件当中添加绑定到端口的网站根目录，例如：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">VirtualHost</span> *<span class="attr">:81</span>&gt;</span></span><br><span class="line">        ServerAdmin webmaster@localhost</span><br><span class="line">        DocumentRoot /var/www/web1</span><br><span class="line">        ErrorLog $&#123;APACHE_LOG_DIR&#125;/error.log</span><br><span class="line">        CustomLog $&#123;APACHE_LOG_DIR&#125;/access.log combined</span><br><span class="line"><span class="tag">&lt;/<span class="name">VirtualHost</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在<code>&lt;VirtualHost *:81&gt;</code>里设置要开启的端口号，本例子中的端口号是81。</p>
+<p>其中的<code>DocumentRoot</code>对应字段更改为网站根目录的位置。</p>
+<p>同时，在<code>/etc/apache2/ports.conf</code> 文件中添加对新增端口的监听：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Listen 81</span><br></pre></td></tr></table></figure>
+
+<p>在完成这些设置以后，重启apache2服务器，既可完成对新端口的访问。（PS：如果依然无法访问，请去云服务器提供商的控制台看一看，是否在网络安全组中未能放行对应的端口）</p>
 <h2 id="Linux的cron定时任务设置与踩坑"><a href="#Linux的cron定时任务设置与踩坑" class="headerlink" title="Linux的cron定时任务设置与踩坑"></a>Linux的cron定时任务设置与踩坑</h2><p><code>crond</code>是Linux上一个用于运行定时任务的守护进程。它的配置文件路径是<code>/etc/crontab</code>，里面的内容大概长这个样子：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># /etc/crontab: system-wide crontab</span></span><br><span class="line"><span class="comment"># Unlike any other crontab you don&#x27;t have to run the `crontab&#x27;</span></span><br><span class="line"><span class="comment"># command to install the new version when you edit this file</span></span><br><span class="line"><span class="comment"># and files in /etc/cron.d. These files also have username fields,</span></span><br><span class="line"><span class="comment"># that none of the other crontabs do.</span></span><br><span class="line"></span><br><span class="line">SHELL=/bin/sh</span><br><span class="line">PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</span><br><span class="line"></span><br><span class="line"><span class="comment"># Example of job definition:</span></span><br><span class="line"><span class="comment"># .---------------- minute (0 - 59)</span></span><br><span class="line"><span class="comment"># |  .------------- hour (0 - 23)</span></span><br><span class="line"><span class="comment"># |  |  .---------- day of month (1 - 31)</span></span><br><span class="line"><span class="comment"># |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...</span></span><br><span class="line"><span class="comment"># |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat</span></span><br><span class="line"><span class="comment"># |  |  |  |  |</span></span><br><span class="line"><span class="comment"># *  *  *  *  * user-name command to be executed</span></span><br><span class="line">17 *    * * *   root    <span class="built_in">cd</span> / &amp;&amp; run-parts --report /etc/cron.hourly</span><br><span class="line">25 6    * * *   root    <span class="built_in">test</span> -x /usr/sbin/anacron || ( <span class="built_in">cd</span> / &amp;&amp; run-parts --report /etc/cron.daily )</span><br><span class="line">47 6    * * 7   root    <span class="built_in">test</span> -x /usr/sbin/anacron || ( <span class="built_in">cd</span> / &amp;&amp; run-parts --report /etc/cron.weekly )</span><br><span class="line">52 6    1 * *   root    <span class="built_in">test</span> -x /usr/sbin/anacron || ( <span class="built_in">cd</span> / &amp;&amp; run-parts --report /etc/cron.monthly )</span><br><span class="line"><span class="comment">#</span></span><br></pre></td></tr></table></figure>
 
@@ -9082,6 +9091,376 @@
         <tag>虚拟内存</tag>
         <tag>web服务</tag>
         <tag>定时任务</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>云存储服务常见通信协议</title>
+    <url>/2024/02/16/cloud-storage-communivation-protocals/</url>
+    <content><![CDATA[<p>整理了一些云存储的通信协议。</p>
+<span id="more"></span>
+
+
+<h2 id="1-FTPS-amp-SFTP-amp-SCP"><a href="#1-FTPS-amp-SFTP-amp-SCP" class="headerlink" title="1. FTPS &amp; SFTP &amp; SCP"></a>1. FTPS &amp; SFTP &amp; SCP</h2><p>FTP（File Transfer ProtocoL）是TCP/IP应用层中的一个基础协议，FTP的默认端口是20和21，负责将文件从一台计算机传输到另计算机，并保证文件传输的可靠性。FTP 协议的历史源远流长，最早可以追溯到 1971 年（<a href="https://www.rfc-editor.org/rfc/rfc114">RFC 114</a> ，<a href="https://www.rfc-editor.org/rfc/rfc959">RFC 959</a>）。由于FTP协议使用明文传输，存在安全问题，因此后来有人将TLS加密协议与FTP传输协议结合起来，推出了FTPS协议（<a href="https://www.rfc-editor.org/rfc/rfc4217">RFC 4217</a>）。FTPS支持在990端口上以全SSL加密的形式进行运行（隐式SSL模式），也兼容原始的FTP协议并在20/21端口运行（显式SSL模式）。</p>
+<p>安全外壳协议（Secure Shell，SSH）（<a href="https://www.rfc-editor.org/rfc/rfc4253">RFC 4253</a>），是一种加密的网络传输协议，默认使用22端口建立会话。在SSH基础上有两种文件传输协议，分别是SFTP和SCP。二者都使用SSH进行加密，SFTP是一个完整的文件传输系统，提供了文件传输、删除、重命名、创建目录等操作，并支持断点续传，而SCP则是一个简单的文件复制命令，主要用于在服务器之间复制文件，不支持断点续传。</p>
+<p>总结： </p>
+<ul>
+<li>FTPS=FTP+TLS;</li>
+<li>SFTP=SSH+文件传输+管理；</li>
+<li>SCP=SSH+文件传输</li>
+</ul>
+<h2 id="2-webDAV"><a href="#2-webDAV" class="headerlink" title="2. webDAV"></a>2. webDAV</h2><p>WebDAV （Web-based Distributed Authoring and Versioning）是一种基于HTTP 1.1协议的通信协议（<a href="https://www.rfc-editor.org/rfc/rfc4918">RFC 4918</a>）。它扩展了HTTP 1.1协议，在GET、POST、HEAD等几个HTTP标准方法以外添加了一些新的方法，使应用程序可对Web Server 直接读写，并支持写文件锁定(Locking)及解锁(Unlock)，还可以支持文件的版本控制。WebDAV的优点是使用方便、支持多种操作系统和应用程序、支持锁定机制和版本控制。WebDAV的缺点是安全性不高、传输效率低、需要额外的软件支持。许多云存储服务都支持WebDAV协议，包括国外的Box、Dropbox、Google Drive等，以及国内的坚果云。</p>
+<h2 id="3-NFS"><a href="#3-NFS" class="headerlink" title="3. NFS"></a>3. NFS</h2><p>NFS（Network File System，网络文件系统）是一种允许多个客户端访问同一服务器上的文件的网络文件系统与传输协议（<a href="https://www.rfc-editor.org/rfc/rfc7530">RFC 7530</a>）。NFS的优点是内核直接支持、传输效率高、运行稳定。由于NFS使用起来非常方便，因此在UNIX操作系统中被广泛使用，特别是在一些大型数据中心和计算集群中，常用于分布式存储设备的互相连接。此外，一些NAS管理系统，例如群晖系统（Synology NAS）也使用这一协议进行存储设备的组网。</p>
+<h2 id="4-SMB-SAMBA"><a href="#4-SMB-SAMBA" class="headerlink" title="4. SMB/SAMBA"></a>4. SMB/SAMBA</h2><p>SMB/CIFS（Server Message Block / Common Internet File System）通信协议是微软和英特尔在1987年制定的协议（<a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb/f210069c-7086-4dc2-885e-861d837df688">MS-SMB</a>），主要是作为Microsoft网络的通讯协议，可以在局域网不同计算机之间进行文件、打印机等资源共享，和 NFS 功能类似。最早SMB是微软为自己需求设计的专用协议，用来实现微软主机之间的文件共享与打印共享，并不支持在 Linux 上运行。著名程序员 Andrew Tridgell 逆向了这个协议，并开发出了一组被称为Samba的软件包，从而使Linux系统上也支持了这个传输协议。</p>
+<p>根据微软必应AI的介绍，SMB的优点是兼容性好、支持端到端加密、支持多种用户认证模式、支持ACL权限控制，然而其缺点是传输效率稍低、速度不太稳定、会有波动。单从介绍上看，SMB/Samba是一个很优秀的传输协议/软件。不过在Linux上配置Samba的流程挺复杂的，和NFS有得一拼。（这两个协议也真的是……唉。不过，个人用户用sshfs和webDAV似乎也够用了（？））</p>
+<h2 id="一点补充内容"><a href="#一点补充内容" class="headerlink" title="一点补充内容"></a>一点补充内容</h2><p>刷知乎的时候，看到一个很有趣的回答，作者比较了这几个文件传输协议并阐述了webDAV协议被许多网盘使用的原因。这个回答很切题，特此转载：</p>
+<blockquote>
+<p><a href="https://www.zhihu.com/question/21511143/answer/2216786433">《为什么国内各大云存储服务都不支持 WebDAV？》 - LSZH的回答 - 知乎</a>   </p>
+</blockquote>
+<p>看了一圈答案全是阴谋论。实际上就是个技术问题。</p>
+<p>主流文件存储网盘协议一共就这么几个：ftps、nfs、smb、webdav、sftp</p>
+<p><strong>对于互联网盘</strong>，即「数据在云上，用数据的人在本地或另一个云上」通过互联网连接的网盘：</p>
+<ul>
+<li>nfs 和 smb 没有无限缓冲，所以只在低延迟的局域网上才能跑满带宽，在高延迟互联网上性能非常拉胯。排除。</li>
+<li>ftps 不支持流媒体，因为不完全支持随机读取，只能指定从哪开始读，不能指定读到哪，所以在线播放必须一次性缓冲到底，内存会爆。而流媒体是公共网盘的重要功能，排除。</li>
+<li>sftp 底层是 ssh 而不是 tls 所以不能自动公共认证，在互联网上你不能保证你家网盘的用户连到的是你的真网盘而不是黑客给你劫持的假网盘。</li>
+</ul>
+<p>所以只有自己搭建自己用的<strong>私有互联网盘</strong>才会用 sftp，而厂家搭建给消费者用的<strong>公共互联网盘</strong>只能 webdav。</p>
+<p><strong>对于局域网盘</strong>，即「数据和用数据人在同一个云上，或在本地同一个局域网内」直接挂载的网盘：</p>
+<ul>
+<li>sftp 主流版本不支持文件锁。排除。</li>
+<li>ftps 和 webdav 不支持随机写入。排除。</li>
+</ul>
+<p>所以只能 nfs 或 smb。</p>
+<p>所以你看那些提供 webdav 的网盘都是消费级公共互联网盘如坚果云、onedrive，或自己搭建的私有互联网盘如nextcloud、owncloud等</p>
+<p>而那些云服务商的商用局域网盘都只支持 smb 和 nfs，如阿里云nas，亚马逊efs等</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/266255133">《科普！一文详解 FTP、FTPS 与 SFTP 的原理》 - 民工哥的文章 - 知乎</a></li>
+<li><a href="https://juejin.cn/post/6939309167974809614">《被抛弃的WebDAV，从未有过青春！》</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/448386493">《什么是nfs？nfs工作机制是什么》 - 龙腾虎跃的文章 - 知乎</a></li>
+<li><a href="https://segmentfault.com/a/1190000039814380">《CIFS、SMB、Samba关系》</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/547106013">《samba实现共享文件（能在Windows和Linux上访问）》 - 洛川不会学的文章 - 知乎</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>FTP</tag>
+        <tag>SFTP</tag>
+        <tag>SCP</tag>
+        <tag>webDAV</tag>
+        <tag>SMB/Samba</tag>
+        <tag>NFS</tag>
+        <tag>通信协议</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>跨设备、系统、网络的文件共享与文件系统挂载杂谈</title>
+    <url>/2024/02/17/cloud-storage-cross-platform-mount-and-access/</url>
+    <content><![CDATA[<p>刚放寒假那几天，有位朋友问了我一个问题： <strong>有什么不限制文件格式的、基于网络的文件互传/同步工具或云储存，以便于代码/文档/图片等在不同设备之间的共享？</strong> 这个问题之前没有仔细研究过，模模糊糊也只是知道有一些技术可以实现这样的文件共享，于是想着专门学习一下。然而，寒假期间除了休息和给长辈帮忙，就没怎么给学习留下时间。这不，趁着寒假快要结束，刚好抽出点时间来探索一下这个问题。</p>
+<span id="more"></span>
+
+<h2 id="一、一些比较麻烦的同步策略"><a href="#一、一些比较麻烦的同步策略" class="headerlink" title="一、一些比较麻烦的同步策略"></a>一、一些比较麻烦的同步策略</h2><h3 id="（一）基于网盘的方法"><a href="#（一）基于网盘的方法" class="headerlink" title="（一）基于网盘的方法"></a>（一）基于网盘的方法</h3><p>这一类方法基本没有技术含量，但是也很繁琐，适合临时分享一些小文件，不适合长期的文件同步。</p>
+<p>国内最广为人知的网盘就是百度网盘，其存储空间很大，并且有非常强悍的离线下载功能。然而极慢的下载速度和高昂的会员费用严重削弱了用户体验。近年来，一些替代品如夸克网盘、阿里云盘等的出现渐渐改善了用户体验，使用这些网盘进行文件同步，倒也不失为一种很好的选择。</p>
+<p>除了上述网盘之外，还有一些小网盘在分享文件方面也很常用，例如 <a href="https://www.lanzou.com/">蓝奏云</a>、 <a href="https://www.ctfile.com/">城通网盘</a> 和 <a href="https://cowtransfer.com/">奶牛快传</a> 。这些小网盘虽然存在广告多、文件大小和存储时间有限等缺点，但在传输速度方面有着更大的优势。</p>
+<p>此外，还有一些国外的网盘服务商，如dropbox、OneDrive等，但要么在国内无法访问，要么就是上传和下载速度极慢（点名OneDrive），因此不太推荐。</p>
+<blockquote>
+<p>延伸阅读：</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/65644792">《评测完国内外40个网盘，我来告诉你究竟哪个好用！（2019/05） - 阿虚同学的文章》 - 知乎</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/381186448">《推荐9款十分靠谱的网盘空间(网络云盘）》 - 小辣椒高效Office的文章 - 知乎</a></li>
+</ul>
+</blockquote>
+<h3 id="（二）基于坚果云等服务商的方法"><a href="#（二）基于坚果云等服务商的方法" class="headerlink" title="（二）基于坚果云等服务商的方法"></a>（二）基于坚果云等服务商的方法</h3><p>从本质上讲，坚果云也是一个网盘。但和上面那些不一样的是，坚果云提供webDAV通信协议，因此可以更好的与软件/系统进行集成。例如，在文献管理软件Zotero中，我们可以选择webDAV的同步方式以存储更多的文献。在Windows系统中，也可也通过“添加一个网络位置”的功能，实现对坚果云的挂载。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218152601.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218152740.png" alt="image.png"></p>
+<p>在Linux系统上，我们可以先安装 <code>davfs2</code> 这个软件包（<code>sudo apt install -y davfs2</code> 或 <code>suod yum install -y davfs2</code> ），然后使用下面的指令进行挂载：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo mount -t davfs -o noexec https://dav.jianguoyun.com/dav/ /mnt/webDAV/</span><br></pre></td></tr></table></figure>
+
+<p>挂载过程中会要求输入坚果云的账号密码。如果出现 <code>&quot;/sbin/mount.davfs: mounting failed; the server does not support WebDAV&quot;</code> 这样的报错，可以直接修改 <code>/etc/davfs2/davfs2.conf</code> 配置文件，将 <code># ignore_dav_header 0</code> 这一行内容解注释并改为：<code>ignore_dav_header 1</code>  （参考<a href="https://blog.csdn.net/weixin_41452768/article/details/84560046">此文</a> ）。这样以后，即可完成对坚果云的挂载。</p>
+<p>坚果云的同步功能还是非常强大的，但有个缺点，就是免费版用户每个月上传和下载流量有限制。</p>
+<h3 id="（三）基于自建web服务器的方法"><a href="#（三）基于自建web服务器的方法" class="headerlink" title="（三）基于自建web服务器的方法"></a>（三）基于自建web服务器的方法</h3><p>自建web服务器其实也是很大的一块内容，包括了架设简单的FTP服务器/HTTP文件服务器/网盘应用/网络附加存储（NAS）组网等等，受篇幅所限无法讲完，此处仅简单讲讲它们的区别与应用。</p>
+<p>由于FTP协议的安全性问题，架设FTP服务器逐渐成为了一种过时的技术。架设FTP服务器的方法可以参考这篇文章：<a href="https://www.linuxprobe.com/basic-learning-11.html">《使用Vsftpd服务传输文件》</a> 。目前的大多数浏览器已经放弃了对FTP协议的支持，因此无法通过浏览器访问FTP服务器上的文件，但可以使用文件管理器或filezilla等第三方软件登录FTP服务器进行文件传递。</p>
+<p>另一种思路是HTTP文件服务器，即将服务器变成网盘，并通过浏览器访问。例如， <a href="https://tinyfilemanager.github.io/">Tiny File Manager</a> 是一个用PHP语言写就的单文件网页框架，将服务器上的某个特定目录作为网盘的存储位置，并提供了网盘的一些基本功能（如账户管理、文件浏览、文本编辑、下载管理）（如下图， <a href="http://legacy.anoms.top/fileproxy.php">ANOMS文件代理</a> ）。这一类框架还包括Rich Filemanager、FileStash、KodExplorer等。更多内容可以参考文章 <a href="https://medevel.com/15-web-based-file-manager/">《17个基于 Web 的免费开源云文件管理器》</a> 。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218163453.png" alt="image.png"></p>
+<p>NAS （Network Attached Storage，网络附属存储）则是另一种更复杂的技术，说白了就是在自家的局域网里面专门开一个本地网盘，允许全家人共享。组建NAS需要自行购置硬盘和NAS专用服务器（目前的市场上主要有群晖和威联通两家公司提供方案），前期投入成本比较高，但由于NAS的高可靠性（通过Raid技术保证数据安全）和可拓展性（可以加硬盘），其可以为使用者带来很多方便。关于NAS服务器的选购和配置，网络上有许多教程，此处也不再赘述。</p>
+<p>最后用一个表格来总结：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>FTP服务器</th>
+<th>HTTP文件服务器</th>
+<th>NAS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>成本</td>
+<td>低</td>
+<td>中等</td>
+<td>高</td>
+</tr>
+<tr>
+<td>易用性</td>
+<td>中等</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>低</td>
+<td>中</td>
+<td>高</td>
+</tr>
+<tr>
+<td>设备兼容性</td>
+<td>有限</td>
+<td>广泛</td>
+<td>广泛</td>
+</tr>
+<tr>
+<td>维护需求</td>
+<td>中等</td>
+<td>中等</td>
+<td>高</td>
+</tr>
+</tbody></table>
+<p>如果仅仅是为了文件共享，那么FTP服务器和HTTP文件服务器是比较方便的选择。而如果有上传文件或文件同步的需求，在成本有限的情况下可以选择HTTP文件服务器，不计成本的话NAS也挺好（手动狗头）。</p>
+<h2 id="二、挂载任意网络位置到本地"><a href="#二、挂载任意网络位置到本地" class="headerlink" title="二、挂载任意网络位置到本地"></a>二、挂载任意网络位置到本地</h2><p>这一类方法可以算是比较通用的方法了，没有云存储服务商等诸多限制。</p>
+<h3 id="（一）NFS"><a href="#（一）NFS" class="headerlink" title="（一）NFS"></a>（一）NFS</h3><p>NFS是一种基于TCP/IP传输的网络文件系统<strong>协议</strong>。通过使用NFS协议，客户机可以像访问本地目录一样访问远程服务器中的共享资源。</p>
+<p>这个协议听起来很陌生，然而在这两天的探索中我神奇地发现，其实自己早就在用它了。实验室的计算集群上，各个实验室的存储目录几乎都是靠NFS进行挂载的。这也间接证明了NFS的可靠性：挂载的NFS目录的使用体验就像本地目录一样流畅丝滑。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218171347.png" alt="image.png"></p>
+<p>下面是一些配置和使用方法：</p>
+<h4 id="服务器端开启NFS文件系统（假设客户端的IP地址为192-168-184-0）："><a href="#服务器端开启NFS文件系统（假设客户端的IP地址为192-168-184-0）：" class="headerlink" title="服务器端开启NFS文件系统（假设客户端的IP地址为192.168.184.0）："></a>服务器端开启NFS文件系统（假设客户端的IP地址为<code>192.168.184.0</code>）：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo yum install nfs-utils rpcbind <span class="comment"># 安装一些必要的软件包</span></span><br><span class="line"><span class="built_in">mkdir</span> /text888 <span class="comment">#创建共享目录  </span></span><br><span class="line"><span class="built_in">chmod</span> 777 /text888 <span class="comment">#修改共享目录权限  </span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;/text888 192.168.184.0/24(rw,sync,no_root_squash)&quot;</span> &gt;&gt; /etc/exports</span><br><span class="line">systemctl start rpcbind  <span class="comment"># 启动rpcbind服务</span></span><br><span class="line">systemctl start nfs      <span class="comment"># 启动nfs服务。需要在rpcbind之后启动</span></span><br><span class="line">systemctl <span class="built_in">enable</span> rpcbind  </span><br><span class="line">systemctl <span class="built_in">enable</span> nfs</span><br></pre></td></tr></table></figure>
+
+<p>其中, <code>/etc/exports</code> 是NFS的配置文件，其中的内容代表共享为NFS的文件目录以及允许连接的客户机地址，括号内的字段代表权限设置，其中<code>rw</code> 表示允许读写，<code>ro</code> 表示为只读。<code>sync</code> 表示同步写入到内存与硬盘，<code>no_root_squash</code> 表示当客户机以root身份访问时赋予本地root权限。</p>
+<h4 id="客户端挂载NFS文件系统（假设服务器端的IP地址为192-168-78-22）："><a href="#客户端挂载NFS文件系统（假设服务器端的IP地址为192-168-78-22）：" class="headerlink" title="客户端挂载NFS文件系统（假设服务器端的IP地址为192.168.78.22）："></a>客户端挂载NFS文件系统（假设服务器端的IP地址为<code>192.168.78.22</code>）：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo yum install nfs-utils rpcbind <span class="comment"># 安装一些必要的软件包</span></span><br><span class="line">systemctl start rpcbind  <span class="comment"># 启动rpcbind服务</span></span><br><span class="line">systemctl <span class="built_in">enable</span> rpcbind</span><br><span class="line">showmount -e 192.168.78.22 <span class="comment"># 查看 NFS 服务器端共享了哪些目录</span></span><br><span class="line"><span class="built_in">mkdir</span> /text777 <span class="comment">#客户端创建挂载目录  </span></span><br><span class="line">mount 192.168.78.22:/test888 /text777 <span class="comment"># 挂载目录  </span></span><br><span class="line"><span class="built_in">df</span> -Th <span class="comment">#确认挂载结果</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>更多内容参考：</p>
+<ul>
+<li><a href="https://blog.csdn.net/Dark_Tk/article/details/114100517">《Linux NFS文件共享 | 配置流程 | 超详细》</a></li>
+<li><a href="https://help.aliyun.com/zh/nas/user-guide/mount-an-nfs-file-system-on-a-linux-ecs-instance">《Linux系统挂载NFS协议文件系统》</a></li>
+</ul>
+</blockquote>
+<h3 id="（二）SSHFS"><a href="#（二）SSHFS" class="headerlink" title="（二）SSHFS"></a>（二）SSHFS</h3><p>SSHFS（Secure SHell FileSystem）是一个客户端，可以让我们通过 SSH 文件传输协议（SFTP）挂载远程的文件系统并且在本地机器上和远程的目录和文件进行交互。</p>
+<p>SFTP 是一种通过 SSH 协议提供文件访问、文件传输和文件管理功能的安全文件传输协议。因为 SSH 在网络中从一台电脑到另一台电脑传输文件的时候使用数据加密通道，并且 SSHFS 内置在 FUSE（用户空间的文件系统）内核模块，允许任何非特权用户在不修改内核代码的情况下创建他们自己的文件系统。</p>
+<p>相比于NFS，SSHFS对服务器的需求更低一点，不需要在服务器端额外安装程序或服务，只需要服务器端支持ssh登录即可，因此更加方便。</p>
+<h4 id="1、-在windows上启用SSHFS并挂载远程服务器"><a href="#1、-在windows上启用SSHFS并挂载远程服务器" class="headerlink" title="1、 在windows上启用SSHFS并挂载远程服务器"></a>1、 在windows上启用SSHFS并挂载远程服务器</h4><p>windows下的sshfs工具是<a href="https://github.com/winfsp/sshfs-win">sshfs-win</a> 。根据网站上的介绍，要安装这个工具，我们可以使用下面的命令行：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">winget install <span class="literal">-h</span> <span class="literal">-e</span> <span class="literal">--id</span> <span class="string">&quot;WinFsp.WinFsp&quot;</span> &amp;&amp; winget install <span class="literal">-h</span> <span class="literal">-e</span> <span class="literal">--id</span> <span class="string">&quot;SSHFS-Win.SSHFS-Win&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>此后，在“此电脑”-“添加一个网络位置”中输入下面格式的路径（例如，<code>\\sshfs\cyclin@legacy.anoms.top</code>），并根据引导输入远程服务器的ssh密码，即可完成挂载</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">\\sshfs\REMUSER@HOST[\PATH]</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218181235.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218181313.png" alt="image.png"></p>
+<h4 id="2、在Linux上启用sshfs并挂载远程服务器"><a href="#2、在Linux上启用sshfs并挂载远程服务器" class="headerlink" title="2、在Linux上启用sshfs并挂载远程服务器"></a>2、在Linux上启用sshfs并挂载远程服务器</h4><p>我们可以在linux上安装<code>sshfs</code>这一软件包，从而进行sshfs的挂载。</p>
+<p>下面是一个示例，我们将远程服务器<code>cyclin@anoms.top</code> 上的家目录挂载到了本地的<code>temp</code>目录。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install sshfs <span class="comment"># 需要安装sshfs这个客户端才行</span></span><br><span class="line"><span class="built_in">mkdir</span> /home/cyclin/temp <span class="comment"># 新建目录作为sshfs挂载点</span></span><br><span class="line">sshfs cyclin@anoms.top:/home/cyclin /home/cyclin/temp <span class="comment"># 挂载目录</span></span><br><span class="line"><span class="built_in">df</span> -hT <span class="comment"># 查看挂载结果</span></span><br></pre></td></tr></table></figure>
+
+<p>结果如下图所示，可以看到sshfs成功实现了文件系统的挂载。使用<code>df -hT</code> 查看文件系统类型时，我们可以发现其类型被标记为<code>fuse.sshfs</code>，正是sshfs的文件系统。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218180032.png" alt="image.png"></p>
+<h4 id="几个小问题："><a href="#几个小问题：" class="headerlink" title="几个小问题："></a>几个小问题：</h4><ul>
+<li>① 在Windows WSL1上测试时发现无法进行sshfs的挂载，报错 <code>&quot;modprobe: FATAL: Module fuse not found in directory /lib/modules/4.4.0-19041-Microsoft&quot;</code> 。查询后得知，WSL1并非完整Linux内核，因此对fuse的支持存在问题，如果换成虚拟机则会好一点。不过说实话，在Windows系统上，sshfs-win完全够用了。</li>
+<li>② 朋友之前提到过，mac不能通过sshfs访问linux，似乎是mac上的sshfs已经被放弃了。由于手边没有mac设备，无法进行测试，查询一些资料后却发现在mac上使用sshfs似乎需要换源或者从源代码编译，总之是很麻烦。因此mac用户可能还需要想想其他办法。</li>
+</ul>
+<h2 id="三、其他思路"><a href="#三、其他思路" class="headerlink" title="三、其他思路"></a>三、其他思路</h2><p>因为<code>anoms.top</code> 这个域名在我手里也有好几年的时间了，利用这个域名我也琢磨过一些用于数据同步的小应用。</p>
+<ul>
+<li><p><strong>ANOMS文件代理</strong> ：使用网页框架 <a href="https://tinyfilemanager.github.io/">Tiny File Manager</a>  建立的一个网盘，如前文所述。有时候我会在服务器上挂着一些大文件的下载的任务干别的事情，等文件下载好了就用这个网盘传到本地。算是百度网盘离线下载的平替。</p>
+</li>
+<li><p><strong>ANOMS online editor</strong> ：最初是想开发一个网页端的markdown笔记本工具，以实现在不同设备上同时记笔记的需求。那时候年少轻狂，因此没有用任何框架，直接从0开始纯手写了一个极其简陋的页面（如下图）。后来渐渐摸索出了更多的功能，例如可以把文件使用<code>base64</code>工具进行转码，然后保存在这个工具里，就可以在其他设备上访问了。</p>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218114928.png" alt="image.png"></p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>通信协议</tag>
+        <tag>文件共享</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jupyter魔法指令的一点点探索</title>
+    <url>/2024/02/03/jupyter-magic-cmd/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+
+
+<h2 id="从-pip-install-和-pip-install-的区别说起"><a href="#从-pip-install-和-pip-install-的区别说起" class="headerlink" title="从%pip install 和 !pip install 的区别说起"></a>从<code>%pip install</code> 和 <code>!pip install</code> 的区别说起</h2><blockquote>
+<p>参考： <a href="https://stackoverflow.com/questions/65547021/difference-between-pip-and-pip-in-python-jupyter-notebook-and-colab">stackoverflow - difference between ‘%pip’ and ‘!pip’ </a></p>
+</blockquote>
+<p>在jupyter notebook中，<code>%pip install</code> 和 <code>!pip install</code> 的区别是：</p>
+<ul>
+<li><code>%pip install</code> 是一个<strong>魔法指令</strong>，它会在当前的notebook内核所运行的<strong>虚拟环境</strong>中安装模块。</li>
+<li><code>!pip install</code> 是一个<strong>shell命令</strong>，它会在<strong>基础环境</strong>中安装模块。类似的，使用<code>! &lt;command&gt;</code>允许运行<code>ls</code>或<code>pwd</code>等命令或操作系统上可用的命令。</li>
+</ul>
+<p>在安装新模块的过程中，虽然使用 <code>!pip install</code> 同样可以安装新模块，但代码编辑器会推荐使用 <code>%pip install</code> ，这样可以确保安装的模块和notebook内核是兼容的，并且不会影响到其他Notebook或系统级别的Python环境。</p>
+<h2 id="什么是jupyter魔法指令"><a href="#什么是jupyter魔法指令" class="headerlink" title="什么是jupyter魔法指令"></a>什么是jupyter魔法指令</h2><blockquote>
+<p>参考： <a href="https://ipython.readthedocs.io/en/stable/interactive/magics.html">https://ipython.readthedocs.io/en/stable/interactive/magics.html</a></p>
+</blockquote>
+<p>在Jupyter Notebook中，“魔法指令”（Magic Commands）是一组特殊的命令，它们以百分号（<code>%</code>）或双百分号（<code>%%</code>）为前缀。这些命令用于执行一些特殊的操作，如操作系统命令、调用系统工具、测量代码 执行时间等。</p>
+<p>需要注意的是，提供这些魔法指令的并非jupyter notebook本身，而是jupyter所连接到的IPython内核。<code>%</code> 符号并非python语言中的有效一元运算符，因此IPython内核得以对其进行重载以提供这些魔法指令；然而jupyter也可以连接到其他语言的内核（如IJulia、IRKernel等，如下图），在这些语言中 <code>%</code> 可能有功能，因此当使用其他编程语言编写jupyter notebook时，这些魔法指令可能无法使用。</p>
+<p><img src="https://pic.imgdb.cn/item/65bf96ab871b83018a32707e.png" alt="jupyter project review"></p>
+<h2 id="jupyter魔法指令有哪些，怎么用"><a href="#jupyter魔法指令有哪些，怎么用" class="headerlink" title="jupyter魔法指令有哪些，怎么用"></a>jupyter魔法指令有哪些，怎么用</h2><h3 id="两类魔法指令"><a href="#两类魔法指令" class="headerlink" title="两类魔法指令"></a>两类魔法指令</h3><p>魔法指令分为两种类型：行魔法指令和单元格魔法指令。</p>
+<ul>
+<li>前者以一个百分号 <code>%</code> 开头，只对当前行的代码有效。</li>
+<li>后者以两个百分号 <code>%%</code> 开头，必须放在单元格的第一行，其对整个单元格的代码都有效。</li>
+</ul>
+<p>可以使用 <code>%lsmagic</code> 命令来列出所有可用的魔术命令，或者使用 <code>%quickref</code> 命令来查看简要的帮助文档。</p>
+<p><img src="https://pic.imgdb.cn/item/65bf98d8871b83018a3cb75b.jpg" alt="lsmagic"></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">In [1]: %quickref</span><br><span class="line"></span><br><span class="line">IPython -- An enhanced Interactive Python - Quick Reference Card</span><br><span class="line">================================================================</span><br><span class="line"></span><br><span class="line">obj?, obj??      : Get help, or more help for object (also works as</span><br><span class="line">                   ?obj, ??obj).</span><br><span class="line">?foo.*abc*       : List names in &#x27;foo&#x27; containing &#x27;abc&#x27; in them.</span><br><span class="line">%magic           : Information about IPython&#x27;s &#x27;magic&#x27; % functions.</span><br><span class="line"></span><br><span class="line">Magic functions are prefixed by % or %%, and typically take their arguments</span><br><span class="line">without parentheses, quotes or even commas for convenience.  Line magics take a</span><br><span class="line">single % and cell magics are prefixed with two %%.</span><br><span class="line"></span><br><span class="line">The following magic functions are currently available:</span><br><span class="line"></span><br><span class="line">%alias:</span><br><span class="line">    Define an alias for a system command.</span><br><span class="line">%alias_magic:</span><br><span class="line">    ::</span><br><span class="line">%autoawait:</span><br><span class="line"></span><br><span class="line">%autocall:</span><br><span class="line">    Make functions callable without having to type parentheses.</span><br><span class="line">%autoindent:</span><br><span class="line">    Toggle autoindent on/off (deprecated)</span><br><span class="line">%automagic:</span><br><span class="line">    Make magic functions callable without having to type the initial %.</span><br><span class="line">%bookmark:</span><br><span class="line">    Manage IPython&#x27;s bookmark system.</span><br><span class="line">%cd:</span><br><span class="line">    Change the current working directory.</span><br><span class="line">%cls:</span><br><span class="line">    Clear screen.</span><br><span class="line">--- more ---</span><br></pre></td></tr></table></figure>
+
+
+<p>另外，<code>%Magics_Name?</code> 命令可以用来查看某个魔术命令的详细说明，比如 <code>%time?</code>。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">In [2]: %time?</span><br><span class="line">Docstring:</span><br><span class="line">Time execution of a Python statement or expression.</span><br><span class="line"></span><br><span class="line">The CPU and wall clock times are printed, and the value of the</span><br><span class="line">expression (if any) is returned.  Note that under Win32, system time</span><br><span class="line">is always reported as 0, since it can not be measured.</span><br><span class="line"></span><br><span class="line">This function can be used both as a line and cell magic:</span><br><span class="line"></span><br><span class="line">- In line mode you can time a single-line statement (though multiple</span><br><span class="line">  ones can be chained with using semicolons).</span><br><span class="line"></span><br><span class="line">- In cell mode, you can time the cell body (a directly</span><br><span class="line">  following statement raises an error).</span><br><span class="line"></span><br><span class="line">This function provides very basic timing functionality.  Use the timeit</span><br><span class="line">magic for more control over the measurement.</span><br><span class="line"></span><br><span class="line">.. versionchanged:: 7.3</span><br><span class="line">    User variables are no longer expanded,</span><br><span class="line">    the magic line is always left unmodified.</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h3><p>下面是一些常用的魔术命令的例子：</p>
+<ul>
+<li><code>%run</code>：运行外部Python脚本，比如 <code>%run hello.py</code>。</li>
+<li><code>%load</code>：载入外部脚本的内容到一个代码单元格中，比如 <code>%load hello.py</code>。</li>
+<li><code>%time</code>：测量单行代码的执行时间，比如 <code>%time x = sum(range(100))</code>。</li>
+<li><code>%timeit</code>：测量单行代码的平均执行时间，比如 <code>%timeit x = sum(range(100))</code>。</li>
+<li><code>%%time</code>：测量整个单元格代码的执行时间，比如：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">%%time</span><br><span class="line">x = <span class="built_in">sum</span>(<span class="built_in">range</span>(<span class="number">100</span>))</span><br><span class="line">y = <span class="built_in">sum</span>(<span class="built_in">range</span>(<span class="number">200</span>))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/65bf9b66871b83018a483585.jpg" alt="time statictis"></p>
+<ul>
+<li><code>%%writefile</code>：将当前单元格的内容写入文件中，比如：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">%%writefile hello.py</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Hello, world!&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>%%latex</code>：显示LaTeX公式，比如：</li>
+</ul>
+<figure class="highlight latex"><table><tr><td class="code"><pre><span class="line"><span class="comment">%%latex</span></span><br><span class="line"><span class="keyword">\begin</span>&#123;equation&#125;</span><br><span class="line"><span class="keyword">\int</span><span class="built_in">_</span>0<span class="built_in">^</span><span class="keyword">\infty</span> <span class="keyword">\frac</span>&#123;x<span class="built_in">^</span>3&#125; &#123;e<span class="built_in">^</span>x-1&#125;<span class="keyword">\,</span>dx = <span class="keyword">\frac</span>&#123;<span class="keyword">\pi</span><span class="built_in">^</span>4&#125; &#123;15&#125; <span class="keyword">\label</span>&#123;eq:sample&#125;</span><br><span class="line"><span class="keyword">\end</span>&#123;equation&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/65bf9a0a871b83018a421038.jpg" alt="latex"></p>
+<ul>
+<li><code>%matplotlib</code>：设置Matplotlib图形的渲染方式。比如<code>%matplotlib inline</code></li>
+<li><code>%reset</code>：清除所有变量的名称空间。</li>
+<li><code>%who</code> 和 <code>%whos</code>：显示当前命名空间中的变量。</li>
+<li><code>%pdb</code>：启用或禁用交互式调试器（pdb）。</li>
+<li><code>%history</code>：显示输入/输出历史记录。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>jupyter</tag>
+        <tag>魔法指令</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>移动端可用的一些Linux终端程序推荐</title>
+    <url>/2024/02/09/mobile_Linux_terminal_Apps/</url>
+    <content><![CDATA[<p>如题。</p>
+<p>有时候我们可能会有在无电脑的情况下开发和运行程序的需求。这个时候，可以使用本文提到的终端程序进行一些程序开发的操作。</p>
+<span id="more"></span>
+
+<h2 id="一、安卓端"><a href="#一、安卓端" class="headerlink" title="一、安卓端"></a>一、安卓端</h2><h3 id="1-Termux"><a href="#1-Termux" class="headerlink" title="1. Termux"></a>1. Termux</h3><p>Termux是一个安卓系统上的终端模拟器和Linux环境App，并且在工作时不需要root权限或繁琐的安装步骤。根据<a href="https://termux.dev/en/">官方网站</a>的宣传，Termux拥有的特点包括：安全（这个App相当于一个沙箱环境）、功能齐全（支持几乎所有Linux指令）、可定制（就像正常使用Linux系统那样）、可探索、可携带（装在手机上，想啥时候用就啥时候用）、可扩展（通过连接键盘鼠标并安装X11桌面服务，可以当作电脑使用），以及可修补（基于各种开发工具）。事实上，完全可以把Termux视为一个微型的Linux发行版，甚至可以在上面安装python、gcc、java、node.js等开发工具。</p>
+<p><img src="https://pic.imgdb.cn/item/65c396de9f345e8d03ff23a2.jpg" alt="termux app"></p>
+<p>虽然Google Play上收录了Termux，但更推荐的做法是从<a href="https://github.com/termux/termux-app/releases">Github存储库</a>或<a href="https://f-droid.org/packages/com.termux/">F-Droid</a>上下载，以获得最新版本的App。</p>
+<p>众所周知，安卓系统的底层是个Linux内核（所谓安卓kernel是也）。然而谷歌公司对安卓内核做了太多改动，甚至相比于常见的Linux发行版有了许多残缺。因此，Termux进行了一些额外的工作，从而在安卓上运行起来。具体来说，Termux对所有的软件包进行了与<a href="https://developer.android.google.cn/ndk/guides?hl=en">Android NDK</a>的交叉编译，使其能够原生运行在安卓平台上；此外，Termux上的各种软件、配置文件都安装在<code>/data/data/com.termux/files/usr</code>路径下，而非根目录下，从而使其不需要root权限既可运行各种程序。再强调一遍，Termux不是虚拟机，更不是模拟器！</p>
+<p>关于如何安装和使用Termux App，网上已有很多教程，此处不再赘述。感兴趣的读者可以阅读<a href="https://www.sqlsec.com/2018/05/termux.html#">《Termux 高级终端安装使用配置教程》</a> 和 <a href="https://www.sqlsec.com/2020/04/termuxlinux.html">《Android Termux 安装 Linux 就是这么简单》</a> ，此外，<a href="https://wiki.termux.com/wiki/Main_Page">官方文档</a> 也提供了许多详细的教程。</p>
+<p>在Termux的基础上，还有人搞出了一堆其他的应用，例如安卓平台上的深度学习平台<a href="https://github.com/aidlearning/AidLearning-FrameWork">AidLearn</a>、vscode编辑器的安卓系统移植版<a href="https://juejin.cn/post/7032548034638675982">code FA</a> 等。这些工具极大丰富了安卓系统的程序开发生态。</p>
+<h3 id="2-Android-Terminal-Emulator"><a href="#2-Android-Terminal-Emulator" class="headerlink" title="2. Android Terminal Emulator"></a>2. Android Terminal Emulator</h3><p>更准确地说，这其实是一类应用。一个例子是F-Droid上的 <a href="https://f-droid.org/packages/jackpal.androidterm/">Terminal Emulator for Android </a> 软件。与Termux不同，这一类应用直接连接的是安卓自带的Linux内核，可以运行一些简单的Linux指令。然而由于安卓系统的限制，这些Terminal Emulator的功能是残缺的。</p>
+<p>在Linux生态中，有一个著名的“瑞士军刀”应用叫做<a href="https://www.busybox.net/">busybox</a>，它提供了近百种Linux基础指令的命令行调用方式（如下图），体积却非常精简，只有几MB大小，因此在大量嵌入式Linux设备中广泛使用。安卓系统某种意义上也算是一种嵌入式Linux系统，故早起版本的安卓系统也采用了busybox为终端用户界面提供各种指令调用。然而busybox采用的开源许可证是GPLv2许可证，这是一种<a href="https://www.zhihu.com/question/506101535/answer/2271874721">有传染性的许可证</a>，谷歌公司为了规避busybox的GPL许可证的传染性，于是开发了<a href="http://www.landley.net/toybox/about.html">toybox</a>这一平替版本，并从Android Marshmallow版本（安卓6，发布于2015年）正式替代了busybox。也因此，Android Terminal Emulator调用的其实是安卓内核中的toybox程序。</p>
+<p><img src="https://pic.imgdb.cn/item/65c5ba059f345e8d03f0fca3.jpg" alt="busybox"></p>
+<p>toybox提供的指令少于busybox，并且没有提供联网的功能。这就意味着其功能与可扩展性远小于termux。一种使用Android Terminal Emulator的场景是手机获得了root权限以后对系统关键位置的配置文件进行修改，但这样的场景过于小众了。</p>
+<h3 id="3-juicySSH"><a href="#3-juicySSH" class="headerlink" title="3. juicySSH"></a>3. juicySSH</h3><p>正如其名，<a href="https://juicessh.com/">juicySSH</a> 实际上是安卓系统上的一个SSH客户端程序。其提供了一个图形化的配置界面，用于对远程服务器的地址和账户进行设置。连接上远程服务器以后，可以通过SSH运行指令以操纵远程机器。</p>
+<h2 id="二、iOS端"><a href="#二、iOS端" class="headerlink" title="二、iOS端"></a>二、iOS端</h2><p>苹果公司是一家很有自己想法的公司。其最知名的产品包括mac、iphone和ipad。mac运行的系统是macOS，iphone和ipad运行的是iOS。这些系统的底层实际上是一样的，都是经过修改的Unix内核，即<a href="https://zhuanlan.zhihu.com/p/436752408">Darwin OS</a>。</p>
+<p><a href="https://github.com/holzschu/a-shell">a-shell</a> 是iOS平台上的一个终端程序，其使用<a href="https://github.com/holzschu/ios_system/">ios_system</a>进行命令解释，更底层依然连接到的是Darwin的内核。可以使用的指令包括<code>nslookup、whois、python3、lua、pdflatex、lualatex</code> 等，基本可以看作一个类Unix的终端了。</p>
+<p><img src="https://pic.imgdb.cn/item/65c5c90c9f345e8d0310c967.jpg" alt="a-shell"></p>
+<p>想要了解更多，可以阅读下面的文章： <a href="https://talk.quwj.com/topic/2417">《a-Shell：适用于 iOS 的多窗口终端 App》</a></p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux终端程序</tag>
+        <tag>移动应用</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一年又一年</title>
+    <url>/2024/02/18/year-beyond-one-year-2024/</url>
+    <content><![CDATA[<p>碎碎念。</p>
+<span id="more"></span>
+
+<h2 id="一"><a href="#一" class="headerlink" title="一"></a>一</h2><p>某天晚上刷B站时看到一条观察者网出品的视频： <a href="https://www.bilibili.com/video/BV1nN4y1H7yA">《为什么年轻人看得穿网络谣言，却容易被极端思想蛊惑？》</a> 。看完有一点想法。</p>
+<p>这段视频主要分析了年轻人容易受极端思想蛊惑、甚至成为极端思想传播的推波助澜者的原因。这里的极端思想当然包括近几年在网络上相当流行的各种思潮，特别是一些极端精致利己思想。</p>
+<p>作者认为，90后、00后以独生子女为主，这一代人生活环境的原子化，导致在成长过程中很大程度上缺失了集体生活的经历和经验，同时这一代人又是互联网原住民，这就是导致年轻人容易被网络极端思想蛊惑的原因。然而根据弹幕可能还要补充一条，就是现代社会中，人太多、机会太少，需要竞争的情况越来越多，需要合作的情况倒不见得还和以前一样多（至少网络上的一种观点如此）。</p>
+<p>感觉很无力。如果整个社会的氛围都如此内卷，那么上述精致利己的极端思想，其蓬勃生长的土壤也就是这样存在的吧。</p>
+<h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>寒假过完了。</p>
+<p>今年的寒假真正让我感受到了什么叫做假期比工作日还累。</p>
+<p>假期前半段勉强说服自己每天抽出一点时间学Linux，但那几天实在有点摆烂，每天打游戏的时间更长。随后，和父母回老家过了年，在四处拜访亲戚和参与各种社交中度过了除夕。</p>
+<p>再次回到家以后，依然每天忙于应对各种事情，余下的时间只想刷刷短视频。就这么一直待到假期结束。</p>
+<h2 id="三"><a href="#三" class="headerlink" title="三"></a>三</h2><p>回老家的那几天，一直在连轴转，不过还好，几天下来感觉自己好像也不怎么排斥那样的生活。</p>
+<p>家族里的社交联系远比在学校丰富的多，短短几天见到了许多长辈，更重要的是和许多平辈的兄弟姐妹有不少交流。</p>
+<p>可能这种不带层级关系的平辈社交更适合我吧，那几天其实玩的也挺开心的。</p>
+<p>我想我确实缺乏社交，也确实需要社交。</p>
+<h2 id="四"><a href="#四" class="headerlink" title="四"></a>四</h2><p>今年的春节档很有意思。</p>
+<p>有幸在假期结束前，带全家去看了几部电影。</p>
+<p>《热辣滚烫》的故事挺励志的，但全片没什么喜剧元素，看完笑不太出来，而且有很多人通过这部电影找到了共鸣。这也让我想到了多年前在网易云音乐上看到的一句话， <strong>“北京南站与西局终有粉色飘带牵绊在一起的一天，困境中的人终有自己的飘带，它可以是任何颜色，但总能带来人生光芒”。</strong></p>
+<p>相比之下《第二十条》反而更有趣一点，在欢声笑语中对法律的理解又加深一层。</p>
+<h2 id="五"><a href="#五" class="headerlink" title="五"></a>五</h2><p>不管怎么说，假期已经过完了，这又是一个全新的开始。</p>
+<p>新年刚刚过去，一切都是崭新的。年后的阳光也很温暖，大地虽然还是光秃秃的，但相信不久之后就会冒出嫩芽和花苞，迎来欣欣向荣的春天。</p>
+<p>过去的一年无灾无难，但也说不上多顺利——自己的课题进展一直不太顺。希望今年可以排除困难，走得更平稳一点。</p>
+<p>愿课题顺利，愿在年内在社交方面有所提升，愿成为更好的自己。</p>
+<p>以及，祝所有读者以及我的朋友们平安喜乐，万事顺遂。</p>
+<p>新年快乐！（这是一句姗姗来迟的新年祝福）。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>碎碎念</title>
+    <url>/2024/02/04/%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B52024%E5%AF%92%E5%81%87/</url>
+    <content><![CDATA[<p>这几天放假回家了。</p>
+<p>具体来说，是昨天中午到的家。</p>
+<span id="more"></span>
+
+<p>今年春运，票尤其不好买，只抢到周六清晨6点多的高铁。然而这意味着我要早起赶地铁——或者提前一晚上去车站候着。这一周上海一直都是阴雨绵绵的，实在不想大清早去赶地铁，于是周五晚上就去虹桥枢纽了。</p>
+<p>不得不说，大城市就是不一样。虹桥高铁站春运期间加开了不少夜间高铁，于是整晚整晚的候车室都有人（以及没位置）；虹桥机场很大很宽敞，不过没啥过夜航班，乘客也少，倒是清净不少。推着小推车在候机楼找了个没人的角落坐了一晚上，二刷《流浪地球2》，又看了会儿小说（《冰与火之歌》，这小说体量挺大的，不过确实好看），硬是熬到了6点。</p>
+<hr>
+<p>在家和在所里，氛围完全不一样。这两天过得懒洋洋的<sup>[1]</sup>，每天睡八九个小时睡到自然醒，推开窗户看看——嗬，好大的雪——然后继续回去睡。如果给我发消息半天没回复，大概率是我没看到消息。</p>
+<p>感觉放假在家，离开了往日的氛围，思考和说话的欲望也减少了很多。就，整个人很倦怠，虽然知道还有许多事情要去做，但相比做事情我更喜欢捂被窝。雪下的也是够大的，到现在也没有一丝要停的迹象。</p>
+<p>这就是冬天的感觉吗？穷冬烈风，大雪深数尺，千里冰封万里雪飘。相比之下，上海的冬天太不像冬天了。</p>
+<hr>
+<p>随着年的临近，各种奇奇怪怪的热搜也出现了。除开这几天下大雪封大路导致列车停运旅客滞留的消息以外，一些大学生回家的矛盾、家长催婚的压力等等鸡毛蒜皮的事情也能上新闻。虽然看到这些新闻时，更多的还是扎心——24年了，依然是个单身狗。</p>
+<p>也许在人际关系方面，我需要修炼的路依然很长吧。套用多年前日记里的一句话，2024年了，希望遇到更好的朋友，希望变成更好的自己。</p>
+<p>最近生活不一定规律，博客的更新可能也不会像之前那样规律了，不过我会尽量保持一定的更新节奏。近期可能会探索学习一些Linux相关的东西，还有文件服务器等等。（但愿这些立下的flag不倒！）</p>
+<p>快过年了，也许更重要的是和家人团聚以及调整自己的状态吧。</p>
+<p>提前祝大家新年快乐~awa</p>
+<p><img src="https://pic.imgdb.cn/item/65bfc278c458853aef91be88.jpg" alt="back home"></p>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=30148671&auto=1&height=66"></iframe>
+
+<blockquote>
+<p>注[1]：然而现阶段，我的工作进展一直都不怎么顺利，报名的驾校考试也没怎么准备。很惭愧，现在我居然如此心安理得的摆烂。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
       </tags>
   </entry>
 </search>
