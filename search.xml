@@ -9264,7 +9264,7 @@
 <p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240218180032.png" alt="image.png"></p>
 <h4 id="几个小问题："><a href="#几个小问题：" class="headerlink" title="几个小问题："></a>几个小问题：</h4><ul>
 <li>① 在Windows WSL1上测试时发现无法进行sshfs的挂载，报错 <code>&quot;modprobe: FATAL: Module fuse not found in directory /lib/modules/4.4.0-19041-Microsoft&quot;</code> 。查询后得知，WSL1并非完整Linux内核，因此对fuse的支持存在问题，如果换成虚拟机则会好一点。不过说实话，在Windows系统上，sshfs-win完全够用了。</li>
-<li>② 朋友之前提到过，mac不能通过sshfs访问linux，似乎是mac上的sshfs已经被放弃了。由于手边没有mac设备，无法进行测试，查询一些资料后却发现在mac上使用sshfs似乎需要换源或者从源代码编译，总之是很麻烦。因此mac用户可能还需要想想其他办法。</li>
+<li>② Hazel同学之前提到过，mac不能通过sshfs访问linux，似乎是mac上的sshfs已经被放弃了。由于手边没有mac设备，无法进行测试，查询一些资料后却发现在mac上使用sshfs似乎需要换源或者从源代码编译，总之是很麻烦。因此mac用户可能还需要想想其他办法。</li>
 </ul>
 <h2 id="三、其他思路"><a href="#三、其他思路" class="headerlink" title="三、其他思路"></a>三、其他思路</h2><p>因为<code>anoms.top</code> 这个域名在我手里也有好几年的时间了，利用这个域名我也琢磨过一些用于数据同步的小应用。</p>
 <ul>
@@ -9536,6 +9536,188 @@
         <tag>通信协议</tag>
         <tag>云服务器</tag>
         <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQLite3读取数据库与优化的一点探索</title>
+    <url>/2024/02/24/SQLite3-database-query-and-optimize/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>想用python开发一个离线版查词工具。其中，离线词典文件的选择是一个麻烦事。常见的离线词典格式有<code>.mdx</code>, <code>.eudic</code>等，但这些格式解析起来有些麻烦，有些甚至需要专有库。因此一直未能选择到合适的离线词库。</p>
+<p>前几天逛Github时看到一个存储库：</p>
+<p><a href="https://github.com/skywind3000/ECDICT">https://github.com/skywind3000/ECDICT</a></p>
+<p>这个存储库的作者收集了四百多万个英语单词和词组，构建了一个非常全面的离线词库，非常符合我的心意。看release页面，作者提供的格式除了<code>.mdx</code>和 <code>.eudic</code>以外，还提供了SQLite格式（<code>.db</code>）的数据库文件，这意味着我们可以使用python标准库<code>sqlite3</code>进行读取。</p>
+<p><a href="https://www.sqlite.org/index.html">SQLite</a>是一个轻量化的SQL数据库管理工具，支持SQL语法进行数据库操作，并提供许多种编程语言的接口，目前已成为使用最广泛的数据库，应用场景包括轻量级网站服务器、嵌入式设备、移动应用程序等的数据存储。</p>
+<p>我们从作者的GitHub release中下载SQLite格式的词库文件并解压缩，得到<code>stardict.db</code>文件，这个就是SQLite能够直接操作的数据库文件了。整个文件大小为 811.9M ，非常大（后面会提到如何减小文件大小）。</p>
+<p>直接在SQLite中查询这个数据库（以查询单词“python”为例。需要首先在命令行中通过<code>sqlite3</code>指令启动到SQLite3工具的交互式界面，然后运行下面的指令）：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">.<span class="keyword">open</span> stardict.db  <span class="comment">--打开数据库文件</span></span><br><span class="line">.header <span class="keyword">on</span>         <span class="comment">--开启表头显示</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> stardict <span class="keyword">WHERE</span> word<span class="operator">=</span><span class="string">&#x27;python&#x27;</span>;  <span class="comment">--使用SQL语句查询数据库</span></span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">sqlite&gt; .open stardict.db</span><br><span class="line">sqlite&gt; .header on</span><br><span class="line">sqlite&gt; SELECT * FROM stardict WHERE word=&#x27;python&#x27;;</span><br><span class="line">id|word|sw|phonetic|definition|translation|pos|collins|oxford|tag|bnc|frq|exchange|detail|audio</span><br><span class="line">2451896|python|python|&#x27;paiθ?n|n. large Old World boas</span><br><span class="line">n. a soothsaying spirit or a person who is possessed by such a spirit</span><br><span class="line">n. (Greek mythology) dragon killed by Apollo at Delphi|n. 大蟒, 巨蟒</span><br><span class="line">[计] Python 程序设计语言；人生苦短，我用 Python|n:100|1|||24103|19021|s:pythons||</span><br><span class="line">sqlite&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这个词库收录了单词的音标、中英文释义、各种场景下的词频统计以及单词的变形，仅此一例就可以看出这个离线词库做得很精心。</p>
+<p>下面是在python程序中的一些探索。</p>
+<h2 id="python对SQLite数据库的操作"><a href="#python对SQLite数据库的操作" class="headerlink" title="python对SQLite数据库的操作"></a>python对SQLite数据库的操作</h2><p>python标准库中提供了<code>sqlite3</code>这个库，可以原生支持对SQLite数据库的操作。使用前需要<code>import sqlite3</code> 。在python中查词的方法（仍然以查询单词“python”为例）：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> sqlite3 </span><br><span class="line">con = sqlite3.connect(<span class="string">&quot;stardict.db&quot;</span>) <span class="comment"># 连接到SQLite数据库文件</span></span><br><span class="line">cur = con.cursor() <span class="comment"># 新建一个用于操作数据库的指针对象。后续操作需通过指针进行。</span></span><br><span class="line">sql = <span class="string">&quot;SELECT * FROM stardict WHERE word=&#x27;python&#x27;;&quot;</span> <span class="comment"># 定义SQL查询语句</span></span><br><span class="line">res = cur.execute(sql).fetchall() <span class="comment"># 通过指针执行上述SQL查询语句，将查询结果保存在变量res中</span></span><br><span class="line"><span class="built_in">print</span>(res)</span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下。注意到，在python中，sqlite3查询数据库以后返回的是一个python list，这大大方便了后续的处理。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import sqlite3</span><br><span class="line">&gt;&gt;&gt; con = sqlite3.connect(&quot;stardict.db&quot;) # 连接到SQLite数据库文件</span><br><span class="line">&gt;&gt;&gt; cur = con.cursor() # 新建一个用于操作数据库的指针对象。后续操作需通过指针进行。</span><br><span class="line">&gt;&gt;&gt; sql = &quot;SELECT * FROM stardict WHERE word=&#x27;python&#x27;;&quot; # 定义SQL查询语句</span><br><span class="line">&gt;&gt;&gt; res = cur.execute(sql).fetchall() # 通过指针执行上述SQL查询语句，将查询结果保存在变量res中</span><br><span class="line">&gt;&gt;&gt; print(res)</span><br><span class="line">[(2451896, &#x27;python&#x27;, &#x27;python&#x27;, &quot;&#x27;paiθɒn&quot;, &#x27;n. large Old World boas\nn. a soothsaying spirit or a person who is possessed by such a spirit\nn. (Greek mythology) dragon killed by Apollo at Delphi&#x27;, &#x27;n. 大蟒, 巨蟒\n[计] Python 程序设计语言；人生苦短，我用 Python&#x27;, &#x27;n:100&#x27;, 1, None, &#x27;&#x27;, 24103, 19021, &#x27;s:pythons&#x27;, None, &#x27;&#x27;)]</span><br></pre></td></tr></table></figure>
+
+<p>整个离线查词工具的实现细节此处省略，源代码见<a href="https://github.com/cyclinbox/youdao_dict_get/blob/main/offline_dict_get.py">GitHub存储库</a> ，目前仅支持在命令行环境下使用。</p>
+<h2 id="减小SQLite3文件的大小"><a href="#减小SQLite3文件的大小" class="headerlink" title="减小SQLite3文件的大小"></a>减小SQLite3文件的大小</h2><p>我们注意到，作者提供的数据库原始文件，其大小达到了 811.9M之多，然而当我们用下面的指令导出数据到<code>.csv</code>以后却发现整个CSV表格才306.0M。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从sqlite3导出数据库到CSV文件</span></span><br><span class="line">sqlite3 -header -csv stardict.db <span class="string">&quot;select * from stardict;&quot;</span> &gt; data.csv</span><br></pre></td></tr></table></figure>
+
+<p>SQLite格式比CSV表格格式大了这么多，为什么呢？能不能压缩数据库文件，让他节省点空间呢？</p>
+<p>很遗憾不能。python的<code>sqlite3</code>库似乎并不支持直接读取压缩后的数据库文件；尽管有一些方法可以绕过上述限制，但总归很麻烦并且很占内存。</p>
+<p>不过确实有方法可以降低SQLite数据库文件的体积的。一种方法是使用<code>VACUUM</code>命令清理未使用的空间；另一种方法是通过<code>PRAGMA page_size</code>指令修改数据库分页大小，从而提高空间利用率。</p>
+<h3 id="1-VACUUM指令"><a href="#1-VACUUM指令" class="headerlink" title="1. VACUUM指令"></a>1. <code>VACUUM</code>指令</h3><p>当我们从Sqlite删除数据后，未使用的磁盘空间被添加到一个内在的”空闲列表”中用于存储下次插入的数据。这会导致删除数据后文件大小没有变化。然而，”空闲列表”所占用的空间对于我们一般的操作来说是没有帮助的，这意味着我们可以清理掉这部分空间。<code>VACUUM</code>指令就是用来清理它们的。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">.<span class="keyword">open</span> stardict.db  <span class="comment">--打开数据库文件</span></span><br><span class="line">VACUUM; <span class="comment">--清理空闲空间。这会花上一段时间。</span></span><br></pre></td></tr></table></figure>
+
+<p>很简单，对不对？这一个指令把所有能干的事情都干完了。</p>
+<p>不过当我们再次查看<code>stardict.db</code>文件大小时，发现文件大小变化并不显著，仅仅从811.9M降低到了 762.0M 。</p>
+<p>能不能进一步压缩空间呢？有 <a href="https://geek-docs.com/sqlite/sqlite-questions/357_sqlite_whats_the_effective_way_to_compact_sqlite3_db.html">文章</a> 提到可以通过设置分页大小以减少文件大小。</p>
+<h3 id="2-修改分页大小"><a href="#2-修改分页大小" class="headerlink" title="2. 修改分页大小"></a>2. 修改分页大小</h3><p>页面（PAGE）是SQLite的最小存储单元，它是表扩张和收缩的基本单位，表中的记录都存储在PAGE中。<code>PAGE_SIZE</code>用来指定PAGE的大小，这个数值必须是2的指数幂，并且在512和65536之间。SQLite的不同版本有不同的默认值（v3.12之前是1024 Byte即1KB，v3.12之后是4096 Byte即4KB），一般来说使用默认值即可，但也可也修改<code>PAGE_SIZE</code>以满足我们自己的需求。</p>
+<p>根据 <a href="https://www.cnblogs.com/6yuhang/p/11444351.html">另一篇文章</a> 的描述，SQLite在PAGE中的存储表记录时（在SQLite中也称为payload），会首先使用当前PAGE中剩余的存储空间，当剩余空间不够用时，会产生一个overflow page（溢出页）,然后继续在溢出页中存储payload剩余的内容，空间仍然不够用时，会继续产生溢出页，以此种方式直到将payload表达完整（如下图）。不论是1KB的<code>PAGE_SIZE</code>还是4KB的<code>PAGE_SIZE</code>，都实在是太小了，如果一条记录占用空间超过4KB，则需要不止一次的寻址，并且为了实现高效寻址，SQLite数据库也必然会使用更多的空间存储元数据，使得数据库文件占用空间增大。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1029647-20190902000100536-1382003152.png" alt="1029647-20190902000100536-1382003152.png"></p>
+<p>查询和修改<code>PAGE_SIZE</code>的指令很简单：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">PRAGMA page_size; <span class="comment">--查询PAGE_SIZE</span></span><br><span class="line">PRAGMA page_size<span class="operator">=</span><span class="operator">&lt;</span><span class="keyword">new</span> size<span class="operator">&gt;</span>; <span class="comment">--修改PAGE_SIZE为&lt;new size&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是请注意，通过上述指令完成<code>PAGE_SIZE</code>修改以后，并不会马上生效，需要手动更新整个数据库。</p>
+<p>因此完整指令如下：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">.<span class="keyword">open</span> stardict.db  <span class="comment">--打开数据库文件</span></span><br><span class="line">PRAGMA page_size<span class="operator">=</span><span class="number">16384</span>; <span class="comment">--修改PAGE_SIZE为16KB</span></span><br><span class="line">VACUUM; <span class="comment">--清理空闲空间。这会花上一段时间。</span></span><br></pre></td></tr></table></figure>
+
+<p>或者在修改完<code>PAGE_SIZE</code>以后，直接将数据表另存为一份副本，从而实现更新（参考这篇 <a href="https://geek-docs.com/sqlite/sqlite-questions/357_sqlite_whats_the_effective_way_to_compact_sqlite3_db.html">文章</a> ）：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">.<span class="keyword">open</span> stardict.db  <span class="comment">--打开数据库文件</span></span><br><span class="line">PRAGMA page_size<span class="operator">=</span><span class="number">16384</span>; <span class="comment">--修改PAGE_SIZE为16KB</span></span><br><span class="line"><span class="keyword">BEGIN</span> TRANSACTION; <span class="comment">--开始一个另存数据表为副本的操作</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> db1 <span class="keyword">AS</span> <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> stardict; <span class="comment">--另存数据表stardict为副本db1</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> stardict;  <span class="comment">--删除原始的stardict数据表</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> db1 RENAME <span class="keyword">TO</span> stardict; <span class="comment">--把新数据表的名字改回去</span></span><br><span class="line"><span class="keyword">COMMIT</span>;  <span class="comment">--提交上述操作</span></span><br><span class="line">VACUUM;  <span class="comment">--并释放删除原数据表以后的空间</span></span><br></pre></td></tr></table></figure>
+
+<p>完成上述步骤以后，我们成功将 <code>stardict.db</code> 文件的大小减小到了   298.6M ，甚至小于导出的CSV文件（306.0M）。说明<code>PAGE_SIZE</code>对SQLite数据库文件的大小确实有很大的影响。</p>
+<p>不过最后还得补充一点，经过上述方法处理以后，虽然数据库文件大小显著减小，但查询速度也受到了一些影响而变得很慢，这和数据库索引以及数据存储方式有关。重新建立一下数据库索引，会好很多。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="https://geek-docs.com/sqlite/sqlite-questions/357_sqlite_whats_the_effective_way_to_compact_sqlite3_db.html">《SQLite 数据库压缩的有效方式》</a></li>
+<li><a href="https://www.sqlite.org/lang_vacuum.html">SQLite官方文档 - VACUUM指令</a></li>
+<li><a href="https://www.sqlite.org/pragma.html#pragma_page_size">SQLite官方文档 - PAGE SIZE设置</a></li>
+<li><a href="https://www.cnblogs.com/6yuhang/p/11444351.html">《SQLite中字段顺序和PAGE SIZE对性能的影响》</a></li>
+<li><a href="https://blog.csdn.net/wangshuchangfrank/article/details/42170711">《SQLite优化笔记》</a></li>
+<li><a href="https://www.cnblogs.com/samlin/p/5580191.html">《压缩Sqlite数据文件大小，解决数据删除后占用空间不变的问题》</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>SQLite</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>systemd添加与管理系统服务</title>
+    <url>/2024/02/25/Systemctl-operation/</url>
+    <content><![CDATA[<p>上周的文章中，我们介绍了几种Linux上的文件共享策略，并提到了可以用systemctl将程序注册为系统服务。本篇将主要介绍一下注册为系统服务的具体方法。</p>
+<span id="more"></span>
+
+
+<h2 id="systemd简介"><a href="#systemd简介" class="headerlink" title="systemd简介"></a>systemd简介</h2><p>Linux 操作系统的启动首先从 BIOS 开始，接下来进入 boot loader，由 bootloader 载入内核，进行内核初始化。内核初始化的最后一步就是启动 pid 为 1 的 init 进程。这个进程是系统的第一个进程，它以守护进程方式存在，是所有其他进程的祖先，负责产生其他所有用户进程。</p>
+<p>早期的Linux 发行版的 init 系统是和 System V 相兼容的，被称为 System V init（也可简写为SysVinit），它依赖于Shell脚本进行启动项管理，因此具有概念简单清晰、易于维护等优点。然而随着Linux的发展以及Linux在移动设备上的广泛应用，SysVinit启动速度慢的缺点开始显现出来。人们开始改进这一启动系统，让它速度更快、支持的功能更多、更加自动化，并最终发展出了systemd（所有字母全小写）。</p>
+<p>systemd的设计目标是，为系统的启动和管理提供一套完整的解决方案。根据 Linux 惯例，字母<code>d</code>是守护进程（daemon）的缩写。 systemd 这个名字的含义，就是它要守护整个系统。它并不是一个单独的程序或命令，而是一组命令，涉及系统的方方面面。其中，<code>systemctl</code>是 systemd 的主命令，用于管理系统。</p>
+<p>下面是一些systemctl常用指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 重启系统</span></span><br><span class="line">$ sudo systemctl reboot</span><br><span class="line"><span class="comment"># 关闭系统，切断电源</span></span><br><span class="line">$ sudo systemctl poweroff</span><br><span class="line"><span class="comment"># CPU停止工作</span></span><br><span class="line">$ sudo systemctl halt</span><br><span class="line"><span class="comment"># 暂停系统</span></span><br><span class="line">$ sudo systemctl <span class="built_in">suspend</span></span><br><span class="line"><span class="comment"># 让系统进入冬眠状态</span></span><br><span class="line">$ sudo systemctl hibernate</span><br><span class="line"><span class="comment"># 让系统进入交互式休眠状态</span></span><br><span class="line">$ sudo systemctl hybrid-sleep</span><br><span class="line"><span class="comment"># 启动进入救援状态（单用户状态）</span></span><br><span class="line">$ sudo systemctl rescue</span><br></pre></td></tr></table></figure>
+
+<h2 id="systemd的开机启动项"><a href="#systemd的开机启动项" class="headerlink" title="systemd的开机启动项"></a>systemd的开机启动项</h2><p>Linux系统在启动时要进行大量的初始化工作，比如挂载文件系统和交换分区、启动各类进程服务等，这些都可以看作是一个一个的单元（unit），并用一系列单元文件表示它们。systemd用目标（target）代替了System V init中运行级别的概念，这两者的区别如下表所示。</p>
+<table>
+<thead>
+<tr>
+<th>System V init运行级别</th>
+<th>systemd目标名称</th>
+<th>systemd 目标作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>poweroff.target</td>
+<td>关机</td>
+</tr>
+<tr>
+<td>1</td>
+<td>rescue.target</td>
+<td>救援模式</td>
+</tr>
+<tr>
+<td>2</td>
+<td>multi-user.target</td>
+<td>多用户的命令行界面</td>
+</tr>
+<tr>
+<td>3</td>
+<td>multi-user.target</td>
+<td>多用户的命令行界面</td>
+</tr>
+<tr>
+<td>4</td>
+<td>multi-user.target</td>
+<td>多用户的命令行界面</td>
+</tr>
+<tr>
+<td>5</td>
+<td>graphical.target</td>
+<td>多用户的图形界面</td>
+</tr>
+<tr>
+<td>6</td>
+<td>reboot.target</td>
+<td>重启</td>
+</tr>
+<tr>
+<td>emergency</td>
+<td>emergency.target</td>
+<td>救援模式</td>
+</tr>
+</tbody></table>
+<p>一般来说，我们最常接触到的运行级别只有<code>multi-user.target</code>多用户命令行界面，其次是<code>graphical.target</code>多用户图形界面（如果使用Linux桌面版的话）。因此，将服务进程的目标设定为<code>multi-user.target</code>准没错。</p>
+<p>单元文件的文件名以 <code>.service</code> 结尾，文件内容由 Unit、Service 和 Install 三个区块组成，分别用于描述启动顺序与依赖关系、定义启动行为、定义服务安装到的目标。以下是一个 service 脚本样例：</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="section">[Unit]</span>   </span><br><span class="line"><span class="attr">Description</span>=test        <span class="comment"># 简单描述服务</span></span><br><span class="line"><span class="attr">After</span>=network.target    <span class="comment"># 描述服务类别，表示本服务需要在network服务启动后在启动</span></span><br><span class="line"><span class="attr">Before</span>=xxx.service      <span class="comment"># 表示需要在某些服务启动之前启动，After和Before字段只涉及启动顺序，不涉及依赖关系</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span> </span><br><span class="line"><span class="attr">Type</span>=forking            <span class="comment"># 设置服务的启动方式</span></span><br><span class="line"><span class="attr">User</span>=USER               <span class="comment"># 设置服务运行的用户</span></span><br><span class="line"><span class="attr">Group</span>=USER              <span class="comment"># 设置服务运行的用户组</span></span><br><span class="line"><span class="attr">WorkingDirectory</span>=/PATH  <span class="comment"># 设置服务运行的路径(cwd)</span></span><br><span class="line"><span class="attr">KillMode</span>=control-group  <span class="comment"># 定义systemd如何停止服务</span></span><br><span class="line"><span class="attr">Restart</span>=<span class="literal">no</span>              <span class="comment"># 定义服务进程退出后，systemd的重启方式，默认是不重启</span></span><br><span class="line"><span class="attr">ExecStart</span>=/start.sh     <span class="comment"># 服务启动命令，命令需要绝对路径（采用sh脚本启动其他进程时Type须为forking）</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span>   </span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target  <span class="comment"># 多用户</span></span><br></pre></td></tr></table></figure>
+
+<p>上述单元文件必须放在合适的目录中才能发挥作用。在Linux的systemd启动管理服务中，<code>/lib/systemd/system/</code>和<code>/etc/systemd/system/</code>这两个目录都用于存放系统服务的单元文件，但二者有所不同：</p>
+<ul>
+<li><code>/lib/systemd/system/</code>目录是系统默认的服务单元文件，由系统或特定软件包来维护，不建议用户进行修改。</li>
+<li><code>/etc/systemd/system/</code> 目录用于存放系统管理员创建或修改过的服务单元文件，在Linux启动过程中优先级更高。如果这个目录中存在与 <code>/lib/systemd/system/</code>中同名的单元文件，则后者的设置会被前者覆盖。</li>
+</ul>
+<p>因此，我们可以通过在<code>/etc/systemd/system/</code> 目录中添加或修改单元文件，从而实现对开机启动项的修改。</p>
+<h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><p>经过前面的介绍，我们已经知道可以通过在<code>/etc/systemd/system/</code>中创建服务单元文件，从而实现开机自启动。这一小节中我们将展示一个实际例子（节选自 <a href="https://mcsmanager.com/">MCSManager</a>的安装程序）。</p>
+<p>首先，我们准备一份单元文件，内容如下所示：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="attr">Description</span>=MCSManager Daemon  <span class="comment"># 定义服务名称，即MCSManager Daemon</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">WorkingDirectory</span>=/opt/mcsmanager/daemon <span class="comment"># 定义服务进程工作目录。下面的`app.js`存放在工作目录中。</span></span><br><span class="line"><span class="attr">ExecStart</span>=<span class="variable">$&#123;node_install_path&#125;</span>/bin/node app.js <span class="comment"># 定义服务进程启动指令</span></span><br><span class="line"><span class="attr">ExecReload</span>=/bin/kill -s QUIT <span class="variable">$MAINPID</span> <span class="comment"># 定义服务进程重启指令</span></span><br><span class="line"><span class="attr">ExecStop</span>=/bin/kill -s QUIT <span class="variable">$MAINPID</span>   <span class="comment"># 定义服务进程关闭指令</span></span><br><span class="line"><span class="attr">Environment</span>=<span class="string">&quot;PATH=$&#123;PATH&#125;&quot;</span>            <span class="comment"># 定义环境变量</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target            <span class="comment"># 定义服务程序的启动目标。启动到`multi-user.target`，即多用户的文本界面</span></span><br></pre></td></tr></table></figure>
+
+<p>上面这段代码定义了一个服务进程。我们将它保存为<code>mcsm-daemon.service</code> 文件，并存放在<code>/etc/systemd/system/</code> 目录下（需要root权限） 。这样以后，就可以使用 <code>systemctl &lt;command&gt; mcsm-daemon.service</code> 对这个进程进行操作了。</p>
+<p>现在我们想让这个服务进程能够开机自启动。因此，我们运行下面的指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> mcsm-daemon.service --now <span class="comment"># 参数`--now`要求立即启动这个服务进程。</span></span><br><span class="line"><span class="comment"># 不加`--now`则仅仅是将这个服务进程设置为开机启动项，但不立即启动服务，需要用户手动重启系统才能生效。</span></span><br></pre></td></tr></table></figure>
+
+<p>其中， <code>systemctl enable &lt;service&gt;</code> 命令用于在系统启动时自动启动指定的服务。这个命令会创建一个符号链接，指向服务的单元文件。这样，当系统启动时，systemd会读取这些链接，并自动启动相应的服务。相应的，如果想要取消自启动，可以使用<code>systemctl disable &lt;service&gt;</code> 指令。</p>
+<p>而如果要立即启动这个服务进程，则使用下面的指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl start mcsm-daemon.service </span><br></pre></td></tr></table></figure>
+
+<p>其中， <code>systemctl start &lt;service&gt;</code>  命令用于立即启动指定的服务。这个命令不会创建任何符号链接，也不会改变系统的启动设置。它只是告诉systemd立即执行服务的启动操作。如果服务已经处于运行状态，<code>start</code> 命令通常不会有任何效果。相应的，如果想要取消自启动，可以使用<code>systemctl stop &lt;service&gt;</code> 指令。</p>
+<p>要查看服务进程的运行状态，可以使用下面的指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl status  mcsm-daemon.service</span><br></pre></td></tr></table></figure>
+
+<p>其中， <code>systemctl status &lt;service&gt;</code>  命令用于查看服务进程的运行状态。上述指令的运行结果如下图所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240225134352.png" alt="image.png"></p>
+<p>以上。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/49556226">《浅析 Linux 初始化 init 系统：sysvinit》 - 无谓的文章 - 知乎</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/140273445">《学会爱上 systemd | Linux 中国》 - Linux中国的文章 - 知乎</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html">《systemd 入门教程：命令篇》- 阮一峰的网络日志</a></li>
+<li><a href="https://www.linuxprobe.com/basic-learning-01.html#15">《Linux就该这么学》第1章 动手部署一台Linux操作系统</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/651550778">《一次搞定 Linux systemd 服务脚本》 - 阿基米东的文章 - 知乎</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux</tag>
+        <tag>systemd</tag>
       </tags>
   </entry>
 </search>
