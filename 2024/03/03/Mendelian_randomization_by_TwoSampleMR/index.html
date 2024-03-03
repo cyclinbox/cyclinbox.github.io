@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用TwoSampleMR包做孟德尔随机化分析">
+<meta property="og:url" content="https://wz.anoms.top/2024/03/03/Mendelian_randomization_by_TwoSampleMR/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="如题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303123312.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303123434.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303125811.png">
+<meta property="article:published_time" content="2024-03-03T04:10:12.000Z">
+<meta property="article:modified_time" content="2024-03-03T05:12:32.688Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="R">
+<meta property="article:tag" content="孟德尔随机化">
+<meta property="article:tag" content="因果分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303123312.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/03/03/Mendelian_randomization_by_TwoSampleMR/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/03/03/Mendelian_randomization_by_TwoSampleMR/","path":"2024/03/03/Mendelian_randomization_by_TwoSampleMR/","title":"用TwoSampleMR包做孟德尔随机化分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>用TwoSampleMR包做孟德尔随机化分析 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%81%9A%E5%AD%9F%E5%BE%B7%E5%B0%94%E9%9A%8F%E6%9C%BA%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">一、为什么要做孟德尔随机化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AD%9F%E5%BE%B7%E5%B0%94%E9%9A%8F%E6%9C%BA%E5%8C%96%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">二、孟德尔随机化的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81TwoSampleMR%E5%8C%85%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">三、TwoSampleMR包的安装与使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">154</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/03/03/Mendelian_randomization_by_TwoSampleMR/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="用TwoSampleMR包做孟德尔随机化分析 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用TwoSampleMR包做孟德尔随机化分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-03-03 12:10:12 / 修改时间：13:12:32" itemprop="dateCreated datePublished" datetime="2024-03-03T12:10:12+08:00">2024-03-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如题。</p>
+<span id="more"></span>
+
+<h2 id="一、为什么要做孟德尔随机化"><a href="#一、为什么要做孟德尔随机化" class="headerlink" title="一、为什么要做孟德尔随机化"></a>一、为什么要做孟德尔随机化</h2><p>一言以蔽之：相关性 ≠ 因果性。</p>
+<p>在研究中我们常常观察到一些相关性，例如人群中某个基因与某种疾病的发病率正相关。然而这种相关性并不能解释基因和疾病的关联，有可能是基因产物造成了这种疾病（真因果），有可能是这个基因的连锁基因的产物造成了疾病，甚至有可能是疾病的病因（例如逆转录病毒的感染）造成了这个基因的异常……</p>
+<p>相关性说明不了因果性，因为存在第三种或更多因素，而造成相关性的情况也有很多种。简单概括一下，下面这些情况都会造成相关性：</p>
+<ul>
+<li>因果相关：A导致B，B导致C  (A→B→C)</li>
+<li>混杂相关：A导致B跟C，造成B和C相关  (A→B,A→C)</li>
+<li>对撞相关：A跟B共同导致C，控制C后A跟B相关  (A→C,B→C,(C):A→B)</li>
+<li>随机相关：高维度数据中碰巧两个变量表现出了相关性</li>
+</ul>
+<p>孟德尔随机化方法是一种因果分析方法，灵感来源于经济学研究中的工具变量分析。它可以区分上述这些情况，并正确估计或探索变量间的关系。</p>
+<h2 id="二、孟德尔随机化的原理"><a href="#二、孟德尔随机化的原理" class="headerlink" title="二、孟德尔随机化的原理"></a>二、孟德尔随机化的原理</h2><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303123312.png" alt="image.png"></p>
+<p>如上图。</p>
+<p>某种意义上说，随机对照实验（CRT）更能揭示因果关系。然而CRT需要实验，成本很高。<br>孟德尔随机化（MR）的思路与CRT一致，但“随机分组”的过程由孟德尔分离定律所代替，因此无需实验，可以仅凭观察数据得出结论，实验成本更低，并且保证了最终结论的准确性。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303123434.png" alt="image.png"></p>
+<p>孟德尔随机化主要用于确定暴露因素（E）和结局（O）之间的因果关系。为了排除混杂因素的干扰，需要引入工具变量（IV），在此次是与且仅与暴露相关的一组遗传变异。作为工具变量的遗传变异满足下面三个核心假设：</p>
+<ul>
+<li>1、关联性假设：工具变量（IV）与暴露（E）存在关联（图中①）</li>
+<li>2、独立性假设：工具变量（IV）与混杂因素（U）不存在关联（图中②）</li>
+<li>3、排他性假设：工具变量（IV）与结局（O）没有任何关联（图中③），除非通过暴露（E）（图中IV→E→O）</li>
+</ul>
+<p>例如，我们想要研究咖啡因摄入如何影响肾结石发病率，可以这样选择：</p>
+<ul>
+<li>工具变量（IV）：通过GWAS找到的一组与咖啡因摄入有关的SNP</li>
+<li>暴露（exposure）：咖啡因摄入水平</li>
+<li>结局（outcome）：肾结石发病率</li>
+</ul>
+<p>有多种方法可以用于计算MR，这些方法包括Wald ratio方法、逆方差加权法（IVW）、MR-Egger法等。不同方法有不同的适用情景，如果工具变量数量太少（只有一两个），那么Wald ratio方法会很合适。当有多个工具变量时，我们可以对每个工具变量各自计算Wald ratio，最后进行加权求和，这就是逆方差加权法（IVW）和MR-Egger法的原理。</p>
+<p>有多种工具可以方便我们计算MR，下面我们只介绍一种：TwoSampleMR</p>
+<h2 id="三、TwoSampleMR包的安装与使用"><a href="#三、TwoSampleMR包的安装与使用" class="headerlink" title="三、TwoSampleMR包的安装与使用"></a>三、TwoSampleMR包的安装与使用</h2><p><a target="_blank" rel="noopener" href="https://github.com/MRCIEU/TwoSampleMR">TwoSampleMR</a>包是一个用R语言编写的MR计算工具，其连接到了IEU GWAS database的后端，因此可以很方便的进行工具变量选取。</p>
+<p>TwoSampleMR包似乎没有放在CRAN上面，但作者提供了GitHub安装方法：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;remotes&quot;</span><span class="punctuation">)</span></span><br><span class="line">remotes<span class="operator">::</span>install_github<span class="punctuation">(</span><span class="string">&quot;MRCIEU/TwoSampleMR&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>如果网络不太好，也可也从上述<a target="_blank" rel="noopener" href="https://github.com/MRCIEU/TwoSampleMR">GitHub存储库</a>中的release页面上直接下载<code>.tar.gz</code>格式的源码包，然后使用</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;TwoSampleMR-0.5.10.tar.gz&quot;</span><span class="punctuation">,</span>repo<span class="operator">=</span><span class="literal">NULL</span><span class="punctuation">,</span>type<span class="operator">=</span><span class="string">&quot;source&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>进行源代码安装。</p>
+<p>此外，<code>TwoSampleMR</code> 包依赖于 <code>RadialMR</code> 包（ <a target="_blank" rel="noopener" href="https://github.com/WSpiller/RadialMR">https://github.com/WSpiller/RadialMR</a> ），因此如果上述安装方法出现问题，可以尝试先安装RadialMR包：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remotes<span class="operator">::</span>install_github<span class="punctuation">(</span><span class="string">&quot;WSpiller/RadialMR&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>然后再安装TwoSampleMR。</p>
+<p>使用方法也很简单：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">library<span class="punctuation">(</span>TwoSampleMR<span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 我们想看一下BMI对冠心病（CDH）风险的因果效应</span></span><br><span class="line"><span class="comment"># 首先选取工具变量</span></span><br><span class="line">bmi_exp_dat <span class="operator">&lt;-</span> extract_instruments<span class="punctuation">(</span>outcomes <span class="operator">=</span> <span class="string">&#x27;ieu-a-2&#x27;</span><span class="punctuation">,</span> <span class="comment"># 选择数据库ID为ieu-a-2的SNP，这些是与BMI性状有关的工具变量</span></span><br><span class="line">                 access_token<span class="operator">=</span><span class="literal">NULL</span><span class="punctuation">)</span> <span class="comment"># 如果网络不稳定，可用加上这句话</span></span><br><span class="line"><span class="comment"># 接下来根据工具变量选择结局								   </span></span><br><span class="line">chd_out_dat <span class="operator">&lt;-</span> extract_outcome_data<span class="punctuation">(</span>snps <span class="operator">=</span> bmi_exp_dat<span class="operator">$</span>SNP<span class="punctuation">,</span> </span><br><span class="line">                 outcomes <span class="operator">=</span> <span class="string">&#x27;ieu-a-7&#x27;</span><span class="punctuation">,</span></span><br><span class="line">                 access_token<span class="operator">=</span><span class="literal">NULL</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 我们已经获得了一系列的工具变量和与之对应的结局</span></span><br><span class="line"><span class="comment"># 但是，还需要协调一下，以保证SNP对暴露的影响和该SNP对结果的影响对应于同一等位基因。</span></span><br><span class="line">dat <span class="operator">&lt;-</span> harmonise_data<span class="punctuation">(</span>bmi_exp_dat<span class="punctuation">,</span> chd_out_dat<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用MR-Egger方法和IVW方法做MR：</span></span><br><span class="line">res <span class="operator">&lt;-</span> mr<span class="punctuation">(</span>dat<span class="punctuation">,</span></span><br><span class="line">          method_list <span class="operator">=</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;mr_egger_regression&quot;</span><span class="punctuation">,</span> <span class="string">&quot;mr_ivw&quot;</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 展示结果</span></span><br><span class="line">res</span><br></pre></td></tr></table></figure>
+
+
+<p>输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">  id.exposure id.outcome                              outcome</span><br><span class="line">1     ieu-a-2    ieu-a-7 Coronary heart disease || id:ieu-a-7</span><br><span class="line">2     ieu-a-2    ieu-a-7 Coronary heart disease || id:ieu-a-7</span><br><span class="line">                       exposure                    method nsnp         b</span><br><span class="line">1 Body mass index || id:ieu-a-2                  MR Egger   79 0.5024935</span><br><span class="line">2 Body mass index || id:ieu-a-2 Inverse variance weighted   79 0.4459091</span><br><span class="line">          se        pval</span><br><span class="line">1 0.14396056 8.01259e-04</span><br><span class="line">2 0.05898302 4.03202e-14</span><br></pre></td></tr></table></figure>
+
+<p>从输出可以看出，对于BMI这一暴露因素和冠心病（CHD）这一结局，使用MR-Egger方法给出的β值为0.5024935，显著大于0（$p=8.01259^{-4}&lt;0.05$ ），使用IVW方法给出的β值 0.4459091，同样显著大于0（$p=4.03202^{-14}&lt;0.05$ ），这说明BMI对CHD有比较强的正向因果效应。</p>
+<p>最后，我们也可也画一个图，展示一下上面的结果：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">res <span class="operator">&lt;-</span> mr<span class="punctuation">(</span>dat<span class="punctuation">)</span></span><br><span class="line">p1 <span class="operator">&lt;-</span> mr_scatter_plot<span class="punctuation">(</span>res<span class="punctuation">,</span> dat<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303125811.png" alt="image.png"></p>
+<p>图中每个点代表一个工具变量对暴露的效应和对结局的效应。加权线性回归拟合出的直线斜率大于1，这说明BMI对CHD有正向因果效应。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://mrcieu.github.io/TwoSampleMR/articles/introduction.html">https://mrcieu.github.io/TwoSampleMR/articles/introduction.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mrcieu/ieugwasr">https://github.com/mrcieu/ieugwasr</a></li>
+<li><a target="_blank" rel="noopener" href="http://gwas-api.mrcieu.ac.uk/docs/">http://gwas-api.mrcieu.ac.uk/docs/</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/MRCIEU/TwoSampleMR">https://github.com/MRCIEU/TwoSampleMR</a></li>
+<li><a target="_blank" rel="noopener" href="https://yufree.github.io/sciguide/thought.html#%E5%9B%A0%E6%9E%9C">https://yufree.github.io/sciguide/thought.html#因果</a></li>
+<li><a target="_blank" rel="noopener" href="https://doi.org/10.1038/s43586-021-00092-5">Sanderson, E., Glymour, M.M., Holmes, M.V. et al. Mendelian randomization. Nat Rev Methods Primers 2, 6 (2022). </a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/106666439">https://zhuanlan.zhihu.com/p/106666439</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/03/03/Mendelian_randomization_by_TwoSampleMR/" title="用TwoSampleMR包做孟德尔随机化分析">https://wz.anoms.top/2024/03/03/Mendelian_randomization_by_TwoSampleMR/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/R/" rel="tag"><i class="fa fa-tag"></i> R</a>
+              <a href="/tags/%E5%AD%9F%E5%BE%B7%E5%B0%94%E9%9A%8F%E6%9C%BA%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 孟德尔随机化</a>
+              <a href="/tags/%E5%9B%A0%E6%9E%9C%E5%88%86%E6%9E%90/" rel="tag"><i class="fa fa-tag"></i> 因果分析</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/03/01/Build_and_Install_low_version_Rpkg_in_high_version_R/" rel="prev" title="高版本R安装低版本R包不兼容问题的解决思路探索">
+                  <i class="fa fa-chevron-left"></i> 高版本R安装低版本R包不兼容问题的解决思路探索
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

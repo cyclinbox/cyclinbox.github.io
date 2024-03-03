@@ -2187,6 +2187,7 @@
         <tag>计算机技术杂谈</tag>
         <tag>Rstudio</tag>
         <tag>瞎折腾</tag>
+        <tag>R</tag>
       </tags>
   </entry>
   <entry>
@@ -2832,8 +2833,9 @@
       </categories>
       <tags>
         <tag>ggtree</tag>
-        <tag>R语言学习</tag>
         <tag>系统发育树</tag>
+        <tag>R</tag>
+        <tag>数据可视化</tag>
       </tags>
   </entry>
   <entry>
@@ -7662,7 +7664,7 @@
 <li> 《R语言基于R6的面向对象编程》 <a href="http://blog.fens.me/r-class-r6/">http://blog.fens.me/r-class-r6/</a></li>
 <li> 《发布gridgame游戏包》 <a href="http://blog.fens.me/r-game-gridgame/">http://blog.fens.me/r-game-gridgame/</a></li>
 <li> 《撬动R内核的高级工具包pryr》 <a href="http://blog.fens.me/r-pryr/">http://blog.fens.me/r-pryr/</a></li>
-<li> 《mlr3_R6对象》 <a href="https://cloud.tencent.com/developer/article/1775379#">https://cloud.tencent.com/developer/article/1775379#</a></li>
+<li> <a href="https://cloud.tencent.com/developer/article/1775379#">《mlr3_R6对象》</a></li>
 </ul>
 </blockquote>
 <hr>
@@ -8151,8 +8153,8 @@
         <category>计算机</category>
       </categories>
       <tags>
-        <tag>R语言</tag>
         <tag>对象系统</tag>
+        <tag>R</tag>
       </tags>
   </entry>
   <entry>
@@ -9718,6 +9720,157 @@
         <tag>计算机技术杂谈</tag>
         <tag>Linux</tag>
         <tag>systemd</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>高版本R安装低版本R包不兼容问题的解决思路探索</title>
+    <url>/2024/03/01/Build_and_Install_low_version_Rpkg_in_high_version_R/</url>
+    <content><![CDATA[<p>前些天，在电脑上安装R包时碰见了一个问题：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&gt; install.packages(&quot;FastEPRR_2.0.zip&quot;)</span><br><span class="line">inferring &#x27;repos = NULL&#x27; from &#x27;pkgs&#x27;</span><br><span class="line">package &#x27;FastEPRR&#x27; successfully unpacked and MD5 sums checked</span><br><span class="line">&gt; library(FastEPRR)</span><br><span class="line">Error: package or namespace load failed for &#x27;FastEPRR&#x27;:</span><br><span class="line"> package &#x27;FastEPRR&#x27; was installed before R 4.0.0: please re-install it</span><br></pre></td></tr></table></figure>
+
+<p>根据报错提示，应该是我们用的R包版本比较老所导致的不兼容问题。这个R包并非官方CRAN上的包，而是实验室自己开发并封装的计算工具包，因此只有离线安装这一种安装方法，并且这个包的版本只与R 3.x.x版本兼容，低于系统里装的R 4.3.1版本。</p>
+<p>下面是一些探索。</p>
+<span id="more"></span>
+
+<h2 id="一、R包的种类"><a href="#一、R包的种类" class="headerlink" title="一、R包的种类"></a>一、R包的种类</h2><p>参考：</p>
+<blockquote>
+<p><a href="https://r-packages-zh-cn.readthedocs.io/zh-cn/latest/%E7%AC%AC%E5%9B%9B%E7%AB%A0%20%E7%A8%8B%E5%BA%8F%E5%8C%85%E7%BB%93%E6%9E%84%E4%B8%8E%E7%8A%B6%E6%80%81.html">《R包开发》# 第四章 程序包结构与状态</a></p>
+</blockquote>
+<p>R包总共有五种状态：</p>
+<ul>
+<li>源代码包（source）：R包源代码，包括R包文档以及实现这个包的功能的R代码、C++代码（可能有）、附带数据（可能有）。</li>
+<li>捆绑包（bundled）：打包压缩为<code>.tar.gz</code>格式的源代码包。</li>
+<li>二进制包（binary）：专为Windows平台设计。将源代码包预先编译为二进制格式，然后打包为<code>.zip</code>压缩文件。</li>
+<li>已安装的（installed）：使用<code>install.package()</code>函数安装后的包。通常位于<code>$R_HOME/library</code>目录下。</li>
+<li>载入内存中的（in-memory）：使用<code>library()</code>函数加载的包，可以在程序中进一步调用。</li>
+</ul>
+<p>其中，我们最常接触到的R包安装包属于第二种（捆绑包）和第三种（二进制包）。</p>
+<p>理论上说，捆绑包是跨平台的，因为其中存储的是R包源代码，可以在不同平台上使用各自的编译工具进行编译安装。然而实际情况是Linux平台通常会自带C++编译工具，但Windows不会自带，即使在Windows平台上安装了第三方的C++编译工具，在打包阶段和安装阶段调用的C++编译工具也是不同的。因此在Windows平台上安装捆绑包（尤其是含C++代码的捆绑包）远比在Linux上要麻烦的多。</p>
+<p>这次我们遇到的问题也是如此。实验室提供了这个包的捆绑包格式和二进制包格式，出问题的是二进制包格式。在Linux环境中安装上述R包，一切是正常的：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;FastEPRR_2.0.tar.gz&quot;</span><span class="punctuation">,</span>repo<span class="operator">=</span><span class="literal">NULL</span><span class="punctuation">,</span>type<span class="operator">=</span><span class="string">&quot;source&quot;</span><span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>FastEPRR<span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 一切正常无报错</span></span><br></pre></td></tr></table></figure>
+
+<p>然而有时候我们需要在Windows上使用这个包（甚至是安装其他包时也可能出现这个问题），因此有必要探索一下Windows上如何解决。</p>
+<h2 id="二、一种思路"><a href="#二、一种思路" class="headerlink" title="二、一种思路"></a>二、一种思路</h2><p>虽然在Windows平台上安装捆绑包很麻烦，但如果把编译的步骤放到打包阶段，问题就变得好解决的多了。我们可以在R 4.x.x版本的开发工具中重新编译FastEPRR的二进制包，使其能够在高版本R上运行起来。</p>
+<p>首先，我们准备一下Windows平台上的编译工具链。这里推荐安装 <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> 。根据电脑上的R语言版本选择合适的Rtools（R 4.2.x选择<a href="https://cran.r-project.org/bin/windows/Rtools/rtools42/rtools.html">RTools 4.2</a> ，R 4.3.x选择<a href="https://cran.r-project.org/bin/windows/Rtools/rtools43/rtools.html">RTools 4.3</a>）。建议安装到一个盘符的根目录中以便调用（例如 <code>D:\rtools43</code> 这样的位置）。</p>
+<p>理论上说，Rtools安装完后会自动将编译工具链添加到系统的环境变量。因此不用管太多，接着左下面的操作即可。</p>
+<p>前面提到，实验室提供了的这个包的捆绑包格式，因此将其解压缩就能获得源代码：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">D:.</span><br><span class="line">│  DESCRIPTION</span><br><span class="line">│  NAMESPACE</span><br><span class="line">│</span><br><span class="line">├─man</span><br><span class="line">│      FastEPRR-package.Rd</span><br><span class="line">│      FastEPRR.Rd</span><br><span class="line">│</span><br><span class="line">├─R</span><br><span class="line">│      alignEsRho.R</span><br><span class="line">│      FastEPRR_ALN.R</span><br><span class="line">│      FastEPRR_rho2r.R</span><br><span class="line">│      FastEPRR_VCF_step1.R</span><br><span class="line">│      FastEPRR_VCF_step2.R</span><br><span class="line">│      FastEPRR_VCF_step3.R</span><br><span class="line">│      util.R</span><br><span class="line">│      VariableRecomRate.R</span><br><span class="line">│      vcfEsRho.R</span><br><span class="line">│</span><br><span class="line">└─src</span><br><span class="line">       ms.c</span><br><span class="line">       ms.h</span><br><span class="line">       rand2.c</span><br><span class="line">       streec.c</span><br></pre></td></tr></table></figure>
+
+<p>既然Windows二进制包是从源代码包编译过来的，我们也就可以从上面这一套源代码中自己攒一个二进制包。</p>
+<p>根据 <a href="https://zhuanlan.zhihu.com/p/648519451">《R · R 包开发 | 保姆级教程》</a>  这篇文章，我们建立一个R包的开发环境：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装并加载开发包所需包</span></span><br><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;usethis&quot;</span><span class="punctuation">,</span> <span class="string">&quot;devtools&quot;</span><span class="punctuation">,</span> <span class="string">&quot;roxygen2&quot;</span><span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>usethis<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>devtools<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>roxygen2<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查</span></span><br><span class="line">has_devel<span class="punctuation">(</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># output: Your system is ready to build packages!</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来，我们新建一个R包的开发目录，命名无所谓（因为最后打包的时候会用源码里面定义的名称来命名）</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">usethis<span class="operator">::</span>create_package<span class="punctuation">(</span><span class="string">&quot;fastEPRR2.1&quot;</span><span class="punctuation">)</span> <span class="comment"># 建立开发目录</span></span><br><span class="line">system<span class="punctuation">(</span><span class="string">&quot;copy D:/linux/R/FastEPRR/* .&quot;</span><span class="punctuation">)</span> <span class="comment"># 调用系统指令，将解压缩后的捆绑包的内容全部复制到开发目录中。这一步也可也手动进行。</span></span><br><span class="line">devtools<span class="operator">::</span>document<span class="punctuation">(</span><span class="punctuation">)</span> <span class="comment"># 更新一下文件</span></span><br></pre></td></tr></table></figure>
+
+<p>由于我们只是想用高版本R重新编译二进制包，因此做到这里就可以了，不需要其他更多的工作。下一步是进行打包：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">devtools<span class="operator">::</span>build<span class="punctuation">(</span>binary <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span> <span class="comment"># 参数`binary=TRUE`代表构建为二进制包。默认情况下构建的是捆绑包格式。</span></span><br></pre></td></tr></table></figure>
+
+
+<p>这一步会经历一些编译的过程，时间不长大概半分钟左右就完了。</p>
+<p>输出：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&gt; devtools::build(binary = TRUE)</span><br><span class="line">── R CMD INSTALL ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span><br><span class="line">─  installing to library &#x27;C:/Users/ab124/AppData/Local/Temp/RtmpozCnQV/temp_libpath6e41f9d73a5&#x27;</span><br><span class="line">─  installing *source* package &#x27;FastEPRR&#x27; ...</span><br><span class="line">   ** using staged installation</span><br><span class="line">   ** libs</span><br><span class="line">   using C compiler: &#x27;gcc.exe (GCC) 12.3.0&#x27;</span><br><span class="line">   make: Nothing to be done for &#x27;all&#x27;.</span><br><span class="line">   installing to C:/Users/ab124/AppData/Local/Temp/RtmpozCnQV/temp_libpath6e41f9d73a5/00LOCK-fastEPRR2.1/00new/FastEPRR/libs/x64</span><br><span class="line">   ** R</span><br><span class="line">   ** byte-compile and prepare package for lazy loading</span><br><span class="line">   ** help</span><br><span class="line">   *** installing help indices</span><br><span class="line">   ** building package indices</span><br><span class="line">   ** testing if installed package can be loaded from temporary location</span><br><span class="line">   ** testing if installed package can be loaded from final location</span><br><span class="line">   ** testing if installed package keeps a record of temporary installation path</span><br><span class="line">─  MD5 sums</span><br><span class="line">   packaged installation of &#x27;FastEPRR&#x27; as FastEPRR_2.0.zip</span><br><span class="line">─  DONE (FastEPRR)</span><br><span class="line">[1] &quot;H:/temp/temp-2024-2-20/FastEPRR_2.0.zip&quot;</span><br></pre></td></tr></table></figure>
+
+<p>最终生成的二进制包文件名为<code>FastEPRR_2.0.zip</code>，它是由源代码确定的，并不受 <code>create_package()</code> 建立的目录名称的影响。下面我们加载一下这个文件，看看是否正常：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;FastEPRR_2.0.zip&quot;</span><span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>FastEPRR<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&gt; install.packages(&quot;FastEPRR_2.0.zip&quot;)</span><br><span class="line">inferring &#x27;repos = NULL&#x27; from &#x27;pkgs&#x27;</span><br><span class="line">package &#x27;FastEPRR&#x27; successfully unpacked and MD5 sums checked</span><br><span class="line">&gt; library(FastEPRR)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
+<p>没有报错。说明这回的包是可以正确运行的！</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/648519451">https://zhuanlan.zhihu.com/p/648519451</a></li>
+<li><a href="https://cosx.org/2011/05/write-r-packages-like-a-ninja">https://cosx.org/2011/05/write-r-packages-like-a-ninja</a></li>
+<li><a href="https://cosx.org/2013/11/building-r-packages-easily">https://cosx.org/2013/11/building-r-packages-easily</a></li>
+<li><a href="https://r-packages-zh-cn.readthedocs.io/zh-cn/latest/">https://r-packages-zh-cn.readthedocs.io/zh-cn/latest/</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>R</tag>
+        <tag>编译工具链</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>用TwoSampleMR包做孟德尔随机化分析</title>
+    <url>/2024/03/03/Mendelian_randomization_by_TwoSampleMR/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+<h2 id="一、为什么要做孟德尔随机化"><a href="#一、为什么要做孟德尔随机化" class="headerlink" title="一、为什么要做孟德尔随机化"></a>一、为什么要做孟德尔随机化</h2><p>一言以蔽之：相关性 ≠ 因果性。</p>
+<p>在研究中我们常常观察到一些相关性，例如人群中某个基因与某种疾病的发病率正相关。然而这种相关性并不能解释基因和疾病的关联，有可能是基因产物造成了这种疾病（真因果），有可能是这个基因的连锁基因的产物造成了疾病，甚至有可能是疾病的病因（例如逆转录病毒的感染）造成了这个基因的异常……</p>
+<p>相关性说明不了因果性，因为存在第三种或更多因素，而造成相关性的情况也有很多种。简单概括一下，下面这些情况都会造成相关性：</p>
+<ul>
+<li>因果相关：A导致B，B导致C  (A→B→C)</li>
+<li>混杂相关：A导致B跟C，造成B和C相关  (A→B,A→C)</li>
+<li>对撞相关：A跟B共同导致C，控制C后A跟B相关  (A→C,B→C,(C):A→B)</li>
+<li>随机相关：高维度数据中碰巧两个变量表现出了相关性</li>
+</ul>
+<p>孟德尔随机化方法是一种因果分析方法，灵感来源于经济学研究中的工具变量分析。它可以区分上述这些情况，并正确估计或探索变量间的关系。</p>
+<h2 id="二、孟德尔随机化的原理"><a href="#二、孟德尔随机化的原理" class="headerlink" title="二、孟德尔随机化的原理"></a>二、孟德尔随机化的原理</h2><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303123312.png" alt="image.png"></p>
+<p>如上图。</p>
+<p>某种意义上说，随机对照实验（CRT）更能揭示因果关系。然而CRT需要实验，成本很高。<br>孟德尔随机化（MR）的思路与CRT一致，但“随机分组”的过程由孟德尔分离定律所代替，因此无需实验，可以仅凭观察数据得出结论，实验成本更低，并且保证了最终结论的准确性。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303123434.png" alt="image.png"></p>
+<p>孟德尔随机化主要用于确定暴露因素（E）和结局（O）之间的因果关系。为了排除混杂因素的干扰，需要引入工具变量（IV），在此次是与且仅与暴露相关的一组遗传变异。作为工具变量的遗传变异满足下面三个核心假设：</p>
+<ul>
+<li>1、关联性假设：工具变量（IV）与暴露（E）存在关联（图中①）</li>
+<li>2、独立性假设：工具变量（IV）与混杂因素（U）不存在关联（图中②）</li>
+<li>3、排他性假设：工具变量（IV）与结局（O）没有任何关联（图中③），除非通过暴露（E）（图中IV→E→O）</li>
+</ul>
+<p>例如，我们想要研究咖啡因摄入如何影响肾结石发病率，可以这样选择：</p>
+<ul>
+<li>工具变量（IV）：通过GWAS找到的一组与咖啡因摄入有关的SNP</li>
+<li>暴露（exposure）：咖啡因摄入水平</li>
+<li>结局（outcome）：肾结石发病率</li>
+</ul>
+<p>有多种方法可以用于计算MR，这些方法包括Wald ratio方法、逆方差加权法（IVW）、MR-Egger法等。不同方法有不同的适用情景，如果工具变量数量太少（只有一两个），那么Wald ratio方法会很合适。当有多个工具变量时，我们可以对每个工具变量各自计算Wald ratio，最后进行加权求和，这就是逆方差加权法（IVW）和MR-Egger法的原理。</p>
+<p>有多种工具可以方便我们计算MR，下面我们只介绍一种：TwoSampleMR</p>
+<h2 id="三、TwoSampleMR包的安装与使用"><a href="#三、TwoSampleMR包的安装与使用" class="headerlink" title="三、TwoSampleMR包的安装与使用"></a>三、TwoSampleMR包的安装与使用</h2><p><a href="https://github.com/MRCIEU/TwoSampleMR">TwoSampleMR</a>包是一个用R语言编写的MR计算工具，其连接到了IEU GWAS database的后端，因此可以很方便的进行工具变量选取。</p>
+<p>TwoSampleMR包似乎没有放在CRAN上面，但作者提供了GitHub安装方法：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;remotes&quot;</span><span class="punctuation">)</span></span><br><span class="line">remotes<span class="operator">::</span>install_github<span class="punctuation">(</span><span class="string">&quot;MRCIEU/TwoSampleMR&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>如果网络不太好，也可也从上述<a href="https://github.com/MRCIEU/TwoSampleMR">GitHub存储库</a>中的release页面上直接下载<code>.tar.gz</code>格式的源码包，然后使用</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;TwoSampleMR-0.5.10.tar.gz&quot;</span><span class="punctuation">,</span>repo<span class="operator">=</span><span class="literal">NULL</span><span class="punctuation">,</span>type<span class="operator">=</span><span class="string">&quot;source&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>进行源代码安装。</p>
+<p>此外，<code>TwoSampleMR</code> 包依赖于 <code>RadialMR</code> 包（ <a href="https://github.com/WSpiller/RadialMR">https://github.com/WSpiller/RadialMR</a> ），因此如果上述安装方法出现问题，可以尝试先安装RadialMR包：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">remotes<span class="operator">::</span>install_github<span class="punctuation">(</span><span class="string">&quot;WSpiller/RadialMR&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>然后再安装TwoSampleMR。</p>
+<p>使用方法也很简单：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">library<span class="punctuation">(</span>TwoSampleMR<span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 我们想看一下BMI对冠心病（CDH）风险的因果效应</span></span><br><span class="line"><span class="comment"># 首先选取工具变量</span></span><br><span class="line">bmi_exp_dat <span class="operator">&lt;-</span> extract_instruments<span class="punctuation">(</span>outcomes <span class="operator">=</span> <span class="string">&#x27;ieu-a-2&#x27;</span><span class="punctuation">,</span> <span class="comment"># 选择数据库ID为ieu-a-2的SNP，这些是与BMI性状有关的工具变量</span></span><br><span class="line">                 access_token<span class="operator">=</span><span class="literal">NULL</span><span class="punctuation">)</span> <span class="comment"># 如果网络不稳定，可用加上这句话</span></span><br><span class="line"><span class="comment"># 接下来根据工具变量选择结局								   </span></span><br><span class="line">chd_out_dat <span class="operator">&lt;-</span> extract_outcome_data<span class="punctuation">(</span>snps <span class="operator">=</span> bmi_exp_dat<span class="operator">$</span>SNP<span class="punctuation">,</span> </span><br><span class="line">                 outcomes <span class="operator">=</span> <span class="string">&#x27;ieu-a-7&#x27;</span><span class="punctuation">,</span></span><br><span class="line">                 access_token<span class="operator">=</span><span class="literal">NULL</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 我们已经获得了一系列的工具变量和与之对应的结局</span></span><br><span class="line"><span class="comment"># 但是，还需要协调一下，以保证SNP对暴露的影响和该SNP对结果的影响对应于同一等位基因。</span></span><br><span class="line">dat <span class="operator">&lt;-</span> harmonise_data<span class="punctuation">(</span>bmi_exp_dat<span class="punctuation">,</span> chd_out_dat<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用MR-Egger方法和IVW方法做MR：</span></span><br><span class="line">res <span class="operator">&lt;-</span> mr<span class="punctuation">(</span>dat<span class="punctuation">,</span></span><br><span class="line">          method_list <span class="operator">=</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;mr_egger_regression&quot;</span><span class="punctuation">,</span> <span class="string">&quot;mr_ivw&quot;</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 展示结果</span></span><br><span class="line">res</span><br></pre></td></tr></table></figure>
+
+
+<p>输出：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">  id.exposure id.outcome                              outcome</span><br><span class="line">1     ieu-a-2    ieu-a-7 Coronary heart disease || id:ieu-a-7</span><br><span class="line">2     ieu-a-2    ieu-a-7 Coronary heart disease || id:ieu-a-7</span><br><span class="line">                       exposure                    method nsnp         b</span><br><span class="line">1 Body mass index || id:ieu-a-2                  MR Egger   79 0.5024935</span><br><span class="line">2 Body mass index || id:ieu-a-2 Inverse variance weighted   79 0.4459091</span><br><span class="line">          se        pval</span><br><span class="line">1 0.14396056 8.01259e-04</span><br><span class="line">2 0.05898302 4.03202e-14</span><br></pre></td></tr></table></figure>
+
+<p>从输出可以看出，对于BMI这一暴露因素和冠心病（CHD）这一结局，使用MR-Egger方法给出的β值为0.5024935，显著大于0（$p=8.01259^{-4}&lt;0.05$ ），使用IVW方法给出的β值 0.4459091，同样显著大于0（$p=4.03202^{-14}&lt;0.05$ ），这说明BMI对CHD有比较强的正向因果效应。</p>
+<p>最后，我们也可也画一个图，展示一下上面的结果：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">res <span class="operator">&lt;-</span> mr<span class="punctuation">(</span>dat<span class="punctuation">)</span></span><br><span class="line">p1 <span class="operator">&lt;-</span> mr_scatter_plot<span class="punctuation">(</span>res<span class="punctuation">,</span> dat<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240303125811.png" alt="image.png"></p>
+<p>图中每个点代表一个工具变量对暴露的效应和对结局的效应。加权线性回归拟合出的直线斜率大于1，这说明BMI对CHD有正向因果效应。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="https://mrcieu.github.io/TwoSampleMR/articles/introduction.html">https://mrcieu.github.io/TwoSampleMR/articles/introduction.html</a></li>
+<li><a href="https://github.com/mrcieu/ieugwasr">https://github.com/mrcieu/ieugwasr</a></li>
+<li><a href="http://gwas-api.mrcieu.ac.uk/docs/">http://gwas-api.mrcieu.ac.uk/docs/</a></li>
+<li><a href="https://github.com/MRCIEU/TwoSampleMR">https://github.com/MRCIEU/TwoSampleMR</a></li>
+<li><a href="https://yufree.github.io/sciguide/thought.html#%E5%9B%A0%E6%9E%9C">https://yufree.github.io/sciguide/thought.html#因果</a></li>
+<li><a href="https://doi.org/10.1038/s43586-021-00092-5">Sanderson, E., Glymour, M.M., Holmes, M.V. et al. Mendelian randomization. Nat Rev Methods Primers 2, 6 (2022). </a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/106666439">https://zhuanlan.zhihu.com/p/106666439</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>R</tag>
+        <tag>孟德尔随机化</tag>
+        <tag>因果分析</tag>
       </tags>
   </entry>
 </search>
