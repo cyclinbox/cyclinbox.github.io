@@ -9873,4 +9873,76 @@
         <tag>因果分析</tag>
       </tags>
   </entry>
+  <entry>
+    <title>python字符串前缀与字符编码设置的使用小技巧</title>
+    <url>/2024/03/10/python-string-trickery/</url>
+    <content><![CDATA[<p>这一周事情有点多。<span style="font-size:6px;color:#888">（开学后这段时间的摆烂造成了严重后果，组会后的心情十分低落。）</span></p>
+<p>周末没有抽出太多时间探索新的知识，谨在此po一篇去年整理的旧文。</p>
+<span id="more"></span>
+
+
+
+<h2 id="一、python字符串前缀使用小技巧"><a href="#一、python字符串前缀使用小技巧" class="headerlink" title="一、python字符串前缀使用小技巧"></a>一、python字符串前缀使用小技巧</h2><h3 id="1、字符串前加u"><a href="#1、字符串前加u" class="headerlink" title="1、字符串前加u"></a>1、字符串前加u</h3><p>例子： <code>u&quot;字符串中有中文&quot;</code></p>
+<p>含义：</p>
+<p>前缀u表示该字符串是unicode编码，主要用于在Python2中，用在含有中文字符的字符串前，防止因为编码问题，导致中文出现乱码，另外一般要在文件开关标明编码方式采用utf8（ <code>#coding=utf-8</code> ）。<br>由于在Python3中，所有字符串默认都是unicode字符串，这一前缀也就失去了作用。现在我们编写python代码基本用不上这个前缀了，但有时候翻看前人发表的模型或软件，偶尔可能会碰上。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">str1 = <span class="string">u&quot;字符串中有中文&quot;</span></span><br><span class="line"><span class="built_in">print</span>(str1)</span><br><span class="line"><span class="comment"># 输出效果：</span></span><br><span class="line"><span class="comment"># 字符串中有中文</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="2、字符串前加r"><a href="#2、字符串前加r" class="headerlink" title="2、字符串前加r"></a>2、字符串前加r</h3><p>例子： <code>r&quot;\n\t&quot;</code></p>
+<p>含义：</p>
+<p>在普通字符串中，反斜线是转义符，代表一些特殊的内容，如换行符<code>\n</code>。前缀r表示该字符串是原始字符串，即<code>\</code>不是转义符，只是单纯的一个符号。常用于特殊的字符如换行符、正则表达式、文件路径。<br>注意不能在原始字符串结尾输入反斜线，否则Python不知道这是一个字符还是换行符(字符串最后用<code>\</code>表示换行)，会报错：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; str21 = r&#x27;C:\Program File\my\path\&#x27; </span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1</span><br><span class="line">    str21 = r&#x27;C:\Program File\my\path\&#x27;</span><br><span class="line">SyntaxError: EOL while scanning string literal    </span><br></pre></td></tr></table></figure>
+
+<p>如果一个字符串确实是以<code>\</code>结尾（如文件夹路径），可以再接一个转义<code>\</code>的字符串以规避上面的报错。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">str21 = <span class="string">r&#x27;C:\Program File\my\path&#x27;</span><span class="string">&#x27;\\&#x27;</span></span><br><span class="line"><span class="built_in">print</span>(str21)</span><br><span class="line">str22 = <span class="string">r&#x27;\d+\.d*&#x27;</span></span><br><span class="line"><span class="built_in">print</span>(str22)</span><br><span class="line"><span class="comment"># 输出效果：</span></span><br><span class="line"><span class="comment"># C:\Program File\my\path\</span></span><br><span class="line"><span class="comment"># \d+\.d*</span></span><br><span class="line">str23 = <span class="string">r&#x27;C:\Program File\my\path\\&#x27;</span> <span class="comment"># 这是第一个字符串的另一种写法，但输出结果会变得不一样（末尾变成两个`\`）。如果这个字符串仅用于储存文件夹路径的话，影响到也不大。</span></span><br><span class="line"><span class="comment"># 输出效果：</span></span><br><span class="line"><span class="comment"># C:\Program File\my\path\\</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="3、字符串前加b"><a href="#3、字符串前加b" class="headerlink" title="3、字符串前加b"></a>3、字符串前加b</h3><p>例子： <code>b&#39;&lt;h1&gt;Hello World!&lt;/h1&gt;&#39;</code></p>
+<p>含义：</p>
+<p>前缀b表示该字符串是bytes类型。主要用在Python3中，因为Python3里默认的str是unicode类。Python2的str本身就是bytes类，所以可不用。<br>常用在如网络编程中，服务器和浏览器只认bytes类型数据。<br>如：send 函数的参数和 recv 函数的返回值都是bytes类型。<br>在Python3中，bytes和str的互相转换方式是</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">str</span>.encode(<span class="string">&#x27;utf-8&#x27;</span>)   <span class="comment"># str转为bytes</span></span><br><span class="line"><span class="built_in">bytes</span>.decode(<span class="string">&#x27;utf-8&#x27;</span>) <span class="comment"># bytes转为str</span></span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">str3 = <span class="string">b&#x27;&lt;h1&gt;Hello World!&lt;/h1&gt;&#x27;</span></span><br><span class="line"><span class="built_in">print</span>(str3)</span><br><span class="line"><span class="comment"># 输出效果：</span></span><br><span class="line"><span class="comment"># b&#x27;&lt;h1&gt;Hello World!&lt;/h1&gt;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4、字符串前加f"><a href="#4、字符串前加f" class="headerlink" title="4、字符串前加f"></a>4、字符串前加f</h3><p>例子： </p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; name = &#x27;python&#x27;</span><br><span class="line">&gt;&gt;&gt; f&#x27;我的编程语言是：&#123;name&#125;&#x27;</span><br><span class="line">&#x27;我的编程语言是：python&#x27;</span><br></pre></td></tr></table></figure>
+
+
+<p>含义：</p>
+<p>前缀<code>f</code>是python3.6新加特性，用来格式化字符串。可以看出<code>f</code>前缀可以更方便的格式化字符串, 比<code>format()</code>方法可读性高且使用方便。而且加上<code>f</code>前缀后, 支持在大括号内, 运行Python表达式。你还可以用fr前缀来表示原生字符串。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">code_name = <span class="string">&#x27;python&#x27;</span></span><br><span class="line">str4 = <span class="string">f&#x27;我的编程语言是：<span class="subst">&#123;code_name&#125;</span>&#x27;</span> </span><br><span class="line"><span class="comment"># 等价于 `str4 = &#x27;我的编程语言是：&#123;&#125;&#x27;.format(code_name)`</span></span><br><span class="line"><span class="built_in">print</span>(str4) </span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;现在时间为<span class="subst">&#123;time.asctime()&#125;</span>&quot;</span>)</span><br><span class="line"><span class="comment"># 输出效果：</span></span><br><span class="line"><span class="comment"># 我的编程语言是：python</span></span><br><span class="line"><span class="comment"># 现在时间为Sun Mar 10 18:44:43 2024</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="二、python在使用open-读取文件时的字符串编码问题"><a href="#二、python在使用open-读取文件时的字符串编码问题" class="headerlink" title="二、python在使用open()读取文件时的字符串编码问题"></a>二、python在使用<code>open()</code>读取文件时的字符串编码问题</h2><p>在windows平台下使用python内置函数 open() 时发现,当不传递encoding参数时，会自动采用gbk(cp936)编码打开文件，而当下很大部分文件的编码都是UTF-8，因此可能会出现文件打开失败的情况。</p>
+<p>我们当然可以通过每次给<code>open()</code>函数手动传参<code>encoding=&#39;utf-8&#39;</code>，但是略显冗余，而且有很多外国的第三方包，里面调用的内置<code>open()</code>函数并没有提供接口让我们指定encoding，这就会导致这些包在windows平台上使用时，常会出现如 <code>&quot;UnicodeDecodeError: &#39;gbk&#39; codec can&#39;t decode byte 0x91 in position 209: illegal multibyte sequence&quot;</code> 的报错</p>
+<p>通过查看python文档分析原因：</p>
+<blockquote>
+<p>if encoding is not specified the encoding used is platform dependent: locale.getpreferredencoding(False) is called to get the current locale encoding. (For reading and writing raw bytes use binary mode and leave encoding unspecified.)</p>
+</blockquote>
+<p>可以发现当<code>open()</code>不传递encoding参数时，是默认调用<code>locale.getpreferredencoding()</code>方法来获取当前平台的“默认编码类型”,继续查看相关文档，发现有两种方法可以指定windows平台下Python运行时的“默认编码类型”。</p>
+<h3 id="1-指定sys-flags-utf8-mode"><a href="#1-指定sys-flags-utf8-mode" class="headerlink" title="1. 指定sys.flags.utf8_mode"></a>1. 指定<code>sys.flags.utf8_mode</code></h3><p>通过运行python脚本时添加命令行参数 <code>-X utf8</code>（注意是跟在python.exe后面的interpreter option,不是跟在要运行脚本后面的parameters!）<br>指定<code>sys.flags.utf8_mode</code>参数之后，Python运行时会在很多场景下自动使用utf-8编码，而不是win默认的gbk(cp936)编码。</p>
+<h3 id="2-直接重写-locale"><a href="#2-直接重写-locale" class="headerlink" title="2. 直接重写_locale"></a>2. 直接重写<code>_locale</code></h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> _locale</span><br><span class="line"><span class="built_in">print</span>(_locale._getdefaultlocale())</span><br><span class="line"><span class="comment"># 输出 `(&#x27;zh_CN&#x27;, &#x27;cp936&#x27;)` ，表明此时的locale设定依然是中文cp936</span></span><br><span class="line">_locale._getdefaultlocale = (<span class="keyword">lambda</span>*args: [<span class="string">&#x27;en_US&#x27;</span>, <span class="string">&#x27;utf8&#x27;</span>])</span><br><span class="line"><span class="built_in">print</span>(_locale._getdefaultlocale())</span><br><span class="line"><span class="comment"># 输出 `[&#x27;en_US&#x27;, &#x27;utf8&#x27;]` ，表明locale设定已经变为了utf-8</span></span><br></pre></td></tr></table></figure>
+
+<p>python解释器会取<code>_getdefaultlocale()[1]</code>作为默认编码类型，重写后，会改变当前运行环境下的所有模块的默认编码。</p>
+<p>如果在windows下， 还可以在Python安装目录下的<code>Lib/site-packages</code>目录中，新建一个<code>sitecustomize.py</code>文件：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> _locale </span><br><span class="line">_locale._getdefaultlocale = (<span class="keyword">lambda</span> *args: [<span class="string">&#x27;en_US&#x27;</span>, <span class="string">&#x27;utf8&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<p>这样，可以让locale设置在每次python启动时都生效。</p>
+<p>总之，使用以上两种方法后，windows平台下，<code>open()</code>函数会默认用utf-8编码打开文件。其实不止<code>open()</code>方法，跨模块、全局改变python解释器的默认编码为utf-8,会带来很多使用上的便利，而不需要被gbk编码报错的噩梦所纠缠。</p>
+<h2 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h2><ul>
+<li>知乎专栏文章 <a href="https://zhuanlan.zhihu.com/p/648881825">https://zhuanlan.zhihu.com/p/648881825</a></li>
+<li>稀土掘金文章 <a href="https://juejin.cn/post/6844903700079575047">https://juejin.cn/post/6844903700079575047</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>locale设置</tag>
+        <tag>文本编码</tag>
+      </tags>
+  </entry>
 </search>
