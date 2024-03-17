@@ -9945,4 +9945,109 @@
         <tag>文本编码</tag>
       </tags>
   </entry>
+  <entry>
+    <title>GSEA原理和使用方法浅析</title>
+    <url>/2024/03/17/GSEA-principle-and-usage/</url>
+    <content><![CDATA[<p>在RNA-seq数据的分析流程中，<a href="https://www.pnas.org/doi/full/10.1073/pnas.0506580102">基因集富集分析（Gene Set Enrichment Analysis，GSEA）</a>是一种很常用的下游分析方法。这一方法在2005年由MIT博德研究所开发，用于确定先验定义的基因集（如特定信号通路的编码基因、疾病性状的关联基因等）是否在基因表达差异分析的结果上出现统计学显著性。</p>
+<p>因为课题的原因，最近再一次复习了一下GSEA方法。目前有许多工具都能进行GSEA分析，例如博德研究所官方提供了一个基于Java编程语言开发的<a href="https://www.gsea-msigdb.org/gsea/index.jsp">GSEA计算工具</a> ，南方医科大学的余光创教授开发的R语言工具包<a href="https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html">ClusterProfiler</a>也提供了GSEA分析的功能。本文将简单介绍一下GSEA的原理，并举例说明如何使用博德研究所官方的工具包做GSEA分析。</p>
+<span id="more"></span>
+
+<h2 id="一、原理"><a href="#一、原理" class="headerlink" title="一、原理"></a>一、原理</h2><p>正如前文所述，GSEA想看的是一系列基因集在差异分析结果中的显著性。以下图为例，其来自于Cell期刊上一篇研究疾病模型的文章（ <a href="https://doi.org/10.1016/j.cell.2016.11.033">Disease Model of GATA4 Mutation Reveals Transcription Factor Cooperativity in Human Cardiogenesis</a>）。在这幅图中，作者想要研究GATA基因的突变对心脏功能的影响，作者首先在GATA基因野生型（iwt）和突变型（G296S）两组样本之间进行了差异表达分析，找到了一系列差异基因，随后用不同的基因集做GSEA，发现Cardiac Development（心脏发育）基因集在野生型中普遍表达偏高，而Endothelial/endocardial（内皮或内膜发育）基因集在突变型中表达偏高，因此推测GATA基因的G296S突变可能通过心脏内皮或内膜的过度发育导致心脏相关疾病的产生。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240317214856.png" alt="image.png"></p>
+<p>我们可以观察一下这幅图。在每个小图中，都可以分为上下两个部分，上半部分是一条绿色的曲线，其与<code>y=0</code>轴围成的曲线的面积代表GSEA的富集分数，这个分数的正负号代表基因集富集的方向，而绝对值反映了基因集在我们的差异基因列表中是否显著富集。下半部分是一系列黑线，黑线的位置代表了基因集在我们的差异基因列表中的位置。GSEA的原理就是看一个特定基因集（如果不懂什么叫基因集，可以简单理解为一个GO term或KEGG pathway）在我们实验得到的gene rank list中富集到的位置。一般来说，gene rank list会按照差异表达进行排序，越靠前说明表达差异越大；而一个基因集如果富集到gene rank list中更加靠前的位置，则说明这个基因集在我们的实验中更重要。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240317220338.png" alt="image.png"></p>
+<p>更直观的原理可以参考上面这张图。首先，给定一个按基因表达差异排序的基因表 $L$ 和一个预先定义的基因集 $S$ ，GSEA的目的是判断 $S$ 里面的成员 $s$ 在 $L$ 里面是随机分布还是聚集在 $L$ 的某一侧（顶部或底部）。若研究的基因集 $S$ 的成员显著聚集在 $L$ 的顶部或底部，则说明此基因集成员对表型的差异有贡献，也是我们关注的基因集。主要步骤包括下面三步：</p>
+<ul>
+<li><strong>step1：富集分数（ES）的计算</strong>。ES反映了一个 $S$ 在整个 $L$ 的某一侧（顶部或底部）过度表达的程度。计算得分的方法是沿着 $L$ 向下走，每走一步时，如果遇到 $S$ 中的一个基因，则<code>running-sum</code> 统计量增加，否则<code>running-sum</code> 统计量减少，增加或减少的幅度取决于基因的权重。最终的<code>running-sum</code> 会形成一条曲线，如本文第一张图中的绿色曲线和上图中右下角的红色曲线。</li>
+<li><strong>step2：估计ES的显著性</strong>。这里使用了置换检验的方法进行统计检验。</li>
+<li><strong>step3：对显著性p值的矫正</strong>。通常我们在做GSEA时一次会测试若干个基因集 $S$ 在 $L$ 中的富集情况，因此需要使用FDR等方法矫正p值。</li>
+</ul>
+<p>一次GSEA会检测几百甚至几万个基因集。这些基因集可以由研究者自行定义，也可也直接使用<a href="https://www.gsea-msigdb.org/gsea/datasets.jsp">MSigDB</a>数据库预先定义的基因集。在<a href="https://www.gsea-msigdb.org/gsea/datasets.jsp">MSigDB</a>数据库中，这些基因集被归类为H、C1、C2等多个大类，研究者可以一次选择所有的基因集做GSEA，也可只挑选其中一部分感兴趣的基因集。一般来说，选择C1基因集则是看基因的染色体区域分布，C5基因集则是GO term的富集分析。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240317221743.png" alt="image.png"></p>
+<p>关于GSEA和MSigDB的更多内容，还可以参考<a href="https://docs.gsea-msigdb.org/#">官方文档</a></p>
+<h2 id="二、安装"><a href="#二、安装" class="headerlink" title="二、安装"></a>二、安装</h2><p>GSEA的安装包可以从官方网站的下载界面 <a href="https://www.gsea-msigdb.org/gsea/downloads.jsp">https://www.gsea-msigdb.org/gsea/downloads.jsp</a> 中下载。首次打开这个页面需要注册（如下图），注册步骤很简单，不需要等待太久。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240317223437.png" alt="image.png"></p>
+<p>注册完成后登录，就可以看到安装包的下载链接了。如下图，GSEA提供了多个不同平台的安装包版本，其中前三个自带了java11的运行环境，一键安装即可，而最后一个跨平台的命令行版本需要使用系统自带的java。如果怕麻烦，直接下载前三个安装包就好了。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240317223525.png" alt="image.png"></p>
+<p>除了GSEA软件本体，我们还需要下载预定义的基因集。MSigDB提供了基因集的<a href="https://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2023.2.Hs/msigdb.v2023.2.Hs.symbols.gmt">下载链接</a>，见 <a href="https://www.gsea-msigdb.org/gsea/msigdb/human/collections.jsp">https://www.gsea-msigdb.org/gsea/msigdb/human/collections.jsp</a> 。如下图，这里提供了好几种格式的基因集压缩包，其中包括gene symbol版的gmt文件、NCBI Enterz版的gmt文件，以及sqlite数据库格式和json格式。做GSEA的话我们只需要前面两种，具体使用gene symbol版还是NCBI Enterz版要看具体情况。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240317224110.png" alt="image.png"></p>
+<h2 id="三、数据格式"><a href="#三、数据格式" class="headerlink" title="三、数据格式"></a>三、数据格式</h2><p>GSEA需要的文件格式包括下面这几类。</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Data File</strong></th>
+<th align="left"><strong>Content</strong></th>
+<th align="left"><strong>Format</strong></th>
+<th align="left"><strong>Source</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a href="https://docs.gsea-msigdb.org/#GSEA/GSEA_User_Guide/#expression-datasets">Expression dataset</a></td>
+<td align="left">Contains features (genes or probes), samples, and an expression value for each feature in each sample. Expression data can come from any source (Affymetrix, Stanford cDNA, and so on).</td>
+<td align="left">res, gct, pcl, or txt</td>
+<td align="left">差异表达矩阵文件</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.gsea-msigdb.org/#GSEA/GSEA_User_Guide/#phenotype-labels">Phenotype labels</a></td>
+<td align="left">Contains phenotype labels and associates each sample with a phenotype.</td>
+<td align="left">cls</td>
+<td align="left">自行提供，需要与表达矩阵中的样本一一对应起来</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.gsea-msigdb.org/#GSEA/GSEA_User_Guide/#gene-sets">Gene sets</a></td>
+<td align="left">Contains one or more gene sets. For each gene set, gives the gene set name and list of features (genes or probes) in that gene set.</td>
+<td align="left">gmx, gmt or grp</td>
+<td align="left">预定义的基因集文件。MSigDB中提供了这一类文件的下载，也可也根据<a href="https://docs.gsea-msigdb.org/#GSEA/Data_Formats/#gmt-gene-matrix-transposed-file-format-gmt">官方文档</a>自行定义</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.gsea-msigdb.org/#GSEA/GSEA_User_Guide/#chip-annotations">Chip annotations</a></td>
+<td align="left">Lists each identifier on a platform and its matching HGNC gene symbol. Optional for the gene set enrichment analysis.</td>
+<td align="left">chip</td>
+<td align="left">芯片探针数据的转换文件。可选。</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.gsea-msigdb.org/#GSEA/Data_Formats/#rnk-ranked-list-file-format-rnk">Ranked List File Format</a></td>
+<td align="left">It is used when you have a pre-ordered ranked list that you want to analyze with GSEA.</td>
+<td align="left">rnk</td>
+<td align="left">如果使用GSEAPreranked模式，则需要提供这个文件</td>
+</tr>
+</tbody></table>
+<p>各种文件格式的定义方式都可在<a href="https://docs.gsea-msigdb.org/#GSEA/Data_Formats/">官方文档</a>中查看</p>
+<h2 id="四、在Linux命令行中使用GSEAPreranked模式进行GSEA分析"><a href="#四、在Linux命令行中使用GSEAPreranked模式进行GSEA分析" class="headerlink" title="四、在Linux命令行中使用GSEAPreranked模式进行GSEA分析"></a>四、在Linux命令行中使用GSEAPreranked模式进行GSEA分析</h2><p>因为我的实验数据并非基因差异分析数据，无法提供差异表达矩阵，只能使用GSEAPreranked模式跑分析。首先我们要准备一下<code>.rnk</code>文件（文件名为<code>data.rnk</code>），部分内容如下：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">EXD1    -0.5544303794287568</span><br><span class="line">ADAMTS20        -0.23010931295285122</span><br><span class="line">GM11983 -0.15299636226669294</span><br><span class="line">FADS6   -0.12841138655571432</span><br><span class="line">E230025N22RIK   -0.07365590184865184</span><br><span class="line">...</span><br><span class="line">GP6     0.03374213133309236</span><br><span class="line">PIWIL4  0.03461178330715221</span><br><span class="line">MAK     0.0352834952139725</span><br><span class="line">SH2D1A  0.05047290095967518</span><br><span class="line">CPA6    0.05602483790084039</span><br></pre></td></tr></table></figure>
+
+<p><code>.rnk</code>文件是一种制表符分隔的文本文件，第一列是基因名称，第二列是基因的权重。在这个文件里面，基因排序与否并无所谓，因为GSEA会根据基因权重再做一次排序。</p>
+<p>我们还需要一份预定义的基因集文件<code>msigdb.v2023.1.Hs.symbols.gmt</code>。这个文件从MSigDB网站直接下载即可。</p>
+<p>使用下面这份bash脚本，即可完成对我们的结果的GSEA检验。其中调用的是<code>gsea-cli.sh</code>这个脚本，部分传入参数的含义在下面进行了解释。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/bash</span></span><br><span class="line">gsea-cli.sh GSEAPreranked \ <span class="comment">#使用GSEAPreranked模式</span></span><br><span class="line">        -gmx msigdb.v2023.1.Hs.symbols.gmt \  <span class="comment">#预定义基因集的文件路径</span></span><br><span class="line">        -collapse No_Collapse \ </span><br><span class="line">        -mode Abs_max_of_probes \</span><br><span class="line">        -norm meandiv \ </span><br><span class="line">        -nperm 1000 \ <span class="comment"># 置换检验的随机模拟次数</span></span><br><span class="line">        -rnd_seed timestamp \  <span class="comment"># 置换检验的随机种子</span></span><br><span class="line">        -rnk data.rnk \  <span class="comment"># RNK文件的路径</span></span><br><span class="line">        -scoring_scheme weighted \</span><br><span class="line">        -rpt_label GSEA_test \ <span class="comment"># 报告文档的标题</span></span><br><span class="line">        -create_svgs <span class="literal">false</span> \</span><br><span class="line">        -include_only_symbols <span class="literal">true</span> \</span><br><span class="line">        -make_sets <span class="literal">true</span> \</span><br><span class="line">        -plot_top_x 20 \ </span><br><span class="line">        -set_max 500 \  </span><br><span class="line">        -set_min 15 \ </span><br><span class="line">        -zip_report <span class="literal">true</span> \ <span class="comment">#是否使用zip打包压缩报告文档</span></span><br><span class="line">        -out result  <span class="comment"># 报告文档的输出文件夹</span></span><br></pre></td></tr></table></figure>
+
+
+<p>每一次运行会建立一个文件夹，并在文件夹内生成大量结果文件（html+csv+png），其中index.html是概括性的文件，部分信息如下。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240317230028.png" alt="image.png"></p>
+<p>可以看出这里列出了使用到的geneset的数量和富集显著的geneset的数量；除此之外，点击链接可以看到更详细的显著富集的geneset的名称和p-value，以及图片报告，如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240317230045.png" alt="image.png"></p>
+<p>蓝色竖线代表geneset在gene rank list中出现的位置，如果蓝色竖线越在左侧集中，则说明这个geneset富集程度越高。</p>
+<h2 id="五、其他补充-amp-参考文献"><a href="#五、其他补充-amp-参考文献" class="headerlink" title="五、其他补充 &amp; 参考文献"></a>五、其他补充 &amp; 参考文献</h2><p>当然，博得研究所开发的这款GSEA软件，也支持图形界面下的操作，甚至可以和cytoscape联动绘制不同基因集之间的相互作用。这一部分的内容我没有做太多深究，想要进一步了解的朋友可以参考 <a href="https://zhuanlan.zhihu.com/p/467253795">《一文掌握GSEA通路富集分析，超详细教程！》 - 生信宝典 陈同的文章 - 知乎</a> 。本文其他参考文献如下：</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/373388304">《手把手教你用R做GSEA分析》 - 生信小课堂的文章 - 知乎</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/150744437">《差异基因没办法富集到通路你就放弃了吗》 - 曾健明的文章 - 知乎</a></li>
+<li><a href="https://www.plob.org/article/16259.html">《GSEA法基因功能富集分析原理详解》- 组学大讲堂的文章 - PLoB</a></li>
+</ul>
+<p>其他链接：</p>
+<ul>
+<li>GSEA下载地址 <a href="https://www.gsea-msigdb.org/gsea/downloads.jsp">https://www.gsea-msigdb.org/gsea/downloads.jsp</a></li>
+<li>GSEA官方文档 <a href="https://docs.gsea-msigdb.org/#GSEA/GSEA_User_Guide/">https://docs.gsea-msigdb.org/#GSEA/GSEA_User_Guide/</a></li>
+<li>MSigDB基因集下载地址 <a href="https://www.gsea-msigdb.org/gsea/msigdb/human/collections.jsp#H">https://www.gsea-msigdb.org/gsea/msigdb/human/collections.jsp#H</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>生信分析</tag>
+        <tag>基因集富集分析</tag>
+        <tag>GSEA</tag>
+      </tags>
+  </entry>
 </search>
