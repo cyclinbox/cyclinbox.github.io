@@ -10085,4 +10085,68 @@
         <tag>植物发育</tag>
       </tags>
   </entry>
+  <entry>
+    <title>辨析gzip，bgzip和bzip2格式</title>
+    <url>/2024/03/31/gzip_and_bgzip/</url>
+    <content><![CDATA[<p>“eGPS软件平台的MAF插件无法正确处理gzip格式输入数据问题。”</p>
+<span id="more"></span>
+
+<p>先从一个bug讲起：eGPS软件平台提供了带用户界面的MAF操作工具，然而在使用过程中我发现它只能打开文本格式的maf文件，却打开不了<code>maf.gz</code>压缩格式。</p>
+<p>很快把这个bug报告给了负责eGPS开发的大师姐。师姐表示很惊讶，在这个插件设计之初就提供了对<code>maf.gz</code>压缩格式的支持，怎么会出现无法打开的问题呢？</p>
+<p>然而MAF插件确实打不开我自己的<code>maf.gz</code>文件。这个文件是从UCSC genome browser官网上直接下载的多序列比对文件，涵盖了数十个物种的染色体基因组序列的比对信息。这文件能有错？然而，当我解压缩这个文件之后再用<code>bgzip</code>程序压缩以后，它又能被打开了（图1）。看来还是文件格式的锅。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240331225022.png" alt="image.png"></p>
+<p><em>图1：bug复现。A，这两个文件，你能看出有什么区别吗？B，MAF插件打开第一个文件<code>chrY.2.maf.gz</code>的界面，是可以正常打开的。C，MAF插件打开第二个文件<code>chrY.maf.gz</code>的界面，可以看到什么反应都没有。</em></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/7171641c04eb2693a640fa0939e4c57.png" alt="7171641c04eb2693a640fa0939e4c57.png"></p>
+<p><em>图2：在调试模式下，打开<code>chrY.maf.gz</code>文件时控制台会输出这么一大串报错，其核心内容只有一句话，”data stream has invalid uncompressedLength: -2005589438”</em></p>
+<p>如图所示，同样是<code>maf.gz</code>格式，UCSC官网下载的打不开，但是我自己用bgzip压缩的却能打开，这让我怀疑是不是UCSC提供的序列比对MAF文件不是bgzip压缩的。毕竟在生信领域有个潜在的共识，一个文件如果是<code>.gz</code>结尾，大概率是bgzip压缩，因为bgzip压缩格式相比于原版gzip更容易建立索引。很显然UCSC并没有遵循这个潜在的共识。</p>
+<p><a href="https://docs.fileformat.com/compression/gz/">gzip</a>是著名压缩算法<a href="https://en.wikipedia.org/wiki/DEFLATE">DEFLATE</a> 算法在Linux系统下的开源实现，并且随着Linux系统的发展成为了一种很流行的压缩文件格式。<a href="https://www.htslib.org/doc/bgzip.html">bgzip</a>又叫做blocked gzip，分块的gzip压缩格式，这种格式主要服务于基因组数据格式，因为在bgzip格式下文件被压缩成一系列小（小于64K）的“BGZF”块，这允许根据压缩文件构建索引，并用于检索部分数据，而无需解压缩整个文件。bgzip格式与gzip格式在一定程度上是兼容的，这就是说gzip程序可以正常的解压bgzip文件（反之亦然），然而反过来却无法对bgzip格式进行压缩。</p>
+<p>Linux下的<code>xxd</code>指令可以查看二进制文件的二进制编码。我们可以使用<code>xxd</code>指令比较一下文章最开始提到的两个<code>.maf.gz</code>文件的内容：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">~$ xxd chrY.2.maf.gz |head</span><br><span class="line">00000000: 1f8b 0804 0000 0000 00ff 0600 4243 0200  ............BC..</span><br><span class="line">00000010: f227 ec9b 4b8f 1cb7 11c7 effa 1404 7c0c  .&#x27;..K.........|.</span><br><span class="line">00000020: 4668 b2df 071f 081e 8805 0223 0706 714e  Fh.........#..qN</span><br><span class="line">00000030: 06d3 5168 1fbc 0a24 c69f 3fa8 7f55 3f67  ..Qh...$..?..U?g</span><br><span class="line">00000040: a6bb 471e 6d8c d8a3 dd9d 996e 3e8a 553f  ..G.m......n&gt;.U?</span><br><span class="line">00000050: 168b c5d6 37df fc1c ffa5 7ef9 f0e9 f34f  ....7.....~....O</span><br><span class="line">00000060: 1f5f bfd5 eaf3 f0f1 d34f afe9 db4f 1fe3  ._.......O...O..</span><br><span class="line">00000070: e7fc fe97 f27d f92e e2e2 876f b5a9 74a5  .....&#125;.....o..t.</span><br><span class="line">00000080: df17 78bd fbac 7e4c 65f7 7ef8 f1d3 dfd5  ..x...~Le.~.....</span><br><span class="line">00000090: 8d97 2eb4 e954 d574 ea4f 4ad5 ad31 6da5  .....T.t.OJ..1m.</span><br><span class="line"></span><br><span class="line">~$  xxd chrY.maf.gz |head</span><br><span class="line">00000000: 1f8b 0808 f4b1 fb59 0003 6368 7259 2e6d  .......Y..chrY.m</span><br><span class="line">00000010: 6166 00ec fdc9 8ee4 ca96 2008 eef3 2b14  af........ ...+.</span><br><span class="line">00000020: a865 4303 9c87 452c 08a2 8a70 54c5 4503  .eC...E,...pT.E.</span><br><span class="line">00000030: cd44 67ad 122c d66b 6602 1def 155e b012  .Dg..,.kf....^..</span><br><span class="line">00000040: e8bf 6f39 8390 22c2 410e d5c4 ccd4 dc69  ..o9..&quot;.A......i</span><br><span class="line">00000050: f7ba b9b9 a92a 6538 f3fc 3ffd 4fff 3efc  .....*e8..?.O.&gt;.</span><br><span class="line">00000060: 7f1e ffe3 6fff fc8f fffe 8fbf ff6b fcf8  ....o........k..</span><br><span class="line">00000070: 8ff1 1fff fcef 7f9f fef5 9fff 18fe 63fe  ..............c.</span><br><span class="line">00000080: 97ff 91fe 4bfa 9f06 fce5 dffe 354e b238  ....K.......5N.8</span><br><span class="line">00000090: 8bff 25c2 afff f41f 8fff 36a5 d5bf 8cff  ..%.......6.....</span><br></pre></td></tr></table></figure>
+
+<p>这两个文件的开头2个字节都是<code>0x1f 0x8b</code>，这正是gzip压缩格式的magic number。然而接着往后看，就能发现区别。</p>
+<ul>
+<li>在前一个文件的12-13字节，<code>0x42 0x43</code> ，编码的是BC这个字符串，代表bgzip压缩；</li>
+<li>在后一个文件中，11-18字节<code>0x63 0x68 0x72 0x59 0x2e 0x6d 0x61 0x66</code> 编码字符串<code>chrY.maf</code> 正是解压后的文件名。</li>
+</ul>
+<p>这就是说，UCSC genome browser官方提供的跨物种序列比对MAF文件确实是普通的gzip压缩，而不是bgzip压缩。也许是UCSC认为bgzip这种格式不够高效，也许他们认为bgzip格式用户不需要，总之他们的选择导致了今天的bug，并且因为这个问题的存在，还有可能影响更多人的研究工作。</p>
+<p>对于这个bug如何处理，我们倒是没什么好想法。最简单粗暴的方法当然是直接弹出个报错窗口，让用户自己检查文件格式上的错误；当然，如果想要做得更人性化一点，倒是可以在弹出报错的同时告诉用户这个文件的压缩工具选错了，让用户自己用bgzip程序重新压缩一遍。至于让MAF插件提供对普通的gzip格式的支持，实现起来却不具备可行性，毕竟大部分生信软件为了速度和效率都会通过bgzip建立索引以提供对文件的快速访问，而这一点，是一般的gzip格式无法办到的。</p>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><ol>
+<li>除了gzip和bzip外，还有一种容易搞混的压缩格式是<code>bz2</code>格式，由bzip2程序压缩得到。bzip2是对压缩算法<a href="https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform" title="Burrows–Wheeler transform">Burrows–Wheeler algorithm</a>的开源实现，相比于gzip所采用的<a href="https://en.wikipedia.org/wiki/DEFLATE">DEFLATE</a> 算法压缩率更高，并且跨平台兼容性更好。唯一的缺点是bzip2和gzip一样都只支持对单个文件的压缩，因此如何要对一整个目录的文件进行归档压缩同样需要配合tar指令才能完成。</li>
+<li>昨天刷知乎的时候，看到了刚刚发生在网络安全圈子里的一个瓜（<a href="https://www.zhihu.com/question/650826484">知名压缩软件 xz 被发现有后门，影响有多大？如何应对？ - 知乎</a> ）。简单来说，主流压缩工具xz-utils被植入后门，可在远程登录系统时绕过验证。攻击者JiaTan于2021年创建Github账户，然后积极参与xz维护，在获得信任和成为主要贡献者后，他在测试环节加入不起眼的后门（包括两个带有后门的测试文件和一段编译脚本，在编译安装时会将带有后门的测试文件插入到编译目标中，从而在工具中引入后门）。这位攻击者还催促Ubuntu合并有毒的版本，受到影响的xz版本包括0.56.0和0.56.1。然而后门有个Bug，在特定情况下会使CPU占用异常。一位微软数据库研究员偶然发现，系统登陆反应比原先慢了0.5秒，跟进后锁定了xz。RedHat对此给出了CVSS评分10.0分，即最高危害等级。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>压缩格式</tag>
+        <tag>bgzip</tag>
+        <tag>eGPS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>三月总结</title>
+    <url>/2024/03/31/20240331_updatelog/</url>
+    <content><![CDATA[<p>三月的最后一天。</p>
+<span id="more"></span>
+
+<p>这个月过得实在是太漫长，感觉每天都有新鲜事发生，每个周末都有各种各样新奇的活动让我感受集体的温暖——从月初和一群小伙伴勇闯辰山植物园，到月中的剧本杀桌游，从为师姐庆生的一顿火锅，到为HJ同学践行的一桌川菜，从陆家嘴读书会，到这个周末已经毕业的GP大师兄突然来访与漫谈人生。抛去组会汇报的紧张和课题做不出来的痛苦，这确实是一个充实的月份，正如这个月中夹杂着的那两个充满生机和生命力的节气——惊蛰和春分。</p>
+<p>春天到了。这个周末的阳光很好，可惜这些天我比较宅，哪也没有去。刚刚过去的这一周主要在赶报告（因此连续一周没有运动），周五那夜终于完成了初稿，回到宿舍倒头就睡。今天状态很好，前去健身房跑了5公里，却忘记了太久没有运动突然进行高强度健身会比较伤身体——于是跑完浑身酸痛犯恶心，晚饭随便吃了点酸奶和水果就凑合过去了。chatGPT告诉我太久没有运动的情况下突然增加运动量，确实会有这些不良反应，并且很伤身，也许我该听他的下次运动轻缓一点。</p>
+<p>四月马上就要到了，相比于三月的小清新，四月的事情估计会很多。春种一粒粟，秋收万粒籽，春天的生活可能是忙碌的，但认真努力的去生活，或许会让我们的生活变得充实而幸福的（艹这段话我在瞎写什么）。</p>
+<p>突然想起一句诗：</p>
+<blockquote>
+<p>东方欲晓，莫道君行早。踏遍青山人未老，风景这边独好。</p>
+</blockquote>
+<p>（谨以此诗献给我的博客或许并不多的读者朋友们。）</p>
+<p>加油。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>更新日志</tag>
+      </tags>
+  </entry>
 </search>
