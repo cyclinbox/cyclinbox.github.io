@@ -10226,4 +10226,35 @@
         <tag>ASD</tag>
       </tags>
   </entry>
+  <entry>
+    <title>【转载】2024年Firefox浏览器安装OneNoteClipper插件的方法</title>
+    <url>/2024/04/14/install_OneNoteClipper_on_firefox/</url>
+    <content><![CDATA[<p>（这周更新比较水，感觉最近题材有点匮乏）</p>
+<p>2023年8月左右，微软对OneNote Web Clipper插件进行了更新——然而并不是什么好更新，而是弹出一个“OneNote Web Clipper is no longer supported on Firefox browser”的提示然后自动卸载的更新，逼着用户换Edge浏览器。</p>
+<p>这件事实在令人烦恼。忍受了大半年无法使用这个插件进行网页一键剪藏以后，还是去网上找了一圈教程。下面这篇文章给出了一种比较不错的解决方法，又让这个插件装了回来。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>原文链接： <a href="https://zhuanlan.zhihu.com/p/649592765">https://zhuanlan.zhihu.com/p/649592765</a> (有修改)</p>
+</blockquote>
+<p>今天是 2023/ 08/ 12，最近OneNote Web Clipper突然消失在我的firefox插件栏里面，让我在需要收集信息的时候还需要粘贴网址到edge里面去使用适配edge的插件。<br>这太让我烦恼了。</p>
+<p>因为：<br>    1. 微软的浏览器的黑历史，让人不喜欢。<br>    2. 我更倾向于支持竞争，需要支持firefox，以免浏览器市场像历史上某个时间段一样被独裁。更何况firefox是一个开放的浏览器，各种可以自定义非常符合我的实际诉求。<br>    3. 暂时没找到可以平替onenote的产品，因为我使用它的主要用途就是剪切网页上的片段，图文混排，批注，同时可以本地储存。文本文档可以用txt+nas+nextcloud，图文混排就没有替代产品了。</p>
+<p>所以经过一番尝试后，又找到并重新安装回来这个插件了。</p>
+<h2 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a>解决方法：</h2><p>因为我除了主力机以为，还有一个surface pro电脑，平时用来看pdf文件，有几个月没联网了，根据网上查询到的firefox备份插件的方法，找到了个人目录下的插件，文件名为：<a href="mailto:&#x43;&#108;&#x69;&#x70;&#x70;&#101;&#114;&#x40;&#x4f;&#x6e;&#101;&#78;&#x6f;&#116;&#x65;&#x2e;&#99;&#x6f;&#x6d;&#x2e;&#x78;&#112;&#105;">&#x43;&#108;&#x69;&#x70;&#x70;&#101;&#114;&#x40;&#x4f;&#x6e;&#101;&#78;&#x6f;&#116;&#x65;&#x2e;&#99;&#x6f;&#x6d;&#x2e;&#x78;&#112;&#105;</a></p>
+<p>复制备份好以后，在主力机上双击，就可以安装到firefox上了。</p>
+<p>至此就可以像以前一样正常使用了。</p>
+<p>期望早日找到可以平替的开源产品，这种商业公司的软件用起来实在是太不放心了。不知道什么时候就搞夭蛾子。</p>
+<p>另外，我在网上找到了别人分享的一个文件，有需要的可以去下载：</p>
+<p>链接：<a href="https://pan.baidu.com/s/1sbrMU4c6VeGPFI9HE6n5nQ">https://pan.baidu.com/s/1sbrMU4c6VeGPFI9HE6n5nQ</a></p>
+<p>提取码：pryu</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Firefox</tag>
+        <tag>网页收藏插件</tag>
+      </tags>
+  </entry>
 </search>
