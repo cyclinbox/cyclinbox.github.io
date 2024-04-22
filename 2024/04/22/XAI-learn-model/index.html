@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文简单介绍了可解释机器学习的研究背景，并结合python的sklearn接口简单探索了一些实现事后机器学习可解释性的方法。这些方法将对实际应用中的数学模型搭建和分析起到重要的作用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习可解释性实操">
+<meta property="og:url" content="https://wz.anoms.top/2024/04/22/XAI-learn-model/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="本文简单介绍了可解释机器学习的研究背景，并结合python的sklearn接口简单探索了一些实现事后机器学习可解释性的方法。这些方法将对实际应用中的数学模型搭建和分析起到重要的作用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imgdb.cn/item/662621f20ea9cb1403765b3e.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/6625d51e0ea9cb1403e72fc0.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/662627970ea9cb14038428de.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/662627e20ea9cb140384ae30.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/66262aa80ea9cb1403899359.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/6625fc5a0ea9cb14032a725f.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/6626024f0ea9cb1403371da8.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/6626079d0ea9cb140340524d.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/66260b050ea9cb140348b941.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/66261c370ea9cb14036c5263.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240108185443.png">
+<meta property="article:published_time" content="2024-04-22T09:20:00.000Z">
+<meta property="article:modified_time" content="2024-04-22T09:26:17.848Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="机器学习可解释性">
+<meta property="article:tag" content="sklearn">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imgdb.cn/item/662621f20ea9cb1403765b3e.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/04/22/XAI-learn-model/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/04/22/XAI-learn-model/","path":"2024/04/22/XAI-learn-model/","title":"机器学习可解释性实操"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>机器学习可解释性实操 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF%E4%B8%8E%E5%BF%85%E8%A6%81%E7%9A%84%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">一、背景与必要的知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7%E7%9A%84%E6%8F%90%E5%87%BA%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">（一）机器学习可解释性的提出背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.</span> <span class="nav-text">（二）可解释性的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%86%85%E5%9C%A8%E5%8F%AF%E8%A7%A3%E9%87%8AVS-%E4%BA%8B%E5%90%8E%E5%8F%AF%E8%A7%A3%E9%87%8A"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 内在可解释VS.事后可解释</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%B1%80%E9%83%A8%E8%A7%A3%E9%87%8AVS-%E5%85%A8%E5%B1%80%E8%A7%A3%E9%87%8A"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 局部解释VS.全局解释</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E7%A0%94%E7%A9%B6%E6%96%B9%E5%90%91%E6%A6%82%E8%A7%88"><span class="nav-number">1.3.</span> <span class="nav-text">（三）研究方向概览</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%83%A8%E4%BB%BD%E4%BE%9D%E8%B5%96%E5%9B%BE%EF%BC%88Partial-dependence-plots%EF%BC%8CPDP%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、部份依赖图（Partial dependence plots，PDP）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%AA%E4%BD%93%E6%9D%A1%E4%BB%B6%E6%9C%9F%E6%9C%9B%E5%9B%BE%EF%BC%88Individual-conditional-expectation-plot%EF%BC%8CICE%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、个体条件期望图（Individual conditional expectation plot，ICE）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BD%AE%E6%8D%A2%E7%89%B9%E5%BE%81%E9%87%8D%E8%A6%81%E6%80%A7%EF%BC%88Permutation-feature-importance%EF%BC%89%E6%A3%80%E9%AA%8C"><span class="nav-number">4.</span> <span class="nav-text">四、置换特征重要性（Permutation feature importance）检验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE%E4%B8%8E%E6%8B%93%E5%B1%95%E9%98%85%E8%AF%BB"><span class="nav-number">5.</span> <span class="nav-text">五、参考文献与拓展阅读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">5.1.</span> <span class="nav-text">参考：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%93%E5%B1%95%E9%98%85%E8%AF%BB%EF%BC%9A"><span class="nav-number">5.2.</span> <span class="nav-text">拓展阅读：</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">171</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/04/22/XAI-learn-model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="机器学习可解释性实操 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习可解释性实操
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-04-22 17:20:00 / 修改时间：17:26:17" itemprop="dateCreated datePublished" datetime="2024-04-22T17:20:00+08:00">2024-04-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文简单介绍了可解释机器学习的研究背景，并结合python的sklearn接口简单探索了一些实现事后机器学习可解释性的方法。这些方法将对实际应用中的数学模型搭建和分析起到重要的作用。</p>
+<span id="more"></span>
+
+<h2 id="一、背景与必要的知识"><a href="#一、背景与必要的知识" class="headerlink" title="一、背景与必要的知识"></a>一、背景与必要的知识</h2><h3 id="（一）机器学习可解释性的提出背景"><a href="#（一）机器学习可解释性的提出背景" class="headerlink" title="（一）机器学习可解释性的提出背景"></a>（一）机器学习可解释性的提出背景</h3><p>近些年来，以深度学习为主的方法在AI的各个领域内都取得了丰硕的成绩。基本上人能做或者不能做的事情，大家都想用AI解决。然而相比于线性回归、决策树等传统的建模方法，深度学习方法的缺点在于其内部结构相当于一个“黑盒”，我们并不知道模型的每个决策是如何做出的。</p>
+<p>另一方面，即使是传统的模型，如果能使用一些方法进行更深层次的profile，则也会有着非常重要的意义，例如可以基于此了解特征之间的互作关系。</p>
+<p>为了解决模型的“黑盒”问题，科学家们提出了可解释机器学习。除了预测的精准性之外，可解释性也是机器学习模型是否值得信赖的重要衡量标准。</p>
+<p>解释指的是用通俗易懂的语言进行分析阐明或呈现。对于模型来说，可解释性指的是模型能用通俗易懂的语言进行表达，是一种能被人类理解的能力，具体地说就是，能够将模型的预测过程转化成具备逻辑关系的规则的能力。</p>
+<p>可解释性通常比较主观，对于不同的人，解释的程度也不一样，很难用统一的指标进行度量。我们的目标是希望机器学习模型能“像人类一样表达，像人类一样思考”，如果模型的解释符合我们的认知和思维方式，能够清晰地表达模型从输入到输出的预测过程，那么我们就会认为模型的可解释性是好的。</p>
+<h3 id="（二）可解释性的分类"><a href="#（二）可解释性的分类" class="headerlink" title="（二）可解释性的分类"></a>（二）可解释性的分类</h3><p>根据不同的使用场景，我们大致可以将模型的可解释性作以下分类。</p>
+<h4 id="1-内在可解释VS-事后可解释"><a href="#1-内在可解释VS-事后可解释" class="headerlink" title="1. 内在可解释VS.事后可解释"></a>1. 内在可解释VS.事后可解释</h4><ul>
+<li><strong>内在可解释（Intrinsic Interpretability）</strong> 指的是模型自身结构比较简单，使用者可以清晰地看到模型的内部结构，模型的结果带有解释的效果，模型在设计的时候就已经具备了可解释性。</li>
+<li><strong>事后可解释（Post-hoc Interpretability）</strong> 指的是模型训练完之后，使用一定的方法增强模型的可解释性，挖掘模型学习到的信息。</li>
+</ul>
+<h4 id="2-局部解释VS-全局解释"><a href="#2-局部解释VS-全局解释" class="headerlink" title="2. 局部解释VS.全局解释"></a>2. 局部解释VS.全局解释</h4><p>对于模型使用者来说，不同场景对解释的需求也有所不同。对于整个数据集而言，我们需要了解整体的预测情况；对于个体而言，我们需要了解特定个体中预测的差异情况。</p>
+<ul>
+<li><strong>局部解释</strong> 指的是当一个样本或一组样本的输入值发生变化时，解释其预测结果会发生怎样的变化。</li>
+<li><strong>全局解释</strong> 指的是整个模型从输入到输出之间的解释，从全局解释中，我们可以得到普遍规律或统计推断，理解每个特征对模型的影响。</li>
+</ul>
+<h3 id="（三）研究方向概览"><a href="#（三）研究方向概览" class="headerlink" title="（三）研究方向概览"></a>（三）研究方向概览</h3><p>目前机器学习领域已经提出的模型中，如果按模型可解释性和模型精度来划分，则会呈现出下图这种场景。诸如线性回归、决策树等传统模型固然内在可解释性很好，但在面对复杂问题时的精度较低；而神经网络、支持向量机等方法的预测精度很好，但内在可解释性不足。似乎没有模型能够同时满足“预测精度好”和“可解释性好”这两个指标。</p>
+<p><img src="https://pic.imgdb.cn/item/662621f20ea9cb1403765b3e.png"></p>
+<p>因此，针对模型评价的两个指标，可解释机器学习有两大研究方向，具体说明如下。</p>
+<ul>
+<li>第一，对于传统的统计学模型（比如决策树、逻辑回归、线性回归等），模型的可解释性较强，我们在使用模型时可以清楚地看到模型的内部结构，结果具有很高的可解释性。<ul>
+<li>然而一般情况下，这些模型的精度较低，在一些信噪比较高（信号强烈，噪声较少）的领域，拟合效果没有当下的机器学习模型高。</li>
+<li>在保持模型的可解释性前提下，我们可以适当地改良模型的结构，通过增加模型的灵活表征能力，提高其精度，使得模型往纵轴正方向移动，形成内在可解释机器学习模型。</li>
+<li>比如，保持模型的加性性质，同时从线性拟合拓展到非线性拟合，GAMI-Net、EBM模型均属于内在可解释机器学习模型。</li>
+</ul>
+</li>
+<li>第二，当下的机器学习模型（比如神经网络、深度学习），其内部结构十分复杂，我们难以通过逐层神经网络或逐个神经元观察数据的变化，在一些信噪比较低（信号较弱，噪声强）的领域，我们很容易把噪声也拟合进去，不易发现其中的错误，模型的可解释性较低。<ul>
+<li>为了提高模型的可解释性，我们可以采用以下两种方法：<ul>
+<li>降低模型结构的复杂度，如减少树模型的深度，以牺牲模型的精度换取可解释性；</li>
+<li>保持模型原有的精度，在模型训练完之后，利用事后辅助的归因解析方法及可视化工具，来获得模型的可解释性。</li>
+</ul>
+</li>
+<li>无论采用哪一种方法，其目的都是让模型往横轴的正方向移动，获取更多的可解释性。</li>
+</ul>
+</li>
+</ul>
+<p>本文主要是对机器学习可解释性方法的简要介绍，此外我们将利用<code>sklearn</code>提供的函数接口和示例数据集，介绍几种较为经典的事后可解释性方法（部份依赖图、个体条件期望图、置换特征重要性检验）。这些方法非常简单实用，但可以满足大多数模型的事后可解释性的研究。</p>
+<h2 id="二、部份依赖图（Partial-dependence-plots，PDP）"><a href="#二、部份依赖图（Partial-dependence-plots，PDP）" class="headerlink" title="二、部份依赖图（Partial dependence plots，PDP）"></a>二、部份依赖图（Partial dependence plots，PDP）</h2><p>“部分依赖图”（Partial Dependence Plot，PDP）是机器学习模型解释和可解释性分析的一种工具，它主要用于可视化单个特征（或输入变量）对模型预测结果的影响（与此同时，边缘化所有其他输入特征的值）。在机器学习中，模型往往包含多个输入变量（也称为特征），这些变量之间可能存在复杂的相互作用。 <strong>PDP通过展示每个特征值的变化如何单独影响模型输出，从而帮助我们理解模型的行为</strong>。 直观地，我们可以将部分依赖性解释为作为感兴趣的输入特征的函数的预期目标响应。</p>
+<blockquote>
+<p>在此，我们定义“感兴趣的输入特征”（input features of interest）是要用可解释机器学习方法进行分析的所有特征，而“补充特征”（complement features）是剩余的所有被模型所包含、但我们并不关心或不去分析的特征。</p>
+</blockquote>
+<p>PDP的工作原理如下：</p>
+<ol>
+<li><p><strong>固定其他特征</strong>：对于一个给定的预测目标，PDP会固定所有其他输入特征在训练数据的平均值或某个特定值，只改变目标特征的取值范围。</p>
+</li>
+<li><p><strong>计算预测</strong>：对于每一个特征值，模型会计算出相应的预测结果。</p>
+</li>
+<li><p><strong>绘制曲线</strong>：将特征值与对应的预测结果绘制成一条线或者一个区域图，形成部分依赖图。如果预测值随着特征值增加而增加，那么曲线通常是上升的；如果预测值与特征值无关或负相关，曲线则基本平坦或下降。</p>
+</li>
+</ol>
+<p>通过观察PDP，我们可以直观地了解：</p>
+<ul>
+<li>某个特征对模型预测的重要性：特征值变化较大时，对应曲线变化明显，说明该特征对预测有较大影响。</li>
+<li>特征之间的交互：如果一个特征的PDP曲线在另一个特征的值变化时有所改变，可能表明这两个特征存在交互效应。</li>
+<li>预测的稳定性和敏感性：如果曲线平滑且变化较小，说明模型对该特征的预测相对稳定；反之，如果曲线波动大，可能表示模型对该特征的预测较为敏感。</li>
+</ul>
+<p>部分依赖图是黑盒模型（如随机森林、神经网络等）可解释性分析的重要工具，它可以帮助我们理解模型决策的基础，从而增强模型的透明度。</p>
+<p>下图显示了使用<a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html">HistGradientBoostingRegressor</a>在共享单车数据集上建立的模型中，温度和湿度这两个因素的部分依赖图（图片来自sklearn官方教程）：</p>
+<p><img src="https://pic.imgdb.cn/item/6625d51e0ea9cb1403e72fc0.png" alt="PDP-sklearnofficial"></p>
+<ul>
+<li><p>单路PDP（1-way PDP）告诉我们目标响应和单个输入特征之间的相互作用。上图中的左图显示了温度对自行车租赁数量的影响；我们可以清楚地看到，更高的温度与更高的自行车租赁数量有关。同样，我们可以分析湿度对自行车租赁数量的影响（中间图）。因此，如果一次只考虑一个特征，这些解释是边缘的。</p>
+</li>
+<li><p>双路PDP（2-way PDP）则可以显示两个特征之间的相互作用。例如，上图中的右图显示了自行车租赁数量对温度和湿度联合值的依赖性。我们可以清楚地看到这两个特征之间的相互作用：温度高于20摄氏度，主要是湿度对自行车租赁数量有很大影响。对于较低的温度，温度和湿度都会影响自行车租赁的数量。</p>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/classes.html"><code>sklearn.inspection</code></a>模块提供了一个函数<a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/generated/sklearn.inspection.PartialDependenceDisplay.html"><code>from_estimator</code></a>，用于创建1-way和2-way PDP。</p>
+<p>下面是一个实际的例子，我们在<a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/datasets/toy_dataset.html#diabetes-dataset">糖尿病疾病进展数据集</a>上使用支持向量机回归（SVR）方法构建了一个回归模型，然后使用PDP对模型进行解释。这一数据集收集了BMI、BP（血压）、sex（性别）、age（年龄）、s1（total serum cholesterol，总血清胆固醇）、S2（低密度脂蛋白）、S3（高密度脂蛋白）等因素对糖尿病患者疾病进展情况（disease progression）的影响，除了sex这一特征以外，其余特征均为连续变量。</p>
+<p>首先我们导入数据集，使用pairplot看一下数据分布情况，并建立SVR回归模型，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_diabetes <span class="comment"># 数据集的导入函数</span></span><br><span class="line"><span class="keyword">from</span> sklearn.svm <span class="keyword">import</span> SVR <span class="comment"># 支持向量机回归方法</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy  <span class="keyword">as</span> np</span><br><span class="line"><span class="comment"># 加载数据集</span></span><br><span class="line">diabetes_data = load_diabetes() </span><br><span class="line">X = pd.DataFrame(diabetes_data[<span class="string">&quot;data&quot;</span>])    <span class="comment"># 获取自变量X</span></span><br><span class="line">X.columns = diabetes_data[<span class="string">&quot;feature_names&quot;</span>] <span class="comment"># 设置自变量X的特征名称</span></span><br><span class="line">y = diabetes_data[<span class="string">&quot;target&quot;</span>] <span class="comment"># 获取数据集中的响应变量y</span></span><br><span class="line"><span class="comment"># 下面几行代码用来画一个pairplot图，看一看数据分布情况</span></span><br><span class="line">dataset_to_display = X.copy()</span><br><span class="line">dataset_to_display[<span class="string">&quot;y&quot;</span>] = y</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">sns.pairplot(dataset_to_display)</span><br><span class="line"><span class="comment"># 建立数学模型。SVR方法建模，超参数全部用默认参数</span></span><br><span class="line">reg = SVR().fit(X, y) </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/662627970ea9cb14038428de.png"></p>
+<p>接下来，我们使用1-way PDP看一下这些自变量对响应变量的影响：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.inspection <span class="keyword">import</span> PartialDependenceDisplay <span class="comment"># PDP模型解释函数</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">features_interest_1way = np.arange(X.shape[<span class="number">1</span>])</span><br><span class="line">PartialDependenceDisplay.from_estimator(reg, X, <span class="comment"># 要解释的模型和自变量</span></span><br><span class="line">    features=features_interest_1way, <span class="comment"># 这个参数是要解释的自变量的下标</span></span><br><span class="line">    grid_resolution=<span class="number">10</span>) <span class="comment"># 网格搜索分辨率，分辨率越高PDP越精确，但速度也越慢。默认100，如果想要快一点出图可以调得更小</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/662627e20ea9cb140384ae30.png"></p>
+<p>从图上看，似乎BMI、BP（血压）、S3（总胆固醇/HDL）、S5（血清甘油三酯水平可能对数）这几个特征对响应变量贡献比较大（曲线有更大的起伏）。</p>
+<p>下面，我们再来看看2-way PDP，看看这些特征之间的相互作用。由于特征数量较多，我们只挑选部分特征进行2-way PDP的绘制</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.inspection <span class="keyword">import</span> PartialDependenceDisplay <span class="comment"># PDP模型解释函数</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">interest_feature_index = [<span class="number">2</span>,<span class="number">3</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>] <span class="comment"># 挑选的特征下标</span></span><br><span class="line">features_interest_2way = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i+<span class="number">1</span>,<span class="number">5</span>):</span><br><span class="line">        features_interest_2way.append((interest_feature_index[i],</span><br><span class="line">            interest_feature_index[j]))</span><br><span class="line">PartialDependenceDisplay.from_estimator(reg, X, </span><br><span class="line">    features=features_interest_2way, <span class="comment"># 这个参数是要解释的自变量的下标，注意2-way PDP传入的是一组元组，每个元组中包括两个特征的下标</span></span><br><span class="line">    grid_resolution=<span class="number">10</span>)</span><br><span class="line">plt.show()                                        </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/66262aa80ea9cb1403899359.png"></p>
+<p>从图中可以看出，对糖尿病疾病进展有重要作用的特征包括BMI、BP、S1等等，并且可以看出它们之间的相互作用。</p>
+<h2 id="三、个体条件期望图（Individual-conditional-expectation-plot，ICE）"><a href="#三、个体条件期望图（Individual-conditional-expectation-plot，ICE）" class="headerlink" title="三、个体条件期望图（Individual conditional expectation plot，ICE）"></a>三、个体条件期望图（Individual conditional expectation plot，ICE）</h2><p>与PDP类似，个体条件期望图（ICE）显示了目标函数和感兴趣的输入特征之间的相关性。然而，与显示输入特征的平均效果的PDP不同，ICE图对每个样本预测结果各自的特征依赖性进行了可视化，每个样本分别绘制一条线。一副ICE图只支持可视化一个感兴趣的输入特征。</p>
+<p>仍以共享单车数据集为例，下图显示了使用<a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html">HistGradientBoostingRegressor</a>建立的模型中，温度和湿度这两个因素的ICE图（图片来自sklearn官方教程）：</p>
+<p><img src="https://pic.imgdb.cn/item/6625fc5a0ea9cb14032a725f.png"></p>
+<p>图中的每一条蓝色细线代表一个样本在预测过程中的特征依赖性。虽然PDP善于显示目标特征的平均效果，但它们可能会掩盖由交互创建的异构关系。当特征间的互作出现时，ICE图将提供更多的见解。例如，我们看到温度特征的ICE提供了一些额外的信息：一些ICE线是平的，而另一些则显示出对35摄氏度以上温度的依赖性降低。我们观察到湿度特征的类似模式：当湿度超过80%时，一些ICE线显示出急剧下降。</p>
+<p><code>sklearn.inspection</code>模块的<code>PartialDependenceDisplay.from_estimator</code>函数不仅可以用于创建PDP图，还可以用于创建ICE图，只需要设置参数<code>kind=&#39;individual&#39;</code>即可。设置参数<code>centered=True</code>可以对ICE图进行中心化处理，从而方便对结果的查看。</p>
+<p>下面我们仍以糖尿病数据集为例进行实操：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_diabetes</span><br><span class="line"><span class="keyword">from</span> sklearn.svm <span class="keyword">import</span> SVR</span><br><span class="line"><span class="keyword">from</span> sklearn.inspection <span class="keyword">import</span> PartialDependenceDisplay</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy  <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">diabetes_data = load_diabetes() <span class="comment"># 加载数据集</span></span><br><span class="line">X = pd.DataFrame(diabetes_data[<span class="string">&quot;data&quot;</span>][:,<span class="number">0</span>:<span class="number">5</span>])  <span class="comment"># 获取数据集中的自变量X，并保留前四列</span></span><br><span class="line">X.columns = diabetes_data[<span class="string">&quot;feature_names&quot;</span>][<span class="number">0</span>:<span class="number">5</span>] <span class="comment"># 获取数据集中的自变量X的特征名称</span></span><br><span class="line">y = diabetes_data[<span class="string">&quot;target&quot;</span>] <span class="comment"># 获取数据集中的响应变量y</span></span><br><span class="line">reg = SVR().fit(X, y)</span><br><span class="line">features_interest_1way = np.arange(X.shape[<span class="number">1</span>])</span><br><span class="line">PartialDependenceDisplay.from_estimator(reg, X, </span><br><span class="line">    features=features_interest_1way,</span><br><span class="line">    kind=<span class="string">&#x27;both&#x27;</span>,   <span class="comment"># 同时绘制PDP图和ICE图，以便观察。</span></span><br><span class="line">    centered=<span class="literal">True</span>, <span class="comment"># 按x轴第一个点的数值进行中心化处理。</span></span><br><span class="line">    grid_resolution=<span class="number">10</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/6626024f0ea9cb1403371da8.png"></p>
+<p>PDP图可以看作ICE图所有曲线的平均。如上图所示，我们可以看到包括BMI、BP、S1等在内的诸多因素都对糖尿病进展有重要性，虽然如此S1性状（血清胆固醇）的ICE提供了一些额外的信息：一些ICE线随S1的变化先增高后降低，另一些则与之相反，先降低后增高。</p>
+<h2 id="四、置换特征重要性（Permutation-feature-importance）检验"><a href="#四、置换特征重要性（Permutation-feature-importance）检验" class="headerlink" title="四、置换特征重要性（Permutation feature importance）检验"></a>四、置换特征重要性（Permutation feature importance）检验</h2><p>置换特征重要性是一种模型检查技术，用于测量每个特征对给定数据集上拟合模型统计性能的贡献。这种技术对黑箱模型特别有用，它的原理大体上涉及随机打乱单个特征的值，并观察模型得分的下降。通过打破特征和目标之间的关系，我们可以确定模型在多大程度上依赖于这种特定特征。</p>
+<p>在下图中，我们观察到置换特征对特征和目标之间的相关性的影响，以及对模型统计性能的影响（图片来自sklearn官方教程）：</p>
+<p><img src="https://pic.imgdb.cn/item/6626079d0ea9cb140340524d.png"></p>
+<p>每幅图的横坐标都是特征的取值，纵坐标是相应目标（ $Y$ ）的取值。左侧的图是置换之前的图，右侧的图是置换之后的图。对于预测性的特征（上面两图），对特征进行置换会破坏特征和目标之间的相关性，从而降低模型的统计性能（Mean Absolute Error显著增高）。对于非预测性的特征（下面两图），对特征进行置换并不会显著降低模型的统计性能。</p>
+<p>置换特征重要性的一个关键优点是它是“模型不可知的”（model-agnostic），即它可以应用于任何拟合的估计器。此外，它可以多次进行特征置换的计算，从而为特征重要性的估计提供了方差度量（多次置换并计算统计性能的降低，然后可以对这种统计性能上的降低进行方差的计算）。如下图是使用随机森林方法对泰坦尼克幸存人员数据集的建模结果（其中人为的加入了两个随机数特征<code>random_cat</code>和<code>random_num</code>，它们仅为随机取值，不包含任何信息），使用特征重要性检验可以看出性别、乘客等级、年龄等特征都很重要，而正如我们预期的那样，两个随机数特征<code>random_cat</code>和<code>random_num</code>的置换特征重要性近乎为零。（图片来自sklearn官方教程）</p>
+<p><img src="https://pic.imgdb.cn/item/66260b050ea9cb140348b941.png"></p>
+<p>下面我们再以糖尿病数据集为例进行实操。首先我们继续使用支持向量回归（SVR）建模：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_diabetes</span><br><span class="line"><span class="keyword">from</span> sklearn.svm <span class="keyword">import</span> SVR</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy  <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">diabetes_data = load_diabetes() <span class="comment"># 加载数据集</span></span><br><span class="line">X = pd.DataFrame(diabetes_data[<span class="string">&quot;data&quot;</span>])    <span class="comment"># 获取数据集中的自变量X</span></span><br><span class="line">X.columns = diabetes_data[<span class="string">&quot;feature_names&quot;</span>] <span class="comment"># 获取数据集中的自变量X的特征名称</span></span><br><span class="line">y = diabetes_data[<span class="string">&quot;target&quot;</span>] <span class="comment"># 获取数据集中的响应变量y</span></span><br><span class="line">reg = SVR().fit(X, y)</span><br><span class="line">reg.score(X,y) <span class="comment"># 输出0.2071777370990262</span></span><br></pre></td></tr></table></figure>
+
+<p>下面使用sklearn提供的方法<code>permutation_importance</code>进行置换特征重要性检验。需要的传入参数包括模型、数据集以及置换检验次数，也可通过<code>scoring</code>参数指定不同的模型评价指标。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.inspection <span class="keyword">import</span> permutation_importance</span><br><span class="line">r = permutation_importance(reg, X, y,</span><br><span class="line">                           n_repeats=<span class="number">30</span>,</span><br><span class="line">                           random_state=<span class="number">0</span>,</span><br><span class="line">                           scoring=<span class="string">&quot;r2&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> r.importances_mean.argsort()[::-<span class="number">1</span>]:</span><br><span class="line">    <span class="keyword">if</span> r.importances_mean[i] - <span class="number">2</span> * r.importances_std[i] &gt; <span class="number">0</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;X.columns[i]:&lt;<span class="number">8</span>&#125;</span>&quot;</span></span><br><span class="line">              <span class="string">f&quot;<span class="subst">&#123;r.importances_mean[i]:<span class="number">.3</span>f&#125;</span>&quot;</span></span><br><span class="line">              <span class="string">f&quot; +/- <span class="subst">&#123;r.importances_std[i]:<span class="number">.3</span>f&#125;</span>&quot;</span>)                          </span><br></pre></td></tr></table></figure>
+
+
+<p>输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">bmi     0.058 +/- 0.005</span><br><span class="line">s5      0.056 +/- 0.006</span><br><span class="line">bp      0.035 +/- 0.004</span><br><span class="line">s3      0.030 +/- 0.004</span><br><span class="line">s4      0.026 +/- 0.004</span><br><span class="line">s6      0.015 +/- 0.003</span><br><span class="line">age     0.011 +/- 0.002</span><br><span class="line">s1      0.010 +/- 0.002</span><br><span class="line">s2      0.009 +/- 0.002</span><br><span class="line">sex     0.006 +/- 0.002</span><br></pre></td></tr></table></figure>
+
+<p>还可以对这些结果进行可视化展示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 利用pandas的dataframe对置换特征重要性检测结果进行一些预处理和排序</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">rdf = pd.DataFrame(r.importances)</span><br><span class="line">rdf.index = X.columns</span><br><span class="line">rdf[<span class="string">&quot;mean&quot;</span>] = r.importances_mean</span><br><span class="line">rdf = rdf.sort_values(by=<span class="string">&quot;mean&quot;</span>,ascending=<span class="literal">False</span>)</span><br><span class="line">rdf = rdf.T</span><br><span class="line">rdf = rdf.drop(<span class="string">&quot;mean&quot;</span>,axis=<span class="number">0</span>)</span><br><span class="line"><span class="comment"># 之后，使用seaborn进行数据可视化</span></span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">sns.boxplot(rdf,orient=<span class="string">&quot;h&quot;</span>)</span><br><span class="line">plt.plot([<span class="number">0</span>,<span class="number">0</span>],[-<span class="number">1</span>,rdf.shape[<span class="number">1</span>]],color=<span class="string">&quot;#222&quot;</span>,linestyle=<span class="string">&quot;--&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Decrease in accuracy score&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;permutation importances&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>结果如下图所示：</p>
+<p><img src="https://pic.imgdb.cn/item/66261c370ea9cb14036c5263.png"></p>
+<p>需要注意的一点是，对于坏模型来说重要性较低的特征（低交叉验证分数）对于好模型来说可能非常重要。因此，在计算特征重要性之前，使用交叉验证等方法评估模型的预测能力总是很重要的。置换重要性并不反映特征本身的内在预测值，而是反映该特征 <strong>对特定模型的</strong> 重要性。</p>
+<h2 id="五、参考文献与拓展阅读"><a href="#五、参考文献与拓展阅读" class="headerlink" title="五、参考文献与拓展阅读"></a>五、参考文献与拓展阅读</h2><h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><ul>
+<li>sklearn文档： <a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/partial_dependence.html#partial-dependence-plots">https://scikit-learn.org/stable/modules/partial_dependence.html#partial-dependence-plots</a></li>
+<li>sklearn文档： <a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/generated/sklearn.inspection.PartialDependenceDisplay.html#sklearn.inspection.PartialDependenceDisplay.from_estimator">https://scikit-learn.org/stable/modules/generated/sklearn.inspection.PartialDependenceDisplay.html#sklearn.inspection.PartialDependenceDisplay.from_estimator</a></li>
+<li>sklearn文档： <a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/auto_examples/inspection/plot_permutation_importance.html">https://scikit-learn.org/stable/auto_examples/inspection/plot_permutation_importance.html</a></li>
+<li>sklearn文档： <a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/permutation_importance.html">https://scikit-learn.org/stable/modules/permutation_importance.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/339294365">可解释机器学习(Explainable ML)总结 - 酒仙桥大鲨鱼的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1937617">终于有人把可解释机器学习讲明白了</a></li>
+</ul>
+<h3 id="拓展阅读："><a href="#拓展阅读：" class="headerlink" title="拓展阅读："></a>拓展阅读：</h3><ol>
+<li>课本： <a target="_blank" rel="noopener" href="https://link.springer.com/book/10.1007/978-3-030-83356-5">Explainable Artificial Intelligence：An Introduction to Interpretable Machine Learning</a></li>
+<li>R包&amp;python模块： <a target="_blank" rel="noopener" href="https://dalex.drwhy.ai/">DALEX</a> 。相关资源： <a target="_blank" rel="noopener" href="https://github.com/ModelOriented/DALEX">Github</a> 。 这一模块有其 <a target="_blank" rel="noopener" href="https://ema.drwhy.ai/introduction.html#bookstructure">官方课本</a> 。下图为DALEX的文档中对机器学习可解释性的分层。</li>
+</ol>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240108185443.png" alt="image.png"></p>
+<p>关于机器学习可解释性，在事后解释（post-hoc）方面，主要的方法包括PDP图、ICE图等，这一部分内容详见下面这些参考资料</p>
+<blockquote>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/104473317">偏回归图与偏残差图 - vacleon的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/100454991">Partial Dependence Plots —— 部分依赖图 - 冰焰虫子的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/364921771">机器学习模型可解释性进行到底 ——PDP&amp;ICE图（三） - 悟乙己的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/364922142">机器学习模型可解释性进行到底——特征重要性（四） - 悟乙己的文章 - 知乎</a></li>
+<li>chapter 3.7 Traditional Interpretable Algorithms. in book: “Explainable Artificial Intelligence：An Introduction to Interpretable Machine Learning”, p102.</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/628473104">R语言可解释性机器学习（五）部分依赖图（PDP） - 修身立道的文章 - 知乎</a></li>
+</ul>
+</blockquote>
+<p>在DALEX的网站中，提供了一些 <a target="_blank" rel="noopener" href="https://github.com/ModelOriented/DALEX#talks-about-dalex">视频研讨会的录像</a> ，例如 <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=9WWn5ew8D8o">useR! 2020: Keynote + Farewell - Talk with your model! </a></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/04/22/XAI-learn-model/" title="机器学习可解释性实操">https://wz.anoms.top/2024/04/22/XAI-learn-model/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7/" rel="tag"><i class="fa fa-tag"></i> 机器学习可解释性</a>
+              <a href="/tags/sklearn/" rel="tag"><i class="fa fa-tag"></i> sklearn</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/04/21/20240421_updatelog/" rel="prev" title="四月上半旬生活">
+                  <i class="fa fa-chevron-left"></i> 四月上半旬生活
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
