@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="由于工作需要，我要在一个docker环境中安装一个mysql，于是对docker和mysql做了一点探究，笔记如下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker初探与安装基于docker的mysql-server服务">
+<meta property="og:url" content="https://wz.anoms.top/2024/06/03/install-mysql-via-docker/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="由于工作需要，我要在一个docker环境中安装一个mysql，于是对docker和mysql做了一点探究，笔记如下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imgdb.cn/item/665dbe7b5e6d1bfa0526f386.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/665dbc485e6d1bfa05240bab.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/665dc1e05e6d1bfa052acd36.png">
+<meta property="og:image" content="https://pic.imgdb.cn/item/665dc3255e6d1bfa052c2f46.png">
+<meta property="article:published_time" content="2024-06-03T02:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-03T13:24:45.113Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imgdb.cn/item/665dbe7b5e6d1bfa0526f386.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/06/03/install-mysql-via-docker/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/06/03/install-mysql-via-docker/","path":"2024/06/03/install-mysql-via-docker/","title":"Docker初探与安装基于docker的mysql-server服务"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Docker初探与安装基于docker的mysql-server服务 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%B6%E3%80%81%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">零、背景知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">一、基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AE%89%E8%A3%85"><span class="nav-number">1.2.</span> <span class="nav-text">二、安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E5%9C%A8Linux%E4%B8%BB%E6%B5%81%E5%8F%91%E8%A1%8C%E7%89%88%E4%B8%8A%E5%AE%89%E8%A3%85docker-engine"><span class="nav-number">1.2.1.</span> <span class="nav-text">（一）在Linux主流发行版上安装docker-engine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89macOS%E5%AE%89%E8%A3%85docker-desktop"><span class="nav-number">1.2.2.</span> <span class="nav-text">（二）macOS安装docker-desktop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89windows%E5%AE%89%E8%A3%85docker-desktop"><span class="nav-number">1.2.3.</span> <span class="nav-text">（三）windows安装docker-desktop</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%88%9D%E8%AF%86docker"><span class="nav-number">1.3.</span> <span class="nav-text">三、初识docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%BD%BF%E7%94%A8docker%E5%AE%89%E8%A3%85mysql-server"><span class="nav-number">1.4.</span> <span class="nav-text">四、使用docker安装mysql-server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%AE%BF%E4%B8%BB%E6%9C%BAmysql%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5%E5%AE%B9%E5%99%A8%E5%86%85%E7%9A%84mysql%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="nav-number">1.5.</span> <span class="nav-text">五、宿主机mysql客户端连接容器内的mysql服务端</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">118</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">181</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/06/03/install-mysql-via-docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Docker初探与安装基于docker的mysql-server服务 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker初探与安装基于docker的mysql-server服务
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-06-03 10:00:00 / 修改时间：21:24:45" itemprop="dateCreated datePublished" datetime="2024-06-03T10:00:00+08:00">2024-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>由于工作需要，我要在一个docker环境中安装一个mysql，于是对docker和mysql做了一点探究，笔记如下。</p>
+<span id="more"></span>
+
+
+<h1 id="零、背景知识"><a href="#零、背景知识" class="headerlink" title="零、背景知识"></a>零、背景知识</h1><p><a target="_blank" rel="noopener" href="https://www.docker.com/">Docker</a> 是一个开源的应用容器引擎，可以 让开发者打包他们的应用以及依赖包到一个可移植的容器中，然后发布 到任何流行的Linux机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口。</p>
+<p>简单来说，Docker将应用程序及其运行环境（包括操作系统、库、配置 等）封装在一个独立的、可移植的“容器”中。这个容器可以在任何支持Docker的平台上运行，无需关心底层的操作系统或硬件差异。这使得开发者可以更加专注于代码开发，而不用担心环境配置的问题，同时也简化 了部署和运维过程。</p>
+<p>Docker的核心组件包括镜像（Image）、容器（Container）和仓库（Repository）。镜像是创建容器的基础，它包含了应用程序的所有依赖；容器是从镜像创建的一个运行实例；仓库则是用来存储和分发镜像的地方 。</p>
+<p>Docker改变了软件的交付方式，使得开发、测试、部署变得更加高效和 一致。其logo是一条托着一堆集装箱的鲸鱼，更是展示出其包容一切、托付一切的美好愿景。</p>
+<p><img src="https://pic.imgdb.cn/item/665dbe7b5e6d1bfa0526f386.png"></p>
+<h2 id="一、基本概念"><a href="#一、基本概念" class="headerlink" title="一、基本概念"></a>一、基本概念</h2><p>在Docker技术中，有一些基本概念需要辨析一下：</p>
+<ol>
+<li><strong>镜像（Image）</strong>：Docker镜像是一个只读模板，包含了应用程序 的代码、运行时依赖（比如库、配置文件等），以及运行时的环境。它 是构建容器的基础，类似于软件包（安装包）或安装系统所需的ISO镜像。每个镜像都有一个唯一的ID，并且可以通过命令行工具如<code>docker pull</code>从Docker Hub等仓库下载，或者通过<code>docker build</code>自己创建。    </li>
+<li><strong>仓库（Repository）</strong>：仓库是存储Docker镜像的地方，可以是私有的（如Docker Hub上的个人账户）或公共的（如Docker Hub、GitHub Container Registry等）。用户可以从仓库下载镜像，也可以将自己的 镜像上传到仓库分享给其他人。</li>
+<li><strong>容器（Container）</strong>：容器是镜像的运行实例（Instance）。当你基于一个镜 像启动一个容器时，系统会创建一个新的进程空间，与宿主机隔离，但 共享内核。容器有自己的文件系统、网络设置和端口映射，但不包含宿 主机的文件系统，这使得容器之间互相独立，易于管理和复制（这听起来很像虚拟机，但docker允许容器和宿主机共享内核，不需要对硬件进行模拟，因此其计算开销要远小于虚拟机技术）。docker允许在同一台宿主机上基于同一个镜像启动多个容器，每个容器都是该镜像的一个实例。</li>
+</ol>
+<p>关于docker的虚拟化（Virtualization），这里做一点补充。虚拟化是一种技术，允许一台物理计算机同时运行多个独立的操作系统实例；Docker使用的是轻量级虚拟 化，也称为容器虚拟化，它不是在底层创建完整的虚拟机，而是利用操 作系统提供的资源隔离（如命名空间和控制组）来创建容器，从而节省 资源并提高效率。</p>
+<p>一句话总结：镜像是docker的基础，仓库是存储docker镜像的地方，容器是镜像的运行实例，而虚拟化是实现容器化的一种技术。</p>
+<h2 id="二、安装"><a href="#二、安装" class="headerlink" title="二、安装"></a>二、安装</h2><p>这一部分另外参见 <a target="_blank" rel="noopener" href="https://docs.docker.com/">Docker的官方文档</a></p>
+<p>docker的运行需要Linux系统内核，因此在Linux系统上的安装很方便，而在macOS和Windows上则需要一些额外的步骤。</p>
+<h3 id="（一）在Linux主流发行版上安装docker-engine"><a href="#（一）在Linux主流发行版上安装docker-engine" class="headerlink" title="（一）在Linux主流发行版上安装docker-engine"></a>（一）在Linux主流发行版上安装docker-engine</h3><blockquote>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/">Docker.docs - Install Docker Engine</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/">清华大学开源软件镜像站 - Docker CE 软件仓库</a></li>
+</ul>
+</blockquote>
+<p>docker-engine是docker中最核心的组件，用于容器的管理与运行。在Linux的几大主流发行版上均可通过下面的方法安装docker-engine，但同样也可以安装docker官方提供<a target="_blank" rel="noopener" href="https://docs.docker.com/desktop/install/linux-install/">的docker-desktop</a>，后者是一个可视化的docker安装和管理工具。</p>
+<p>下面我们介绍docker-engine的安装。</p>
+<p>在Redhat Enterprise Linux（RHEL）、centOS、Alibaba cloud Linux等红帽系发行版上，使用下面的步骤即可进行安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo</span><br><span class="line">sudo dnf makecache</span><br><span class="line">sudo dnf install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+
+<p>上述三条指令分别用于添加docker社区版的软件包仓库、更新软件包列表缓存，以及进行docker安装。dnf是红帽系发行版中较新采用的一个包管理器，如果要使用旧版的yum包管理器，可以使用下面的方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y yum-utils</span><br><span class="line">sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line">sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</span><br></pre></td></tr></table></figure>
+
+<p>在Debian、Ubuntu等deb系发行版上，使用下面的步骤进行安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Add Docker&#x27;s official GPG key:</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install ca-certificates curl</span><br><span class="line">sudo install -m 0755 -d /etc/apt/keyrings</span><br><span class="line">sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc</span><br><span class="line">sudo <span class="built_in">chmod</span> a+r /etc/apt/keyrings/docker.asc</span><br><span class="line"></span><br><span class="line"><span class="comment"># Add the repository to Apt sources:</span></span><br><span class="line"><span class="built_in">echo</span> \</span><br><span class="line">  <span class="string">&quot;deb [arch=<span class="subst">$(dpkg --print-architecture)</span> signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="string">  <span class="subst">$(. /etc/os-release &amp;&amp; echo <span class="string">&quot;<span class="variable">$VERSION_CODENAME</span>&quot;</span>)</span> stable&quot;</span> | \</span><br><span class="line">  sudo <span class="built_in">tee</span> /etc/apt/sources.list.d/docker.list &gt; /dev/null</span><br><span class="line"><span class="comment"># update apt-get list</span></span><br><span class="line">sudo apt-get update</span><br><span class="line"><span class="comment"># and install</span></span><br><span class="line">sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</span><br></pre></td></tr></table></figure>
+
+<h3 id="（二）macOS安装docker-desktop"><a href="#（二）macOS安装docker-desktop" class="headerlink" title="（二）macOS安装docker-desktop"></a>（二）macOS安装docker-desktop</h3><blockquote>
+<p>参考： <a target="_blank" rel="noopener" href="https://docs.docker.com/desktop/install/mac-install/">Docker.docs - Install Docker Desktop on Mac</a></p>
+</blockquote>
+<p>首先，从docker官网下载最新版本的<a target="_blank" rel="noopener" href="https://docs.docker.com/desktop/release-notes/">docker desktop安装包</a>。随后双击安装包，根据提示完成安装和配置（一般情况下使用默认配置即可），即可完成安装。</p>
+<h3 id="（三）windows安装docker-desktop"><a href="#（三）windows安装docker-desktop" class="headerlink" title="（三）windows安装docker-desktop"></a>（三）windows安装docker-desktop</h3><blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://docs.docker.com/desktop/install/windows-install/">Docker.docs - Install Docker Desktop on Windows</a></p>
+</blockquote>
+<p>由于Windows的内核与Linux/Unix那一套相去甚远，按理说Windows原生是不支持docker的。不过好在windows支持hyper-V这种半虚拟化技术（需要硬件支持），且前几年微软推出了一个大杀器——windows subsystem for linux（wsl），使得在Windows上运行Linux程序成为可能，于是docker也就顺理成章能够在Windows上运行了。</p>
+<p>因此，要在Windows上安装docker，首先需要<a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/wsl/install">开启系统的WSL2功能</a>，或<a target="_blank" rel="noopener" href="https://docs.docker.com/desktop/install/windows-install/#system-requirements">开启hyper-V虚拟化功能</a>。随后，从docker官网下载<a target="_blank" rel="noopener" href="https://docs.docker.com/desktop/release-notes/">最新版安装包</a>，并双击安装即可。</p>
+<h2 id="三、初识docker"><a href="#三、初识docker" class="headerlink" title="三、初识docker"></a>三、初识docker</h2><p>下面以linux系统为例，简单展示一下docker的一些基本操作：</p>
+<ul>
+<li><code>docker images</code> : 列出本地主机上的所有镜像</li>
+<li><code>docker search</code> : 从Docker Hub中搜索镜像</li>
+<li><code>docker pull</code> : 从Docker Hub下载镜像到本地</li>
+<li><code>docker system df</code> : 显示Docker磁盘使用情况</li>
+<li><code>docker rmi</code> : 删除本地的一个或多个 <strong>镜像</strong></li>
+<li><code>docker rm</code> : 删除一个或多个 <strong>容器</strong></li>
+<li><code>docker commit</code> : 从正在运行的容器创建一个新的镜像</li>
+<li><code>docker build</code> : 根据Dockerfile构建镜像</li>
+<li><code>docker run</code> : 创建一个新的容器并运行一个命令</li>
+<li><code>docker ps</code> : 列出当前正在运行的容器</li>
+<li><code>docker exec -it &lt;container ID/name&gt; bashShell</code> : 在正在运行的容器中执行命令</li>
+<li><code>docker attach &lt;container ID&gt;</code> : 连接到正在运行中的容器</li>
+<li><code>docker start</code> : 启动一个或多个已经被停止的容器</li>
+<li><code>docker stop</code> : 停止运行中的容器</li>
+<li><code>docker restart</code> : 重启容器</li>
+</ul>
+<p>一个简单的示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo docker search hello-world <span class="comment"># 查询名叫hello-world的镜像。这个镜像是docker中很著名的测试镜像</span></span><br><span class="line">sudo docker pull   hello-world <span class="comment"># 将上述镜像下载到本地</span></span><br><span class="line">sudo docker run    hello-world <span class="comment"># 基于上述镜像运行一个容器</span></span><br></pre></td></tr></table></figure>
+
+<p>运行效果如下：</p>
+<p><img src="https://pic.imgdb.cn/item/665dbc485e6d1bfa05240bab.png"></p>
+<h2 id="四、使用docker安装mysql-server"><a href="#四、使用docker安装mysql-server" class="headerlink" title="四、使用docker安装mysql-server"></a>四、使用docker安装mysql-server</h2><p>由于我在公共服务器上没有root权限，无法使用正常的方式安装mysql-server，因此只能使用docker曲线救国。下面是探索的结果：</p>
+<p>首先，从dockerhub上拉取镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker search mysql</span><br><span class="line">docker pull mysql:5.7 <span class="comment"># 从docker仓库中拉取mysql的基础镜像</span></span><br><span class="line">docker images <span class="comment"># 列出已经下载的容器列表</span></span><br></pre></td></tr></table></figure>
+
+<p>终端输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">REPOSITORY    TAG       IMAGE ID       CREATED         SIZE</span><br><span class="line">mysql         5.7       5107333e08a8   5 months ago    501MB</span><br></pre></td></tr></table></figure>
+
+<p>在拉取完镜像以后，我们基于这个镜像启动一个容器实例。由于mysql-server需要容器和宿主机之间的双向通信，我们的启动脚本会稍微有些复杂，如下（可以写到一个shell脚本里面，然后以脚本的方式运行）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">docker run -p 3306:3306 --name mysql         \</span><br><span class="line">        -v /mydata/mysql/log:/var/log/mysql  \</span><br><span class="line">        -v /mydata/mysql/data:/var/lib/mysql \</span><br><span class="line">        -e MYSQL_ROOT_PASSWORD=root          \</span><br><span class="line">	-u $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g)                 \</span><br><span class="line">        -d mysql:5.7</span><br></pre></td></tr></table></figure>
+
+<p>顺便解释一下上面的这些参数：</p>
+<ul>
+<li><code>-p</code>用于配置网络端口映射，上面的写法是将宿主机的3306端口映射到容器的3306端口。</li>
+<li><code>--name</code>用于指定这个容器的名称。如果不指定，则docker会随机生成一个name（一般是一个形容词+一个名词的格式，其实抛开实用性不谈，docker随机生成的name还挺好玩，例如<code>great_noether</code>、<code>modest_borg</code>、<code>frosty_germain</code>、<code>sleepy_elion</code>等等）</li>
+<li><code>-v</code>用于将宿主机中的目录（冒号前）挂在到容器中（冒号后）。挂载的目录必须是普通用户有访问权限的目录（最好提前创建，否则后期改权限很麻烦），并且不可以是软链接目录。</li>
+<li><code>-e</code>配置运行时的环境变量，对于mysql-server来说，需要配置的环境变量只有root密码这一个。</li>
+<li><code>-u</code>指定使用特定用户身份登录。默认情况下会以root身份登录，但实际使用时可能会有 <code>chown: changing ownership of &#39;/var/lib/mysql/&#39;: Operation not permitted</code> 的访问权限问题。因此这里需要指定登录身份。</li>
+<li><code>-d</code>表明让这个docker容器后台运行，就像一个服务程序那样。</li>
+</ul>
+<p>运行上面的指令可以让mysql服务在后台运行。可以使用<code>docker ps -a</code>查看服务状态：</p>
+<p><img src="https://pic.imgdb.cn/item/665dc1e05e6d1bfa052acd36.png"></p>
+<p>（注意，一些停止运行的容器也会被列出）</p>
+<p>要暂停这个容器，可以使用<code>docker stop &lt;container ID/name&gt;</code>指令。要彻底删除这个容器，可以使用<code>docker rm &lt;container ID/name&gt;</code>。</p>
+<p>我们也可以登录到这个容器内部看一看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mysql bash</span><br></pre></td></tr></table></figure>
+
+<p>上面这串指令的意思是在mysql容器中，以交互式的方式（由参数<code>-it</code>控制）运行<code>bash</code>指令。效果如下：</p>
+<p><img src="https://pic.imgdb.cn/item/665dc3255e6d1bfa052c2f46.png"></p>
+<h2 id="五、宿主机mysql客户端连接容器内的mysql服务端"><a href="#五、宿主机mysql客户端连接容器内的mysql服务端" class="headerlink" title="五、宿主机mysql客户端连接容器内的mysql服务端"></a>五、宿主机mysql客户端连接容器内的mysql服务端</h2><p>最后，我们看一下如何在宿主机中连接这个数据库。在宿主机中使用下面的命令即可登录（其中，<code>-h</code>指定mysql-server的IP地址，此处为本地即127.0.0.1（不设置这个参数的话，mysql客户端会去找套接字文件<code>/tmp/mysql.sock</code>，从而引发一些报错）；<code>-P</code>指定端口，此处为前面使用的3306；<code>-p</code>指定使用交互式密码输入界面登录数据库）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -h 127.0.0.1 -P 3306 -u root -p </span><br></pre></td></tr></table></figure>
+
+
+<p>登陆界面：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">(base) cyclin@iZf8z0u1kbopnpeuu32nf5Z:~/miniconda3/pkgs/mysql-connector-python-8.3.0-py310h1b8f574_0$ mysql -h 127.0.0.1 -P 3306 -u root -p</span><br><span class="line">Enter password:</span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 4</span><br><span class="line">Server version: 5.7.44 MySQL Community Server (GPL)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2024, Oracle and/or its affiliates.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type &#x27;help;&#x27; or &#x27;\h&#x27; for help. Type &#x27;\c&#x27; to clear the current input statement.</span><br><span class="line"></span><br><span class="line">mysql&gt; </span><br></pre></td></tr></table></figure>
+
+<p>如果连接失败，可以尝试检查防火墙设置。在ubuntu系统上，防火墙的设置如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw allow 3306/tcp <span class="comment"># 允许3306端口的TCP连接</span></span><br></pre></td></tr></table></figure>
+
+
+<p>关于端口占用情况：前面的启动脚本中 指定了使用宿主机3306端口作为mysql-server的服务端口。然而在公共计算平台上，我们无法保证这一端口没有被其他人使用。因此，在启动docker前，检查端口占用情况也是很重要的。</p>
+<p>下面是一些检查端口占用情况的指令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">netstat -tuln <span class="comment"># 检查已用端口有哪些</span></span><br><span class="line">lsof -i :3306 <span class="comment"># 查看占用某端口（以3306端口为例）的具体进程有哪些</span></span><br></pre></td></tr></table></figure>
+
+<p>运行示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">(base) [zhangwanyu@lih005]~$  netstat -tuln |head</span><br><span class="line">Active Internet connections (only servers)</span><br><span class="line">Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line">tcp        0      0 127.0.0.1:9028          0.0.0.0:*               LISTEN</span><br><span class="line">tcp        0      0 127.0.0.1:9029          0.0.0.0:*               LISTEN</span><br><span class="line">tcp        0      0 127.0.0.1:34055         0.0.0.0:*               LISTEN</span><br><span class="line">tcp        0      0 0.0.0.0:40040           0.0.0.0:*               LISTEN</span><br><span class="line">tcp        0      0 127.0.0.1:16554         0.0.0.0:*               LISTEN</span><br><span class="line">tcp        0      0 0.0.0.0:3690            0.0.0.0:*               LISTEN</span><br><span class="line">tcp        0      0 127.0.0.1:44171         0.0.0.0:*               LISTEN</span><br><span class="line">tcp        0      0 127.0.0.1:9005          0.0.0.0:*               LISTEN</span><br><span class="line">(base) [zhangwanyu@lih005]~$ lsof -i :45012</span><br><span class="line">COMMAND   PID       USER   FD   TYPE    DEVICE SIZE/OFF NODE NAME</span><br><span class="line">node    27890 zhangwanyu   18u  IPv4 216467048      0t0  TCP localhost:45012 (LISTEN)</span><br><span class="line">node    27890 zhangwanyu   21u  IPv4 216467050      0t0  TCP localhost:45012-&gt;localhost:39406 (CLOSE_WAIT)</span><br></pre></td></tr></table></figure>
+
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/06/03/install-mysql-via-docker/" title="Docker初探与安装基于docker的mysql-server服务">https://wz.anoms.top/2024/06/03/install-mysql-via-docker/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/docker/" rel="tag"><i class="fa fa-tag"></i> docker</a>
+              <a href="/tags/mysql/" rel="tag"><i class="fa fa-tag"></i> mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/05/20/20240520_updatelog/" rel="prev" title="520特辑|《霍乱时期的爱情》与我们的爱情">
+                  <i class="fa fa-chevron-left"></i> 520特辑|《霍乱时期的爱情》与我们的爱情
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
