@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Termux是一个在安卓设备上模拟Linux终端的APP。借助这个终端，可以运行许多Linux程序；更进一步的，我们还可以在其上安装发行版并配置桌面环境，进而运行一些PC端应用（在华为最新的几款平板上，这个功能叫做“PC应用引擎”）。下面是探索的步骤">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安卓平板运行PC级WPS和VS Code的探索">
+<meta property="og:url" content="https://wz.anoms.top/2024/06/16/install-WPS-and-VSCode-on-android-tablet/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="Termux是一个在安卓设备上模拟Linux终端的APP。借助这个终端，可以运行许多Linux程序；更进一步的，我们还可以在其上安装发行版并配置桌面环境，进而运行一些PC端应用（在华为最新的几款平板上，这个功能叫做“PC应用引擎”）。下面是探索的步骤">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imgdb.cn/item/666f0488d9c307b7e9dfcf87.jpg">
+<meta property="og:image" content="https://pic.imgdb.cn/item/666f064ed9c307b7e9e322dc.jpg">
+<meta property="og:image" content="https://pic.imgdb.cn/item/666f0ca1d9c307b7e9f10523.jpg">
+<meta property="og:image" content="https://pic.imgdb.cn/item/666f0ca9d9c307b7e9f1176d.jpg">
+<meta property="og:image" content="https://pic.imgdb.cn/item/666f0fa2d9c307b7e9f6a279.jpg">
+<meta property="og:image" content="https://pic.imgdb.cn/item/666f116bd9c307b7e9f9df2c.jpg">
+<meta property="og:image" content="https://pic.imgdb.cn/item/666f1185d9c307b7e9fa0b4d.jpg">
+<meta property="article:published_time" content="2024-06-16T15:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-16T16:33:39.120Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="termux">
+<meta property="article:tag" content="fedora">
+<meta property="article:tag" content="proot">
+<meta property="article:tag" content="WPS">
+<meta property="article:tag" content="VS Code">
+<meta property="article:tag" content="PC应用引擎">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imgdb.cn/item/666f0488d9c307b7e9dfcf87.jpg">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/06/16/install-WPS-and-VSCode-on-android-tablet/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/06/16/install-WPS-and-VSCode-on-android-tablet/","path":"2024/06/16/install-WPS-and-VSCode-on-android-tablet/","title":"安卓平板运行PC级WPS和VS Code的探索"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>安卓平板运行PC级WPS和VS Code的探索 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Termux%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">一、Termux的安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81termux%E7%9A%84apt%E8%BD%AF%E4%BB%B6%E6%BA%90%E6%9B%B4%E6%96%B0-proot%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">二、termux的apt软件源更新+proot安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%AE%89%E8%A3%85Fedora%E5%8F%91%E8%A1%8C%E7%89%88"><span class="nav-number">3.</span> <span class="nav-text">三、安装Fedora发行版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%AE%89%E8%A3%85LXQt%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83%E5%B9%B6%E9%85%8D%E7%BD%AEVNC%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">四、安装LXQt桌面环境并配置VNC服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81WPS-arm-linux%E7%89%88%E7%9A%84%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B"><span class="nav-number">5.</span> <span class="nav-text">五、WPS arm linux版的安装过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81VS-Code%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E5%90%AF%E5%8A%A8"><span class="nav-number">6.</span> <span class="nav-text">六、VS Code的安装和启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%B8%80%E4%BA%9B%E6%8A%A5%E9%94%99%E7%9A%84%E8%A7%A3%E5%86%B3%EF%BC%9A"><span class="nav-number">7.</span> <span class="nav-text">七、一些报错的解决：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%881%EF%BC%89tumux%E7%9A%84curl%E6%8A%A5%E9%94%99%EF%BC%88cannot-link-executable-quot-Curl-quot-library-quot-libssl-so-1-1-quot-not-found%EF%BC%89%EF%BC%9A"><span class="nav-number">7.1.</span> <span class="nav-text">（1）tumux的curl报错（cannot link executable &quot;Curl&quot;: library &quot;libssl.so.1.1&quot; not found）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E4%BD%BF%E7%94%A8proot-distro%E5%AE%89%E8%A3%85linux%E5%8F%91%E8%A1%8C%E7%89%88%E4%BB%A5%E5%90%8Ednf%E6%9B%B4%E6%96%B0%E7%BC%93%E5%AD%98%E5%A4%B1%E8%B4%A5%E3%80%81curl%E6%97%A0%E6%B3%95%E8%A7%A3%E6%9E%90%E4%B8%BB%E6%9C%BA%E5%90%8D%EF%BC%88-%E2%80%9Ccurl-error-6-could-not-resolve-host%E2%80%9D%EF%BC%8C%E4%BD%86%E6%98%AF%E5%8F%AF%E4%BB%A5%E6%A0%B9%E6%8D%AEip%E8%8E%B7%E5%8F%96%E4%BF%A1%E6%81%AF%EF%BC%89%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-number">7.2.</span> <span class="nav-text">（2）使用proot-distro安装linux发行版以后dnf更新缓存失败、curl无法解析主机名（ “curl error (6) could not resolve host”，但是可以根据ip获取信息）的解决方法：</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">189</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/06/16/install-WPS-and-VSCode-on-android-tablet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="安卓平板运行PC级WPS和VS Code的探索 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          安卓平板运行PC级WPS和VS Code的探索
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-06-16 23:00:00" itemprop="dateCreated datePublished" datetime="2024-06-16T23:00:00+08:00">2024-06-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-06-17 00:33:39" itemprop="dateModified" datetime="2024-06-17T00:33:39+08:00">2024-06-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><a target="_blank" rel="noopener" href="https://termux.dev/en/">Termux</a>是一个在安卓设备上模拟Linux终端的APP。借助这个终端，可以运行许多Linux程序；更进一步的，我们还可以在其上安装发行版并配置桌面环境，进而运行一些PC端应用（在华为最新的几款平板上，这个功能叫做“PC应用引擎”）。下面是探索的步骤</p>
+<span id="more"></span>
+
+<h2 id="一、Termux的安装"><a href="#一、Termux的安装" class="headerlink" title="一、Termux的安装"></a>一、Termux的安装</h2><p>可以在下面的地址获得apk，在安卓设备上通过apk的方式安装Termux。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://f-droid.org/en/packages/com.termux/">Termux | F-Droid</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/termux/termux-app#github">Termux | GitHub</a></li>
+</ul>
+<p>安装以后，点击APP图标即可进入终端界面。初次进入时APP会自动下载一些依赖库，等待一两分钟即可完成下载安装。之后，就可以像普通的Linux终端那样对这个APP进行使用了。</p>
+<h2 id="二、termux的apt软件源更新-proot安装"><a href="#二、termux的apt软件源更新-proot安装" class="headerlink" title="二、termux的apt软件源更新+proot安装"></a>二、termux的apt软件源更新+proot安装</h2><blockquote>
+<p>参考： <a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/termux/">https://mirrors.tuna.tsinghua.edu.cn/help/termux/</a></p>
+</blockquote>
+<p>如题。</p>
+<p>最新版的Termux中包含了<code>termux-change-repo</code>这一指令，可以通过一个图形化的方式选择合适的软件源（如下图）。通过键盘方向键选择切换镜像组，随后选择中国大陆的镜像站即可（按空格选中，按回车确认，按左右方向键切换OK/Cancel）。</p>
+<p><img src="https://pic.imgdb.cn/item/666f0488d9c307b7e9dfcf87.jpg"></p>
+<p>更新完软件源以后，使用下面的指令安装<code>proot-distro</code>这个容器软件，之后我们会使用它进行Linux发行版的安装。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install proot-distro</span><br></pre></td></tr></table></figure>
+
+<p>（其实理论上不做后面的步骤也可以，Termux自身已经包含了大量的Linux程序和运行时环境，可以进行一些如C++程序编译、python开发、web网站假设等一系列工作。安装Linux发行版主要是想装图形界面）</p>
+<h2 id="三、安装Fedora发行版"><a href="#三、安装Fedora发行版" class="headerlink" title="三、安装Fedora发行版"></a>三、安装Fedora发行版</h2><blockquote>
+<p>参考： <a target="_blank" rel="noopener" href="https://wiki.termux.com/wiki/PRoot">https://wiki.termux.com/wiki/PRoot</a></p>
+</blockquote>
+<p>如下图，<code>proot-distro</code>是一个Linux PRoot容器的管理软件，包含许多指令。</p>
+<ul>
+<li>使用<code>proot-distro list</code>可以列出当前可用的Linux发行版（包括已安装的和未安装的）</li>
+<li>使用<code>proot-distro install &lt;发行版名称&gt;</code>可以安装特定发行版</li>
+<li>使用<code>proot-distro remove</code>可以删除特定发行版</li>
+<li>要进入一个已经安装好的发行版，可用使用<code>proot-distro login &lt;发行版名称&gt; --user &lt;用户名&gt;</code>指令（其中<code>--user</code>参数是可选的。不加这一参数则登录到root用户）</li>
+</ul>
+<p><img src="https://pic.imgdb.cn/item/666f064ed9c307b7e9e322dc.jpg"></p>
+<p>下面我们来安装Fedora发行版：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proot-distro install fedora</span><br></pre></td></tr></table></figure>
+
+<p>这将会下载大约几十MB的文件，大约需要几分钟时间。</p>
+<p>之后，使用下面的指令即可登录到刚刚安装的fedora发行版：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proot-distro login fedora</span><br></pre></td></tr></table></figure>
+
+<p>Fedora系统配置非root用户、软件源、bashrc设置、网络设置等过程和普通的Linux发行版一样，在网络上也有许多教程，此处略过。</p>
+<h2 id="四、安装LXQt桌面环境并配置VNC服务"><a href="#四、安装LXQt桌面环境并配置VNC服务" class="headerlink" title="四、安装LXQt桌面环境并配置VNC服务"></a>四、安装LXQt桌面环境并配置VNC服务</h2><p>在众多Linux桌面环境中，LXQt算是一个比较轻量级的存在了。其前身是LXDE，也是一个非常轻量级的桌面，随后有人使用Qt框架对其进行了重写，保留了原本的轻量级特性，但引入了更加现代的界面设计。</p>
+<p>VNC是一种使用RFB（Remote Framebuffer）协议的屏幕画面分享及远程操作软件，分为服务端和客户端，在此我们使用它进行图形界面的显示。</p>
+<p>上述这些软件在Fedora里的安装方法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先更新dnf缓存</span></span><br><span class="line">sudo dnf makecache</span><br><span class="line"><span class="comment"># 然后安装LXQt相关的软件包</span></span><br><span class="line">sudo dnf group install <span class="string">&quot;LXQt Desktop&quot;</span> <span class="string">&quot;LXQt Office&quot;</span> <span class="string">&quot;Multimedia support for LXQt&quot;</span> <span class="string">&quot;Applications for the LXQt Desktop&quot;</span></span><br><span class="line"><span class="comment"># 最后安装vnc服务</span></span><br><span class="line">sudo dnf install tigervnc-server xorg-x11-server-utils xterm</span><br></pre></td></tr></table></figure>
+
+<p>安装过程需要持续几十分钟，期间需要下载1G左右的数据。</p>
+<p>安装完成后，我们还需要对VNC服务进行一些配置：</p>
+<p>1、修改密码。终端输入下面这行指令，然后根据提示直接在终端内输入要使用的密码即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncpasswd</span><br></pre></td></tr></table></figure>
+
+<p>2、修改位于<code>~/.vnc/xstartup</code>处的VNC配置文件，将下面这几行内容写入文件当中：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xrdb $HOME/.Xresources</span><br><span class="line">xsetroot -solid grey</span><br><span class="line">startlxqt &amp;</span><br></pre></td></tr></table></figure>
+
+<p>并赋予上述文件可执行权限（<code>chmod +x ~/.vnc/xstartup</code>）</p>
+<p>3、创建VNC启动脚本。在家目录下创建文件<code>start_lxqt_with_vncserver.sh</code>并写入下面的内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">First we must stop the previous VNC session</span></span><br><span class="line">vncserver -kill :2</span><br><span class="line">rm /tmp/.X*-lock</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Then we start a new VNC session</span></span><br><span class="line">vncserver  -depth 24 :2</span><br></pre></td></tr></table></figure>
+
+<p>并赋予上述文件可执行权限（<code>chmod +x ~/start_lxqt_with_vncserver.sh</code>）。</p>
+<p>这个启动脚本中，<code>vncserver -kill :2</code>和<code>rm /tmp/.X*-lock</code>两行内容是为了避免先前启动的VNC服务未关闭造成的一些问题，<code>vncserver  -depth 24 :2</code>表示以24位色彩深度在<code>:2</code>端口上启动VNC服务。</p>
+<p>为了使用这个桌面，我们也需要在设备上安装一个VNC客户端。在<a target="_blank" rel="noopener" href="https://www.realvnc.com/en/connect/download/viewer/">VNC viewer官网</a>上提供了安卓版的下载链接，从这里我们下载VNC viewer并安装即可。</p>
+<p>4、启动VNC服务。这一步直接运行刚刚我们编写好的启动脚本即可（<code>./start_lxqt_with_vncserver.sh</code>）。控制台会有一些输出，大致如下：</p>
+<p><img src="https://pic.imgdb.cn/item/666f0ca1d9c307b7e9f10523.jpg"></p>
+<p>5、启动VNC客户端。现在我们暂时退出Termux的终端（记得挂后台，别被清理了），打开刚刚安装的VNC viewer，点击右下角的加号创建一个新的session，其中主机地址填写<code>localhost:2</code>或<code>127.0.0.1:2</code>，密码填写前面第一步中设置的密码，即可连接。</p>
+<p><img src="https://pic.imgdb.cn/item/666f0ca9d9c307b7e9f1176d.jpg"></p>
+<p>启动后的界面大致是下面这个样子。VNC viewer内支持鼠标和键盘操作（就像PC那样）。</p>
+<p><img src="https://pic.imgdb.cn/item/666f0fa2d9c307b7e9f6a279.jpg"></p>
+<h2 id="五、WPS-arm-linux版的安装过程"><a href="#五、WPS-arm-linux版的安装过程" class="headerlink" title="五、WPS arm linux版的安装过程"></a>五、WPS arm linux版的安装过程</h2><blockquote>
+<p>参考： <a target="_blank" rel="noopener" href="https://www.linuxcapable.com/how-to-install-wps-office-on-fedora-linux/">https://www.linuxcapable.com/how-to-install-wps-office-on-fedora-linux/</a></p>
+</blockquote>
+<p>首先从WPS官网上下载Linux版的WPS安装包（rpm格式）： <a target="_blank" rel="noopener" href="https://www.wps.cn/product/wpslinux#">https://www.wps.cn/product/wpslinux#</a></p>
+<p>在这以后，直接使用<code>rpm -ivh &lt;package_name.rpm&gt;</code> 并不能安装，因为一些依赖库的缺失会导致报错。但是可以使用下面的指令安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先切到WPS安装包的下载目录</span></span><br><span class="line"><span class="built_in">cd</span> &lt;WPS安装包的下载目录&gt;</span><br><span class="line"><span class="comment"># 然后使用dnf安装。注意指令中的通配符。</span></span><br><span class="line">sudo dnf install wps-office*.rpm</span><br></pre></td></tr></table></figure>
+
+<p>这会自动安装依赖库，并同时从本地rpm文件中安装WPS。</p>
+<p>之后，使用<code>wps</code>指令即可启动WPS主程序。</p>
+<p>但是更推荐的是启动LXQT桌面并通过VNC view连接到这个桌面以后，通过LXQT桌面管理器的launcher启动WPS主程序。</p>
+<p><img src="https://pic.imgdb.cn/item/666f116bd9c307b7e9f9df2c.jpg"></p>
+<h2 id="六、VS-Code的安装和启动"><a href="#六、VS-Code的安装和启动" class="headerlink" title="六、VS Code的安装和启动"></a>六、VS Code的安装和启动</h2><p>和WPS相反，VScode的安装非常简单，只需要一行指令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install code</span><br></pre></td></tr></table></figure>
+
+<p>要启动vscode，可以直接使用<code>code</code>指令。然而在我的termux-fedora环境中，这一指令并不能正确启动vscode，添加<code>--verbose</code>选项以后得到的报错信息中提到：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[cyclin@localhost]~$ code --verbose</span><br><span class="line">[5987:0521/102754.483405:FATAL:setuid_sandbox_host.cc(158)] The SUID sandbox helper binary was found, but is not configured correctly. Rather than run without sandboxing I&#x27;m aborting now. You need to make sure that /usr/share/code/chrome-sandbox is owned by root and has mode 4755</span><br></pre></td></tr></table></figure>
+
+<p>按这个报错信息的说法，我需要给chrome沙箱文件<code>/usr/share/code/chrome-sandbox</code>赋予4755权限。当我这么做以后，问题依然没有解决，推测可能是termux的chroot环境所导致的。</p>
+<p>所以我们可以尝试绕过上述chrome沙箱，直接启动vscode。指令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code --no-sandbox</span><br></pre></td></tr></table></figure>
+
+<p>可以把上述指令封装为<code>vscode</code>指令以便下一次启动。</p>
+<p><img src="https://pic.imgdb.cn/item/666f1185d9c307b7e9fa0b4d.jpg"></p>
+<h2 id="七、一些报错的解决："><a href="#七、一些报错的解决：" class="headerlink" title="七、一些报错的解决："></a>七、一些报错的解决：</h2><h3 id="（1）tumux的curl报错（cannot-link-executable-quot-Curl-quot-library-quot-libssl-so-1-1-quot-not-found）："><a href="#（1）tumux的curl报错（cannot-link-executable-quot-Curl-quot-library-quot-libssl-so-1-1-quot-not-found）：" class="headerlink" title="（1）tumux的curl报错（cannot link executable &quot;Curl&quot;: library &quot;libssl.so.1.1&quot; not found）："></a>（1）tumux的curl报错（<code>cannot link executable &quot;Curl&quot;: library &quot;libssl.so.1.1&quot; not found</code>）：</h3><p>根据 <a target="_blank" rel="noopener" href="https://github.com/termux/termux-packages/issues/10871">https://github.com/termux/termux-packages/issues/10871</a> ，首先在 $PREFIX/lib下创建libssl.so.1.1的软连接</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd $PREFIX/lib</span><br><span class="line">ln -s openssl-1.1/libcrypto.so.1.1 libcrypto.so.1.1;</span><br><span class="line">ln -s openssl-1.1/libssl.so.1.1 libssl.so.1.1</span><br></pre></td></tr></table></figure>
+<p>从而保证curl的依赖库可以被link。<br>随后使用apt full-upgrade进行全局更新。</p>
+<h3 id="（2）使用proot-distro安装linux发行版以后dnf更新缓存失败、curl无法解析主机名（-“curl-error-6-could-not-resolve-host”，但是可以根据ip获取信息）的解决方法："><a href="#（2）使用proot-distro安装linux发行版以后dnf更新缓存失败、curl无法解析主机名（-“curl-error-6-could-not-resolve-host”，但是可以根据ip获取信息）的解决方法：" class="headerlink" title="（2）使用proot-distro安装linux发行版以后dnf更新缓存失败、curl无法解析主机名（ “curl error (6) could not resolve host”，但是可以根据ip获取信息）的解决方法："></a>（2）使用proot-distro安装linux发行版以后dnf更新缓存失败、curl无法解析主机名（ “curl error (6) could not resolve host”，但是可以根据ip获取信息）的解决方法：</h3><p>经过排查，大约是DNS配置的问题。尝试在/etc/resolv.conf中增加了一些DNS服务器，但是错误仍未解决。</p>
+<p>最后，在/etc/hosts中将一些网站的DNS写死（yum软件源用<a target="_blank" rel="noopener" href="https://mirrors4.tuna.tsinghua.edu.cn,在hosts中添加这一主机并配置ip为101.6.15.130)/">https://mirrors4.tuna.tsinghua.edu.cn，在hosts中添加这一主机并配置ip为101.6.15.130）</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">101.6.15.130  mirrors4.tuna.tsinghua.edu.cn</span><br><span class="line">101.6.15.130  bfdmirrors4.a.s.tuna.tsinghua.edu.cn</span><br></pre></td></tr></table></figure>
+
+<p>这样至少可以保证更新软件源缓存时是没有问题的。</p>
+<p>之后安装一下net-tools这个软件包，DNS的问题似乎就解决好了。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/06/16/install-WPS-and-VSCode-on-android-tablet/" title="安卓平板运行PC级WPS和VS Code的探索">https://wz.anoms.top/2024/06/16/install-WPS-and-VSCode-on-android-tablet/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/termux/" rel="tag"><i class="fa fa-tag"></i> termux</a>
+              <a href="/tags/fedora/" rel="tag"><i class="fa fa-tag"></i> fedora</a>
+              <a href="/tags/proot/" rel="tag"><i class="fa fa-tag"></i> proot</a>
+              <a href="/tags/WPS/" rel="tag"><i class="fa fa-tag"></i> WPS</a>
+              <a href="/tags/VS-Code/" rel="tag"><i class="fa fa-tag"></i> VS Code</a>
+              <a href="/tags/PC%E5%BA%94%E7%94%A8%E5%BC%95%E6%93%8E/" rel="tag"><i class="fa fa-tag"></i> PC应用引擎</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/06/10/20240610_updatelog/" rel="prev" title="碎碎念：关于高考和考试制度的一些反思">
+                  <i class="fa fa-chevron-left"></i> 碎碎念：关于高考和考试制度的一些反思
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
