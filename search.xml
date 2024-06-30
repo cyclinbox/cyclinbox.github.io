@@ -10910,4 +10910,1478 @@
         <tag>PC应用引擎</tag>
       </tags>
   </entry>
+  <entry>
+    <title>碎碎念：六月总结</title>
+    <url>/2024/06/30/20240630_updatelog/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+
+<p>梅雨季节如期到来。连绵不绝的雨水覆盖了这一周的大部分时间。最近状态也有点down——相比于5月底和6月初的那段时间。</p>
+<p>五月底的那段时间，我已经基本从五一假期北京天津特种兵的舟车劳顿中走了出来，每天的工作和学习效率还是比较高的；六月初的端午假期和大学同学见了一面，交流了不少东西，也给自己增添了不少信心和力量，于是端午后的那段时间我的工作状态也非常好。</p>
+<p>然而目前又陷入了一些瓶颈。周一到周五，几乎每天都在打着“文献调研”的旗号摆烂，看了一些文献，但几乎都没过脑子。到了周末，只想疯狂补觉和狂刷b站，对于堆积如山的事情看都不想看。</p>
+<p>前段时间不知受了什么刺激，开始看一本心理学书籍《蚊子背后的大象》，并也顺道回顾了大学以来的日记（还是很怀念大三大四在北京度过的那段时期，以及那个时候的自己）。《蚊子背后的大象》是一本德国人写的自我帮助类书籍，主要是帮助读者从一些生活中的细节和冲突（“蚊子”）出发去定位童年时期的创伤（“大象”），并进一步的针对不同的童年创伤给出特定的解决方案，以帮助读者走出这些阴影、更好的生活、更好的处理与身边的人的关系。</p>
+<p>这确实是一本好书，并且今天下午加了把劲终于给看完了。书中有一些自测题，帮助读者定位自己所在意的一些需求和一些得不到满足的需求。自测了一下，结果和之前的预期差不多，所有的“欲求不满”都集中在对关心和爱的需求上。或许我可以更自爱一点的——自己给自己多一点爱，以换来和他人更健康的关系。</p>
+<p>然而有时候我会想自己有没有过于放纵自己了——就像这个周末，以及之前的许多个周末一样——早上睡到午饭的点才起来，一下午加一晚上基本不干正事。这对吗？这不对啊。整天在日记里说怀念在IBP的时光，可是在IBP的那段时间里，也没有这么摆烂呀。  </p>
+<p>上海的雨看起来还得再下一个星期。刚刚讲完组会，又有一堆问题要解决。阿里云的服务器已经到期了，<br>一些备份的文件还没整理。事情很多，麻了啊。</p>
+<p>以及，我好像还对这个夏天有所期待——你究竟在期待什么？</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>US NEWS 2024-2025世界大学排行榜</title>
+    <url>/2024/06/28/USNEWSrank2024_2025/</url>
+    <content><![CDATA[<p>U.S. News世界大学排名是全球最知名且具有广泛影响力的大学排名之一，由美国《美国新闻与 世界报道》（U.S. News &amp; World Report）发布。自1983年起，U.S. News开始对美国大学进行 排名，随着时间的推移，这一排名体系逐渐扩展到全球范围，成为衡量大学学术水平和综合影响力的重要参考。前几天他们发布了今年最新版的大学排名，感觉需要关注一下。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>网址： <a href="https://www.usnews.com/education/best-global-universities/rankings?int=a27a09">https://www.usnews.com/education/best-global-universities/rankings?int=a27a09</a></p>
+</blockquote>
+<p>那个网页没有提供导出的功能，所以我用python写了个解析的脚本，将网页解析为了一个tsv文件，并用Excel做了进一步的编辑和筛选。这个Excel表格我放在WPS云文档了，有需要的自取： <a href="https://kdocs.cn/l/cdks8IcjYKyf">【金山文档 | WPS云文档】 2024usnews </a></p>
+<p>下面是一些比较有意思的结果：</p>
+<h2 id="中国大学（仅中国大陆，Top20）"><a href="#中国大学（仅中国大陆，Top20）" class="headerlink" title="中国大学（仅中国大陆，Top20）"></a>中国大学（仅中国大陆，Top20）</h2><p>列表如下：（其中第二列的index是全球排名，第一列是国内排名）</p>
+<table>
+<thead>
+<tr>
+<th>china rank</th>
+<th>index</th>
+<th>name</th>
+<th>country_and_region</th>
+<th>city</th>
+<th>rank</th>
+<th>details</th>
+<th>global_score</th>
+<th>enrollment_score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>16</td>
+<td>Tsinghua University</td>
+<td>China</td>
+<td>Beijing</td>
+<td>16</td>
+<td>Tsinghua University, located in northwest Beijing, China, is a public institution that traces its roots back to 1911… Read More</td>
+<td>84.4</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>31</td>
+<td>Peking University</td>
+<td>China</td>
+<td>Beijing</td>
+<td>31</td>
+<td>Peking University is a public institution that was founded in 1898, though it wasn’t known by its current name until… Read More</td>
+<td>79.7</td>
+<td>33,064</td>
+</tr>
+<tr>
+<td>3</td>
+<td>52</td>
+<td>Zhejiang University</td>
+<td>China</td>
+<td>Hangzhou</td>
+<td>51</td>
+<td>Zhejiang University is a public institution that traces its roots back to 1897. The university is located in Hangzhou… Read More</td>
+<td>75.6</td>
+<td>48,169</td>
+</tr>
+<tr>
+<td>4</td>
+<td>54</td>
+<td>Shanghai Jiao Tong University</td>
+<td>China</td>
+<td>Shanghai</td>
+<td>54</td>
+<td>Read More</td>
+<td>75.4</td>
+<td>38,472</td>
+</tr>
+<tr>
+<td>5</td>
+<td>69</td>
+<td>University of Chinese Academy of Sciences, CAS</td>
+<td>China</td>
+<td>Beijing</td>
+<td>69</td>
+<td>Read More</td>
+<td>74.4</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>6</td>
+<td>83</td>
+<td>University of Science &amp; Technology of China, CAS</td>
+<td>China</td>
+<td>Hefei</td>
+<td>82</td>
+<td>The University of Science and Technology of China is a public university that the Chinese Academy of Sciences founded in… Read More</td>
+<td>73.2</td>
+<td>20,252</td>
+</tr>
+<tr>
+<td>7</td>
+<td>86</td>
+<td>Fudan University</td>
+<td>China</td>
+<td>Shanghai</td>
+<td>85</td>
+<td>Fudan University is a public institution that was founded in 1905. The university is located in Shanghai, China, and is… Read More</td>
+<td>73</td>
+<td>38,101</td>
+</tr>
+<tr>
+<td>8</td>
+<td>98</td>
+<td>Nanjing University</td>
+<td>China</td>
+<td>Nanjing</td>
+<td>98</td>
+<td>Read More</td>
+<td>72</td>
+<td>36,711</td>
+</tr>
+<tr>
+<td>9</td>
+<td>100</td>
+<td>Huazhong University of Science &amp; Technology</td>
+<td>China</td>
+<td>Wuhan</td>
+<td>100</td>
+<td>Read More</td>
+<td>71.9</td>
+<td>57,663</td>
+</tr>
+<tr>
+<td>10</td>
+<td>106</td>
+<td>Sun Yat Sen University</td>
+<td>China</td>
+<td>Guangzhou</td>
+<td>106</td>
+<td>Read More</td>
+<td>71.4</td>
+<td>61,453</td>
+</tr>
+<tr>
+<td>11</td>
+<td>108</td>
+<td>Wuhan University</td>
+<td>China</td>
+<td>Wuhan</td>
+<td>108</td>
+<td>Read More</td>
+<td>71.3</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>12</td>
+<td>119</td>
+<td>Hunan University</td>
+<td>China</td>
+<td>Changsha</td>
+<td>119</td>
+<td>Read More</td>
+<td>69.7</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>13</td>
+<td>155</td>
+<td>Tongji University</td>
+<td>China</td>
+<td>Shanghai</td>
+<td>153</td>
+<td>Read More</td>
+<td>67.6</td>
+<td>31,632</td>
+</tr>
+<tr>
+<td>14</td>
+<td>156</td>
+<td>University of Electronic Science &amp; Technology of China</td>
+<td>China</td>
+<td>Chengdu</td>
+<td>153</td>
+<td>Read More</td>
+<td>67.6</td>
+<td>37,498</td>
+</tr>
+<tr>
+<td>15</td>
+<td>157</td>
+<td>Southern University of Science &amp; Technology</td>
+<td>China</td>
+<td>Shenzhen</td>
+<td>157</td>
+<td>Read More</td>
+<td>67.5</td>
+<td>6,575</td>
+</tr>
+<tr>
+<td>16</td>
+<td>161</td>
+<td>Harbin Institute of Technology</td>
+<td>China</td>
+<td>Harbin</td>
+<td>160</td>
+<td>Read More</td>
+<td>67.2</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>17</td>
+<td>168</td>
+<td>Central South University</td>
+<td>China</td>
+<td>Changsha</td>
+<td>168</td>
+<td>Read More</td>
+<td>66.9</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>18</td>
+<td>180</td>
+<td>Beijing Institute of Technology</td>
+<td>China</td>
+<td>Beijing</td>
+<td>179</td>
+<td>Read More</td>
+<td>66.3</td>
+<td>34,050</td>
+</tr>
+<tr>
+<td>19</td>
+<td>182</td>
+<td>Xi’an Jiaotong University</td>
+<td>China</td>
+<td>Xi’an</td>
+<td>179</td>
+<td>Read More</td>
+<td>66.3</td>
+<td>45,955</td>
+</tr>
+<tr>
+<td>20</td>
+<td>183</td>
+<td>Southeast University - China</td>
+<td>China</td>
+<td>Nanjing</td>
+<td>183</td>
+<td>Read More</td>
+<td>66.2</td>
+<td>39,653</td>
+</tr>
+</tbody></table>
+<p>其中清华、北大、浙江大学分列top1~3，上交第四，UCAS第五，USTC第六（这几所学校的世界排名都在top90靠前，其中清华16，北大31，浙江大学51）。</p>
+<p>华中科技大学表现亮眼，排名第九，位列中山大学（排名第10）和武汉大学（排名第11）之间。</p>
+<p>南开、四川大学在20多名左右.</p>
+<p>比较有趣的是西湖大学也上了这个排行榜，目前的国内排名是第50名，在济南大学和华中师范大学之间。</p>
+<h2 id="全球Top10"><a href="#全球Top10" class="headerlink" title="全球Top10"></a>全球Top10</h2><table>
+<thead>
+<tr>
+<th>index</th>
+<th>name</th>
+<th>country_and_region</th>
+<th>city</th>
+<th>rank</th>
+<th>details</th>
+<th>global_score</th>
+<th>enrollment_score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Harvard University</td>
+<td>United States</td>
+<td>Cambridge (U.S.)</td>
+<td>1</td>
+<td>Founded in 1636, Harvard University is the oldest higher education institution in the U.S. The bulk of Harvard’s… Read More</td>
+<td>100</td>
+<td>20,050</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Massachusetts Institute of Technology (MIT)</td>
+<td>United States</td>
+<td>Cambridge (U.S.)</td>
+<td>2</td>
+<td>Massachusetts Institute of Technology, founded in 1861, is located in Cambridge, Massachusetts, near Boston. Around… Read More</td>
+<td>96.9</td>
+<td>11,085</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Stanford University</td>
+<td>United States</td>
+<td>Stanford</td>
+<td>3</td>
+<td>Stanford University was founded in 1885 and is located in California’s Bay Area, around 30 miles south of San Francisco… Read More</td>
+<td>94.5</td>
+<td>14,517</td>
+</tr>
+<tr>
+<td>4</td>
+<td>University of Oxford</td>
+<td>United Kingdom</td>
+<td>Oxford</td>
+<td>4</td>
+<td>The exact date of the University of Oxford’s founding is unknown, but the school traces its roots back to at least 1096… Read More</td>
+<td>88.2</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>5</td>
+<td>University of California Berkeley</td>
+<td>United States</td>
+<td>Berkeley</td>
+<td>5</td>
+<td>The University of California—Berkeley is situated roughly 15 miles from San Francisco in what is known as the Bay Area… Read More</td>
+<td>87.2</td>
+<td>39,991</td>
+</tr>
+<tr>
+<td>6</td>
+<td>University of Cambridge</td>
+<td>United Kingdom</td>
+<td>Cambridge (U.K.)</td>
+<td>6</td>
+<td>The University of Cambridge, located around 60 miles north of London, traces its history back to 1209. Around 19,000… Read More</td>
+<td>86.9</td>
+<td>20,870</td>
+</tr>
+<tr>
+<td>7</td>
+<td>University College London</td>
+<td>United Kingdom</td>
+<td>London (U.K.)</td>
+<td>7</td>
+<td>University College London, or UCL, is a public institution that was founded in 1826. It was the third university… Read More</td>
+<td>86.5</td>
+<td>41,195</td>
+</tr>
+<tr>
+<td>8</td>
+<td>University of Washington Seattle</td>
+<td>United States</td>
+<td>Seattle</td>
+<td>7</td>
+<td>The University of Washington is a public institution that was founded in 1861. The school’s oldest and largest campus in… Read More</td>
+<td>86.5</td>
+<td>49,485</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Columbia University</td>
+<td>United States</td>
+<td>New York City</td>
+<td>9</td>
+<td>Columbia University is a private institution that was founded in 1754. It is located in the Upper West Side of New York… Read More</td>
+<td>86.4</td>
+<td>25,914</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Yale University</td>
+<td>United States</td>
+<td>New Haven</td>
+<td>10</td>
+<td>Yale University was founded in 1701, making it one of the oldest institutions of higher education in the U.S. The… Read More</td>
+<td>86</td>
+<td>11,923</td>
+</tr>
+</tbody></table>
+<p>全被英美这俩国家瓜分了。</p>
+<h2 id="美国top10"><a href="#美国top10" class="headerlink" title="美国top10"></a>美国top10</h2><p>（其中第二列的index是全球排名，下同）</p>
+<table>
+<thead>
+<tr>
+<th>US rank</th>
+<th>index</th>
+<th>name</th>
+<th>country_and_region</th>
+<th>city</th>
+<th>rank</th>
+<th>details</th>
+<th>global_score</th>
+<th>enrollment_score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+<td>Harvard University</td>
+<td>United States</td>
+<td>Cambridge (U.S.)</td>
+<td>1</td>
+<td>Founded in 1636, Harvard University is the oldest higher education institution in the U.S. The bulk of Harvard’s… Read More</td>
+<td>100</td>
+<td>20,050</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>Massachusetts Institute of Technology (MIT)</td>
+<td>United States</td>
+<td>Cambridge (U.S.)</td>
+<td>2</td>
+<td>Massachusetts Institute of Technology, founded in 1861, is located in Cambridge, Massachusetts, near Boston. Around… Read More</td>
+<td>96.9</td>
+<td>11,085</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+<td>Stanford University</td>
+<td>United States</td>
+<td>Stanford</td>
+<td>3</td>
+<td>Stanford University was founded in 1885 and is located in California’s Bay Area, around 30 miles south of San Francisco… Read More</td>
+<td>94.5</td>
+<td>14,517</td>
+</tr>
+<tr>
+<td>4</td>
+<td>5</td>
+<td>University of California Berkeley</td>
+<td>United States</td>
+<td>Berkeley</td>
+<td>5</td>
+<td>The University of California—Berkeley is situated roughly 15 miles from San Francisco in what is known as the Bay Area… Read More</td>
+<td>87.2</td>
+<td>39,991</td>
+</tr>
+<tr>
+<td>5</td>
+<td>8</td>
+<td>University of Washington Seattle</td>
+<td>United States</td>
+<td>Seattle</td>
+<td>7</td>
+<td>The University of Washington is a public institution that was founded in 1861. The school’s oldest and largest campus in… Read More</td>
+<td>86.5</td>
+<td>49,485</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9</td>
+<td>Columbia University</td>
+<td>United States</td>
+<td>New York City</td>
+<td>9</td>
+<td>Columbia University is a private institution that was founded in 1754. It is located in the Upper West Side of New York… Read More</td>
+<td>86.4</td>
+<td>25,914</td>
+</tr>
+<tr>
+<td>7</td>
+<td>10</td>
+<td>Yale University</td>
+<td>United States</td>
+<td>New Haven</td>
+<td>10</td>
+<td>Yale University was founded in 1701, making it one of the oldest institutions of higher education in the U.S. The… Read More</td>
+<td>86</td>
+<td>11,923</td>
+</tr>
+<tr>
+<td>8</td>
+<td>11</td>
+<td>University of California Los Angeles</td>
+<td>United States</td>
+<td>Los Angeles</td>
+<td>11</td>
+<td>The University of California—Los Angeles, commonly referred to as UCLA, is a public institution that was founded in… Read More</td>
+<td>85.5</td>
+<td>43,504</td>
+</tr>
+<tr>
+<td>9</td>
+<td>13</td>
+<td>Johns Hopkins University</td>
+<td>United States</td>
+<td>Baltimore</td>
+<td>13</td>
+<td>Johns Hopkins University is a private institution that was founded in 1876. The school has campuses located in and… Read More</td>
+<td>85.2</td>
+<td>18,835</td>
+</tr>
+<tr>
+<td>10</td>
+<td>14</td>
+<td>University of Pennsylvania</td>
+<td>United States</td>
+<td>Philadelphia</td>
+<td>14</td>
+<td>The University of Pennsylvania, also known as Penn, was founded in 1740. The private, Ivy League institution is located… Read More</td>
+<td>84.7</td>
+<td>21,312</td>
+</tr>
+</tbody></table>
+<p>记一下这几个学校的名字：哈佛，MIT，斯坦福，UCB，University of Washington Seattle。</p>
+<p>补充一下，CMU在美国排48，全球排名134。</p>
+<h2 id="西欧主要国家top20"><a href="#西欧主要国家top20" class="headerlink" title="西欧主要国家top20"></a>西欧主要国家top20</h2><table>
+<thead>
+<tr>
+<th>Euro rank</th>
+<th>index</th>
+<th>name</th>
+<th>country_and_region</th>
+<th>city</th>
+<th>rank</th>
+<th>details</th>
+<th>global_score</th>
+<th>enrollment_score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>4</td>
+<td>University of Oxford</td>
+<td>United Kingdom</td>
+<td>Oxford</td>
+<td>4</td>
+<td>The exact date of the University of Oxford’s founding is unknown, but the school traces its roots back to at least 1096… Read More</td>
+<td>88.2</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>6</td>
+<td>University of Cambridge</td>
+<td>United Kingdom</td>
+<td>Cambridge (U.K.)</td>
+<td>6</td>
+<td>The University of Cambridge, located around 60 miles north of London, traces its history back to 1209. Around 19,000… Read More</td>
+<td>86.9</td>
+<td>20,870</td>
+</tr>
+<tr>
+<td>3</td>
+<td>7</td>
+<td>University College London</td>
+<td>United Kingdom</td>
+<td>London (U.K.)</td>
+<td>7</td>
+<td>University College London, or UCL, is a public institution that was founded in 1826. It was the third university… Read More</td>
+<td>86.5</td>
+<td>41,195</td>
+</tr>
+<tr>
+<td>4</td>
+<td>12</td>
+<td>Imperial College London</td>
+<td>United Kingdom</td>
+<td>London (U.K.)</td>
+<td>12</td>
+<td>Imperial College London is a public institution that was founded in 1907. The university was previously a college of the… Read More</td>
+<td>85.3</td>
+<td>20,190</td>
+</tr>
+<tr>
+<td>5</td>
+<td>33</td>
+<td>ETH Zurich</td>
+<td>Switzerland</td>
+<td>Zurich</td>
+<td>33</td>
+<td>Read More</td>
+<td>79.4</td>
+<td>22,219</td>
+</tr>
+<tr>
+<td>6</td>
+<td>34</td>
+<td>University of Amsterdam</td>
+<td>Netherlands</td>
+<td>Amsterdam</td>
+<td>33</td>
+<td>The University of Amsterdam is a public institution that traces its roots back to 1632. The university is spread across… Read More</td>
+<td>79.4</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>7</td>
+<td>36</td>
+<td>King’s College London</td>
+<td>United Kingdom</td>
+<td>London (U.K.)</td>
+<td>36</td>
+<td>Read More</td>
+<td>79.2</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>8</td>
+<td>38</td>
+<td>University of Edinburgh</td>
+<td>United Kingdom</td>
+<td>Edinburgh</td>
+<td>38</td>
+<td>The University of Edinburgh is a public institution that was founded in 1583. It is spread across five campuses in… Read More</td>
+<td>78.2</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>9</td>
+<td>43</td>
+<td>Universite Paris Cite</td>
+<td>France</td>
+<td>Paris</td>
+<td>43</td>
+<td>Read More</td>
+<td>77.3</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>10</td>
+<td>44</td>
+<td>University of Copenhagen</td>
+<td>Denmark</td>
+<td>Copenhagen</td>
+<td>44</td>
+<td>Read More</td>
+<td>76.9</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>11</td>
+<td>46</td>
+<td>Utrecht University</td>
+<td>Netherlands</td>
+<td>Utrecht</td>
+<td>46</td>
+<td>Utrecht University is a public institution that was founded in 1636. It is located in the city of Utrecht in the… Read More</td>
+<td>76.8</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>12</td>
+<td>48</td>
+<td>Humboldt University of Berlin</td>
+<td>Germany</td>
+<td>Berlin</td>
+<td>48</td>
+<td>Humboldt-Universität zu Berlin is a public institution in Germany that was founded in 1810. The university’s campuses… Read More</td>
+<td>76.3</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>13</td>
+<td>49</td>
+<td>KU Leuven</td>
+<td>Belgium</td>
+<td>Leuven</td>
+<td>48</td>
+<td>Read More</td>
+<td>76.3</td>
+<td>49,434</td>
+</tr>
+<tr>
+<td>14</td>
+<td>51</td>
+<td>Karolinska Institutet</td>
+<td>Sweden</td>
+<td>Stockholm</td>
+<td>51</td>
+<td>The Karolinska Institute is a public institution that was founded in 1810 as a school for army surgeons. It is located… Read More</td>
+<td>75.6</td>
+<td>8,085</td>
+</tr>
+<tr>
+<td>15</td>
+<td>53</td>
+<td>University of Munich</td>
+<td>Germany</td>
+<td>Munich</td>
+<td>53</td>
+<td>The University of Munich is a public institution that traces its roots back to 1472. It is situated in Munich – the… Read More</td>
+<td>75.5</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>16</td>
+<td>55</td>
+<td>Ruprecht Karls University Heidelberg</td>
+<td>Germany</td>
+<td>Heidelberg</td>
+<td>55</td>
+<td>Heidelberg University is a public institution that was founded in 1386, earning it the title of Germany’s oldest… Read More</td>
+<td>75.3</td>
+<td>19,315</td>
+</tr>
+<tr>
+<td>17</td>
+<td>56</td>
+<td>Leiden University</td>
+<td>Netherlands</td>
+<td>Leiden</td>
+<td>56</td>
+<td>Leiden University is a public institution that was founded in 1575, making it the oldest university in the Netherlands… Read More</td>
+<td>75.2</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>18</td>
+<td>58</td>
+<td>Sorbonne Universite</td>
+<td>France</td>
+<td>Paris</td>
+<td>56</td>
+<td>Read More</td>
+<td>75.2</td>
+<td>41,527</td>
+</tr>
+<tr>
+<td>19</td>
+<td>60</td>
+<td>University of Zurich</td>
+<td>Switzerland</td>
+<td>Zurich</td>
+<td>60</td>
+<td>Read More</td>
+<td>75</td>
+<td>25,796</td>
+</tr>
+<tr>
+<td>20</td>
+<td>62</td>
+<td>University of Glasgow</td>
+<td>United Kingdom</td>
+<td>Glasgow</td>
+<td>61</td>
+<td>Read More</td>
+<td>74.9</td>
+<td>32,330</td>
+</tr>
+</tbody></table>
+<p>（其中英国的大学占比不少。丹麦哥本哈根大学在top10。ETH Zurich排第五。德国最好的学校是Humboldt University of Berlin，排12）</p>
+<h2 id="欧陆传统强国（丹麦、法国、德国、意大利、西班牙）top10"><a href="#欧陆传统强国（丹麦、法国、德国、意大利、西班牙）top10" class="headerlink" title="欧陆传统强国（丹麦、法国、德国、意大利、西班牙）top10"></a>欧陆传统强国（丹麦、法国、德国、意大利、西班牙）top10</h2><p>单看欧陆几个主要大国（丹法德意西）的top10排名的话，德国大学的占比其实还挺高的：</p>
+<table>
+<thead>
+<tr>
+<th>DFGIS rank</th>
+<th>index</th>
+<th>name</th>
+<th>country_and_region</th>
+<th>city</th>
+<th>rank</th>
+<th>details</th>
+<th>global_score</th>
+<th>enrollment_score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>43</td>
+<td>Universite Paris Cite</td>
+<td>France</td>
+<td>Paris</td>
+<td>43</td>
+<td>Read More</td>
+<td>77.3</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>44</td>
+<td>University of Copenhagen</td>
+<td>Denmark</td>
+<td>Copenhagen</td>
+<td>44</td>
+<td>Read More</td>
+<td>76.9</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>48</td>
+<td>Humboldt University of Berlin</td>
+<td>Germany</td>
+<td>Berlin</td>
+<td>48</td>
+<td>Humboldt-Universität zu Berlin is a public institution in Germany that was founded in 1810. The university’s campuses… Read More</td>
+<td>76.3</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>4</td>
+<td>53</td>
+<td>University of Munich</td>
+<td>Germany</td>
+<td>Munich</td>
+<td>53</td>
+<td>The University of Munich is a public institution that traces its roots back to 1472. It is situated in Munich – the… Read More</td>
+<td>75.5</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>5</td>
+<td>55</td>
+<td>Ruprecht Karls University Heidelberg</td>
+<td>Germany</td>
+<td>Heidelberg</td>
+<td>55</td>
+<td>Heidelberg University is a public institution that was founded in 1386, earning it the title of Germany’s oldest… Read More</td>
+<td>75.3</td>
+<td>19,315</td>
+</tr>
+<tr>
+<td>6</td>
+<td>58</td>
+<td>Sorbonne Universite</td>
+<td>France</td>
+<td>Paris</td>
+<td>56</td>
+<td>Read More</td>
+<td>75.2</td>
+<td>41,527</td>
+</tr>
+<tr>
+<td>7</td>
+<td>66</td>
+<td>Free University of Berlin</td>
+<td>Germany</td>
+<td>Berlin</td>
+<td>66</td>
+<td>The Free University of Berlin is a public institution that was founded in 1948. The university has three main campuses… Read More</td>
+<td>74.6</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>8</td>
+<td>76</td>
+<td>Universite Paris Saclay</td>
+<td>France</td>
+<td>Saint-Aubin</td>
+<td>76</td>
+<td>Read More</td>
+<td>73.6</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>9</td>
+<td>80</td>
+<td>University of Barcelona</td>
+<td>Spain</td>
+<td>Barcelona</td>
+<td>79</td>
+<td>The University of Barcelona is a public institution that was founded in 1450. The urban university has multiple campuses… Read More</td>
+<td>73.4</td>
+<td>44,365</td>
+</tr>
+<tr>
+<td>10</td>
+<td>82</td>
+<td>Technical University of Munich</td>
+<td>Germany</td>
+<td>Munich</td>
+<td>82</td>
+<td>The Technical University of Munich, sometimes called TUM, is a public institution that was founded in 1868. The… Read More</td>
+<td>73.2</td>
+<td>35,505</td>
+</tr>
+</tbody></table>
+<p>科隆大学（University of Cologne；UNIVERSITÄT ZU KÖLN）全球排名242，西欧大陆排名93，丹法德意西（DFGIS）排名37。</p>
+<h2 id="东亚-南亚-东南亚-top-20（除中国大陆）："><a href="#东亚-南亚-东南亚-top-20（除中国大陆）：" class="headerlink" title="东亚+南亚+东南亚 top 20（除中国大陆）："></a>东亚+南亚+东南亚 top 20（除中国大陆）：</h2><table>
+<thead>
+<tr>
+<th>EA rank</th>
+<th>index</th>
+<th>name</th>
+<th>country_and_region</th>
+<th>city</th>
+<th>rank</th>
+<th>details</th>
+<th>global_score</th>
+<th>enrollment_score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>22</td>
+<td>National University of Singapore</td>
+<td>Singapore</td>
+<td>Singapore</td>
+<td>22</td>
+<td>Read More</td>
+<td>83.5</td>
+<td>33,334</td>
+</tr>
+<tr>
+<td>2</td>
+<td>27</td>
+<td>Nanyang Technological University</td>
+<td>Singapore</td>
+<td>Singapore</td>
+<td>27</td>
+<td>Read More</td>
+<td>80.9</td>
+<td>25,895</td>
+</tr>
+<tr>
+<td>3</td>
+<td>42</td>
+<td>Chinese University of Hong Kong</td>
+<td>Hong Kong</td>
+<td>Shatin</td>
+<td>42</td>
+<td>Read More</td>
+<td>77.5</td>
+<td>18,290</td>
+</tr>
+<tr>
+<td>4</td>
+<td>45</td>
+<td>University of Hong Kong</td>
+<td>Hong Kong</td>
+<td>Pok Fu Lam</td>
+<td>44</td>
+<td>Read More</td>
+<td>76.9</td>
+<td>18,103</td>
+</tr>
+<tr>
+<td>5</td>
+<td>67</td>
+<td>Hong Kong Polytechnic University</td>
+<td>Hong Kong</td>
+<td>Kowloon</td>
+<td>67</td>
+<td>Read More</td>
+<td>74.5</td>
+<td>20,033</td>
+</tr>
+<tr>
+<td>6</td>
+<td>79</td>
+<td>City University of Hong Kong</td>
+<td>Hong Kong</td>
+<td>Kowloon</td>
+<td>79</td>
+<td>Read More</td>
+<td>73.4</td>
+<td>9,076</td>
+</tr>
+<tr>
+<td>7</td>
+<td>84</td>
+<td>University of Tokyo</td>
+<td>Japan</td>
+<td>Tokyo</td>
+<td>84</td>
+<td>The University of Tokyo, also known as UTokyo or Todai, is a Japanese national university that was founded in 1877. The… Read More</td>
+<td>73.1</td>
+<td>26,345</td>
+</tr>
+<tr>
+<td>8</td>
+<td>105</td>
+<td>Hong Kong University of Science &amp; Technology</td>
+<td>Hong Kong</td>
+<td>Hong Kong</td>
+<td>105</td>
+<td>Read More</td>
+<td>71.6</td>
+<td>9,794</td>
+</tr>
+<tr>
+<td>9</td>
+<td>136</td>
+<td>Seoul National University (SNU)</td>
+<td>South Korea</td>
+<td>Seoul</td>
+<td>135</td>
+<td>Seoul National University was founded in 1946. The South Korean national university’s main location is the Gwanak campus… Read More</td>
+<td>68.4</td>
+<td>28,619</td>
+</tr>
+<tr>
+<td>10</td>
+<td>169</td>
+<td>Kyoto University</td>
+<td>Japan</td>
+<td>Kyoto</td>
+<td>168</td>
+<td>Kyoto University is a Japanese national university that was founded in 1897. Originally known as Kyoto Imperial… Read More</td>
+<td>66.9</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>11</td>
+<td>205</td>
+<td>Yonsei University</td>
+<td>South Korea</td>
+<td>Seoul</td>
+<td>205</td>
+<td>Yonsei University is a private institution that traces its roots back to 1885, when Christian missionaries founded a… Read More</td>
+<td>64.9</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>12</td>
+<td>234</td>
+<td>National Taiwan University</td>
+<td>Taiwan</td>
+<td>Taipei</td>
+<td>233</td>
+<td>National Taiwan University traces its roots back to 1928, when it was originally established as Taihoku Imperial… Read More</td>
+<td>63.4</td>
+<td>24,743</td>
+</tr>
+<tr>
+<td>13</td>
+<td>241</td>
+<td>Sejong University</td>
+<td>South Korea</td>
+<td>Seoul</td>
+<td>241</td>
+<td>Read More</td>
+<td>63</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>14</td>
+<td>256</td>
+<td>Ton Duc Thang University</td>
+<td>Vietnam</td>
+<td>Ho Chi Minh City</td>
+<td>253</td>
+<td>Read More</td>
+<td>62.5</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>15</td>
+<td>263</td>
+<td>University of Macau</td>
+<td>Macau</td>
+<td>Taipa</td>
+<td>262</td>
+<td>Read More</td>
+<td>62</td>
+<td>10,908</td>
+</tr>
+<tr>
+<td>16</td>
+<td>275</td>
+<td>Sungkyunkwan University (SKKU)</td>
+<td>South Korea</td>
+<td>Seoul</td>
+<td>275</td>
+<td>Sungkyunkwan University, also known as SKKU, is a private institution that traces its roots back to 1398, when it was… Read More</td>
+<td>61.5</td>
+<td>23,402</td>
+</tr>
+<tr>
+<td>17</td>
+<td>282</td>
+<td>Universiti Malaya</td>
+<td>Malaysia</td>
+<td>Kuala Lumpur</td>
+<td>281</td>
+<td>Read More</td>
+<td>61.2</td>
+<td>19,346</td>
+</tr>
+<tr>
+<td>18</td>
+<td>285</td>
+<td>China Medical University Taiwan</td>
+<td>Taiwan</td>
+<td>Taichung</td>
+<td>285</td>
+<td>Read More</td>
+<td>61</td>
+<td>7,110</td>
+</tr>
+<tr>
+<td>19</td>
+<td>297</td>
+<td>Duy Tan University</td>
+<td>Vietnam</td>
+<td>Danang</td>
+<td>296</td>
+<td>Read More</td>
+<td>60.7</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>20</td>
+<td>298</td>
+<td>Korea Advanced Institute of Science &amp; Technology (KAIST)</td>
+<td>South Korea</td>
+<td>Daejeon</td>
+<td>296</td>
+<td>The Korea Advanced Institute of Science and Technology, commonly known as KAIST, is a public institution that was… Read More</td>
+<td>60.7</td>
+<td>10,111</td>
+</tr>
+</tbody></table>
+<p>新加坡和香港的学校就是牛。</p>
+<h2 id="US-UK-Australia-Canada（top30）"><a href="#US-UK-Australia-Canada（top30）" class="headerlink" title="US + UK + Australia + Canada（top30）"></a>US + UK + Australia + Canada（top30）</h2><p>这几个国家都是留学的热门候选，因此放在一起也排个表：</p>
+<table>
+<thead>
+<tr>
+<th>UUAC rank</th>
+<th>index</th>
+<th>name</th>
+<th>country_and_region</th>
+<th>city</th>
+<th>rank</th>
+<th>details</th>
+<th>global_score</th>
+<th>enrollment_score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+<td>Harvard University</td>
+<td>United States</td>
+<td>Cambridge (U.S.)</td>
+<td>1</td>
+<td>Founded in 1636, Harvard University is the oldest higher education institution in the U.S. The bulk of Harvard’s… Read More</td>
+<td>100</td>
+<td>20,050</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>Massachusetts Institute of Technology (MIT)</td>
+<td>United States</td>
+<td>Cambridge (U.S.)</td>
+<td>2</td>
+<td>Massachusetts Institute of Technology, founded in 1861, is located in Cambridge, Massachusetts, near Boston. Around… Read More</td>
+<td>96.9</td>
+<td>11,085</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+<td>Stanford University</td>
+<td>United States</td>
+<td>Stanford</td>
+<td>3</td>
+<td>Stanford University was founded in 1885 and is located in California’s Bay Area, around 30 miles south of San Francisco… Read More</td>
+<td>94.5</td>
+<td>14,517</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4</td>
+<td>University of Oxford</td>
+<td>United Kingdom</td>
+<td>Oxford</td>
+<td>4</td>
+<td>The exact date of the University of Oxford’s founding is unknown, but the school traces its roots back to at least 1096… Read More</td>
+<td>88.2</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>5</td>
+<td>5</td>
+<td>University of California Berkeley</td>
+<td>United States</td>
+<td>Berkeley</td>
+<td>5</td>
+<td>The University of California—Berkeley is situated roughly 15 miles from San Francisco in what is known as the Bay Area… Read More</td>
+<td>87.2</td>
+<td>39,991</td>
+</tr>
+<tr>
+<td>6</td>
+<td>6</td>
+<td>University of Cambridge</td>
+<td>United Kingdom</td>
+<td>Cambridge (U.K.)</td>
+<td>6</td>
+<td>The University of Cambridge, located around 60 miles north of London, traces its history back to 1209. Around 19,000… Read More</td>
+<td>86.9</td>
+<td>20,870</td>
+</tr>
+<tr>
+<td>7</td>
+<td>7</td>
+<td>University College London</td>
+<td>United Kingdom</td>
+<td>London (U.K.)</td>
+<td>7</td>
+<td>University College London, or UCL, is a public institution that was founded in 1826. It was the third university… Read More</td>
+<td>86.5</td>
+<td>41,195</td>
+</tr>
+<tr>
+<td>8</td>
+<td>8</td>
+<td>University of Washington Seattle</td>
+<td>United States</td>
+<td>Seattle</td>
+<td>7</td>
+<td>The University of Washington is a public institution that was founded in 1861. The school’s oldest and largest campus in… Read More</td>
+<td>86.5</td>
+<td>49,485</td>
+</tr>
+<tr>
+<td>9</td>
+<td>9</td>
+<td>Columbia University</td>
+<td>United States</td>
+<td>New York City</td>
+<td>9</td>
+<td>Columbia University is a private institution that was founded in 1754. It is located in the Upper West Side of New York… Read More</td>
+<td>86.4</td>
+<td>25,914</td>
+</tr>
+<tr>
+<td>10</td>
+<td>10</td>
+<td>Yale University</td>
+<td>United States</td>
+<td>New Haven</td>
+<td>10</td>
+<td>Yale University was founded in 1701, making it one of the oldest institutions of higher education in the U.S. The… Read More</td>
+<td>86</td>
+<td>11,923</td>
+</tr>
+<tr>
+<td>11</td>
+<td>11</td>
+<td>University of California Los Angeles</td>
+<td>United States</td>
+<td>Los Angeles</td>
+<td>11</td>
+<td>The University of California—Los Angeles, commonly referred to as UCLA, is a public institution that was founded in… Read More</td>
+<td>85.5</td>
+<td>43,504</td>
+</tr>
+<tr>
+<td>12</td>
+<td>12</td>
+<td>Imperial College London</td>
+<td>United Kingdom</td>
+<td>London (U.K.)</td>
+<td>12</td>
+<td>Imperial College London is a public institution that was founded in 1907. The university was previously a college of the… Read More</td>
+<td>85.3</td>
+<td>20,190</td>
+</tr>
+<tr>
+<td>13</td>
+<td>13</td>
+<td>Johns Hopkins University</td>
+<td>United States</td>
+<td>Baltimore</td>
+<td>13</td>
+<td>Johns Hopkins University is a private institution that was founded in 1876. The school has campuses located in and… Read More</td>
+<td>85.2</td>
+<td>18,835</td>
+</tr>
+<tr>
+<td>14</td>
+<td>14</td>
+<td>University of Pennsylvania</td>
+<td>United States</td>
+<td>Philadelphia</td>
+<td>14</td>
+<td>The University of Pennsylvania, also known as Penn, was founded in 1740. The private, Ivy League institution is located… Read More</td>
+<td>84.7</td>
+<td>21,312</td>
+</tr>
+<tr>
+<td>15</td>
+<td>15</td>
+<td>University of California San Francisco</td>
+<td>United States</td>
+<td>San Francisco</td>
+<td>15</td>
+<td>The University of California—San Francisco is a public institution that was founded in 1864. The health sciences-focused… Read More</td>
+<td>84.5</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>16</td>
+<td>17</td>
+<td>University of Toronto</td>
+<td>Canada</td>
+<td>Toronto</td>
+<td>17</td>
+<td>The University of Toronto is a public institution that was founded in 1827. Around 80 percent of its students study at… Read More</td>
+<td>84.3</td>
+<td>79,282</td>
+</tr>
+<tr>
+<td>17</td>
+<td>18</td>
+<td>Princeton University</td>
+<td>United States</td>
+<td>Princeton</td>
+<td>18</td>
+<td>Princeton University was founded in 1746, making it one of the oldest higher education institutions in the U.S. The… Read More</td>
+<td>83.9</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>18</td>
+<td>19</td>
+<td>Cornell University</td>
+<td>United States</td>
+<td>Ithaca</td>
+<td>19</td>
+<td>Cornell University is a private institution that was founded in 1865. The Ivy League school is located in Ithaca, New… Read More</td>
+<td>83.7</td>
+<td>23,620</td>
+</tr>
+<tr>
+<td>19</td>
+<td>20</td>
+<td>University of Michigan</td>
+<td>United States</td>
+<td>Ann Arbor</td>
+<td>19</td>
+<td>The University of Michigan—Ann Arbor is a public institution that was founded in 1817 and made the city of Ann Arbor its… Read More</td>
+<td>83.7</td>
+<td>45,783</td>
+</tr>
+<tr>
+<td>20</td>
+<td>21</td>
+<td>University of California San Diego</td>
+<td>United States</td>
+<td>La Jolla</td>
+<td>21</td>
+<td>The University of California—San Diego is a public institution that was established in 1960. It is located in the La… Read More</td>
+<td>83.6</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>21</td>
+<td>23</td>
+<td>California Institute of Technology</td>
+<td>United States</td>
+<td>Pasadena</td>
+<td>23</td>
+<td>The California Institute of Technology, known as Caltech, was founded in 1891 as Throop University and received its… Read More</td>
+<td>83.4</td>
+<td>2,240</td>
+</tr>
+<tr>
+<td>22</td>
+<td>24</td>
+<td>Northwestern University</td>
+<td>United States</td>
+<td>Evanston</td>
+<td>24</td>
+<td>Northwestern University is a private institution that was founded in 1851. The university has three campuses – the main… Read More</td>
+<td>81.8</td>
+<td>18,417</td>
+</tr>
+<tr>
+<td>23</td>
+<td>25</td>
+<td>University of Chicago</td>
+<td>United States</td>
+<td>Chicago</td>
+<td>25</td>
+<td>The University of Chicago is a private institution that was founded in 1890. The university is located in Chicago… Read More</td>
+<td>81.5</td>
+<td>15,792</td>
+</tr>
+<tr>
+<td>24</td>
+<td>26</td>
+<td>Duke University</td>
+<td>United States</td>
+<td>Durham (North Carolina, U.S.)</td>
+<td>26</td>
+<td>Duke University traces its roots back to 1838, though the private institution didn’t receive its current name until… Read More</td>
+<td>81</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>25</td>
+<td>28</td>
+<td>University of Melbourne</td>
+<td>Australia</td>
+<td>Parkville</td>
+<td>27</td>
+<td>The University of Melbourne is a public institution that was founded in 1853. The university has seven campuses… Read More</td>
+<td>80.9</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>26</td>
+<td>29</td>
+<td>University of Sydney</td>
+<td>Australia</td>
+<td>Sydney</td>
+<td>29</td>
+<td>The University of Sydney was founded in 1850, making it the oldest university in Australia. The public institution is… Read More</td>
+<td>80.6</td>
+<td>58,853</td>
+</tr>
+<tr>
+<td>27</td>
+<td>30</td>
+<td>Washington University (WUSTL)</td>
+<td>United States</td>
+<td>St. Louis</td>
+<td>30</td>
+<td>Washington University in St. Louis, also known as Wash U, is a private institution that was founded in 1853. The… Read More</td>
+<td>80.2</td>
+<td>14,184</td>
+</tr>
+<tr>
+<td>28</td>
+<td>32</td>
+<td>New York University</td>
+<td>United States</td>
+<td>New York City</td>
+<td>32</td>
+<td>New York University, also known as NYU, is a private university that was founded in 1831. The university’s main campus… Read More</td>
+<td>79.5</td>
+<td>48,461</td>
+</tr>
+<tr>
+<td>29</td>
+<td>35</td>
+<td>Monash University</td>
+<td>Australia</td>
+<td>Clayton</td>
+<td>35</td>
+<td>Monash University is a public institution that was established in 1958. It is located in the state of Victoria in… Read More</td>
+<td>79.3</td>
+<td>58,460</td>
+</tr>
+<tr>
+<td>30</td>
+<td>36</td>
+<td>King’s College London</td>
+<td>United Kingdom</td>
+<td>London (U.K.)</td>
+<td>36</td>
+<td>Read More</td>
+<td>79.2</td>
+<td>N/A</td>
+</tr>
+</tbody></table>
+<p>英美这俩国家都挺强的，相比之下Canada略弱，Australia没有跻身top20的学校，但贵在数量多。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>US NEWS</tag>
+        <tag>大学排行榜</tag>
+        <tag>留学交流</tag>
+      </tags>
+  </entry>
 </search>
