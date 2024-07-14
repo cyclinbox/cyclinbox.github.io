@@ -12384,4 +12384,54 @@
         <tag>留学交流</tag>
       </tags>
   </entry>
+  <entry>
+    <title>google colab挂载google driver并设置环境变量</title>
+    <url>/2024/07/14/google_colab_mount_gdriver_and_config_PATH/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+<p>Google Colab（也称为Colaboratory）是Google Research开发的一款免费Jupyter笔记本环境，用于机器学习研究。它无需设置即可在云端运行，用户可以通过浏览器直接访问和编写代码。最重要的是它为免费用户提供了Nvidia T4 GPU和TPU两种运行时环境，允许用户在其上调试需要GPU和cuda加速的深度学习项目，这为数据科学研究者带来了许多方便。然而，由于每一次连接一个google colab session都会启动一个新环境，之前下载的文件和存储的环境变量都会丢失，这带来了许多不方便。</p>
+<p>Google driver是谷歌开发的网盘应用，免费版用户共有15GB的永久存储空间。为了能够持久化保存训练数据和环境变量，一种方法就是将训练数据存储在google driver当中并将google driver作为一块硬盘挂载到colab当中。下面是相关探索</p>
+<h2 id="一、colab挂载Google-driver"><a href="#一、colab挂载Google-driver" class="headerlink" title="一、colab挂载Google driver"></a>一、colab挂载Google driver</h2><p>使用下面的代码即可对Google driver进行挂载。其中，<code>drive.mount(&#39;/content/gdrive&#39;)</code>表明将Google driver根目录挂载到当前session所在虚拟机的<code>/content/gdrive</code>位置。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">## Mount google driver for persistent storage</span></span><br><span class="line"><span class="keyword">from</span> google.colab <span class="keyword">import</span> drive</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line">drive.mount(<span class="string">&#x27;/content/gdrive&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>运行上述代码后，colab会弹出对话框，要求对挂载需求进行确认。点击「connect to Google Driver」按钮进行确认后还需要经过账户验证的步骤（如下图），这里直接点同意即可。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240714193948.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240714194206.png" alt="image.png"></p>
+<p>之后，刷新左侧的文件目录，可以看到<code>/content/gdrive</code>下面出现了一个<code>MyDrive</code>，其中的内容就是我们的Google Driver的内容。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240714194435.png" alt="image.png"></p>
+<p>我们还可以创建一个专门的文件夹用来存放colab的文件和数据，并切换到该文件夹下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line">os.system(<span class="string">&quot;mkdir -p /content/gdrive/MyDrive/content&quot;</span>)</span><br><span class="line">os.chdir(<span class="string">&quot;/content/gdrive/MyDrive/content&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以把这两个代码块的内容放在ipynb文件的开头，这样每一次运行都可以挂载Google Driver了。</p>
+<h2 id="二、设置环境变量"><a href="#二、设置环境变量" class="headerlink" title="二、设置环境变量"></a>二、设置环境变量</h2><p>经常使用Linux的朋友都知道，环境变量很重要，它决定了一些程序能否正常运行以及一些指令能否正常执行。一般来说，环境变量都在<code>~/.bashrc</code>和<code>~/.bashprofile</code>中设置好了，每次登录都会自动加载；即使环境变量有更新，使用<code>source ~/.bashrc</code>也可以直接进行刷新。</p>
+<p>可是，虽然每个colab session都会连接到一台Linux虚拟机，并且在jupyter notebook中可以使用<code>os.system(&quot;xxx&quot;)</code>或者<code>!xxx</code> 两种方式运行shell指令，但在<code>~/.bashrc</code>中设置环境变量并使用<code>source</code>指令刷新的方法不再有用了。此处原理比较复杂，似乎和Linux中进程隔离的机制有关，<code>os.system(&quot;xxx&quot;)</code>相当于启动了一个子进程，在子进程中设置的环境变量不会改变父进程，因此<code>source</code>指令无效。</p>
+<p>但是python也有自己的设置环境变量的方式，即<code>os.environ</code>。其返回一个<code>environ</code>对象，结构类似于一个字典，因此可以使用<code>os.environ[&quot;xxx&quot;]</code>来访问更具体的环境变量。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240714201739.png" alt="image.png"></p>
+<p>例如展示当前的PATH变量：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">print</span>(os.environ[<span class="string">&quot;PATH&quot;</span>])</span><br><span class="line"><span class="comment"># Output: /opt/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools/node/bin:/tools/google-cloud-sdk/bin</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以在Google driver 的<code>/content/</code>目录下建立一个<code>.local/bin</code>目录，并在此存储一些自定义的程序。下面是创建目录和添加自定义程序（此处以busybox为例）的示例代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">## Config environment PATH and Download busybox</span></span><br><span class="line"><span class="comment">## 首先，创建./local/bin目录</span></span><br><span class="line">os.system(<span class="string">&quot;mkdir -p /content/gdrive/MyDrive/content/.local/bin/&quot;</span>)</span><br><span class="line"><span class="comment">## 然后，更新PATH环境变量，将刚刚创建的目录添加到PATH中</span></span><br><span class="line">os.environ[<span class="string">&#x27;PATH&#x27;</span>] = os.environ[<span class="string">&#x27;PATH&#x27;</span>]+<span class="string">&quot;:/content/gdrive/MyDrive/content/.local/bin/&quot;</span></span><br><span class="line"><span class="comment">## 展示一下当前的PATH。请注意，现在新创建的`.local/bin/`已经在PATH当中了</span></span><br><span class="line">os.system(<span class="string">&quot;echo $PATH&quot;</span>) <span class="comment"># 其实用print(os.environ[&#x27;PATH&#x27;])是一样的效果。这里只是想表明，刚刚设置的环境变量已经影响到了整个shell</span></span><br><span class="line"><span class="comment"># output: /opt/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools/node/bin:/tools/google-cloud-sdk/bin:/content/gdrive/MyDrive/content/.local/bin/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 下载并安装busybox</span></span><br><span class="line">os.chdir(<span class="string">&quot;/content/gdrive/MyDrive/content/&quot;</span>)</span><br><span class="line">os.system(<span class="string">&quot;wget -c https://www.busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox -O .local/bin/busybox&quot;</span>)</span><br><span class="line"><span class="comment">## 给busybox添加可执行权限</span></span><br><span class="line">os.system(<span class="string">&quot;chmod +x .local/bin/busybox&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>让我们使用<code>!busybox</code>这个魔法指令，看看能否正确执行：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240714202530.png" alt="image.png"></p>
+<p>如上图，busybox成功打印出了所有可执行的applet，表明配置成功。</p>
+<p>请注意，busybox是存储在Google Driver的目录下的，因此下一次即使重新开一个colab session，只需要把挂载Google Driver和设置环境变量的流程走完，依然可以正常调用这些指令。</p>
+<p>一个汇总版的代码流程：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> google.colab <span class="keyword">import</span> drive</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="comment"># 挂载Driver</span></span><br><span class="line">drive.mount(<span class="string">&#x27;/content/gdrive&#x27;</span>)</span><br><span class="line">os.chdir(<span class="string">&quot;/content/gdrive/MyDrive&quot;</span>)</span><br><span class="line">os.system(<span class="string">&quot;mkdir -p /content/gdrive/MyDrive/content&quot;</span>)</span><br><span class="line">os.chdir(<span class="string">&quot;/content/gdrive/MyDrive/content&quot;</span>)</span><br><span class="line"><span class="comment"># 配置环境变量</span></span><br><span class="line">os.system(<span class="string">&quot;mkdir -p /content/gdrive/MyDrive/content/.local/bin/&quot;</span>)</span><br><span class="line">os.environ[<span class="string">&#x27;PATH&#x27;</span>] = os.environ[<span class="string">&#x27;PATH&#x27;</span>]+<span class="string">&quot;:/content/gdrive/MyDrive/content/.local/bin/&quot;</span></span><br><span class="line">os.system(<span class="string">&quot;wget -c https://www.busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox -O .local/bin/busybox&quot;</span>)</span><br><span class="line">os.system(<span class="string">&quot;chmod +x .local/bin/busybox&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>请注意，虽然上面的流程中有创建文件夹（<code>mkdir</code>）和下载（<code>wget</code>）的步骤，但由于带了参数（<code>mkdir -p</code>和<code>wget -c</code>），创建文件夹和下载文件只会进行一次，之后的每次运行只要检测到文件存在就会跳过这些步骤。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>colab</tag>
+        <tag>Google Driver</tag>
+        <tag>文件系统挂载</tag>
+      </tags>
+  </entry>
 </search>
