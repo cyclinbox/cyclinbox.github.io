@@ -12434,4 +12434,158 @@
         <tag>文件系统挂载</tag>
       </tags>
   </entry>
+  <entry>
+    <title>似然比检验（LRT）：原理与应用</title>
+    <url>/2024/07/19/The_principle_and_application_of_LRT/</url>
+    <content><![CDATA[<p>看论文的时候看到了这个方法，由于不懂就去学习了一下，顺带浅浅做了点笔记。</p>
+<span id="more"></span>
+
+<h2 id="一、背景：似然值和最大似然法"><a href="#一、背景：似然值和最大似然法" class="headerlink" title="一、背景：似然值和最大似然法"></a>一、背景：似然值和最大似然法</h2><p>“似然值”（likelihood）是统计学中用来衡量一种模型解释观测数据的好坏程度的一个指标。简单来说，似然值反映了在给定模型参数下，观测数据出现的概率有多大。</p>
+<p>我们日常能够接触到的统计学一般是对样本或总体的探究，例如从一个大的总体中抽取有限数量的样本，从而估计总体的均值和方差，或者对两组样本进行统计检验，判断它们是否来自同一个总体。这些方法虽然也关注到了样本背后的总体，但对总体的概率分布模型参数并没有做过多的探究。</p>
+<p>似然值则关注到了总体的概率分布模型。为了方便理解，我们可以画一个简单直观的图像，如下图所示。这是方差为1的正态分布（normal distribution）的概率密度曲线，其纵轴（概率值，probability）由样本值x和模型参数 $\mu$ （图中mu轴）共同决定。对于一个固定的参数mu，我们可以得到唯一的概率密度曲线，借助这个曲线我们可以进一步求出这一分布模型的期望值。例如，当mu=0时，对应的曲线就是均值为0、方差为1的标准正态分布曲线（图中红线），这一模型的期望值为0。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240718193533.png" alt="image.png"></p>
+<p>似然值则从另一个角度看待上述问题。它关心的是，当我们知道了一个概率分布模型的结论，如何反求这个模型的参数。例如，当我们已知一个正态分布模型的均值为1，要想求出这个模型的参数mu，可以在上图中x=1处做一个切面，研究各条曲线与这个切面的相交情况（如下图）。此时得到的曲线即为似然值曲线，横坐标为参数值，纵坐标为似然值（likelihood），似然值最大的点即为最有可能的参数值。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240718195448.png" alt="image.png"></p>
+<p>下面我们举一个实际点的例子。假设现在我们在探究抛掷一枚硬币出现正反面的概率，并且现在我们怀疑这枚硬币并非匀质，且正面朝上的概率为 $p$ （这里，“硬币并非匀质”就是对总体的概率分布模型的参数探究）。现在我们抛10次硬币，记录结果，结果发现有7次是正面朝上，3次是反面朝上。基于这样的观测结果，我们可以使用最大似然法对概率分布模型的参数 $p$ 进行探究：</p>
+<ul>
+<li><strong>模型设定</strong>：我们假定这枚硬币出现正面的概率是 $p$ ，反面的概率是 $1−p$ 。</li>
+<li><strong>似然函数</strong>：观测数据的概率可以表示为：   $L(p)=P(7次正面, 3次反面∣p)=p^7×(1−p)^3$ 。</li>
+<li><strong>最大似然估计</strong>：最大似然法的原理就是找到上述似然函数的最大值，这个最大值就是最有可能的模型参数。<ul>
+<li>为了简化计算，我们一般会对似然函数取对数（由于对数函数是单调递增函数，因此似然函数和对数似然函数的极值点是相同的）。</li>
+<li>上述似然函数的对数是 $\text{ln}L(p)=7\text{ln}p+3\text{ln}(1−p)$  ，求导得 $\frac{\text{d }\text{ln}L(p)}{\text{d}p}=7/p−3/(1−p)$ 。</li>
+<li>令导数等于0，解方程得 $p=0.7$ ，这就是概率分布模型的参数 $p$ 的最大似然估计值。    </li>
+</ul>
+</li>
+</ul>
+<p>通过最大似然估计，我们得到了 $p=0.7$ 。这意味着，在观测数据（10次中有7次正面）的情况下，最有可能的硬币正面朝上的概率是70%。</p>
+<p>求解似然值的过程和求解概率值的过程可以看作两个相反的过程。求解概率值的过程是已知模型参数求事件发生次数（例如，已知不均匀硬币抛掷一次出现正面向上的概率为 $p=0.7$ ，求抛掷10次最有可能出现多少次正面向上的结果）；而求解似然值则是已知结果求参数。</p>
+<h2 id="二、似然比检验要解决的问题"><a href="#二、似然比检验要解决的问题" class="headerlink" title="二、似然比检验要解决的问题"></a>二、似然比检验要解决的问题</h2><p>“似然比检验”（Likelihood Ratio Test, LRT）是一种统计检验方法，用来比较两个概率统计模型的好坏程度。</p>
+<p>注意，此处用于比较的是两个概率统计模型（或者更实例化一点， <strong>用于比较的是模型参数</strong> ），而不是两个样本总体本身。</p>
+<h2 id="三、如何做似然比检验（LRT）"><a href="#三、如何做似然比检验（LRT）" class="headerlink" title="三、如何做似然比检验（LRT）"></a>三、如何做似然比检验（LRT）</h2><p>假设对于随机变量 $x$ ，其概率密度函数为 $f_\theta(x)$ ，其中模型参数 $\theta$ 未知。我们需要通过似然比检验确定  $\theta$ 的可能取值。</p>
+<p>这里，我们需要提出两个假设用于检验：</p>
+<ul>
+<li><strong>原假设（H0）</strong>：参数 $\theta$ 等于 $\theta_0$ </li>
+<li><strong>备择假设（H1）</strong>：参数 $\theta$ 不等于 $\theta_0$ </li>
+</ul>
+<p>似然比（likelihood ratio， $\Lambda$）是两个似然值的比值： </p>
+<ul>
+<li>$\Lambda = \frac{\text{在原假设 H0 下的最大似然值}}{\text{在备择假设 H1 下的最大似然值}}$ </li>
+</ul>
+<p>（注意，在一些教程中，似然比的定义是 $L(x)=\frac{sup{f_\theta(x):\theta\in \Theta_0}}{sup{f_\theta(x):\theta\in \Theta}}$  ，其中 $f_\theta(x)$ 指参数为 $\theta$ 的概率分布模型的概率密度函数，$\Theta_0$ 和 $\Theta$ 分别表示原假设和备择假设下的参数空间 ，$sup{}$ 是求上确界的意思。这种定义方式和上面的定义完全等价）</p>
+<p>似然比如果等于1，说明原假设和备择假设没有区别。似然比越大，表明检验的结果越倾向于原假设H0；似然比越小，则越倾向于备择假设H1。</p>
+<p>但是，仅凭似然比依然无法得到检验的结果。要决定是否拒绝原假设H0，还需要进行统计检验：</p>
+<ul>
+<li>如果 $\Lambda&gt;l$，则接受H0；</li>
+<li>如果 $\Lambda\le l$  ，则拒绝H0接受H1。</li>
+</ul>
+<p>这里的 $l$ 需要通过显著性水平 $\alpha$ 来确定： $\alpha=P(\Lambda \le l)$ ，其中 $P()$ 为概率测度（probability measure）。</p>
+<p>但是，有时候很难通过这个关系式求出 $l$ 的具体值，因此可以使用 <a href="https://www.wikiwand.com/en/Wilks'_theorem">Wilks’ theorem</a> 进行近似处理。</p>
+<p>要介绍 <a href="https://www.wikiwand.com/en/Wilks'_theorem">Wilks’ theorem</a>近似处理，首先我们需要定义一下对数似然比：</p>
+<p>$$<br>\lambda_{LR}=-2\text{ln}\Lambda<br>$$</p>
+<p>假设原假设为真，样本量 $n$ 近似无穷大，零假设的参数取值严格地位于参数空间的内部，那么上述统计量 $\lambda_{LR}$ 将近似服从一个卡方分布（ $\chi^2$ ），且卡方分布的自由度等于两个模型参数个数的差。这就是 <a href="https://www.wikiwand.com/en/Wilks'_theorem">Wilks’ theorem</a>近似处理的精髓，其允许我们使用卡方检验的方法进行似然比检验。</p>
+<h2 id="四、一个示例"><a href="#四、一个示例" class="headerlink" title="四、一个示例"></a>四、一个示例</h2><p>仍然以上述抛硬币的实验为例。假设我们在研究这个硬币是否均一（即正面和反面的概率都是0.5），可以提出两个假设：</p>
+<ul>
+<li><strong>原假设（H0）</strong>：硬币均一，正反面概率都是0.5。</li>
+<li><strong>备择假设（H1）</strong>：硬币可能不均一，正反面概率不一定是0.5。</li>
+</ul>
+<p>前面提到过似然值的计算方法是   $L(p)=P(7次正面, 3次反面∣p)=p^7×(1−p)^3$ 。按照原假设，最大似然值为 $L_0=0.5^7\times 0.5^3=1/1024\approx 0.00098$ ；按照备择假设，最大似然值为 $L_1=0.7^7\times 0.3^3\approx 0.00222$  （此处利用了前面的结论，既当 $p=0.7$ 时似然值最大）。</p>
+<p>接下来我们需要计算似然比。在我们的示例中， $\Lambda=0.00098/0.00222\approx 0.44144$ ，虽然在一定程度上这表明模型倾向于备择假设H1，但我们需要做进一步的计算。</p>
+<p>根据 <a href="https://www.wikiwand.com/en/Wilks'_theorem">Wilks’ theorem</a>近似处理，检验统计量 $\lambda_{LR}=-2 \ln(\Lambda)\approx 1.63542$ ，自由度为1（因为H0是一个特例，只有一个参数 p = 0.5，而H1有一个自由参数 p）。</p>
+<p>查找卡方分布表，自由度为1，显著性水平α = 0.05时，临界值为3.84。</p>
+<p>由于 1.63542&lt;3.84 ，检验统计量小于临界值，所以我们不能拒绝原假设。这意味着在显著性水平0.05下，没有足够的证据表明硬币是非均匀的。</p>
+<h2 id="五、参考文献"><a href="#五、参考文献" class="headerlink" title="五、参考文献"></a>五、参考文献</h2><ul>
+<li><a href="https://stats.libretexts.org/Bookshelves/Probability_Theory/Probability_Mathematical_Statistics_and_Stochastic_Processes_(Siegrist)/09%3A_Hypothesis_Testing/9.05%3A_Likelihood_Ratio_Tests">Likelihood Ratio Tests - Libretexts statistics</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Likelihood-ratio_test?oldformat=true">Likelihood-ratio test - Wikipedia</a></li>
+<li><a href="https://www.wikiwand.com/en/Wilks'_theorem">Wilks’ theorem - Wikipedia</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>似然比检验</tag>
+        <tag>统计学</tag>
+        <tag>概率论</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>连锁不平衡（Linkage Disequilibrium ）及其统计指标</title>
+    <url>/2024/07/19/Linkage_Disequilibrium_and_measurement/</url>
+    <content><![CDATA[<p>在群体遗传学中，连锁不平衡是一个很重要的概念。前段时间看论文的时候看到了这个概念，于是专门花了点时间重温了一下相关知识点，顺带浅浅做了点笔记。</p>
+<span id="more"></span>
+
+
+<h2 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h2><p>连锁不平衡（Linkage Disequilibrium，LD ）是指一条染色体上的相邻位点之间的非随机关联，当一个位点上的某一等位基因与另一位点上的等位基因共同出现的概率大于随机组合的假设，则这两个位点之间存在连锁不平衡。</p>
+<p>这个概念听起来有点抽象，下面结合一个实际例子进行解释。假设在同一条染色体上有A/a和B/b两个基因座位（由于它们在同一条染色体上，因此是连锁的）。在一个物种群体中，由于个体之间的随机交配以及同源染色体的交叉互换，理论上四种基因型AB,Ab,aB,ab都会出现，且基因型频率满足下面的关系：</p>
+<p>$$<br>\begin{aligned}<br>p(AB)&amp;=p(A)p(B) \\<br>p(Ab)&amp;=p(A)p(b) \\<br>p(aB)&amp;=p(a)p(B) \\<br>p(ab)&amp;=p(a)p(b) \\<br>\end{aligned}<br>$$</p>
+<p>其中 $p(AB),p(ab),p(aB),p(ab)$ 分别是四种基因型的频率， $p(A),p(a),p(B),p(b)$ 是四种等位基因的频率。</p>
+<p>但许多时候，四种基因型频率并不满足上述的关系式，这种情况就是所谓的“连锁不平衡”。</p>
+<p>一张图片用来解释连锁不平衡：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240715210904.png" alt="image.png"></p>
+<h2 id="二、LD的常用统计量"><a href="#二、LD的常用统计量" class="headerlink" title="二、LD的常用统计量"></a>二、LD的常用统计量</h2><p>首先我们定义一些符号，用下表中的这些符号分别表示基因型频率和等位基因频率。</p>
+<table>
+<thead>
+<tr>
+<th>基因型频率</th>
+<th>A</th>
+<th>a</th>
+<th>等位基因频率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B</td>
+<td>$\pi_{AB}$</td>
+<td>$\pi_{aB}$</td>
+<td>$\pi_{B}$</td>
+</tr>
+<tr>
+<td>b</td>
+<td>$\pi_{Ab}$</td>
+<td>$\pi_{ab}$</td>
+<td>$\pi_{b}$</td>
+</tr>
+<tr>
+<td>等位基因频率</td>
+<td>$\pi_{A}$</td>
+<td>$\pi_{a}$</td>
+<td>$1$</td>
+</tr>
+</tbody></table>
+<h3 id="（一）统计量D"><a href="#（一）统计量D" class="headerlink" title="（一）统计量D"></a>（一）统计量D</h3><p>$$<br>\begin{aligned}<br>D &amp;= \pi_{AB}- \pi_{A} \pi_{B} \\<br>  &amp;= \pi_{ab}- \pi_{a} \pi_{b} \\<br>  &amp;= -(\pi_{Ab}- \pi_{A} \pi_{b}) \\<br>  &amp;= -(\pi_{aB}- \pi_{a} \pi_{B}) \\<br>  &amp;= \pi_{AB}\pi_{ab}-\pi_{Ab}\pi_{aB} \\<br>\end{aligned}<br>$$</p>
+<p>统计量 $D$ 是许多LD统计量的基本组成部分，它某种连锁基因型的观测值（例如 $\pi_{AB}$ ）与期望值（例如 $\pi_{A}\pi_{B}$）之间的差异。请注意，上面虽然列出了5个式子，但它们之间都是等价的。</p>
+<p>当连锁平衡时，观测值等于期望值，此时 $D=0$ 。连锁不平衡会使 $D$ 偏离0，但可能是往+1的方向偏离，也可能往-1的方向偏离。然而，由于 $D$ 的取值范围还会受到等位基因频率的影响，这不利于不同染色体片段之间的比较，因此很少有人单独使用 $D$ 统计量进行分析。</p>
+<h3 id="（二）标准化的D统计量：D’"><a href="#（二）标准化的D统计量：D’" class="headerlink" title="（二）标准化的D统计量：D’"></a>（二）标准化的D统计量：D’</h3><p>$$<br>\begin{aligned}<br>D’ &amp;= \left\{<br>        \begin{aligned}<br>        \frac{\pi_{AB} \pi_{ab} - \pi_{aB} \pi_{Ab}}{\min(\pi_{A}\pi_{b} \text{ , } \pi_{a}\pi_{b})} &amp; \text{  , if } D &gt; 0 \\<br>        \frac{\pi_{AB} \pi_{ab} - \pi_{aB} \pi_{Ab}}{\min(\pi_{A}\pi_{B} \text{ , } \pi_{a}\pi_{b})} &amp; \text{  , if } D &lt; 0<br>        \end{aligned}<br>    \right. \\<br>&amp;=\left\{<br>    \begin{aligned}<br>        \frac{D}{\min(\pi_{A}\pi_{b} \text{ , } \pi_{a}\pi_{b})} &amp; \text{  , if } D &gt; 0 \\<br>        \frac{D}{\min(\pi_{A}\pi_{B} \text{ , } \pi_{a}\pi_{b})} &amp; \text{  , if } D &lt; 0<br>        \end{aligned}<br>    \right.<br>\end{aligned}<br>$$</p>
+<p>$D’$ 统计量在 $D$ 统计量的基础上多加了一个分母用于标准化，并且根据 $D$ 的正负号的不同，这个分母的计算方式也有差异，从而保证了 $D’$ 是一个取值范围在 $[0,1]$ 之间的非负实数。</p>
+<ul>
+<li>当 $D’=0$ 时，四种基因型的频率完全符合预期，此时连锁平衡；</li>
+<li>当 $D’=1$ 时，只有至多三种基因型（单倍型）存在，两个位点之间的关系没有被重组打断，此时处于 <strong>完全的连锁不平衡状态（complete LD）</strong> 。</li>
+<li>除此之外的其他 $D’$ 取值都属于非完全的连锁不平衡状态。然而对于这些情况， $D’$ 统计量却无法获得更清楚的解释，因为样本量的大小会严重影响 $D’$ 的估值，导致样本之间不可比。<h3 id="（三）-另一种统计量：-r2-和-Δ"><a href="#（三）-另一种统计量：-r2-和-Δ" class="headerlink" title="（三） 另一种统计量： r2 和 Δ"></a>（三） 另一种统计量： r<sup>2</sup> 和 Δ</h3></li>
+</ul>
+<p>$$<br>\begin{aligned}<br>r^2 &amp;= \frac{D^2}{\pi_{A}\pi_{a}\pi_{B}\pi_{b}} \\<br>\Delta &amp;= \frac{D}{\sqrt{\pi_{A}\pi_{a}\pi_{B}\pi_{b}}}<br>\end{aligned}<br>$$</p>
+<p>$r^2$ 和 $\Delta$ 本质上是同一种统计量的不同叫法。和 $D’$ 不同， $r^2$ 使用了另一种方法对 $D$ 进行归一化。</p>
+<p>$r^2=1$ 只有在一种非常严格的情况下成立，即两个位点上等位基因在染色体上的排列没有被重组打乱，而且等位基因具有完全相同的频率。此时的连锁不平衡状态被称为 <strong>完美的连锁不平衡（perfect LD）</strong> 。在这种情况下，样本中实际上只有两种单倍型（例如AB/ab或者Ab/aB），一个位点的信息完全可以替代另外一个位点，检测两个位点的基因型是多余的。</p>
+<p>$r^2$ 的中间值比较容易解释，可以考虑两个位点，一个是与疾病关联的功能位点，另外一个是其附近的遗传标记位点，如果通过标记位点来检测与疾病之间的关联，想要达到与检测功能位点本身同样的功效的话，样本量需要增加大约 $1/r^2$ 倍。简单地讲，$r^2$ 的值与另外一个位点提供的信息含量是直接相关的。值得注意的是，这个性质已经很好地考虑了两个位点之间等位基因频率的差异。</p>
+<p>然而，这也同样意味着两个紧密连锁、互相贴近的位点与第三个位点的连锁不平衡可能表现出完全不同的$r^2$ 值，所以小的$r^2$ 值并不意味着位点之间一定有高的重组率。另外一点，$r^2$ 受样本量大小的影响比 $D’$ 小得多。</p>
+<p>从关联分析的功效角度对$r^2$ 的解释，产生了 <strong>实用连锁不平衡（useful LD）</strong> 的概念。在关联分析当中，由于病人样本，表型数据收集的困难以及基因分型的成本，样本量往往受到限制，况且花费很大的力气扩大样本量而使得标记与疾病易感位点之间的连锁不平衡微弱增加，实在是不可取。$r^2&gt;\frac{1}{3}$ 的连锁不平衡水平，使得样本量的增加不超过3倍，可以作为“实用连锁不平衡”的底线。</p>
+<h3 id="（四）另外几种不算常用的统计量：δ、d、Q"><a href="#（四）另外几种不算常用的统计量：δ、d、Q" class="headerlink" title="（四）另外几种不算常用的统计量：δ、d、Q"></a>（四）另外几种不算常用的统计量：δ、d、Q</h3><p>$$<br>\delta=\frac{\pi_{AB}\pi_{ab}-\pi_{Ab}\pi_{aB}}{\pi_{B}\pi_{ab}}<br>$$</p>
+<p>$$<br>d=\frac{\pi_{AB}}{\pi_{B}}-\frac{\pi_{Ab}}{\pi_{b}}<br>=\frac{\pi_{AB}\pi_{ab}-\pi_{Ab}\pi_{aB}}{\pi_{B}\pi_{b}}<br>$$</p>
+<p>$$<br>\lambda=\frac{\pi_{AB}\pi_{ab}}{\pi_{Ab}\pi_{aB}}<br>$$</p>
+<p>$$<br>Q=\frac{\lambda-1}{\lambda+1}<br>=\frac{\pi_{AB}\pi_{ab}-\pi_{Ab}\pi_{aB}}{\pi_{AB}\pi_{ab}+\pi_{Ab}\pi_{aB}}<br>$$</p>
+<p>这几种统计量本质上也是对 $D$ 统计量的矫正或归一化。由于在文献中见到的较少，此处不做展开。</p>
+<h2 id="三、参考文献"><a href="#三、参考文献" class="headerlink" title="三、参考文献"></a>三、参考文献</h2><ul>
+<li>Devlin B, Risch N. A comparison of linkage disequilibrium measures for fine-scale mapping. <em>Genomics</em>. 1995;29(2):311-322. doi:10.1006/geno.1995.9003</li>
+<li><a href="https://www.plob.org/article/21675.html">https://www.plob.org/article/21675.html</a></li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240719133452.png" alt="image.png"></p>
+<p>另外，有人开发过一个对染色体上LD区间进行可视化的工具（如上图），见<a href="https://github.com/ScottMastro/TextilePlotpy">TextilePlotpy - GitHub</a> 。这个工具使用节点和线条来表示基因座之间的连锁关系，线条越粗表明连锁不平衡程度越高（例如上图展示的例子从左到右的D值在减小，即连锁不平衡程度在降低）。但是，由于长时间缺乏维护，这个工具目前无法直接运行，需要对代码进行一定的修改调整，限于篇幅本文没有进行进一步的探究。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>群体遗传学</tag>
+        <tag>连锁不平衡</tag>
+      </tags>
+  </entry>
 </search>

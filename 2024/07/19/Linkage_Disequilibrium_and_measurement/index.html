@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在群体遗传学中，连锁不平衡是一个很重要的概念。前段时间看论文的时候看到了这个概念，于是专门花了点时间重温了一下相关知识点，顺带浅浅做了点笔记。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="连锁不平衡（Linkage Disequilibrium ）及其统计指标">
+<meta property="og:url" content="https://wz.anoms.top/2024/07/19/Linkage_Disequilibrium_and_measurement/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="在群体遗传学中，连锁不平衡是一个很重要的概念。前段时间看论文的时候看到了这个概念，于是专门花了点时间重温了一下相关知识点，顺带浅浅做了点笔记。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240715210904.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240719133452.png">
+<meta property="article:published_time" content="2024-07-19T01:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-19T05:56:19.285Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="群体遗传学">
+<meta property="article:tag" content="连锁不平衡">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240715210904.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/07/19/Linkage_Disequilibrium_and_measurement/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/07/19/Linkage_Disequilibrium_and_measurement/","path":"2024/07/19/Linkage_Disequilibrium_and_measurement/","title":"连锁不平衡（Linkage Disequilibrium ）及其统计指标"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>连锁不平衡（Linkage Disequilibrium ）及其统计指标 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">一、概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81LD%E7%9A%84%E5%B8%B8%E7%94%A8%E7%BB%9F%E8%AE%A1%E9%87%8F"><span class="nav-number">2.</span> <span class="nav-text">二、LD的常用统计量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E7%BB%9F%E8%AE%A1%E9%87%8FD"><span class="nav-number">2.1.</span> <span class="nav-text">（一）统计量D</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E6%A0%87%E5%87%86%E5%8C%96%E7%9A%84D%E7%BB%9F%E8%AE%A1%E9%87%8F%EF%BC%9AD%E2%80%99"><span class="nav-number">2.2.</span> <span class="nav-text">（二）标准化的D统计量：D’</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89-%E5%8F%A6%E4%B8%80%E7%A7%8D%E7%BB%9F%E8%AE%A1%E9%87%8F%EF%BC%9A-r2-%E5%92%8C-%CE%94"><span class="nav-number">2.3.</span> <span class="nav-text">（三） 另一种统计量： r2 和 Δ</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89%E5%8F%A6%E5%A4%96%E5%87%A0%E7%A7%8D%E4%B8%8D%E7%AE%97%E5%B8%B8%E7%94%A8%E7%9A%84%E7%BB%9F%E8%AE%A1%E9%87%8F%EF%BC%9A%CE%B4%E3%80%81d%E3%80%81Q"><span class="nav-number">2.4.</span> <span class="nav-text">（四）另外几种不算常用的统计量：δ、d、Q</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">3.</span> <span class="nav-text">三、参考文献</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">199</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/07/19/Linkage_Disequilibrium_and_measurement/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="连锁不平衡（Linkage Disequilibrium ）及其统计指标 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          连锁不平衡（Linkage Disequilibrium ）及其统计指标
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-07-19 09:00:00 / 修改时间：13:56:19" itemprop="dateCreated datePublished" datetime="2024-07-19T09:00:00+08:00">2024-07-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%89%A9/" itemprop="url" rel="index"><span itemprop="name">生物</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在群体遗传学中，连锁不平衡是一个很重要的概念。前段时间看论文的时候看到了这个概念，于是专门花了点时间重温了一下相关知识点，顺带浅浅做了点笔记。</p>
+<span id="more"></span>
+
+
+<h2 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a>一、概念</h2><p>连锁不平衡（Linkage Disequilibrium，LD ）是指一条染色体上的相邻位点之间的非随机关联，当一个位点上的某一等位基因与另一位点上的等位基因共同出现的概率大于随机组合的假设，则这两个位点之间存在连锁不平衡。</p>
+<p>这个概念听起来有点抽象，下面结合一个实际例子进行解释。假设在同一条染色体上有A/a和B/b两个基因座位（由于它们在同一条染色体上，因此是连锁的）。在一个物种群体中，由于个体之间的随机交配以及同源染色体的交叉互换，理论上四种基因型AB,Ab,aB,ab都会出现，且基因型频率满足下面的关系：</p>
+<p>$$<br>\begin{aligned}<br>p(AB)&amp;=p(A)p(B) \\<br>p(Ab)&amp;=p(A)p(b) \\<br>p(aB)&amp;=p(a)p(B) \\<br>p(ab)&amp;=p(a)p(b) \\<br>\end{aligned}<br>$$</p>
+<p>其中 $p(AB),p(ab),p(aB),p(ab)$ 分别是四种基因型的频率， $p(A),p(a),p(B),p(b)$ 是四种等位基因的频率。</p>
+<p>但许多时候，四种基因型频率并不满足上述的关系式，这种情况就是所谓的“连锁不平衡”。</p>
+<p>一张图片用来解释连锁不平衡：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240715210904.png" alt="image.png"></p>
+<h2 id="二、LD的常用统计量"><a href="#二、LD的常用统计量" class="headerlink" title="二、LD的常用统计量"></a>二、LD的常用统计量</h2><p>首先我们定义一些符号，用下表中的这些符号分别表示基因型频率和等位基因频率。</p>
+<table>
+<thead>
+<tr>
+<th>基因型频率</th>
+<th>A</th>
+<th>a</th>
+<th>等位基因频率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B</td>
+<td>$\pi_{AB}$</td>
+<td>$\pi_{aB}$</td>
+<td>$\pi_{B}$</td>
+</tr>
+<tr>
+<td>b</td>
+<td>$\pi_{Ab}$</td>
+<td>$\pi_{ab}$</td>
+<td>$\pi_{b}$</td>
+</tr>
+<tr>
+<td>等位基因频率</td>
+<td>$\pi_{A}$</td>
+<td>$\pi_{a}$</td>
+<td>$1$</td>
+</tr>
+</tbody></table>
+<h3 id="（一）统计量D"><a href="#（一）统计量D" class="headerlink" title="（一）统计量D"></a>（一）统计量D</h3><p>$$<br>\begin{aligned}<br>D &amp;= \pi_{AB}- \pi_{A} \pi_{B} \\<br>  &amp;= \pi_{ab}- \pi_{a} \pi_{b} \\<br>  &amp;= -(\pi_{Ab}- \pi_{A} \pi_{b}) \\<br>  &amp;= -(\pi_{aB}- \pi_{a} \pi_{B}) \\<br>  &amp;= \pi_{AB}\pi_{ab}-\pi_{Ab}\pi_{aB} \\<br>\end{aligned}<br>$$</p>
+<p>统计量 $D$ 是许多LD统计量的基本组成部分，它某种连锁基因型的观测值（例如 $\pi_{AB}$ ）与期望值（例如 $\pi_{A}\pi_{B}$）之间的差异。请注意，上面虽然列出了5个式子，但它们之间都是等价的。</p>
+<p>当连锁平衡时，观测值等于期望值，此时 $D=0$ 。连锁不平衡会使 $D$ 偏离0，但可能是往+1的方向偏离，也可能往-1的方向偏离。然而，由于 $D$ 的取值范围还会受到等位基因频率的影响，这不利于不同染色体片段之间的比较，因此很少有人单独使用 $D$ 统计量进行分析。</p>
+<h3 id="（二）标准化的D统计量：D’"><a href="#（二）标准化的D统计量：D’" class="headerlink" title="（二）标准化的D统计量：D’"></a>（二）标准化的D统计量：D’</h3><p>$$<br>\begin{aligned}<br>D’ &amp;= \left\{<br>        \begin{aligned}<br>        \frac{\pi_{AB} \pi_{ab} - \pi_{aB} \pi_{Ab}}{\min(\pi_{A}\pi_{b} \text{ , } \pi_{a}\pi_{b})} &amp; \text{  , if } D &gt; 0 \\<br>        \frac{\pi_{AB} \pi_{ab} - \pi_{aB} \pi_{Ab}}{\min(\pi_{A}\pi_{B} \text{ , } \pi_{a}\pi_{b})} &amp; \text{  , if } D &lt; 0<br>        \end{aligned}<br>    \right. \\<br>&amp;=\left\{<br>    \begin{aligned}<br>        \frac{D}{\min(\pi_{A}\pi_{b} \text{ , } \pi_{a}\pi_{b})} &amp; \text{  , if } D &gt; 0 \\<br>        \frac{D}{\min(\pi_{A}\pi_{B} \text{ , } \pi_{a}\pi_{b})} &amp; \text{  , if } D &lt; 0<br>        \end{aligned}<br>    \right.<br>\end{aligned}<br>$$</p>
+<p>$D’$ 统计量在 $D$ 统计量的基础上多加了一个分母用于标准化，并且根据 $D$ 的正负号的不同，这个分母的计算方式也有差异，从而保证了 $D’$ 是一个取值范围在 $[0,1]$ 之间的非负实数。</p>
+<ul>
+<li>当 $D’=0$ 时，四种基因型的频率完全符合预期，此时连锁平衡；</li>
+<li>当 $D’=1$ 时，只有至多三种基因型（单倍型）存在，两个位点之间的关系没有被重组打断，此时处于 <strong>完全的连锁不平衡状态（complete LD）</strong> 。</li>
+<li>除此之外的其他 $D’$ 取值都属于非完全的连锁不平衡状态。然而对于这些情况， $D’$ 统计量却无法获得更清楚的解释，因为样本量的大小会严重影响 $D’$ 的估值，导致样本之间不可比。<h3 id="（三）-另一种统计量：-r2-和-Δ"><a href="#（三）-另一种统计量：-r2-和-Δ" class="headerlink" title="（三） 另一种统计量： r2 和 Δ"></a>（三） 另一种统计量： r<sup>2</sup> 和 Δ</h3></li>
+</ul>
+<p>$$<br>\begin{aligned}<br>r^2 &amp;= \frac{D^2}{\pi_{A}\pi_{a}\pi_{B}\pi_{b}} \\<br>\Delta &amp;= \frac{D}{\sqrt{\pi_{A}\pi_{a}\pi_{B}\pi_{b}}}<br>\end{aligned}<br>$$</p>
+<p>$r^2$ 和 $\Delta$ 本质上是同一种统计量的不同叫法。和 $D’$ 不同， $r^2$ 使用了另一种方法对 $D$ 进行归一化。</p>
+<p>$r^2=1$ 只有在一种非常严格的情况下成立，即两个位点上等位基因在染色体上的排列没有被重组打乱，而且等位基因具有完全相同的频率。此时的连锁不平衡状态被称为 <strong>完美的连锁不平衡（perfect LD）</strong> 。在这种情况下，样本中实际上只有两种单倍型（例如AB/ab或者Ab/aB），一个位点的信息完全可以替代另外一个位点，检测两个位点的基因型是多余的。</p>
+<p>$r^2$ 的中间值比较容易解释，可以考虑两个位点，一个是与疾病关联的功能位点，另外一个是其附近的遗传标记位点，如果通过标记位点来检测与疾病之间的关联，想要达到与检测功能位点本身同样的功效的话，样本量需要增加大约 $1/r^2$ 倍。简单地讲，$r^2$ 的值与另外一个位点提供的信息含量是直接相关的。值得注意的是，这个性质已经很好地考虑了两个位点之间等位基因频率的差异。</p>
+<p>然而，这也同样意味着两个紧密连锁、互相贴近的位点与第三个位点的连锁不平衡可能表现出完全不同的$r^2$ 值，所以小的$r^2$ 值并不意味着位点之间一定有高的重组率。另外一点，$r^2$ 受样本量大小的影响比 $D’$ 小得多。</p>
+<p>从关联分析的功效角度对$r^2$ 的解释，产生了 <strong>实用连锁不平衡（useful LD）</strong> 的概念。在关联分析当中，由于病人样本，表型数据收集的困难以及基因分型的成本，样本量往往受到限制，况且花费很大的力气扩大样本量而使得标记与疾病易感位点之间的连锁不平衡微弱增加，实在是不可取。$r^2&gt;\frac{1}{3}$ 的连锁不平衡水平，使得样本量的增加不超过3倍，可以作为“实用连锁不平衡”的底线。</p>
+<h3 id="（四）另外几种不算常用的统计量：δ、d、Q"><a href="#（四）另外几种不算常用的统计量：δ、d、Q" class="headerlink" title="（四）另外几种不算常用的统计量：δ、d、Q"></a>（四）另外几种不算常用的统计量：δ、d、Q</h3><p>$$<br>\delta=\frac{\pi_{AB}\pi_{ab}-\pi_{Ab}\pi_{aB}}{\pi_{B}\pi_{ab}}<br>$$</p>
+<p>$$<br>d=\frac{\pi_{AB}}{\pi_{B}}-\frac{\pi_{Ab}}{\pi_{b}}<br>=\frac{\pi_{AB}\pi_{ab}-\pi_{Ab}\pi_{aB}}{\pi_{B}\pi_{b}}<br>$$</p>
+<p>$$<br>\lambda=\frac{\pi_{AB}\pi_{ab}}{\pi_{Ab}\pi_{aB}}<br>$$</p>
+<p>$$<br>Q=\frac{\lambda-1}{\lambda+1}<br>=\frac{\pi_{AB}\pi_{ab}-\pi_{Ab}\pi_{aB}}{\pi_{AB}\pi_{ab}+\pi_{Ab}\pi_{aB}}<br>$$</p>
+<p>这几种统计量本质上也是对 $D$ 统计量的矫正或归一化。由于在文献中见到的较少，此处不做展开。</p>
+<h2 id="三、参考文献"><a href="#三、参考文献" class="headerlink" title="三、参考文献"></a>三、参考文献</h2><ul>
+<li>Devlin B, Risch N. A comparison of linkage disequilibrium measures for fine-scale mapping. <em>Genomics</em>. 1995;29(2):311-322. doi:10.1006/geno.1995.9003</li>
+<li><a target="_blank" rel="noopener" href="https://www.plob.org/article/21675.html">https://www.plob.org/article/21675.html</a></li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240719133452.png" alt="image.png"></p>
+<p>另外，有人开发过一个对染色体上LD区间进行可视化的工具（如上图），见<a target="_blank" rel="noopener" href="https://github.com/ScottMastro/TextilePlotpy">TextilePlotpy - GitHub</a> 。这个工具使用节点和线条来表示基因座之间的连锁关系，线条越粗表明连锁不平衡程度越高（例如上图展示的例子从左到右的D值在减小，即连锁不平衡程度在降低）。但是，由于长时间缺乏维护，这个工具目前无法直接运行，需要对代码进行一定的修改调整，限于篇幅本文没有进行进一步的探究。</p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/07/19/Linkage_Disequilibrium_and_measurement/" title="连锁不平衡（Linkage Disequilibrium ）及其统计指标">https://wz.anoms.top/2024/07/19/Linkage_Disequilibrium_and_measurement/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%BE%A4%E4%BD%93%E9%81%97%E4%BC%A0%E5%AD%A6/" rel="tag"><i class="fa fa-tag"></i> 群体遗传学</a>
+              <a href="/tags/%E8%BF%9E%E9%94%81%E4%B8%8D%E5%B9%B3%E8%A1%A1/" rel="tag"><i class="fa fa-tag"></i> 连锁不平衡</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/07/14/google_colab_mount_gdriver_and_config_PATH/" rel="prev" title="google colab挂载google driver并设置环境变量">
+                  <i class="fa fa-chevron-left"></i> google colab挂载google driver并设置环境变量
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/07/19/The_principle_and_application_of_LRT/" rel="next" title="似然比检验（LRT）：原理与应用">
+                  似然比检验（LRT）：原理与应用 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
