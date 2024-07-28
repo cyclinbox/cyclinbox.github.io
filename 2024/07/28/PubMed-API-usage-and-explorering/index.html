@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="PubMed数据库不仅可以在网页端使用，还可以通过API在程序中调用。配合Echarts工具，可以拿来做引文网络构建；配合LLM，还可以作为文献调研过程中的智能助手。 下面是近期的一些探索。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PubMed API的一些探索">
+<meta property="og:url" content="https://wz.anoms.top/2024/07/28/PubMed-API-usage-and-explorering/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="PubMed数据库不仅可以在网页端使用，还可以通过API在程序中调用。配合Echarts工具，可以拿来做引文网络构建；配合LLM，还可以作为文献调研过程中的智能助手。 下面是近期的一些探索。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240727232853.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1722094324332.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1722094483858.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728001142.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728154520.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728003026.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728133632.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728135148.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728135806.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728141119.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728145129.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728145255.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728145617.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728153035.png">
+<meta property="article:published_time" content="2024-07-28T07:50:00.000Z">
+<meta property="article:modified_time" content="2024-07-28T07:59:48.411Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="PubMed API">
+<meta property="article:tag" content="E-utils">
+<meta property="article:tag" content="echarts">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240727232853.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/07/28/PubMed-API-usage-and-explorering/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/07/28/PubMed-API-usage-and-explorering/","path":"2024/07/28/PubMed-API-usage-and-explorering/","title":"PubMed API的一些探索"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>PubMed API的一些探索 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81NCBI-API%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">一、NCBI API介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%EF%BC%9AAPI-key%E7%9A%84%E7%94%B3%E8%AF%B7"><span class="nav-number">1.1.</span> <span class="nav-text">（一）准备工作：API key的申请</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89-Efetch%EF%BC%9A%E8%8E%B7%E5%8F%96%E7%BB%99%E5%AE%9APMID%E6%96%87%E7%AB%A0%E7%9A%84%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF"><span class="nav-number">1.2.</span> <span class="nav-text">（二） Efetch：获取给定PMID文章的详细信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89Elink%EF%BC%9A%E8%8E%B7%E5%8F%96PMID%E6%96%87%E7%AB%A0%E4%B9%8B%E9%97%B4%E7%9A%84%E8%81%94%E7%B3%BB"><span class="nav-number">1.3.</span> <span class="nav-text">（三）Elink：获取PMID文章之间的联系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81citationMap%E5%B7%A5%E5%85%B7%E7%9A%84%E6%89%93%E9%80%A0"><span class="nav-number">2.</span> <span class="nav-text">二、citationMap工具的打造</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89XML%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90"><span class="nav-number">2.1.</span> <span class="nav-text">（一）XML文档解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%9F%BA%E4%BA%8EEcharts%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">2.2.</span> <span class="nav-text">（二）基于Echarts的可视化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E5%B7%A5%E5%85%B7%E6%88%90%E5%93%81%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.</span> <span class="nav-text">（三）工具成品以及使用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89%E6%9C%AA%E6%9D%A5%E8%AE%A1%E5%88%92%EF%BC%88aka-%E7%94%BB%E5%A4%A7%E9%A5%BC%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">（四）未来计划（aka.画大饼）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%BD%93PubMed-API%E9%81%87%E4%B8%8A%E5%A4%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">三、当PubMed API遇上大模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">4.</span> <span class="nav-text">后记</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">202</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/07/28/PubMed-API-usage-and-explorering/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="PubMed API的一些探索 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PubMed API的一些探索
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-07-28 15:50:00 / 修改时间：15:59:48" itemprop="dateCreated datePublished" datetime="2024-07-28T15:50:00+08:00">2024-07-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>PubMed数据库不仅可以在网页端使用，还可以通过API在程序中调用。配合Echarts工具，可以拿来做<a target="_blank" rel="noopener" href="https://github.com/cyclinbox/citationMap">引文网络构建</a>；配合LLM，还可以作为文献调研过程中的智能助手。</p>
+<p>下面是近期的一些探索。</p>
+<span id="more"></span>
+
+<h2 id="一、NCBI-API介绍"><a href="#一、NCBI-API介绍" class="headerlink" title="一、NCBI API介绍"></a>一、NCBI API介绍</h2><p>参考：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.ncbi.nlm.nih.gov/books/NBK25501/">Entrez Programming Utilities Help - NCBI</a><br><a target="_blank" rel="noopener" href="https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ELink">elink - NCBI</a></p>
+</blockquote>
+<p>PubMed是NCBI数据库下属的一个医学类研究论文的数据库，其中存储了与论文有关的许多信息，包括文章摘要、引文信息等。</p>
+<p>作为世界上最大的生物学研究综合性数据库之一，NCBI提供了一组叫做Entrez Programming Utilities的工具，以帮助开发者通过程序访问数据库中的内容。这组工具包含了许多命令行实用程序，也包含一些网页API。而我们今天要使用的，就是其中的efetch和elink这两个网页API接口。</p>
+<h3 id="（一）准备工作：API-key的申请"><a href="#（一）准备工作：API-key的申请" class="headerlink" title="（一）准备工作：API key的申请"></a>（一）准备工作：API key的申请</h3><p>为了能够正常使用NCBI的API，我们首先需要申请一个API key。当不使用API key时，NCBI数据库的检索工具（E-utils）允许用户最多每秒提交3次请求，否则返回error；反之，可以达到10次每秒。</p>
+<p>首先我们需要去<a target="_blank" rel="noopener" href="https://account.ncbi.nlm.nih.gov/">NCBI账户页</a>登录账户，此处可以使用Google Account、 ORCID、 Microsoft等多种第三方账户登录，也可以注册一个NCBI账户并登录。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240727232853.png" alt="image.png"></p>
+<p>登录后，在账户页右上角点击账户按钮，会弹出如下的菜单栏。在这个菜单栏里，选择Account setting进入账户设置页面。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1722094324332.png" alt="1722094324332.png"></p>
+<p>在账户设置页面的最下方，会有一个API Key Management的栏目，在此处可以生成并管理我们的API key。新用户没有API key，可以点击按钮生成。每个用户只能拥有一个API key，如果旧API key丢失或泄露，可以在已有API key栏目中点击Replace重置。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1722094483858.png" alt="1722094483858.png"></p>
+<p>记住这段API key，后面我们需要用。</p>
+<h3 id="（二）-Efetch：获取给定PMID文章的详细信息"><a href="#（二）-Efetch：获取给定PMID文章的详细信息" class="headerlink" title="（二） Efetch：获取给定PMID文章的详细信息"></a>（二） Efetch：获取给定PMID文章的详细信息</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch">https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch</a></p>
+</blockquote>
+<p>Efetch API的URL是 <code>https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi</code>，其允许通过<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/GET">GET方式</a>进行数据请求（即，在URL之后使用问号”<code>?</code>“连接参数，参数以键值对的格式给出）。这一API接受的参数包括<code>db</code>（要检索的数据库，此处为pubmed）、<code>id</code>（数据库中的条目ID，此处为PMID）以及<code>api_key</code>。</p>
+<p>一个示例URL如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&amp;api_key=ae4e7d262dc452dece0be6c4a7e06d9ccc09&amp;id=37379837</span><br></pre></td></tr></table></figure>
+
+<p>上面这段URL是对pubmed请求了一篇PMID为37379837的研究论文（Huang, Jiaying et al. “Discovery of deaminase functions by structure-based protein clustering.” <em>Cell</em> vol. 186,15 (2023): 3182-3195.e14. doi:10.1016/j.cell.2023.05.041 ）。API的返回值是一份包含了这篇论文相关信息的xml文档，如下图所示。xml中包含了文章标题、发表时间、作者列表、文章摘要、引用文献等信息，可以使用程序进行进一步的处理。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728001142.png" alt="image.png"></p>
+<p>Efetch的API允许同时请求多篇PMID文献的数据，各PMID之间需要以英文逗号隔开。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&amp;api_key=ae4e7d262dc452dece0be6c4a7e06d9ccc09&amp;id=24651067,32286628,32184769,31606751</span><br></pre></td></tr></table></figure>
+
+<p>上述URL同时请求了24651067,32286628,32184769,31606751这4篇文章。返回的xml结构大致如下（为了节约篇幅，折叠了xml中的一些节点）。可以看到，这五篇文章分别存储在4个<code>&lt;PubmedArticle&gt;</code>标签当中，我们可以对这4个<code>&lt;PubmedArticle&gt;</code>标签分别解析，以获得这些文章的信息。考虑到XML的解析速度远快于网络请求的速度，因此如果要查询的文献较多，将他们放在一起仅做一次网页请求，是一种比较不错的提速方法。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728154520.png" alt="image.png"></p>
+<h3 id="（三）Elink：获取PMID文章之间的联系"><a href="#（三）Elink：获取PMID文章之间的联系" class="headerlink" title="（三）Elink：获取PMID文章之间的联系"></a>（三）Elink：获取PMID文章之间的联系</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ELink">https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ELink</a></p>
+</blockquote>
+<p>Elink API的URL是 <code>https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi</code>，同样的，其允许通过<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/GET">GET方式</a>进行数据请求。这一API接受的参数包括<code>db</code>（要检索的数据库，此处为pubmed）、<code>id</code>（数据库中的条目ID，此处为PMID）、<code>api_key</code>、<code>cmd</code>（排序模式等）。</p>
+<p>一个示例URL如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?db=pubmed&amp;api_key=ae4e7d262dc452dece0be6c4a7e06d9ccc09&amp;id=37379837</span><br></pre></td></tr></table></figure>
+
+<p>返回的xml文档如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728003026.png" alt="image.png"></p>
+<p>这个xml中将文献大致分为了下面这几类，不同类别之间存在交集：</p>
+<ul>
+<li><strong>pubmed_pubmed</strong>: 表示与查询文章相关的文章，这些文章可能在内容、主题或研究方法上有相关性。</li>
+<li><strong>pubmed_pubmed_alsoviewed</strong>: 表示查看了查询文章的用户也查看了这些文章，这些文章可能具有相似的主题或读者兴趣。</li>
+<li><strong>pubmed_pubmed_citedin</strong>: 表示引用了查询文章的文献，这些文章直接引用了我们检索的那一篇文章。</li>
+<li><strong>pubmed_pubmed_combined</strong>: 结合了多种关系类型的链接，例如引用、共同被引用等。</li>
+<li><strong>pubmed_pubmed_five</strong>: 表示与查询文章相关的前五篇文章，按相关度排序。</li>
+<li><strong>pubmed_pubmed_reviews</strong>: 表示与查询文章相关的综述文章。</li>
+<li><strong>pubmed_pubmed_reviews_five</strong>: 表示与查询文章相关的前五篇综述文章，按相关度排序。</li>
+</ul>
+<p>如果我们只关注文章的引文信息的话，仅需要解析 <code>pubmed_pubmed_citedin</code> 这一类别列出的文献即可。</p>
+<h2 id="二、citationMap工具的打造"><a href="#二、citationMap工具的打造" class="headerlink" title="二、citationMap工具的打造"></a>二、citationMap工具的打造</h2><p>最初令我关注到这个API的动力是希望创建一款可视化引文网络的工具，以厘清文献调研的文章是否有共同引用或共同被引。如前所述，Efetch和Elink这两个API提供了大量信息，足够我们构建引文网络了。但是还有两个问题需要解决：如何从API返回的xml中提取信息，以及，如何将这些信息进行可视化。</p>
+<p>python自带了<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/markup.html">XML标记语言处理模块</a>，我们只需要在程序中简单的 <code>import xml.dom.minidom</code> 即可利用这一模块提供的xml解析能力。因此，第一个问题能够很方便的解决。</p>
+<p>然而，python自带的数据可视化工具并没有特别好用。我们希望引文网络工具可以提供一定的交互能力，如拖动节点、查看节点信息等，matplotlib做不到这些。好在开源社区提供了一个叫做<a target="_blank" rel="noopener" href="https://echarts.apache.org/en/index.html">Echarts</a>的网页端数据可视化工具，它提供了强大的交互功能。（说起来，这个工具最初是百度开发的，后面百度捐赠给Apache社区了；感谢百度在开源领域做出的贡献）</p>
+<p>我们这一工具的打造分两步：XML文档的解析，以及基于Echarts的可视化。</p>
+<h3 id="（一）XML文档解析"><a href="#（一）XML文档解析" class="headerlink" title="（一）XML文档解析"></a>（一）XML文档解析</h3><p>这一部分涉及的代码量很大，为了节约篇幅，此处只介绍大概的原理。</p>
+<p>在一切的开始，我们需要进行网页请求，以获取xml文档。下面给出了网页请求的函数，其接受一个PMID列表的输入，使用这个PMID list构造URL并请求API，最后返回xml文档的内容。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">api_key = <span class="string">&quot;xxxxxxxx&quot;</span> <span class="comment"># 此处改为你的api key</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">queryPubmed</span>(<span class="params">pmidList</span>):</span><br><span class="line">    queryId = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> pmidList:  <span class="comment"># 将PMID的列表拼接起来，用逗号作为分隔符。不用join的原因是pmidList可能是int型的列表，而join只能处理str型的列表</span></span><br><span class="line">        queryId += <span class="string">f&quot;<span class="subst">&#123;i&#125;</span>,&quot;</span></span><br><span class="line">    queryId = queryId[<span class="number">0</span>:-<span class="number">1</span>]</span><br><span class="line">    url = <span class="string">f&quot;https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&amp;api_key=<span class="subst">&#123;api_key&#125;</span>&amp;id=<span class="subst">&#123;queryId&#125;</span>&quot;</span></span><br><span class="line">    req = requests.get(url) <span class="comment"># 发送网页请求</span></span><br><span class="line">    req.encoding = <span class="string">&quot;utf-8&quot;</span></span><br><span class="line">    txt = req.text</span><br><span class="line">    <span class="keyword">return</span> txt</span><br></pre></td></tr></table></figure>
+
+
+<p>示例输出如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728133632.png" alt="image.png"></p>
+<p>对这段xml的解析需要用到python自带的XML库。如下代码块所示，使用<code>parseString().documentElement</code>可以将xml文档编程一个xml document对象树，进而可以使用面向对象的方法对文档中的各个节点进行访问。例如，使用<code>getElementsByTagName(&quot;PubmedArticle&quot;)</code>可以把xml中所有标签为<code>PubmedArticle</code>的节点提取出来，并构造为一个列表。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> xml.dom.minidom <span class="keyword">import</span> parseString</span><br><span class="line">xmlText = queryPubmed(ls) <span class="comment"># 这里需要先调用queryPubmed获得xmlText。参数ls改成要解析的PMID list</span></span><br><span class="line">data = parseString(xmlText).documentElement</span><br><span class="line">PubmedArticleSet = data.getElementsByTagName(<span class="string">&quot;PubmedArticle&quot;</span>) <span class="comment"># PubMed Article Object</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728135148.png" alt="image.png"></p>
+<p>接下来，就是漫长而无聊的对这棵对象树解析过程了。为了展示这个过程有多无聊，下面给出了获取第一篇文献的PMID的代码，其中需要反复用到<code>getElementsByTagName</code>。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728135806.png" alt="image.png"></p>
+<p>Efetch文档和Elink文档的整体解析过程此处省略。总之，我们完成了对xml文档树的解析过程，获得了与文献及其引文网络有关的大量信息。下面我们再来看一看如何使用Echart做可视化。</p>
+<h3 id="（二）基于Echarts的可视化"><a href="#（二）基于Echarts的可视化" class="headerlink" title="（二）基于Echarts的可视化"></a>（二）基于Echarts的可视化</h3><p>如题。我们要展示文献之间的引用和被引关系，因此需要一类能够显示节点和网络的图表类型。幸运的是，Echarts中提供了一类关系图表（如下图），可以满足我们的要求。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728141119.png" alt="image.png"></p>
+<p>citationMap这个工具的设计思路大致是这样的：</p>
+<ul>
+<li>用户提供一些文献作为初始文献，我们从reference（“参考文献”）和citations（“引用文献”）两个方向开展查询：<ul>
+<li><strong>“参考文献”：</strong> 查询这些初始文献引用了哪些历史文献。在这些历史文献中，存在一些共同引文，这些共同引文一般是领域内的经典文献，需要重点关注。</li>
+<li><strong>“引用文献”：</strong> 查询有哪些新发表的文献引用了这些初始文献，这一部分文献代表了领域的发展现状。</li>
+</ul>
+</li>
+<li>不论是reference关系还是citations关系，都用一条边来表示，表明两篇文献之间存在关系。</li>
+<li>以网络关系进行可视化，网络上的每个节点代表一篇文献，用不同的颜色来区分初始文献、参考文献和引用文献。用户可以点击或拖动这些节点，当点击时，侧边栏展示出文献的详细信息。</li>
+</ul>
+<p>为了实现节点的点击和拖动效果，我们可以使用Echarts中提供的力引导布局方式进行节点展示。其中涉及较多的Javascript代码，限于文本篇幅此处不展开，感兴趣的读者可以在下面的网页上尝试Echarts提供的示例：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://echarts.apache.org/examples/zh/editor.html?c=graph-force">https://echarts.apache.org/examples/zh/editor.html?c=graph-force</a></li>
+<li><a target="_blank" rel="noopener" href="https://echarts.apache.org/examples/zh/editor.html?c=graph-webkit-dep">https://echarts.apache.org/examples/zh/editor.html?c=graph-webkit-dep</a></li>
+</ul>
+<p>需要注意的是，与matplotlib、ggplot或者matlab等不同，Echarts进行数据可视化展示，需要提供的数据源自json文档，包括各个点的坐标、颜色等属性都需要在json中进行描述（这一部分的逻辑已经在python中实现了）。</p>
+<p>citationMap的另一项需求是点击节点展示信息。幸运的是，Echarts为鼠标点击事件提供了API接口，我们只需要捕获鼠标点击事件发生时的param参数并正确解析即可。下面是这一部分的处理逻辑（需要配合html才能实现正确的效果）</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 下面的代码用于响应鼠标点击动作，使用`params`参数可以获得当前节点的所有信息</span></span><br><span class="line"><span class="comment">// 如此可以实现论文详细信息的加载</span></span><br><span class="line">myChart.<span class="title function_">on</span>(<span class="string">&#x27;click&#x27;</span>, <span class="keyword">function</span> (<span class="params">params</span>) &#123;</span><br><span class="line">    <span class="comment">//window.open(&#x27;https://www.baidu.com/s?wd=&#x27; + encodeURIComponent(params.name));</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;click mouse&quot;</span>);</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(params);</span><br><span class="line">    <span class="keyword">var</span> dat        = params.<span class="property">data</span>;</span><br><span class="line">    <span class="keyword">var</span> title      = dat.<span class="property">title</span>;</span><br><span class="line">    <span class="keyword">var</span> authorList = dat.<span class="property">authorList</span>;</span><br><span class="line">    <span class="keyword">var</span> journal    = dat.<span class="property">journal</span>;</span><br><span class="line">    <span class="keyword">var</span> date_      = dat.<span class="property">date</span>;</span><br><span class="line">    <span class="keyword">var</span> pmid       = dat.<span class="property">PMID</span>;</span><br><span class="line">    <span class="keyword">if</span>(pmid&lt;<span class="number">0</span>)&#123;</span><br><span class="line">        pmid = <span class="string">&quot;undefined&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> doi        = dat.<span class="property">DOI</span>;</span><br><span class="line">    <span class="keyword">var</span> citation   = dat.<span class="property">citation</span>;</span><br><span class="line">    <span class="keyword">var</span> abstract   = dat.<span class="property">abstract</span>;</span><br><span class="line">    <span class="keyword">var</span> doiHtml = <span class="string">&quot;&lt;a href=&#x27;https://doi.org/&quot;</span>+doi+<span class="string">&quot;&#x27; target=&#x27;_blank&#x27;&gt;&quot;</span>+doi+<span class="string">&quot;&lt;/a&gt;&quot;</span>;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;article-title&#x27;</span>).<span class="property">innerHTML</span> = title;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;article-authors&#x27;</span>).<span class="property">innerHTML</span> = authorList[<span class="number">0</span>]+<span class="string">&quot;,..,&quot;</span>+authorList.<span class="title function_">at</span>(-<span class="number">1</span>);</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;article-journal&#x27;</span>).<span class="property">innerHTML</span> = journal;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;article-date&#x27;</span>).<span class="property">innerHTML</span> = date_;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;article-pmid&#x27;</span>).<span class="property">innerHTML</span> = pmid;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;article-DOI&#x27;</span>).<span class="property">innerHTML</span> = doiHtml;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;article-citation&#x27;</span>).<span class="property">innerHTML</span> = citation;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;article-abstract&#x27;</span>).<span class="property">innerHTML</span> = abstract;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<p>具体到我们的citationMap这个工具上，可视化部分需要分两部分进行：</p>
+<ul>
+<li>python程序部分：用来解析xml文档和生成json文件，后者是Echarts进行可视化展示所必需的</li>
+<li>html页面：用来加载json并调用Echarts展示网络图。</li>
+</ul>
+<h3 id="（三）工具成品以及使用方法"><a href="#（三）工具成品以及使用方法" class="headerlink" title="（三）工具成品以及使用方法"></a>（三）工具成品以及使用方法</h3><p>citationMap这一工具已经开发完成，我将其上传到了<a target="_blank" rel="noopener" href="https://github.com/cyclinbox/citationMap">Github存储库 - citationMap</a>当中。</p>
+<p>在这一工具中，核心的代码文件主要有两个： <code>app.py</code> 和 <code>index.html</code> 。前者接受用户输入，解析xml文档和生成json文件，后者加载json并调用Echarts展示网络图。为了方便用户使用，在<code>app.py</code>主函数中会开启一个web服务器的进程，并调用浏览器打开<code>index.html</code>以展示结果。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">usage: app.py [-h] [-f FILE | -l LIST] [-m MAX] [-p PORT]</span><br><span class="line"></span><br><span class="line">optional arguments:</span><br><span class="line">  -h, --help            show this help message and exit</span><br><span class="line">  -f FILE, --file FILE  PMID list file.</span><br><span class="line">  -l LIST, --list LIST  PMID list(comma seperate).</span><br><span class="line">  -m MAX, --max MAX     Max limitation of query article number. Default is 10.</span><br><span class="line">  -p PORT, --port PORT  Network port of the report server. Default is using random number.</span><br></pre></td></tr></table></figure>
+
+<p>如上所示，这一工具目前暂时只支持命令行调用，有两种使用模式： <code>-f</code> 文件输入模式和 <code>-l</code> 命令行传参模式。不论哪一种模式，用户的输入都只能是一系列文章的PMID。</p>
+<p>另外，<code>-m</code> 参数用来调整可供解析的文献数量上限（为了确保数据可视化时的性能，默认只解析十篇文章；如果需要解析更多篇文章的话，可以加这个参数手动调整）； <code>-p</code> 参数用来设置web服务器的端口号（默认是随机端口）。</p>
+<p><strong>一个使用示例如下（命令行传参模式）：</strong></p>
+<ul>
+<li>1、打开终端，切换到citationMap所在目录</li>
+<li>2、运行下面这行指令</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python app.py -l 24651067,32286628,32184769,31606751</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>3、此时，程序会开始工作，屏幕上会闪过一些信息，表明文档解析的进程（如下图所示）</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728145129.png" alt="image.png"></p>
+<ul>
+<li>4、当解析完成后，在当前目录下会生成一个<code>citation_map.json</code>文件。同时，python程序也会启动web服务器进程（终端会输出如下信息，以蓝色字体输出URL）。如果用户的系统是Windows或者macOS，则会直接启动系统浏览器并打开这一URL</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728145255.png" alt="image.png"></p>
+<ul>
+<li>5、之后的操作在浏览器中进行。我们将看到类似下面的网页内容，其中绿点代表初始文献，蓝点代表参考文献，黄点代表引用文献。鼠标悬停在节点上时会弹出一个简略的提示框，包含第一作者和发表年份信息；点击节点，则会在右侧面板中展示出这篇文章更具体的信息，包括标题、摘要、DOI等。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728145617.png" alt="image.png"></p>
+<p>文件传参模式与之类似，只不过PMID列表是存储在一个文本文件中的（一行一个PMID），使用<code>-f &lt;file path&gt;</code> 参数进行传参，此处不再赘述。</p>
+<h3 id="（四）未来计划（aka-画大饼）"><a href="#（四）未来计划（aka-画大饼）" class="headerlink" title="（四）未来计划（aka.画大饼）"></a>（四）未来计划（aka.画大饼）</h3><p>目前这个工具的使用方法还比较繁杂，需要在命令行界面下启动<code>app.py</code>主程序，并在浏览器中进行结果的检查和浏览。鉴于python强大的服务器后端处理能力，未来将对citationMap网站化，用户只需要在网站输入框里输入一系列的PMID（就像百度或者Google那样），就可以一键获得citationMap的信息。</p>
+<p>另外，目前的交互依旧比较简陋，只能查看引文网络和获取有限的文章信息。未来将进一步拓展网页的功能，提供诸如节点过滤、二次查询、结果导出等功能，以更进一步的方便使用。</p>
+<p>鉴于pubmed数据库自身的一些bug，部分文献的引文信息不全，因此之后还会考虑将其他文献数据库纳入检索范围之中。</p>
+<p>（几张饼先画下了，啥时候实现不确定，手动狗头）</p>
+<h2 id="三、当PubMed-API遇上大模型"><a href="#三、当PubMed-API遇上大模型" class="headerlink" title="三、当PubMed API遇上大模型"></a>三、当PubMed API遇上大模型</h2><p>这一部分的内容算是上述工作的副产品。某天查文献的时候想到，既然LLM+实时网页搜索就能获得那么多有用的信息，那么LLM+PubMed API是不是也是如此呢？</p>
+<p>于是我对上面的代码进行了改造：首先，去除了查询reference和citations文献的处理过程，仅使用Efetch获得的文献信息进行后续的操作。其次，得到的结果储存在一个json字符串中，后者用于喂给大模型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 接着上述那个app.py，加两个新的function：</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parseXMLm</span>(<span class="params">xmlText,getAuthorList=<span class="literal">False</span></span>): <span class="comment"># 解析xml，返回文章信息</span></span><br><span class="line">    data_dt = []</span><br><span class="line">    <span class="comment"># Read XML document</span></span><br><span class="line">    data = parseString(xmlText).documentElement</span><br><span class="line">    PubmedArticleSet = data.getElementsByTagName(<span class="string">&quot;PubmedArticle&quot;</span>) <span class="comment"># PubMed Article Object</span></span><br><span class="line">    <span class="comment"># process all query result</span></span><br><span class="line">    <span class="keyword">for</span> e <span class="keyword">in</span> PubmedArticleSet:</span><br><span class="line">        artObj,refEdge,refArt = processPubmedArticle(e)</span><br><span class="line">        artObj_dt = artObj.toDict()</span><br><span class="line">        artObj_dt[<span class="string">&quot;category&quot;</span>] = <span class="number">1</span> <span class="comment"># set category as &quot;query&quot;</span></span><br><span class="line">        <span class="keyword">if</span>(getAuthorList==<span class="literal">False</span>): </span><br><span class="line">            <span class="keyword">del</span> artObj_dt[<span class="string">&quot;authorList&quot;</span>]</span><br><span class="line">        pmid = artObj_dt[<span class="string">&quot;PMID&quot;</span>]</span><br><span class="line">        artObj_dt[<span class="string">&quot;name&quot;</span>] = artObj.toTooltip()</span><br><span class="line">        data_dt.append(artObj_dt)</span><br><span class="line">    <span class="keyword">return</span> data_dt</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">PmidList2json</span>(<span class="params">PmidList,getAuthorList=<span class="literal">False</span></span>): <span class="comment"># 给定pmid，返回json字符串</span></span><br><span class="line">    xmlText = queryPubmed(PmidList)</span><br><span class="line">    dt1 = parseXMLm(xmlText,getAuthorList=getAuthorList)</span><br><span class="line">    json_text = json.dumps(dt1,ensure_ascii=<span class="literal">False</span>,indent=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> json_text</span><br><span class="line"></span><br><span class="line"><span class="comment">## A prompt template</span></span><br><span class="line">PROMPT_template = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">下面这段json文档是我使用NCBI pubmed API对论文的查询结果，各篇论文依次以字典的形式列出，每一篇论文的标题在`&quot;title&quot;:`字段当中，论文发表时间在`&quot;date:&quot;`字段当中，论文摘要在`&quot;abstract&quot;:`字段当中，论文作者在`&quot;authorList&quot;:`字段当中。请你根据json文档列出的内容， **回答下列问题：(-question-)。** json文档内容如下： `(-json-)`</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 使用方法示例</span></span><br><span class="line">ls = [<span class="number">24651067</span>,<span class="number">32286628</span>,<span class="number">32184769</span>,<span class="number">31606751</span>]</span><br><span class="line">json_text = PmidList2json(ls,getAuthorList=<span class="literal">False</span>)</span><br><span class="line">json_text1 = json_text <span class="keyword">if</span>(<span class="built_in">len</span>(json_text)&lt;<span class="number">100000</span>) <span class="keyword">else</span> json_text[<span class="number">0</span>:<span class="number">100000</span>]</span><br><span class="line">question  = <span class="string">&quot;（1）请问这些文章各自研究的内容是什么？（2）能否概括一下这些文章的研究方向的共同点？&quot;</span></span><br><span class="line">PROMPT_text = PROMPT_template.replace(<span class="string">&#x27;(-question-)&#x27;</span>,question).replace(<span class="string">&#x27;(-json-)&#x27;</span>,json_text1)</span><br><span class="line"><span class="comment">## 上述PROMPT_text是呈现给大模型的输入内容。</span></span><br></pre></td></tr></table></figure>
+
+<p>喂给大模型：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240728153035.png" alt="image.png"></p>
+<p>（这里我导入了之前用过的一个通义千问大模型API，所以直接<code>chat()</code>就可以。如果没有大模型API的话，也可以把PROMPT_text打印出来，然后复制粘贴到大模型的聊天框里面）</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>citationMap这个工具其实从去年年底就开始开发了（见 <a href="https://wz.anoms.top/2023/12/17/20231217_updatelog/?highlight=citat">《更新日志（2023-12-17）》</a> ），中间因为各种事情拖延了大半年，直到现在这个工具才算比较完善。</p>
+<p>API+LLM的部分，其实也是前段时间摸鱼工作搞出来的探索，只不过没有太深入。总的来说，目前各个大模型的智能程度足以进行一些简单的文献调研工作，虽然要做得更精细还得靠我们自己亲自阅读。</p>
+<p>又是一年七月末，假期将至而暑气未消。昨天看了巴黎奥运会的开幕式，火炬手cos《刺客信条》的创意以及穿插其中各种表演属实惊艳我了一把。不知道说些什么结尾，就祝大家夏天快乐吧 ~ 愿读者朋友们生活如夏花般绚烂精彩。</p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/07/28/PubMed-API-usage-and-explorering/" title="PubMed API的一些探索">https://wz.anoms.top/2024/07/28/PubMed-API-usage-and-explorering/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/LLM/" rel="tag"><i class="fa fa-tag"></i> LLM</a>
+              <a href="/tags/PubMed-API/" rel="tag"><i class="fa fa-tag"></i> PubMed API</a>
+              <a href="/tags/E-utils/" rel="tag"><i class="fa fa-tag"></i> E-utils</a>
+              <a href="/tags/echarts/" rel="tag"><i class="fa fa-tag"></i> echarts</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/07/19/The_principle_and_application_of_LRT/" rel="prev" title="似然比检验（LRT）：原理与应用">
+                  <i class="fa fa-chevron-left"></i> 似然比检验（LRT）：原理与应用
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
