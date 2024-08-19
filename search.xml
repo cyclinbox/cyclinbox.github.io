@@ -10239,7 +10239,7 @@
 <p>今天是 2023/ 08/ 12，最近OneNote Web Clipper突然消失在我的firefox插件栏里面，让我在需要收集信息的时候还需要粘贴网址到edge里面去使用适配edge的插件。<br>这太让我烦恼了。</p>
 <p>因为：<br>    1. 微软的浏览器的黑历史，让人不喜欢。<br>    2. 我更倾向于支持竞争，需要支持firefox，以免浏览器市场像历史上某个时间段一样被独裁。更何况firefox是一个开放的浏览器，各种可以自定义非常符合我的实际诉求。<br>    3. 暂时没找到可以平替onenote的产品，因为我使用它的主要用途就是剪切网页上的片段，图文混排，批注，同时可以本地储存。文本文档可以用txt+nas+nextcloud，图文混排就没有替代产品了。</p>
 <p>所以经过一番尝试后，又找到并重新安装回来这个插件了。</p>
-<h2 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a>解决方法：</h2><p>因为我除了主力机以为，还有一个surface pro电脑，平时用来看pdf文件，有几个月没联网了，根据网上查询到的firefox备份插件的方法，找到了个人目录下的插件，文件名为：<a href="mailto:&#67;&#x6c;&#x69;&#x70;&#112;&#101;&#114;&#x40;&#x4f;&#x6e;&#x65;&#78;&#111;&#116;&#101;&#x2e;&#x63;&#111;&#x6d;&#46;&#120;&#112;&#105;">&#67;&#x6c;&#x69;&#x70;&#112;&#101;&#114;&#x40;&#x4f;&#x6e;&#x65;&#78;&#111;&#116;&#101;&#x2e;&#x63;&#111;&#x6d;&#46;&#120;&#112;&#105;</a></p>
+<h2 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a>解决方法：</h2><p>因为我除了主力机以为，还有一个surface pro电脑，平时用来看pdf文件，有几个月没联网了，根据网上查询到的firefox备份插件的方法，找到了个人目录下的插件，文件名为：<a href="mailto:&#x43;&#108;&#x69;&#x70;&#x70;&#101;&#x72;&#64;&#x4f;&#x6e;&#101;&#x4e;&#111;&#x74;&#101;&#x2e;&#x63;&#111;&#x6d;&#46;&#120;&#x70;&#105;">&#x43;&#108;&#x69;&#x70;&#x70;&#101;&#x72;&#64;&#x4f;&#x6e;&#101;&#x4e;&#111;&#x74;&#101;&#x2e;&#x63;&#111;&#x6d;&#46;&#120;&#x70;&#105;</a></p>
 <p>复制备份好以后，在主力机上双击，就可以安装到firefox上了。</p>
 <p>至此就可以像以前一样正常使用了。</p>
 <p>期望早日找到可以平替的开源产品，这种商业公司的软件用起来实在是太不放心了。不知道什么时候就搞夭蛾子。</p>
@@ -12740,6 +12740,315 @@
         <tag>PubMed API</tag>
         <tag>E-utils</tag>
         <tag>echarts</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>七月总结</title>
+    <url>/2024/08/04/20240804_updatelog/</url>
+    <content><![CDATA[<p>七月生活的一些记录，以及一些碎碎念。</p>
+<span id="more"></span>
+
+<h2 id="一"><a href="#一" class="headerlink" title="一"></a>一</h2><p>七月这么快就过完了。</p>
+<p>确实有点快。感觉这个月基本没有发生太多事情，没有太多人、太多地方、太多时刻值得记忆。自五一过后慢下来的生活，好像又开始如电影般加速，记不清每天做了些什么事情，一晃眼时间就这么过去了。</p>
+<p>七月是夏天最热的时节。月初和父母去了趟南京，随后的日子都在320大院里度过。期间和同学玩了几次桌游，但总是因为表现得太过善良被人一眼看穿身份牌。随着高温假的临近，每天的工作生活也渐渐陷入摆烂的状态，特别是这些天，感觉有快一半时间被花在了刷知乎上。</p>
+<p>今天刷知乎时看到一句话，有点扎心——“青春结束在25岁那年”。那个回答说，25岁以前，在父母、学校的庇护下，我们尚且有时间试错，尚且可以浪费时间追求自己想要的东西，尚且可以享受生活；可是25岁以后，当事业压力、家庭压力等全部都到来时，还能活得像之前那样无忧无虑吗？有点焦虑了。</p>
+<h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>刚刚过去的一周是两重生活状态的集合。周一到周三在划水，基本没怎么干活。周四周五去了松江蹭了场学术会议，每天早早起床等车，忙到有点绷不住，但也确实充实。</p>
+<p>说起来，松江那边的大马路是真的宽阔，视野也很好，天气晴朗蓝天白云的，让我想起了国科大的奥运村校区和奥森公园。</p>
+<h2 id="三"><a href="#三" class="headerlink" title="三"></a>三</h2><p>昨天去上海图书馆（浦东馆）听了一个量子通信的科普报告。</p>
+<p>上海图书馆我去过不少次，但从来都是去淮海中路馆上自习，所以昨天算是第一次去浦东馆。浦东馆确实大（和南开大学津南图书馆有得一拼），里面有7层，大量书籍陈列于此，可供借阅。7楼有单独的活动空间，《量子通信将如何改变我们的生活》科普报告也在此举行。来自中科大和香港科技大学的几位教授用生动幽默的语言，介绍了光量子纠缠的原理与应用，回答了“量子纠缠能否用于传递信息”这一问题（答案是不能，因为量子波动是随机发生的，无法人为载波；但可以用量子纠缠进行通信加密），并展示了他们在茶卡盐湖、德令哈等地开展远距离量子纠缠实验时的一些生活场景。（说起来，那个主持人居然也是科大教授！科大还是牛人多啊）。我不是研究物理的，因此量子通信这块我不懂；虽然昨天的科普主要是面向小朋友的，但听完这个科普报告收获不少。</p>
+<h2 id="四"><a href="#四" class="headerlink" title="四"></a>四</h2><p>在去图书馆和回来的路上，不知怎么的，又陷入了一种emo的状态。也许是一个人待太久了罢；走到地铁站的时候，看着交织的人群，意识到“这世界有好多人”；路上的情侣似乎也格外多，朋友圈里也有情侣晒照片。幸福甜蜜都是他们的，我什么也没有。</p>
+<p>“谈恋爱的时候，你想从对方身上得到什么，对方能从你身上得到什么”，这个问题太值得想一想了。截止到目前，我所接受的信息里（不论是和同学朋友的讨论，还是从书本上），谈恋爱这件事带给男生的更多是情绪价值上的收益；但是恋爱能给女生带来什么，我不知道。（需要强调的是，情绪价值，或者说沟通的艺术、爱别人的能力等等，对于任何关系的长期维护都是必要的）。并且从两性差异上看，女生能给男生提供的情绪价值高于男生提供给女生的情绪价值。</p>
+<p>坐在地铁上时，突然想到了一个思想实验：如果我是女生，我该如何选择自己的对象，或者说如果身边有男生来追我，他的哪些行为能够加分、哪些行为会让我不舒服而扣分。细想了下，一些太过直男、自我意识太浓烈的行为会让人反感，而关心人、会换位思考等行为确实很加分。也许恋爱和交友在许多方面都是相似的——如果一种行为，在朋友关系的相处中都会招致反感，遑论恋爱了。在这方面，从小到大我好像一直踩雷，从没有停过。</p>
+<p>最近在看《亲密关系》这本书。前几天读到了“非语言的敏感性”一节，其中对伴侣之间沟通进行了一些讨论（如下图）。突然意识到沟通确实是一项需要认真对待的事情，特别是一些非语言信息的传达——能够正确解读非语言信息，可以避免一些不必要的misunderstanding的发生，这对于关系的幸福真的很重要！ </p>
+<p>要走的路还很长啊。</p>
+<p><img src="https://pic.imgdb.cn/item/66ae15d1d9c307b7e9ccbff2.jpg"></p>
+<h2 id="五"><a href="#五" class="headerlink" title="五"></a>五</h2><p>但不管怎么说，我好像依然长期处在慢性缺爱的状态，依然自私的想要索取他人的情绪价值，也依然会在夜深人静时期待恋爱的发生。</p>
+<p>可是也许，越是这样，反而越不适合谈恋爱。</p>
+<p>八月已至。前两天断断续续下了阵儿雨，空气稍稍变得凉快了一些；巴黎奥运会开了一个多星期了，好像每天都有赛事新闻上热搜。</p>
+<p>还有一个星期就是七夕节了，生活中遇到的情侣肉眼可见增加了许多，朋友圈里也时不时有人晒出自己的对象。</p>
+<p>依然简单而存粹地羡慕那些在一起的人儿们。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>心理学</tag>
+        <tag>亲密关系</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>德语部分零碎知识点整理</title>
+    <url>/2024/07/31/Deutsch/</url>
+    <content><![CDATA[<p>学习一门新语言过程中的一点笔记。</p>
+<span id="more"></span>
+
+<h2 id="代词"><a href="#代词" class="headerlink" title="代词"></a>代词</h2><h3 id="人称代词（Personalkpronomen）"><a href="#人称代词（Personalkpronomen）" class="headerlink" title="人称代词（Personalkpronomen）"></a>人称代词（Personalkpronomen）</h3><ul>
+<li>主格：用于主语。e.g. Ich sehe den Mann. (我看见那个男人。)</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_8ec2e510-151d-4d12-bfc6-394f3f1d4fc4.png"></p>
+<ul>
+<li>宾格：用于直接宾语。e.g. Der Mann sieht mich. (那个男人看见我。)</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_5e956621-3d35-4110-dde8-20985a39f1b0.png"></p>
+<ul>
+<li>与格：用于间接宾语。e.g. Der Mann gibt mir das Buch. (那个男人给我那本书。)</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_8b0b2d51-64d1-44b5-a5b6-242185ebf3f5.png"></p>
+<ul>
+<li>属格 (Genitiv)：人称代词的属格形式在现代德语中几乎不使用，通常用其它方式表达所有关系，如用名词或形容词的属格形式。尽管人称代词的属格形式不常见，理解其概念和替代用法对于掌握德语还是有帮助的。尤其在阅读文学作品、法律文件或正式书面语时，属格的理解会更加重要。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_7fba9d0c-43d9-490b-e68a-315292e96a0a.png"></p>
+<h3 id="物主代词（Possessivpronomen）"><a href="#物主代词（Possessivpronomen）" class="headerlink" title="物主代词（Possessivpronomen）"></a>物主代词（Possessivpronomen）</h3><ul>
+<li>基本形式（主格，Nominativ）</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_05e78462-c2ce-42b7-d8b5-865c24b4b9cc.png"></p>
+<ul>
+<li>宾格</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_1d47372b-1006-4e64-86f8-a5139a93b884.png"></p>
+<ul>
+<li>与格</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_2a4f3c3e-b49b-42bb-b795-7a737b6a2438.png"></p>
+<ul>
+<li>属格</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_17f07d89-9e37-4def-99ac-bb36953303b3.png"></p>
+<h2 id="系动词"><a href="#系动词" class="headerlink" title="系动词"></a>系动词</h2><h3 id="sein-to-be"><a href="#sein-to-be" class="headerlink" title="sein (to be)"></a>sein (to be)</h3><ul>
+<li>现在时与过去时</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_81be4c53-009e-4baf-d40a-889313f820b1.png"></p>
+<ul>
+<li>将来时与完成时</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_7de3abd4-4f0f-433e-8d73-5ece52011eda.png"></p>
+<ul>
+<li>e.g.  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Ich bin müde. (I am tired.)  </span><br><span class="line">Wir waren in Berlin. (We were in Berlin.)  </span><br><span class="line">Sie ist gewesen glücklich. (She has been happy.)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="werden-to-become"><a href="#werden-to-become" class="headerlink" title="werden (to become)"></a>werden (to become)</h3><ul>
+<li>现在时与过去时</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_f1036160-2219-4306-e801-0af0713476cb.png"></p>
+<ul>
+<li>将来时与完成时</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_9c0dd8fe-fbf5-43bf-c577-9d7774684a7f.png"></p>
+<ul>
+<li>e.g.  </li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Du wirst Arzt. (You become a doctor.)  </span><br><span class="line">Er wurde müde. (He became tired.)  </span><br><span class="line">Wir sind geworden Freunde. (We have become friends.)</span><br></pre></td></tr></table></figure>
+
+<h3 id="bleiben-to-stay-remain"><a href="#bleiben-to-stay-remain" class="headerlink" title="bleiben (to stay/remain)"></a>bleiben (to stay/remain)</h3><ul>
+<li>现在时与过去时</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_e1dc9a16-510f-420e-ce28-3d33455e88ec.png"></p>
+<ul>
+<li>将来时与完成时</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_bebb39b2-4f14-46f2-c627-e1cfe80e88b4.png"></p>
+<ul>
+<li>e.g.  </li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Ich bleibe zu Hause. (I stay at home.)  </span><br><span class="line">Sie blieb ruhig. (She remained calm.)  </span><br><span class="line">Wir sind geblieben dort. (We have stayed there.)</span><br></pre></td></tr></table></figure>
+
+<h2 id="疑问词"><a href="#疑问词" class="headerlink" title="疑问词"></a>疑问词</h2><h3 id="常见类型"><a href="#常见类型" class="headerlink" title="常见类型"></a>常见类型</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_53fc21e0-fc37-4809-ee99-f58b0eead408.png"></p>
+<h3 id="变位变形"><a href="#变位变形" class="headerlink" title="变位变形"></a>变位变形</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_f3ecb7a2-d689-4337-e884-1f0f839b310a.png"></p>
+<h2 id="常见表述总结"><a href="#常见表述总结" class="headerlink" title="常见表述总结"></a>常见表述总结</h2><h3 id="数字"><a href="#数字" class="headerlink" title="数字"></a>数字</h3><ul>
+<li>1-10</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_eb05ef44-20fc-4ba0-eb3b-833b61f685a7.png"></p>
+<ul>
+<li>11-20</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_e1db9826-2d6e-4db1-e87a-836fea4821d8.png"></p>
+<ul>
+<li>30-2000</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_525c2ec6-fab7-41c6-fdf6-8b90cb1dd39a.png"></p>
+<h3 id="日期"><a href="#日期" class="headerlink" title="日期"></a>日期</h3><ul>
+<li>星期一到星期日</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_4ad77192-a918-4a18-a4bf-488bad57545a.png"></p>
+<ul>
+<li>一月至十二月</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_c3dfbca7-8e33-4d56-dc3c-4e4930575f77.png"></p>
+<ul>
+<li>在德语中表示日期时，通常采用 <code>&quot;Tag.Monat.Jahr&quot;</code> 的格式，即日期在前，月份在中间，年份在后面，使用句点作为分隔符。例如，西历2024年6月2日在德语中写作 “2. Juni 2024”。  </li>
+<li>如果要在德语句子中表示 “我将在某年某月某日做某事”，句子结构可以是：<code>&quot;Ich werde am [Tag] [Monat] [Jahr] etwas tun.&quot;</code>，例如：”Ich werde am 2. Juni 2024 etwas tun.”。  </li>
+<li>如果要将时间点精确到小时和分钟，句子结构可以是：<code>&quot;Ich werde um [Stunde] Uhr [Minute] [Tag] [Monat] [Jahr] etwas tun.&quot;</code>，例如：”Ich werde um 10 Uhr 30 am 2. Juni 2024 etwas tun.”。  </li>
+</ul>
+<h3 id="天气"><a href="#天气" class="headerlink" title="天气"></a>天气</h3><p>注意词性。</p>
+<p>duolingo里面目前是把天气当作形容词组合为“主-系-表”结构的句子，但如果天气词作为名词来使用，则应当注意下面的变位。</p>
+<p>下面列出的是名词，形容词则加后缀-ig</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_744f7717-380c-4bfe-eb4c-3010ef49c134.png"></p>
+<h3 id="时间、地点的介词"><a href="#时间、地点的介词" class="headerlink" title="时间、地点的介词"></a>时间、地点的介词</h3><ul>
+<li>in</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_c1205b54-0611-40fc-e965-becaacf04ac6.png"></p>
+<ul>
+<li>im</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_58362643-fff0-4ab9-ef76-eae37d712796.png"></p>
+<ul>
+<li>am</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_afa91fda-5095-4ba1-c91e-462152fb97e7.png"></p>
+<ul>
+<li>um</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_9aeeb82c-b3eb-484a-ae87-7e7490912b9f.png"></p>
+<ul>
+<li>aus</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_576bfac3-e3bf-400c-9148-1168f831fbf4.png"></p>
+<ul>
+<li>其他介词</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_8184223a-2a4e-438d-e067-bca2043513dd.png"></p>
+<h3 id="四季"><a href="#四季" class="headerlink" title="四季"></a>四季</h3><ul>
+<li>der frühling = spring  </li>
+<li>der Sommer = summer  </li>
+<li>der herbst = autumn  </li>
+<li>der winter = winter  </li>
+</ul>
+<h2 id="倒装句"><a href="#倒装句" class="headerlink" title="倒装句"></a>倒装句</h2><p> 德语中的倒装句（Inversion）语法主要涉及动词位置的变化，常见的情况有以下几种：</p>
+<h3 id="时间状语或者地点状语放句首"><a href="#时间状语或者地点状语放句首" class="headerlink" title="时间状语或者地点状语放句首"></a>时间状语或者地点状语放句首</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_6f1976dd-e432-46d1-ecd4-a3412e41e889.png"></p>
+<h3 id="问句的动词需要提前"><a href="#问句的动词需要提前" class="headerlink" title="问句的动词需要提前"></a>问句的动词需要提前</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_3c545420-1e48-4bbf-b077-c20db983777f.png"></p>
+<h3 id="命令句的动词放句首"><a href="#命令句的动词放句首" class="headerlink" title="命令句的动词放句首"></a>命令句的动词放句首</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_29e51558-56bf-423e-cbc4-59fc58e486a2.png"></p>
+<h3 id="连接词开头的句子也要倒装"><a href="#连接词开头的句子也要倒装" class="headerlink" title="连接词开头的句子也要倒装"></a>连接词开头的句子也要倒装</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_8aba21df-cb0a-498c-f85d-1830e6f12963.png"></p>
+<h3 id="引导从句的倒装"><a href="#引导从句的倒装" class="headerlink" title="引导从句的倒装"></a>引导从句的倒装</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_2b32cc9d-f898-4f33-d11b-ef323fc3f06e.png"></p>
+<h2 id="虚拟态与I-would-like-to-do…-ich-mocht-…"><a href="#虚拟态与I-would-like-to-do…-ich-mocht-…" class="headerlink" title="虚拟态与I would like to do…(ich mocht …)"></a>虚拟态与I would like to do…(ich mocht …)</h2><h3 id="情态动词"><a href="#情态动词" class="headerlink" title="情态动词"></a>情态动词</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_7d91f831-1705-4ff5-ae30-abf0344a1516.png"></p>
+<ul>
+<li>具体用法</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_fc1c7926-8cd7-4f86-8ede-f43453cd60cc.png"></p>
+<ul>
+<li>例句（注意动词需要使用不定式形式）</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_a275f642-80ff-4394-ab74-b22acda33306.png"></p>
+<ul>
+<li>情态动词+虚拟态</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_695de694-9cb1-4bb7-ba66-1aa18113462b.png"></p>
+<h3 id="助动词相关知识点"><a href="#助动词相关知识点" class="headerlink" title="助动词相关知识点"></a>助动词相关知识点</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/90635caf-5047-41ec-adab-2a6000750ab4.jpeg"></p>
+<ul>
+<li>möchten</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/227c979e-896f-4015-96f3-416a6b89dcd1.png"></p>
+<ul>
+<li>dürfen</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/457ddca4-71d4-43ba-b988-b81deb09b645.png"></p>
+<ul>
+<li>补充</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/fb2e68ed-1cdf-477a-a8cf-7f9557e6e4e1.png"></p>
+<h3 id="德语中的虚拟态"><a href="#德语中的虚拟态" class="headerlink" title="德语中的虚拟态"></a>德语中的虚拟态</h3><ul>
+<li>德语中的虚拟式（Konjunktiv）是一种用来表示假设、愿望、间接引语以及礼貌请求的动词形式。德语有两种主要的虚拟式：虚拟式I（Konjunktiv I）和虚拟式II（Konjunktiv II）。它们的用法和构成有一些不同。  </li>
+<li>虚拟式1</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_0d4ba1f4-4219-46ac-fcc3-57e960c8bc38.png"></p>
+<ul>
+<li>虚拟式2</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_2d72b6a8-3436-4791-db14-2aedb2a55389.png"></p>
+<ul>
+<li>不规则变形</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_9d6addf6-1a59-45b2-903e-86f32e86a3df.png"></p>
+<ul>
+<li>与英语虚拟语气的对比：德语和英语的虚拟式/虚拟语气在功能上非常相似，主要用于表达假设、愿望、间接引语和礼貌请求。然而，它们在形式上有显著差异。德语有两个虚拟式，分别用于不同的语法情景，而英语主要通过简单的时态变化和助动词来实现类似的功能。  <ul>
+<li>相同点</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_6910cd4c-0f5a-4375-92fe-b1fc9f030490.png"></p>
+<pre><code>+ 不同点
+</code></pre>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4178961_c7c62e80-155b-4d80-b782-a106d079c95b.png"></p>
+]]></content>
+      <categories>
+        <category>摘抄</category>
+      </categories>
+      <tags>
+        <tag>德语</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法</title>
+    <url>/2024/08/18/sentiment_analysis_and_emotional_stability/</url>
+    <content><![CDATA[<p>如题。</p>
+<p>前段时间休假在家，学习了不少心理学方面的知识，某日突然有一个疑惑：我算是一个情绪稳定的人吗？或者说，我想知道自己的情绪稳定性，在这些年来是变得更稳定了，还是更不稳定了。当我把这一疑问提交给chatGPT以后，它告诉我，可以分析一下这几年来的日记中的情感倾向变化，从而更好的了解自己。于是对文本情感倾向性分析进行了一些探索。</p>
+<span id="more"></span>
+
+<h2 id="一、基于textblob的文本倾向性分析"><a href="#一、基于textblob的文本倾向性分析" class="headerlink" title="一、基于textblob的文本倾向性分析"></a>一、基于textblob的文本倾向性分析</h2><p><a href="https://textblob.readthedocs.io/en/dev/quickstart.html#sentiment-analysis">textblob</a> 是一个用于文本数据（textual data）处理的python库，其提供了一系列自然语言处理的函数，包括文本情感分析。要使用这个库也很简单，只需要<code>pip install textblob</code>即可完成安装，随后使用下面的代码就可以完成文本的情感倾向性分析。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> textblob <span class="keyword">import</span> TextBlob</span><br><span class="line">testimonial = TextBlob(<span class="string">&quot;Textblob is amazingly simple to use. What great fun!&quot;</span>) <span class="comment"># create a textBlob object.</span></span><br><span class="line"><span class="built_in">print</span>(testimonial.sentiment)</span><br><span class="line"><span class="comment">## output: Sentiment(polarity=0.39166666666666666, subjectivity=0.4357142857142857)</span></span><br><span class="line"><span class="built_in">print</span>(testimonial.sentiment.polarity)</span><br><span class="line"><span class="comment">## output: 0.39166666666666666</span></span><br></pre></td></tr></table></figure>
+
+<p>上述函数接口传入一段文本，返回一个<code>(polarity,subjectivity)</code>元组，其中<code>polarity</code>代表极性得分，值域为<code>[-1.0,1.0]</code> ，代表情感倾向性；<code>subjectivity</code>代表主观性得分，值域为<code>[0.0，1.0]</code>，其中0代表非常客观，1代表非常主观。</p>
+<p>不过这个库有缺点，只能处理英文文本，因此这里不考虑使用。</p>
+<h2 id="二、基于snowNLP的中文文本倾向性分析"><a href="#二、基于snowNLP的中文文本倾向性分析" class="headerlink" title="二、基于snowNLP的中文文本倾向性分析"></a>二、基于snowNLP的中文文本倾向性分析</h2><blockquote>
+<p>参考： <a href="https://blog.csdn.net/google19890102/article/details/80091502">情感分析——深入snownlp原理和实践</a></p>
+</blockquote>
+<p>受textblob启发，有国人针对中文场景开发了一个文本处理的python库，叫做<a href="https://github.com/isnowfy/snownlp">snowNLP</a>。安装方法同样很简单，<code>pip install snownlp</code> 即可。下面是一个使用方法示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> snownlp <span class="keyword">import</span> SnowNLP</span><br><span class="line">res=SnowNLP(<span class="string">&quot;北京连着下了三天的雪，今天晚上终于停了&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(res.sentiments)</span><br><span class="line"><span class="comment">## output: 0.4371078284732781</span></span><br><span class="line">res=SnowNLP(<span class="string">&quot;这个东西真心很赞&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(res.sentiments)</span><br><span class="line"><span class="comment">## output: 0.9769551298267365</span></span><br></pre></td></tr></table></figure>
+
+<p>上述函数接口传入一段文本，返回一个浮点数，代表文本属于积极情绪的概率值。</p>
+<p>然而snowNLP也存在缺点，因为作者是在电商评论数据集上训练的模型，因此在日记文本上的分类非常不准确，几乎会把任何传入的文本分类为积极情绪（如下图）。此外，传入文本的长度似乎也会影响snowNLP的分类情况，文本越长snowNLP给出的积极性评分也越高（即使是同一段文本内容，重复次数越多得分也越高）。因此这里同样不考虑使用。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819224841.png" alt="image.png"></p>
+<h2 id="三、百度智能云的解决方案"><a href="#三、百度智能云的解决方案" class="headerlink" title="三、百度智能云的解决方案"></a>三、百度智能云的解决方案</h2><p>幸运的是，我们还有百度提供的API接口。参考：</p>
+<blockquote>
+<p><a href="https://cloud.baidu.com/doc/NLP/s/zk6z52hds">百度智能云 - 情感倾向分析</a></p>
+</blockquote>
+<p>这一API能够对只包含单一主体主观信息的文本，进行自动情感倾向性判断（积极、消极、中性），并给出相应的置信度。为口碑分析、话题监控、舆情分析等应用提供基础技术支持。其通过HTTPS的POST请求进行调用，请求URL为  <code>https://aip.baidubce.com/rpc/2.0/nlp/v1/sentiment_classify</code> ， payload格式如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;我爱祖国&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>上述API的返回值是一个json文档，其结构如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;我爱祖国&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;items&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;sentiment&quot;</span><span class="punctuation">:</span><span class="number">2</span><span class="punctuation">,</span>    <span class="comment">//表示情感极性分类结果</span></span><br><span class="line">            <span class="attr">&quot;confidence&quot;</span><span class="punctuation">:</span><span class="number">0.90</span><span class="punctuation">,</span> <span class="comment">//表示分类的置信度</span></span><br><span class="line">            <span class="attr">&quot;positive_prob&quot;</span><span class="punctuation">:</span><span class="number">0.94</span><span class="punctuation">,</span> <span class="comment">//表示属于积极类别的概率</span></span><br><span class="line">            <span class="attr">&quot;negative_prob&quot;</span><span class="punctuation">:</span><span class="number">0.06</span>  <span class="comment">//表示属于消极类别的概率</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>因此，我们可以很方便的构建分析函数，如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line">API_Key    = <span class="string">&quot;xxxxxx&quot;</span> <span class="comment"># 此处填入你的百度智能云的API_KEY</span></span><br><span class="line">Secret_Key = <span class="string">&quot;xxxxxx&quot;</span> <span class="comment"># 此处填入你的百度智能云的Secret_Key </span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Accept&#x27;</span>    : <span class="string">&#x27;application/json&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>:<span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 动态获取API的访问令牌。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_access_token</span>():</span><br><span class="line">    url = <span class="string">&quot;https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&amp;client_id=&#123;&#125;&amp;client_secret=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(API_Key,Secret_Key)</span><br><span class="line">    payload = json.dumps(<span class="string">&quot;&quot;</span>)</span><br><span class="line">    response = requests.request(<span class="string">&quot;POST&quot;</span>, url, headers=headers, data=payload)</span><br><span class="line">    <span class="keyword">return</span>  response.json().get(<span class="string">&quot;access_token&quot;</span>)</span><br><span class="line"><span class="comment"># 情感倾向分析的函数。传入一个text，返回一个python字典对象，其中包含文本的情感倾向性。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sentiment_classify_baidu</span>(<span class="params">text</span>):</span><br><span class="line">    url = <span class="string">&quot;https://aip.baidubce.com/rpc/2.0/nlp/v1/sentiment_classify?charset=UTF-8&amp;access_token=&quot;</span> + get_access_token() </span><br><span class="line">    dt = &#123;</span><br><span class="line">        <span class="string">&quot;text&quot;</span>: text</span><br><span class="line">    &#125;</span><br><span class="line">    payload = json.dumps(dt)</span><br><span class="line">    response = requests.request(<span class="string">&quot;POST&quot;</span>, url, headers=headers, data=payload)</span><br><span class="line">    res = response.json()</span><br><span class="line">    <span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+
+<p>相比于snowNLP，百度的API很显然在训练时使用了更加广泛的语料库，因此分析结果也基本上是准确的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819230336.png" alt="image.png"></p>
+<h2 id="四、分析结果与讨论"><a href="#四、分析结果与讨论" class="headerlink" title="四、分析结果与讨论"></a>四、分析结果与讨论</h2><h3 id="（一）情感倾向性分析"><a href="#（一）情感倾向性分析" class="headerlink" title="（一）情感倾向性分析"></a>（一）情感倾向性分析</h3><p>基于前面的探索，我们可以基于百度的API进行情感倾向性分析。</p>
+<p>我们可以批量读取日记的文本内容，使用上述代码计算情感倾向性，并按日期汇总为一个dataframe（如下图），以便后续分析。此处可以将dataframe导出为csv格式备用。（代码略）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819231542.png" alt="image.png"></p>
+<h3 id="（二）如何定义“情绪稳定性”"><a href="#（二）如何定义“情绪稳定性”" class="headerlink" title="（二）如何定义“情绪稳定性”"></a>（二）如何定义“情绪稳定性”</h3><p>每一篇日记都代表一个孤立的时间点。单独一篇日记的情感倾向性并不能说明什么，只有分析一段时间内的情感倾向性变化才有意义。</p>
+<p>因此，对“情绪稳定性”的度量可以转变为下述问题：对于一串代表情感倾向性的序列向量，如何衡量其变化过程的平稳性？</p>
+<p>（一个直观点的描述是这样：假设某段时间内的情感倾向性变化过程是<code>[0,0,0,2,2,2]</code>，代表一段稳定的 消极情绪过后是一段很稳定的积极情绪，另一端时间内的情感倾向性变化过程是 <code>[0,2,0,2,0,2]</code>，代表两种情绪交替出现，情绪稳定性很差。那么，如何在统计指标上体现出这种差异。）</p>
+<p>我们可以定义一个 <strong>情绪转换率（emotion conversion rate）</strong> 。其定义为情绪转换次数与序列长度的比值。例如序列<code>[0,0,0,2,2,2]</code>中，情绪转换1次，情绪转换率为1/6；序列 <code>[0,2,0,2,0,2]</code>中，情绪转换5次，情绪转换率为5/6。这个指标提供了一个标准化的度量，使得不同长度的序列之间可以进行比较。</p>
+<p>需要注意的是，实际计算时，从消极情绪（0）转移到积极情绪（2）会被算作两次而不是一次，因为这样的情绪转换跨过了中性情绪（1）。</p>
+<p>在计算情绪转换率的过程中，可以使用<code>numpy.diff()</code>函数提高效率。</p>
+<h3 id="（三）滑窗分析与最终结果"><a href="#（三）滑窗分析与最终结果" class="headerlink" title="（三）滑窗分析与最终结果"></a>（三）滑窗分析与最终结果</h3><p>下面是滑窗分析的代码。需要事先准备好日记情感倾向性分析结果的dataframe（见上文），下面的代码会基于用户给定的时间段和窗口长度，对一段时间内的 <strong>情感倾向变化情况</strong> 以及 <strong>情绪转换率</strong> 进行计算。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> os,sys,time</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> matplotlib.gridspec <span class="keyword">import</span> GridSpec</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment">## 分析的时间段定义。</span></span><br><span class="line">start_date = <span class="string">&quot;20200101&quot;</span> <span class="comment"># 分析的起始时间</span></span><br><span class="line">end_date   = <span class="string">&quot;20220630&quot;</span> <span class="comment"># 分析的终止时间</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算一个单位时间戳的长度。</span></span><br><span class="line">start_stamp = <span class="built_in">int</span>(time.mktime(time.strptime(start_date,<span class="string">&quot;%Y%m%d&quot;</span>)))</span><br><span class="line">end_stamp  = <span class="built_in">int</span>(time.mktime(time.strptime( end_date,<span class="string">&quot;%Y%m%d&quot;</span>)))</span><br><span class="line">one_day_stamp = <span class="built_in">abs</span>( \</span><br><span class="line">       <span class="built_in">int</span>(time.mktime(time.strptime(<span class="string">&quot;20200101&quot;</span>,<span class="string">&quot;%Y%m%d&quot;</span>))) - \</span><br><span class="line">       <span class="built_in">int</span>(time.mktime(time.strptime(<span class="string">&quot;20200102&quot;</span>,<span class="string">&quot;%Y%m%d&quot;</span>))) )</span><br><span class="line">time_stamps_list = []</span><br><span class="line"><span class="keyword">for</span> d <span class="keyword">in</span> sentiment_analysis_baidu_df[<span class="string">&quot;date&quot;</span>]:</span><br><span class="line">    time_stamps_list.append(<span class="built_in">int</span>(time.mktime(time.strptime(<span class="built_in">str</span>(d),<span class="string">&quot;%Y%m%d&quot;</span>))))</span><br><span class="line">date_list = <span class="built_in">list</span>(sentiment_analysis_baidu_df[<span class="string">&quot;date&quot;</span>]) <span class="comment"># int型的日期列表，用于后续的时间点判断。</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义一个滑窗扫描的函数</span></span><br><span class="line"><span class="comment"># 使用给定长度的window去滑过某个特定的时间段，计算这段时间内的日记文本的平均情感倾向性，以及情绪转换率</span></span><br><span class="line"><span class="comment"># 传入参数有两个，一个是时间点，一个是窗口长度。</span></span><br><span class="line"><span class="comment"># 返回一个元组，代表这段时间内日记文本的平均情感倾向性</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_n_day_average</span>(<span class="params">day_stamp,n=<span class="number">30</span></span>):</span><br><span class="line">    <span class="comment">#print(&quot;in function get_n_day_average,wins=&quot;,n)</span></span><br><span class="line">    stamp0 = <span class="built_in">int</span>(day_stamp-one_day_stamp*n/<span class="number">2</span>)</span><br><span class="line">    stamp1 = <span class="built_in">int</span>(day_stamp+one_day_stamp*n/<span class="number">2</span>)</span><br><span class="line">    negative_prob_list = []</span><br><span class="line">    positive_prob_list = []</span><br><span class="line">    sentiment_list = []</span><br><span class="line">    <span class="keyword">for</span> stamp <span class="keyword">in</span> <span class="built_in">range</span>(stamp0,stamp1,one_day_stamp):</span><br><span class="line">        date_num = <span class="built_in">int</span>(time.strftime(<span class="string">&quot;%Y%m%d&quot;</span>,time.localtime(stamp)))</span><br><span class="line">        <span class="comment">#print(date_num)</span></span><br><span class="line">        <span class="keyword">if</span>(date_num <span class="keyword">in</span> date_list):</span><br><span class="line">            data_row = sentiment_analysis_baidu_df[sentiment_analysis_baidu_df[<span class="string">&quot;date&quot;</span>]==date_num]</span><br><span class="line">            <span class="comment">#display(data_row) #debug</span></span><br><span class="line">            neg_prob = <span class="built_in">float</span>(data_row[<span class="string">&quot;negative_prob&quot;</span>])</span><br><span class="line">            pos_prob = <span class="built_in">float</span>(data_row[<span class="string">&quot;positive_prob&quot;</span>])</span><br><span class="line">            sentiment =  <span class="built_in">int</span>(data_row[<span class="string">&quot;sentiment&quot;</span>])</span><br><span class="line">            negative_prob_list.append(neg_prob)</span><br><span class="line">            positive_prob_list.append(pos_prob)</span><br><span class="line">            sentiment_list.append(sentiment)</span><br><span class="line">    neg_avg = np.mean(negative_prob_list)</span><br><span class="line">    pos_avg = np.mean(positive_prob_list)</span><br><span class="line">    sentiment_avg = np.mean(sentiment_list)</span><br><span class="line">    <span class="comment">## 情绪转换率: 情绪转换率可以定义为情绪转换次数与序列长度的比值。</span></span><br><span class="line">    <span class="comment"># 这个指标提供了一个标准化的度量，使得不同长度的序列之间可以进行比较。</span></span><br><span class="line">    emo_conv_rate = np.<span class="built_in">sum</span>(np.<span class="built_in">abs</span>(np.diff(sentiment_list)))/n <span class="comment"># 使用窗口长度作为分母，以排除日记写作频率的影响</span></span><br><span class="line">    <span class="keyword">return</span> (neg_avg,pos_avg,sentiment_avg,emo_conv_rate) <span class="comment"># 平均消极情绪概率，平均积极情绪概率，平均情感倾向性，情绪转换率</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 情感倾向性的整体分析。</span></span><br><span class="line"><span class="comment">## 给定窗口长度和起始与终止时间，完成对这段时间内的情感倾向性的连续计算</span></span><br><span class="line"><span class="comment"># 返回值是一个dataframe，每一行是一个连续的时间点，不同列分别代表了情感倾向性、情绪转换率等指标</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">analysis</span>(<span class="params">window_size=<span class="number">30</span>,start_date=<span class="string">&quot;20200101&quot;</span>,end_date=<span class="string">&quot;20220630&quot;</span></span>):</span><br><span class="line">    <span class="comment">#print(&quot;in function analysis,wins=&quot;,window_size)</span></span><br><span class="line">    start_stamp = <span class="built_in">int</span>(time.mktime(time.strptime(start_date,<span class="string">&quot;%Y%m%d&quot;</span>)))</span><br><span class="line">    end_stamp   = <span class="built_in">int</span>(time.mktime(time.strptime( end_date,<span class="string">&quot;%Y%m%d&quot;</span>)))</span><br><span class="line">    one_day_stamp = <span class="built_in">abs</span>( \</span><br><span class="line">       <span class="built_in">int</span>(time.mktime(time.strptime(<span class="string">&quot;20200101&quot;</span>,<span class="string">&quot;%Y%m%d&quot;</span>))) - \</span><br><span class="line">       <span class="built_in">int</span>(time.mktime(time.strptime(<span class="string">&quot;20200102&quot;</span>,<span class="string">&quot;%Y%m%d&quot;</span>))) )</span><br><span class="line">    x_date_list = []</span><br><span class="line">    neg_avg_list = []</span><br><span class="line">    pos_avg_list = []</span><br><span class="line">    sentiment_avg_list = []</span><br><span class="line">    emo_conv_rate_list = []</span><br><span class="line">    <span class="keyword">for</span> stamp <span class="keyword">in</span> <span class="built_in">range</span>(start_stamp,end_stamp,one_day_stamp):</span><br><span class="line">        date_num = <span class="built_in">int</span>(time.strftime(<span class="string">&quot;%Y%m%d&quot;</span>,time.localtime(stamp)))</span><br><span class="line">        x_date_list.append(date_num)</span><br><span class="line">        neg_avg,pos_avg,sentiment_avg,emo_conv_rate = get_n_day_average(stamp,window_size)</span><br><span class="line">        neg_avg_list.append(neg_avg)</span><br><span class="line">        pos_avg_list.append(pos_avg)</span><br><span class="line">        sentiment_avg_list.append(sentiment_avg)</span><br><span class="line">        emo_conv_rate_list.append(emo_conv_rate)</span><br><span class="line">    res_df = pd.DataFrame(&#123;<span class="string">&quot;date&quot;</span>:x_date_list,</span><br><span class="line">                          <span class="string">&quot;negative_prob&quot;</span>:neg_avg_list,</span><br><span class="line">                          <span class="string">&quot;positive_prob&quot;</span>:pos_avg_list,</span><br><span class="line">                          <span class="string">&quot;sentiment&quot;</span>:sentiment_avg_list,</span><br><span class="line">                          <span class="string">&quot;emotion_conv_rate&quot;</span>:emo_conv_rate_list&#125;)</span><br><span class="line">    <span class="keyword">return</span> res_df</span><br><span class="line"></span><br><span class="line"><span class="comment">## 绘图函数。传入一个dataframe和图片标题，完成绘制。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">plot_df</span>(<span class="params">res_df,title</span>):</span><br><span class="line">    x = np.arange(res_df.shape[<span class="number">0</span>])</span><br><span class="line">    fig = plt.figure(figsize=[<span class="number">19.2</span>, <span class="number">10.8</span>], constrained_layout=<span class="literal">True</span>, tight_layout=<span class="literal">True</span>)</span><br><span class="line">    gs = GridSpec(<span class="number">4</span>,<span class="number">1</span>,figure=fig,wspace=<span class="number">0</span>,hspace=<span class="number">0</span>)</span><br><span class="line">    ax1 = fig.add_subplot(gs[<span class="number">0</span>:<span class="number">1</span>,<span class="number">0</span>:<span class="number">1</span>])</span><br><span class="line">    ax1.plot(x,res_df[<span class="string">&quot;negative_prob&quot;</span>],color=<span class="string">&quot;#eff08a&quot;</span>)</span><br><span class="line">    ax1.set_ylabel(<span class="string">&quot;negative_prob&quot;</span>)</span><br><span class="line">    plt.title(title)</span><br><span class="line">    ax2 = fig.add_subplot(gs[<span class="number">1</span>:<span class="number">2</span>,<span class="number">0</span>:<span class="number">1</span>])</span><br><span class="line">    ax2.plot(x,res_df[<span class="string">&quot;positive_prob&quot;</span>],color=<span class="string">&quot;#ff8a8a&quot;</span>)</span><br><span class="line">    ax2.set_ylabel(<span class="string">&quot;positive_prob&quot;</span>)</span><br><span class="line">    ax3 = fig.add_subplot(gs[<span class="number">2</span>:<span class="number">3</span>,<span class="number">0</span>:<span class="number">1</span>])</span><br><span class="line">    ax3.plot(x,res_df[<span class="string">&quot;sentiment&quot;</span>] ,color=<span class="string">&quot;#8ab9ff&quot;</span>)</span><br><span class="line">    ax3.set_ylabel(<span class="string">&quot;sentiment&quot;</span>)</span><br><span class="line">    ax4 = fig.add_subplot(gs[<span class="number">3</span>:<span class="number">4</span>,<span class="number">0</span>:<span class="number">1</span>])</span><br><span class="line">    ax4.plot(x,res_df[<span class="string">&quot;emotion_conv_rate&quot;</span>],color=<span class="string">&quot;#b9ff8a&quot;</span>)</span><br><span class="line">    ax4.set_ylabel(<span class="string">&quot;emotion_conv_rate&quot;</span>)</span><br><span class="line">    ax4.set_xlabel(<span class="string">&quot;date&quot;</span>)</span><br><span class="line">    <span class="comment"># set x-ticks:</span></span><br><span class="line">    x_ = []</span><br><span class="line">    date_ = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>,res_df.shape[<span class="number">0</span>],<span class="number">30</span>):</span><br><span class="line">       x_.append(x[i])</span><br><span class="line">       date_.append(<span class="built_in">int</span>(res_df.iloc[i,:][<span class="string">&quot;date&quot;</span>]))</span><br><span class="line">    plt.xticks(x_,date_,rotation=<span class="number">60</span>)</span><br><span class="line">    plt.savefig(<span class="string">f&quot;report_<span class="subst">&#123;title&#125;</span>.png&quot;</span>)</span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>使用方法如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 导入先前分析结果的dataframe。注意，变量名称必须是sentiment_analysis_baidu_df，否则运行不了</span></span><br><span class="line">sentiment_analysis_baidu_df = pd.read_csv(<span class="string">&quot;sentiment_analysis_baidu_df.txt&quot;</span>,sep=<span class="string">&quot;\t&quot;</span>) </span><br><span class="line"></span><br><span class="line"><span class="comment"># 分析某段时间内的的情绪稳定情况（下面的时间段仅为示例）。</span></span><br><span class="line"><span class="comment"># window_size=90 代表以一个季度为窗口长度进行滑窗</span></span><br><span class="line">flip_window_df = analysis(window_size=<span class="number">90</span>,start_date=<span class="string">&quot;20200101&quot;</span>,end_date=<span class="string">&quot;20220630&quot;</span>) </span><br><span class="line">display(flip_window_df) <span class="comment"># 展示统计结果</span></span><br><span class="line">plot_df(flip_window_df,title=<span class="string">&quot;sentiment analysis(90day avg)&quot;</span>) <span class="comment"># 绘制情绪稳定性变化曲线</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819235135.png" alt="image.png"></p>
+<p>绘制出来的曲线长下图这个样子（图片仅为示例）。</p>
+<p>根据曲线可以判断出来，我确实是一个情绪不太稳定的人，特别是在大四上半学期（2021年10月左右），情绪不稳定性在持续走高😭（看图中最下面的绿线，那段时间存在非常明显的上扬趋势）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819235154.png" alt="image.png"></p>
+<p>至于现在呢？——</p>
+<p>研究生期间的曲线就不放了。说出来丢人，单看情绪转换率这个指标的话，现阶段我的情绪稳定性确实比大学刚毕业那会儿要好不少，但在某些时间段也有一些波动和起伏。</p>
+<p>而且想了下，这样的分析可能也存在问题。“情绪转换率”这个指标可能并不完美，文本情感倾向性分析也太局限了。特别是，把自己的情绪波动量化为冷冰冰的数字，虽然听起来很有创意、很极客，但是否有些不近人情呢？</p>
+<p>或许在情商的锻炼上，我还有很长的路要走吧。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>自然语言处理</tag>
+        <tag>情感倾向性分析</tag>
       </tags>
   </entry>
 </search>
