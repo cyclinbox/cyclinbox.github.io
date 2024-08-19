@@ -24,7 +24,7 @@
     <meta name="description" content="如题。 前段时间休假在家，学习了不少心理学方面的知识，某日突然有一个疑惑：我算是一个情绪稳定的人吗？或者说，我想知道自己的情绪稳定性，在这些年来是变得更稳定了，还是更不稳定了。当我把这一疑问提交给chatGPT以后，它告诉我，可以分析一下这几年来的日记中的情感倾向变化，从而更好的了解自己。于是对文本情感倾向性分析进行了一些探索。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法">
-<meta property="og:url" content="https://wz.anoms.top/2024/08/18/sentiment_analysis_and_emotional_stability/index.html">
+<meta property="og:url" content="https://wz.anoms.top/2024/08/19/sentiment_analysis_and_emotional_stability/index.html">
 <meta property="og:site_name" content="Warren&#39;s Blog">
 <meta property="og:description" content="如题。 前段时间休假在家，学习了不少心理学方面的知识，某日突然有一个疑惑：我算是一个情绪稳定的人吗？或者说，我想知道自己的情绪稳定性，在这些年来是变得更稳定了，还是更不稳定了。当我把这一疑问提交给chatGPT以后，它告诉我，可以分析一下这几年来的日记中的情感倾向变化，从而更好的了解自己。于是对文本情感倾向性分析进行了一些探索。">
 <meta property="og:locale" content="zh_CN">
@@ -33,8 +33,8 @@
 <meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819231542.png">
 <meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819235135.png">
 <meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819235154.png">
-<meta property="article:published_time" content="2024-08-18T14:50:00.000Z">
-<meta property="article:modified_time" content="2024-08-19T16:19:12.392Z">
+<meta property="article:published_time" content="2024-08-19T14:50:00.000Z">
+<meta property="article:modified_time" content="2024-08-19T16:47:39.919Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="python">
@@ -44,11 +44,11 @@
 <meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819224841.png">
 
 
-<link rel="canonical" href="https://wz.anoms.top/2024/08/18/sentiment_analysis_and_emotional_stability/">
+<link rel="canonical" href="https://wz.anoms.top/2024/08/19/sentiment_analysis_and_emotional_stability/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/08/18/sentiment_analysis_and_emotional_stability/","path":"2024/08/18/sentiment_analysis_and_emotional_stability/","title":"如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/08/19/sentiment_analysis_and_emotional_stability/","path":"2024/08/19/sentiment_analysis_and_emotional_stability/","title":"如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法 | Warren's Blog</title>
@@ -171,7 +171,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-count">130</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -182,7 +182,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">206</span>
+        <span class="site-state-item-count">209</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -238,7 +238,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/08/18/sentiment_analysis_and_emotional_stability/">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/08/19/sentiment_analysis_and_emotional_stability/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/cyclinbox.png">
@@ -267,14 +267,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-08-18 22:50:00" itemprop="dateCreated datePublished" datetime="2024-08-18T22:50:00+08:00">2024-08-18</time>
+      <time title="创建时间：2024-08-19 22:50:00" itemprop="dateCreated datePublished" datetime="2024-08-19T22:50:00+08:00">2024-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-20 00:19:12" itemprop="dateModified" datetime="2024-08-20T00:19:12+08:00">2024-08-20</time>
+      <time title="修改时间：2024-08-20 00:47:39" itemprop="dateModified" datetime="2024-08-20T00:47:39+08:00">2024-08-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -335,7 +335,7 @@
 <p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819231542.png" alt="image.png"></p>
 <h3 id="（二）如何定义“情绪稳定性”"><a href="#（二）如何定义“情绪稳定性”" class="headerlink" title="（二）如何定义“情绪稳定性”"></a>（二）如何定义“情绪稳定性”</h3><p>每一篇日记都代表一个孤立的时间点。单独一篇日记的情感倾向性并不能说明什么，只有分析一段时间内的情感倾向性变化才有意义。</p>
 <p>因此，对“情绪稳定性”的度量可以转变为下述问题：对于一串代表情感倾向性的序列向量，如何衡量其变化过程的平稳性？</p>
-<p>（一个直观点的描述是这样：假设某段时间内的情感倾向性变化过程是<code>[0,0,0,2,2,2]</code>，代表一段稳定的 消极情绪过后是一段很稳定的积极情绪，另一端时间内的情感倾向性变化过程是 <code>[0,2,0,2,0,2]</code>，代表两种情绪交替出现，情绪稳定性很差。那么，如何在统计指标上体现出这种差异。）</p>
+<p>（一个直观点的描述是这样：假设某段时间内的情感倾向性变化过程是<code>[0,0,0,2,2,2]</code>，代表一段稳定的 消极情绪过后是一段很稳定的积极情绪，另一段时间内的情感倾向性变化过程是 <code>[0,2,0,2,0,2]</code>，代表两种情绪交替出现，情绪稳定性很差。那么，如何在统计指标上体现出这种差异。）</p>
 <p>我们可以定义一个 <strong>情绪转换率（emotion conversion rate）</strong> 。其定义为情绪转换次数与序列长度的比值。例如序列<code>[0,0,0,2,2,2]</code>中，情绪转换1次，情绪转换率为1/6；序列 <code>[0,2,0,2,0,2]</code>中，情绪转换5次，情绪转换率为5/6。这个指标提供了一个标准化的度量，使得不同长度的序列之间可以进行比较。</p>
 <p>需要注意的是，实际计算时，从消极情绪（0）转移到积极情绪（2）会被算作两次而不是一次，因为这样的情绪转换跨过了中性情绪（1）。</p>
 <p>在计算情绪转换率的过程中，可以使用<code>numpy.diff()</code>函数提高效率。</p>
@@ -375,7 +375,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://wz.anoms.top/2024/08/18/sentiment_analysis_and_emotional_stability/" title="如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法">https://wz.anoms.top/2024/08/18/sentiment_analysis_and_emotional_stability/</a>
+      <a href="https://wz.anoms.top/2024/08/19/sentiment_analysis_and_emotional_stability/" title="如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法">https://wz.anoms.top/2024/08/19/sentiment_analysis_and_emotional_stability/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -394,8 +394,8 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/08/04/20240804_updatelog/" rel="prev" title="七月总结">
-                  <i class="fa fa-chevron-left"></i> 七月总结
+                <a href="/2024/08/19/migrasome/" rel="prev" title="一种新的细胞器：迁移体（migrasome）">
+                  <i class="fa fa-chevron-left"></i> 一种新的细胞器：迁移体（migrasome）
                 </a>
             </div>
             <div class="post-nav-item">

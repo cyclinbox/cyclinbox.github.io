@@ -12979,7 +12979,7 @@
   </entry>
   <entry>
     <title>如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法</title>
-    <url>/2024/08/18/sentiment_analysis_and_emotional_stability/</url>
+    <url>/2024/08/19/sentiment_analysis_and_emotional_stability/</url>
     <content><![CDATA[<p>如题。</p>
 <p>前段时间休假在家，学习了不少心理学方面的知识，某日突然有一个疑惑：我算是一个情绪稳定的人吗？或者说，我想知道自己的情绪稳定性，在这些年来是变得更稳定了，还是更不稳定了。当我把这一疑问提交给chatGPT以后，它告诉我，可以分析一下这几年来的日记中的情感倾向变化，从而更好的了解自己。于是对文本情感倾向性分析进行了一些探索。</p>
 <span id="more"></span>
@@ -13019,7 +13019,7 @@
 <p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240819231542.png" alt="image.png"></p>
 <h3 id="（二）如何定义“情绪稳定性”"><a href="#（二）如何定义“情绪稳定性”" class="headerlink" title="（二）如何定义“情绪稳定性”"></a>（二）如何定义“情绪稳定性”</h3><p>每一篇日记都代表一个孤立的时间点。单独一篇日记的情感倾向性并不能说明什么，只有分析一段时间内的情感倾向性变化才有意义。</p>
 <p>因此，对“情绪稳定性”的度量可以转变为下述问题：对于一串代表情感倾向性的序列向量，如何衡量其变化过程的平稳性？</p>
-<p>（一个直观点的描述是这样：假设某段时间内的情感倾向性变化过程是<code>[0,0,0,2,2,2]</code>，代表一段稳定的 消极情绪过后是一段很稳定的积极情绪，另一端时间内的情感倾向性变化过程是 <code>[0,2,0,2,0,2]</code>，代表两种情绪交替出现，情绪稳定性很差。那么，如何在统计指标上体现出这种差异。）</p>
+<p>（一个直观点的描述是这样：假设某段时间内的情感倾向性变化过程是<code>[0,0,0,2,2,2]</code>，代表一段稳定的 消极情绪过后是一段很稳定的积极情绪，另一段时间内的情感倾向性变化过程是 <code>[0,2,0,2,0,2]</code>，代表两种情绪交替出现，情绪稳定性很差。那么，如何在统计指标上体现出这种差异。）</p>
 <p>我们可以定义一个 <strong>情绪转换率（emotion conversion rate）</strong> 。其定义为情绪转换次数与序列长度的比值。例如序列<code>[0,0,0,2,2,2]</code>中，情绪转换1次，情绪转换率为1/6；序列 <code>[0,2,0,2,0,2]</code>中，情绪转换5次，情绪转换率为5/6。这个指标提供了一个标准化的度量，使得不同长度的序列之间可以进行比较。</p>
 <p>需要注意的是，实际计算时，从消极情绪（0）转移到积极情绪（2）会被算作两次而不是一次，因为这样的情绪转换跨过了中性情绪（1）。</p>
 <p>在计算情绪转换率的过程中，可以使用<code>numpy.diff()</code>函数提高效率。</p>
@@ -13049,6 +13049,46 @@
         <tag>python</tag>
         <tag>自然语言处理</tag>
         <tag>情感倾向性分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一种新的细胞器：迁移体（migrasome）</title>
+    <url>/2024/08/19/migrasome/</url>
+    <content><![CDATA[<p>迁移体（migrasome）是参与细胞迁移过程中细胞质内容物释放的特殊细胞器。这些结构在细胞间通讯中起着重要作用。</p>
+<span id="more"></span>
+
+<hr>
+<p>事情要从早上说起。</p>
+<p>先看一张讲座的海报：</p>
+<p><img src="https://pic.imgdb.cn/item/66c374c8d9c307b7e97687fc.png"></p>
+<p>“迁移体：生物学功能和治疗潜力”。</p>
+<p>查了一下migrasome这个关键词，发现这个词2014年才被提出（见下面这篇Cell Res文章）。PubMed上的相关文章也比较少，表明这是一个比较新的领域。</p>
+<blockquote>
+<p><a href="https://www.nature.com/articles/cr2014135">Liang Ma, et al. Discovery of the migrasome, an organelle mediating release of cytoplasmic contents during cell migration. Cell Research volume 25, p24–38,2015</a></p>
+</blockquote>
+<p>细胞通过分泌和释放蛋白质和囊泡相互交流。许多细胞可以迁移。在这项研究中，我们报告了移行细胞增多症的发现，这是一种释放细胞内容物的细胞迁移依赖机制，以及介导移行细胞增生的囊泡结构移行体。 <strong>当迁移的细胞移动时，它们会在后面留下被称为回缩纤维的长管状纤维。包含许多小囊泡的大囊泡生长在牵开纤维的尖端和交叉处。这些将囊泡与主细胞体连接起来的纤维最终会断裂，囊泡被释放到细胞外空间或直接被周围细胞吸收。</strong> 由于这些囊泡的 <strong>形成依赖于迁移</strong> ，我们将其命名为 <strong>“迁移体”</strong> 。我们还发现细胞质内容物可以运输到移行体中，并通过移行体从细胞中释放出来。我们将这种迁移依赖性释放机制命名为“迁移细胞作用”。</p>
+<p>另外，今年姜东老师发表了一篇review，系统性的描述了迁移体的性状和功能，如下：</p>
+<blockquote>
+<p><a href="https://www.sciencedirect.com/science/article/pii/S0962892424000990?via=ihub">Jiang, Dong et al. “The migrasome, an organelle for cell-cell communication.” Trends in cell biology, S0962-8924(24)00099-0. 11 Jun. 2024, doi:10.1016/j.tcb.2024.05.003</a></p>
+</blockquote>
+<p>一些要点：</p>
+<ul>
+<li>Migrasome是细胞间通讯的细胞器。</li>
+<li>Migrasome富含信号配体，可以作为建立时空定义梯度的来源。</li>
+<li>Migrasomes介导细胞间细胞物质的横向转移。</li>
+<li>Migrasomes通过排出受损的线粒体来介导线粒体稳态。</li>
+<li>Migrasome在胚胎发育和中性粒细胞的稳态中起着重要作用。</li>
+<li>Migrasome在诊断和治疗方面具有巨大的潜力。</li>
+</ul>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>细胞生物学</tag>
+        <tag>迁移体</tag>
+        <tag>囊泡运输</tag>
       </tags>
   </entry>
 </search>
