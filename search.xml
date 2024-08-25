@@ -13144,7 +13144,9 @@
   <entry>
     <title>【转载】李沐重返母校上海交大，从LLM聊到个人生涯，这里是演讲全文</title>
     <url>/2024/08/24/LiMu_lecture_in_ShangHaiJiaoTongUniversity/</url>
-    <content><![CDATA[<p>按：李沐，深度学习专家，本科毕业于上海交通大学，PhD毕业于CMU，在百度、微软、亚马逊等公司就职过，并曾担任百度高级研究员，目前是 Boson AI 联合创始人。著有《动手学深度学习》一书，并在b站上以<a href="https://space.bilibili.com/1567748478/dynamic">“跟李沐学AI”</a>为账号发布了大量深度学习的教学视频。前段时间，李沐回到了母校上海交大，做了一场关于 LLM 和个人生涯的分享。这篇文章转载自<a href="https://mp.weixin.qq.com/s/FctMj2SXotdn8MlL9oSfAg">机器之心公众号</a>，梳理的李沐演讲内容。下面是李沐的讲述。</p>
+    <content><![CDATA[<p>按：李沐，深度学习专家，本科毕业于上海交通大学，PhD毕业于CMU，在百度、微软、亚马逊等公司就职过，并曾担任百度高级研究员，目前是 Boson AI 联合创始人。著有《动手学深度学习》一书，并在b站上以<a href="https://space.bilibili.com/1567748478/dynamic">“跟李沐学AI”</a>为账号发布了大量深度学习的教学视频。</p>
+<p>前段时间，李沐回到了母校上海交大，做了一场关于 LLM 和个人生涯的分享。这篇文章转载自<a href="https://mp.weixin.qq.com/s/FctMj2SXotdn8MlL9oSfAg">机器之心公众号</a>，详细梳理了李沐的演讲内容（以及一些我自己的<a href="#%E5%90%8E%E8%AE%B0">碎碎念</a>，在文章末尾）。</p>
+<p>下面是李沐的讲述。</p>
 <span id="more"></span>
 
 <blockquote>
@@ -13311,6 +13313,10 @@
 <p>相关阅读：《<a href="http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650930329&idx=1&sn=1418416efe70fd2a965ac259fac81c3d&chksm=84e438e7b393b1f17389649e3aa6287871633b4063b184cdaf32ce70715dc041e1eb0cbab216&scene=21#wechat_redirect">李沐：创业一年，人间三年</a>》</p>
 <p>原视频链接：<a href="https://www.bilibili.com/video/BV175WQeZE7Z/">《[4K]上海交通大学计算机系杰出系友面对面讲座@李沐学长》</a></p>
 </blockquote>
+<hr>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>半个月前，李沐在b站上发表了一篇文章，<a href="https://www.bilibili.com/opus/965508248739250195">《创业一年，人间三年》</a>，详细的回顾了他们在Boson AI创业的一些经过。这些经历配合李沐的上海交大演讲，为我们展现出一个更鲜活的AI技术大佬的彪悍人生。</p>
+<p>其实晚上在看这两篇文章的时候，突然在李沐身上看见了一种似曾相识感。这不仅仅是因为他上海交大本+CMU博的人生经历带来的既视感，更是因为他在这篇文章中透露出的一些自信和豁达的人生观，以及面临问题时一些决策思路的智慧。李沐在文章中提到了找张一鸣询问创业思路的经历，以及创业初期在显卡缺货的情况下绕过供应商直接给黄仁勋发邮件要货的事迹（不过从李沐能结识这么多大佬的现实来看，是否也说明他的“向上管理”做得很好呢？）。此外，李沐的创业公司叫做Boson AI，Boson意为玻色子，是来自量子物理学里的一个概念；年初李沐团队开发了Higgs系列模型，模型名称也是来自量子物理学。如果把“物理学”这个buff再给带上，似曾相识感是否又增加了一层？</p>
+<p>总结：也许成功的大佬在某些方面总是相似的。至于我们自己，则更应该好好学习ta们身上的优点，让自己变得更强。</p>
 ]]></content>
       <categories>
         <category>摘抄</category>
