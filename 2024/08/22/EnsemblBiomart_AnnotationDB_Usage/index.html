@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如题。本文探索了从Ensembl biomart中导出基因组注释文件的方法。下文中的步骤主要针对dNdScv的输入，但也可以用于其他的生信分析任务。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ensembl biomart注释数据库的使用">
+<meta property="og:url" content="https://wz.anoms.top/2024/08/22/EnsemblBiomart_AnnotationDB_Usage/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="如题。本文探索了从Ensembl biomart中导出基因组注释文件的方法。下文中的步骤主要针对dNdScv的输入，但也可以用于其他的生信分析任务。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825202753.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203844.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203849.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203855.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203901.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203906.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203915.png">
+<meta property="article:published_time" content="2024-08-22T13:20:00.000Z">
+<meta property="article:modified_time" content="2024-08-25T14:05:28.398Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="BioMart">
+<meta property="article:tag" content="基因组注释">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825202753.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/08/22/EnsemblBiomart_AnnotationDB_Usage/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/08/22/EnsemblBiomart_AnnotationDB_Usage/","path":"2024/08/22/EnsemblBiomart_AnnotationDB_Usage/","title":"Ensembl biomart注释数据库的使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Ensembl biomart注释数据库的使用 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">132</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">216</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/08/22/EnsemblBiomart_AnnotationDB_Usage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Ensembl biomart注释数据库的使用 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ensembl biomart注释数据库的使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-22 21:20:00" itemprop="dateCreated datePublished" datetime="2024-08-22T21:20:00+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-25 22:05:28" itemprop="dateModified" datetime="2024-08-25T22:05:28+08:00">2024-08-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如题。本文探索了从Ensembl biomart中导出基因组注释文件的方法。下文中的步骤主要针对dNdScv的输入，但也可以用于其他的生信分析任务。</p>
+<span id="more"></span>
+
+<p>起先是因为在看dndscv文档的时候，注意到文档里面提到对于自定义物种的reference的构建，需要提供一个 <code>chromosome_segment.txt</code> 的注释文件（如下图）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825202753.png" alt="image.png"></p>
+<p>这个注释文件需要包括下面这些字段：</p>
+<ul>
+<li><strong>Gene ID</strong></li>
+<li><strong>Gene name</strong>: 这是dNdScv将使用的基因名称。如果提供了具有相同基因名称的多个转录本，buildref将使用最长的编码CDS作为dNdScv的参考CDS</li>
+<li><strong>CDS ID</strong>: 每个转录本的唯一标识符。默认使用Ensembl蛋白ID</li>
+<li><strong>Chromosome name</strong>: 染色体编号。需要与提供的fasta序列文件中的染色体编号一致。</li>
+<li><strong>Chromosomal start</strong></li>
+<li><strong>Chromosomal end</strong></li>
+<li><strong>CDS start</strong></li>
+<li><strong>CDS end</strong></li>
+<li><strong>Length</strong></li>
+<li><strong>Strand</strong>: 编码方向。正链为<code>+1</code>，负链为<code>-1</code> 。</li>
+</ul>
+<p>另外，文档里面提到：</p>
+<blockquote>
+<p>The buildref function was originally designed to use a table of transcripts from Ensembl BioMart as input. You can use the BioMart website to download all coding transcripts from a given genome assembly for a wide range of species. Withing BioMart, click on the “Ensembl genes” database and choose your species of interest. Then use the “Attributes” menu on the left and click on the “Structures” option (exon-level information) to select the 10 columns needed by buildref. Make sure that your table has all 10 columns in the right order, which you achieve by selecting each attribute in the right order (see example image below).</p>
+<p> （buildref函数最初的设计目的是使用Ensembl BioMart的转录表作为输入。可以使用BioMart网站下载各种物种的给定基因组组装的所有编码转录本。使用BioMart，点击“Ensembl基因”数据库，选择您感兴趣的物种。然后使用左侧的“属性”菜单，单击“结构”选项，选择buildref所需的10列。确保您的表中所有10列的顺序正确，这是通过以正确的顺序选择每个属性来实现的）</p>
+</blockquote>
+<p>也就是说，这个buildref需要的注释文件可以直接从BioMart数据库中导出。</p>
+<p>BioMart的网址是： <a target="_blank" rel="noopener" href="https://www.ensembl.org/biomart/martview/">https://www.ensembl.org/biomart/martview/</a> </p>
+<p>进入之后，首先需要选择要连接到的数据库和数据集（就像MySQL刚刚登录到shell一样，需要先connect到一个database上面），如下图。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203844.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203849.png" alt="image.png"></p>
+<p>这里主要可以调整的就是下面的这些东西，一个是筛选器栏，用于筛选出特定的基因列表；一个是属性栏，用于设置视图中需要显示的属性。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203855.png" alt="image.png"></p>
+<p>我们首先在Filters栏设置筛选器（筛选器估计是必须选的，即使我们不想过滤一些基因，那么也得在这里选择染色体和基因组坐标。另外，对于多个项目，可以在鼠标选择时按Ctrl键，以实现多选）。</p>
+<p>然后，按照下图这样设置Attributes。如果是为了将结果作为基因组CDS annotation以便导入到dndscv，可以参考下面这样的Attributes设置。设置完成以后，按下Result按钮，可以查看和导出结果。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203901.png" alt="image.png"></p>
+<p>结果如下</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203906.png" alt="image.png"></p>
+<p>可以把biomart的截图和dndscv提供的示例文件放在一起做一下对比，可以看到二者的内容基本一致。至于输出文件中的列的排序，其由Attributes栏中各个属性的顺序决定，而Attributes栏各属性又是按照用户添加顺序排序的。因此，为了避免后续处理的麻烦，可以按照下图Attributes顺序添加属性。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240825203915.png" alt="image.png"></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/08/22/EnsemblBiomart_AnnotationDB_Usage/" title="Ensembl biomart注释数据库的使用">https://wz.anoms.top/2024/08/22/EnsemblBiomart_AnnotationDB_Usage/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/BioMart/" rel="tag"><i class="fa fa-tag"></i> BioMart</a>
+              <a href="/tags/%E5%9F%BA%E5%9B%A0%E7%BB%84%E6%B3%A8%E9%87%8A/" rel="tag"><i class="fa fa-tag"></i> 基因组注释</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/19/sentiment_analysis_and_emotional_stability/" rel="prev" title="如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法">
+                  <i class="fa fa-chevron-left"></i> 如何对“情绪稳定性”定量？一种基于情感倾向性分析的方法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/24/LiMu_lecture_in_ShangHaiJiaoTongUniversity/" rel="next" title="【转载】李沐重返母校上海交大，从LLM聊到个人生涯，这里是演讲全文">
+                  【转载】李沐重返母校上海交大，从LLM聊到个人生涯，这里是演讲全文 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
