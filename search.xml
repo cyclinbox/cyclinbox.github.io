@@ -2860,6 +2860,7 @@
       </categories>
       <tags>
         <tag>计算机技术杂谈</tag>
+        <tag>FFmpeg</tag>
       </tags>
   </entry>
   <entry>
@@ -13513,6 +13514,131 @@
         <tag>python</tag>
         <tag>数学建模</tag>
         <tag>回归分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>又是一年九月天（aka.一周碎碎念）</title>
+    <url>/2024/09/08/20240908_updatelog/</url>
+    <content><![CDATA[<p>最近碎碎念有点多。</p>
+<p>碎碎念比较多，可能是因为这段时间以来生活一直不算太顺心，且极其缺乏宣泄渠道，只能把一些情绪藏在日记里。一个人宅在实验室里的时候啥也不想做，只想刷知乎刷b站，出门转一圈又要被大街上成双成对的情侣或者成群结队的人群给羡慕到（也许是气死），生完闷气继续宅继续刷知乎刷b站，一点改变都没有。</p>
+<span id="more"></span>
+
+<p>回所已经三周多了。前两周其实算是调整阶段，工作效率不算高。这一周稍微把工作推进了点儿——可能因为要讲组会——虽然工作效率也挺一般的。组会结束，收获了不少改进意见以及新知识点，很感谢实验室的大家。</p>
+<p>组会之后的两天过得还算充实。充实感的来源是帮助同学解决了安装软件方面的一个问题（排了一上午bug最后发现是输入文件的锅；那个软件也很坑，输入文件格式有问题居然一点提示都没有），顺便配好了服务器上的一个工具环境。好久没有过这样专注debug的时光了，也好久没有与他人这么高强度的交流了。不知怎的，我好像还挺享受这个过程的。</p>
+<p>不过我可能确实不太正常，或者说缺乏一些人际交往的能力，似乎在我的社会关系里只有”老师”/“同学”/“同事”，除此之外一般意义上的朋友关系少得可怜。送走暑期实习的同学以后，又陷入了一个人吃饭、一个人下班的状态。突然感到一阵心酸：我TMD在人际交往方面是真的失败啊。</p>
+<p>之前也许我还能甩锅，把人际交往失败的原因归咎于成长环境；但是仔细想想，上大学之前，哪怕是在幼儿园和小学，我的朋友也极少，而且也常常成为被欺负的人。所以现在我的社交圈变成这个样子，应该是我自己身上的问题占据主要因素。其实自大学以后，人际交往要好很多了，但是人际交往能力方面的一些essential element依然欠缺，以至于在师弟师妹面前常常一点师兄的样子都没有（含贬义）。</p>
+<p>最近“向上社交”很火。某天刷b站，看到一个视频在分享<a href="https://www.bilibili.com/video/BV1HPp3eJEHs/">“向上社交的偏方”</a>，不知怎得，有点难过和不舒服。向上社交并不是我的强项，而向下社交，我更喜欢不带身份的平等交往，可是时间长了以后，和我相处的人会感谢我的这种不带身份的平等交往吗？还是说，这样只会显得我很没用，只会显得我身上的价值很廉价？</p>
+<p>周末其实也比较充实。昨天因为一些事情去了闵行，一整天都在外面打转转，骑车十公里有余，也成功找回对自己生活的掌控感，让我们不再盯着一些emo的事情或不顺心而自我怀疑。今天看了不少书，更新博客的过程中也学习了不少知识点，感觉还挺好的。</p>
+<p>然而，当生活回归实验室，各种琐事袭来，又因为想要逃避琐事而开始刷手机时，emo感又再度袭来。朋友圈里有人转发了“人物”公众号发表的文章， <a href="https://mp.weixin.qq.com/s/v8fl1IAgbfr9ohjWyGN5Xw">《好好分手，真的很难吗？》</a> ，四封来信代表了四个人的分手故事，其中前三个人的故事颇有共鸣（除了最后一个人，被前任甩了以后遇到了一个爱他的现任，结果他因为现任家庭环境不好把现任甩了。被甩而存在打击报复的心态可以理解，可是就这么草率的把报复转移到另一个无辜的人身上，这种行为真的好吗？）。我发现自己对各种恋爱分手故事中被分手的一方常常怀有一种极大的同情，也许是我潜意识里特别害怕分离的发生。曾经我在日记中提到过道德洁癖导致自己朋友很少，可是细细想来，“害怕分离的发生”而选择直接去回避一段关系（不论是友情还是爱情），可能是我现在社交圈如此小的更主要原因吧。</p>
+<p>不过更让我感到悲哀的是，快节奏的社会似乎不允许细水长流的感情的发生，就像第一封信所说，“现代人对亲密关系的需求有了转变”，“现在很多人都不再追求忠贞的、一生一世的爱情，越来越多的人在他们的一生中都处于流动的状态，离开又进入、进入又离开越来越多的关系”。似乎在这个快节奏的世界，大家都在追逐流动的感情，会允许在人生的不同阶段去认识不同的人，更允许一段不合适的关系自然而然的终结。甚至这几封信里，许多人提到的分手理由就是“不爱了”。一声叹息。</p>
+<p>为什么我会对这些感到悲哀？也许是我先天社交能力不足，和一个人建立关系需要的时间远比同龄人要长（常常需要几个月甚至几年；即使实验室同门这种关系，我也得花上好几个月才能慢慢建立），且要付出的精力更多；因此我很珍惜已经建立的人际关系（也很感谢我身边的朋友们）。仅仅因为“不合适”而中断关系，至少站在我的角度上是一种明显的伤害。而且而且，另一个点也让我感到困惑——仅仅是“不爱了”能否成为分手的理由？毕竟恋爱早期的激情和甜蜜主要来自于多巴胺的分泌，这种甜蜜不可持续，长跑多年的恋人和夫妻，他们之间的关系更像是朋友、家人（所谓的“老夫老妻”的模样）而非腻腻歪歪的小情侣，如果按照前述分手标准，那么这些恋人和夫妻之间都是没有最初那种带着激情的爱的，那么大家是不是都应该分手、都不去过了？也许许多人的答案是“Yes”，但我不在其中。</p>
+<p>所以我对恋爱其实一直是一种矛盾的态度。一边特别期待亲密关系，一边却对未来可能的分离感到恐惧，以至于虽然天天在线上喊着想恋爱可是现实生活中的态度纯粹在摆烂。照这样下去，估计还得继续单着好几年。</p>
+<p>话题似乎有些远了。当下的生活才是更重要的，更应该被我们抓住。还是看看窗外的晴空吧——</p>
+<p>又是一年九月天。站在窗前，九月的阳光依旧灿烂，却多了一丝凉意。天空湛蓝如洗，风轻拂过，带来一丝秋的气息。这样的季节，总让人心情复杂。生活中的琐事如秋叶般纷繁，却也像落叶一样，终究会随着风散去。也许，感情和人际关系就如同这季节的转换，有时炎热如盛夏，有时冷清如初秋。但无论如何，风雨过后，秋天的天空总是清澈的。我想，未来的日子，无论情感如何波动，总会迎来新的晴空。</p>
+<p>生活在继续，秋风已起。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>日记</tag>
+        <tag>亲密关系</tag>
+        <tag>社会交往</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>FFmpeg针对图片的批量操作</title>
+    <url>/2024/09/07/FFmpeg_batch_work_on_photos/</url>
+    <content><![CDATA[<p>在生活中，我们有时候会碰到这样一种场景：外出参加学术会议，回来整理PPT时发现所有的照片都需要裁剪；或者下载了一本扫描版的书，但扫描的图片对比度太低根本看不清字体。对于单张图片，我们可以很方便的使用各种编辑工具进行修改，但是如果图片一多，事情就要麻烦多了。</p>
+<span id="more"></span>
+
+<p>许多同学可能会提出，PhotoShop提供了批处理工具，可以实现对图片的批量操作。不过本文我们将探讨另一种可能性：使用ffmpeg在命令行下实现批量操作。</p>
+<h2 id="什么是FFmpeg"><a href="#什么是FFmpeg" class="headerlink" title="什么是FFmpeg"></a>什么是FFmpeg</h2><p><a href="https://ffmpeg.org/">FFmpeg</a>是一个开源的、跨平台的多媒体处理框架，全称为 Fast Forward MPEG (Moving Picture Experts Group)，由神一般的开发者 —— 法国程序员法布里斯・贝拉（Fabrice Bellard）创建并开源。它以其强大的功能和灵活性在音视频处理领域独树一帜。这个工具集不仅包含了丰富的编解码库、容器处理库和滤镜库，还提供了命令行工具，用于录制、转换、编辑、合并、流化以及播放几乎所有的音频和视频格式， <strong>当然也包括图片格式</strong> 。无论是MP3、AAC音频，还是H.264、H.265视频，FFmpeg都能轻松应对，实现高效的数据处理和转换。无怪乎有人称之为“多媒体处理的瑞士军刀”。（甚至有许多著名的播放器或转码工具都是基于FFmpeg二次开发的：迅雷，QQ影音，VLC player，格式工厂……）</p>
+<p>作为一个跨平台的应用程序，FFmpeg提供了包括Linux、Windows、macOS在内的多种系统上的安装包，可以在<a href="https://ffmpeg.org/download.html">官网的下载页面</a>进行下载（如下图），当然也可以下载源代码包自行编译。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908202217.png" alt="image.png"></p>
+<p>FFmpeg的核心应用程序包括三个可执行文件，分别是<code>ffmpeg.exe</code>、<code>ffplay.exe</code> 、<code>ffprobe.exe</code> 。其中，ffmpeg是FFmpeg项目中最常用的命令行工具之一，主要用于音视频数据的编解码、转码、剪辑、合并、提取等操作；ffplay是FFmpeg项目中的一个简单而强大的视频播放器工具，不仅支持多种音视频格式的本地播放，还支持网络流媒体的播放，常用于快速预览音视频文件；ffprobe是一个多媒体流分析工具，用于检测多媒体文件的各种信息，如格式、编解码器、帧率、比特率等，广泛应用于音视频文件的质量检测。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908202438.png" alt="image.png"></p>
+<p>在博客先前的文章中，我们介绍过如何<a href="https://wz.anoms.top/2022/08/11/%E4%BD%BF%E7%94%A8ffmpeg%E5%B7%A5%E5%85%B7%E5%B0%86%E5%AD%97%E5%B9%95%E5%B5%8C%E5%85%A5%E8%A7%86%E9%A2%91%E4%B8%AD/">使用ffmpeg工具将字幕嵌入视频中</a>，其利用了ffmpeg的视频编辑功能。本文则将介绍ffmpeg的图片编辑功能。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908204809.png" alt="image.png"></p>
+<p>FFmpeg的处理原理很容易理解，如上图所示，它其会把输入的内容看作一个输入流，并将用户指定的滤波器（包括视频滤波器<code>-vf</code>和音频滤波器<code>-af</code>）作用在这个输入流当中，最终把结果传进输出流。</p>
+<h2 id="图片的批量裁剪"><a href="#图片的批量裁剪" class="headerlink" title="图片的批量裁剪"></a>图片的批量裁剪</h2><p>裁剪图片的指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ffmpeg -i &lt;input&gt; -vf crop=w:h:x:y &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li><code>-i</code> 参数指定输入的图片的文件路径。</li>
+<li><code>-vf</code> 是”video filter”的缩写，意为视频滤波器（当然它可以处理单张图片）。其后接参数，用于指定对输入对象流的图像部分的处理逻辑。在这里，<code>crop=w:h:x:y</code> 意味着以坐标<code>(x,y)</code> 为起点，截取宽度和高度分别为<code>(w,h)</code>的图片。另外一点需要注意，在图片处理中，坐标起点一般为左上角，并且x轴正方向是向右、y轴正方向是向下，这与数学中的坐标系有所不同。</li>
+<li>另外，如果要强制覆盖已经存在的图片，则需要加上<code>-y</code>参数</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908205346.png" alt="image.png"></p>
+<p>例如上面这些图片，尺寸为<code>1414x794</code>，我想把PPT两侧的黑边给去掉。使用绘图工具测得黑边的坐标范围是 <code>0~180px</code>和<code>1240~1414px</code> ，因此截图的坐标起点是<code>(180,0)</code> ，截图尺寸为<code>(1060,794)</code>，我们可以使用指令 <code>ffmpeg -i 01.jpg -vf crop=1060:794:180:0 output/01.jpg</code> 进行转换。考虑到要进行批量转换，我们可以配合shell语句写出下面的指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p output <span class="comment"># 防止没有创建文件夹导致报错</span></span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> `<span class="built_in">ls</span> *.jpg`;<span class="keyword">do</span> ffmpeg -i <span class="variable">$f</span> -vf crop=1060:794:180:0 output/<span class="variable">$f</span> -y ;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>如果一切正常的话，屏幕上大概会滚过类似下图的信息</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908210500.png" alt="image.png"></p>
+<p>同时，在输出文件下也能找到新产生的图片文件</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908210559.png" alt="image.png"></p>
+<h2 id="图片的大小调整"><a href="#图片的大小调整" class="headerlink" title="图片的大小调整"></a>图片的大小调整</h2><p>Windows PowerToy工具提供了图片大小调整器，但是非Windows用户想要批量调整图片大小依然很麻烦。但是FFmpeg也可以实现这一点，指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ffmpeg -i &lt;input&gt; -vf &#x27;scale=w:h&#x27; &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>和前面一样：</p>
+<ul>
+<li><code>-vf</code> 指定了视频滤波器参数。这里采用的滤波器是<code>scale=w:h</code>，意味着将输入的图片大小重新调整为<code>(w,h)</code> 。</li>
+<li>FFmpeg允许多个滤波器的串联，参数格式大概类似于 <code>&lt;filter1&gt;,&lt;filter2&gt;,...</code>。例如我们想先裁剪图片，随后压缩图片画质，可以这么做： <code>ffmpeg -i &lt;input&gt; -vf &#39;crop=w:h:x:y,scale=w:h&#39; &lt;output&gt;</code> 。</li>
+</ul>
+<p>下面是一个例子。还是前面的那些图片，现在我们要裁剪掉黑边，并且把图片尺寸缩小到<code>720x480px</code> ：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> `<span class="built_in">ls</span> *.jpg`;<span class="keyword">do</span> ffmpeg -i <span class="variable">$f</span> -vf <span class="string">&#x27;crop=1060:794:180:0,scale=720:480&#x27;</span> output/<span class="variable">$f</span>.resize.jpg -y ;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>新产生的图片文件如下图（右边那一列）。注意，调整图片尺寸后，图像长宽比也会受到影响。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908211644.png" alt="image.png"></p>
+<h2 id="图片色彩调节（去色、亮度、对比度、锐化等）"><a href="#图片色彩调节（去色、亮度、对比度、锐化等）" class="headerlink" title="图片色彩调节（去色、亮度、对比度、锐化等）"></a>图片色彩调节（去色、亮度、对比度、锐化等）</h2><p>对于扫描的书籍或笔记，有时候我们希望将颜色转为灰白以减小存储空间，此外对于一些不清晰或色彩过淡的页面，我们也希望能够调整色彩。这些工作FFmpeg都可以做。</p>
+<h3 id="图片去色（彩色图片转灰白）"><a href="#图片去色（彩色图片转灰白）" class="headerlink" title="图片去色（彩色图片转灰白）"></a>图片去色（彩色图片转灰白）</h3><p>在查询资料的时候，我看到了三种不同的滤波器参数组合，分别如下：</p>
+<ul>
+<li><code>-vf lut=c1=128:c2=128</code> 或者 <code>-vf lutyuv=u=128:v=128</code>：利用查找表（Lookup Table，<code>lut</code>）修改像素点的YUV色彩空间属性，从而实现修改视频帧的颜色。这两种写法是等价的，都是将视频帧像素信息的色彩分量设置为某个固定值（而明亮度分量保持不变）以实现去色效果<ul>
+<li>YUV色彩空间是一种为了彩色电视信号传输而开发的色彩模型，其中第一个分量Y代表明亮度，后两个分量U和V编码色彩信号。</li>
+<li>相比于RGB色彩空间，YUV在存储色彩信号分量时可以适当降低采样率（请注意只要Y信号还在，图像质量就不会受到影响），从而节省传输带宽。</li>
+<li><code>-vf lutyuv=u=128:v=128</code> 将色彩信号分量U和V全部设置为128，因此所有像素点全部不包含色彩信息，只有Y分量携带的明亮度信息还在，因此图片就成了黑白色。</li>
+</ul>
+</li>
+<li><code>hue=s=0</code> ：<code>hue</code>滤波器用于调整视频的色调、饱和度和亮度（基于HSV色彩模型）。 <code>s=0</code>将饱和度设置为0，这意味着去除所有颜色信息，只保留灰度信息。</li>
+<li><code>format=gray</code> ： <code>format</code>滤波器用于改变视频帧的格式。<code>gray</code>将视频帧转换为灰度格式，这是最直接和有效的将彩色图像转换为灰度图像的方法（但是输出图片的体积在三种方法中最大）。</li>
+</ul>
+<p>实际测试中，这三种滤波器组合都能够实现图片去色，但是输出的图片大小存在差异。经过比较发现，前两种参数组合的输出图片的色彩空间为 <code>yuvj420p</code>，而<code>format=gray</code>这种方法是 <code>yuvj444p</code> 。参考知乎文章 <a href="https://zhuanlan.zhihu.com/p/248116694">《YUV图解 （YUV444, YUV422, YUV420, YV12, NV12, NV21）》</a> ，我们可以知道<code>yuvj420p</code>和 <code>yuvj444p</code> 分别代表了两种像素信息的采样方式，其中 <code>yuvj444p</code> 采样了更多的信息，这就是文件体积会更大一点的原因。由于我们将图片转灰白，根本目的是为了减小存储空间，因此<code>format=gray</code>这种方法不可取。</p>
+<p>最后总结一下：要实现图片去色，可以使用下面的指令实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ffmpeg -i &lt;input&gt; -vf lut=c1=128:c2=128 &lt;output&gt;</span><br><span class="line">ffmpeg -i &lt;input&gt; -vf lutyuv=u=128:v=128 &lt;output&gt;</span><br><span class="line">ffmpeg -i &lt;input&gt; -vf hue=s=0 &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="图像锐化"><a href="#图像锐化" class="headerlink" title="图像锐化"></a>图像锐化</h3><p>可以使用下面的指令实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ffmpeg -i  &lt;input&gt; -vf &quot;cas=strength=0.95&quot; &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>cas</code> 指定了一个对比度自适应锐化滤波器，其可调节的参数包括<code>strength</code>（锐化强度）和<code>planes</code> （作用的色彩通道）。</p>
+<p>另一种指令是</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ffmpeg -i &lt;input&gt;  -vf unsharp=5:5:1.5 &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>众所周知，图片的锐化或者模糊本质上是用一个卷积核对整幅图像进行卷积的结果，而卷积核的差异决定了效果是锐化还是模糊。这个滤波器名叫<code>unsharp</code>，实际上既可以实现模糊也可以实现锐化。滤波器参数常用的有前三个，分别是<code>luma_msize_x</code>、<code>luma_msize_y</code>（这两个参数可以理解为卷积核的尺寸）、<code>luma_amount</code>（滤波器数值。取值范围是<code>[-1.5,1.5]</code>，其中负值表示模糊，正值表示锐化）。</p>
+<p>上述两种滤波的实际效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908222935.png" alt="image.png"></p>
+<h3 id="色彩亮度、对比度调节"><a href="#色彩亮度、对比度调节" class="headerlink" title="色彩亮度、对比度调节"></a>色彩亮度、对比度调节</h3><p>可以使用下面的指令实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ffmpeg -i  &lt;input&gt; -vf &quot;eq=brightness=-0.2:contrast=1.6&quot; &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>eq</code> 指定了一个调节亮度、对比度等信息的滤波器，其可调节的参数包括<code>brightness</code>（亮度，取值范围 <code>[-1.0,1.0]</code> ，默认0）和<code>contrast</code> （对比度，取值范围 <code>[-1000.0,1000.0]</code> ，默认1）。</p>
+<p>上述滤波的实际效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908224811.png" alt="image.png"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://blog.csdn.net/weixin_45736829/article/details/108399151">https://blog.csdn.net/weixin_45736829/article/details/108399151</a></li>
+<li><a href="https://blog.csdn.net/milerwj/article/details/118336041">https://blog.csdn.net/milerwj/article/details/118336041</a></li>
+<li><a href="https://blog.csdn.net/culuo8053/article/details/107910348">https://blog.csdn.net/culuo8053/article/details/107910348</a></li>
+<li><a href="https://jishuchi.com/read/ffmpeg-basics/12452">https://jishuchi.com/read/ffmpeg-basics/12452</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/248116694">https://zhuanlan.zhihu.com/p/248116694</a></li>
+<li><a href="https://ffmpeg.org/ffmpeg-all.html">https://ffmpeg.org/ffmpeg-all.html</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>FFmpeg</tag>
       </tags>
   </entry>
 </search>

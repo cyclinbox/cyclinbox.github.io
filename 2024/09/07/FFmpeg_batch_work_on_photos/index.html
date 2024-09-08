@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在生活中，我们有时候会碰到这样一种场景：外出参加学术会议，回来整理PPT时发现所有的照片都需要裁剪；或者下载了一本扫描版的书，但扫描的图片对比度太低根本看不清字体。对于单张图片，我们可以很方便的使用各种编辑工具进行修改，但是如果图片一多，事情就要麻烦多了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FFmpeg针对图片的批量操作">
+<meta property="og:url" content="https://wz.anoms.top/2024/09/07/FFmpeg_batch_work_on_photos/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="在生活中，我们有时候会碰到这样一种场景：外出参加学术会议，回来整理PPT时发现所有的照片都需要裁剪；或者下载了一本扫描版的书，但扫描的图片对比度太低根本看不清字体。对于单张图片，我们可以很方便的使用各种编辑工具进行修改，但是如果图片一多，事情就要麻烦多了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908202217.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908202438.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908204809.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908205346.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908210500.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908210559.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908211644.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908222935.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908224811.png">
+<meta property="article:published_time" content="2024-09-07T02:00:00.000Z">
+<meta property="article:modified_time" content="2024-09-08T15:34:08.569Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="FFmpeg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908202217.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/09/07/FFmpeg_batch_work_on_photos/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/09/07/FFmpeg_batch_work_on_photos/","path":"2024/09/07/FFmpeg_batch_work_on_photos/","title":"FFmpeg针对图片的批量操作"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>FFmpeg针对图片的批量操作 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFFFmpeg"><span class="nav-number">1.</span> <span class="nav-text">什么是FFmpeg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E7%9A%84%E6%89%B9%E9%87%8F%E8%A3%81%E5%89%AA"><span class="nav-number">2.</span> <span class="nav-text">图片的批量裁剪</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E7%9A%84%E5%A4%A7%E5%B0%8F%E8%B0%83%E6%95%B4"><span class="nav-number">3.</span> <span class="nav-text">图片的大小调整</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E8%89%B2%E5%BD%A9%E8%B0%83%E8%8A%82%EF%BC%88%E5%8E%BB%E8%89%B2%E3%80%81%E4%BA%AE%E5%BA%A6%E3%80%81%E5%AF%B9%E6%AF%94%E5%BA%A6%E3%80%81%E9%94%90%E5%8C%96%E7%AD%89%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">图片色彩调节（去色、亮度、对比度、锐化等）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E5%8E%BB%E8%89%B2%EF%BC%88%E5%BD%A9%E8%89%B2%E5%9B%BE%E7%89%87%E8%BD%AC%E7%81%B0%E7%99%BD%EF%BC%89"><span class="nav-number">4.1.</span> <span class="nav-text">图片去色（彩色图片转灰白）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E9%94%90%E5%8C%96"><span class="nav-number">4.2.</span> <span class="nav-text">图像锐化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%89%B2%E5%BD%A9%E4%BA%AE%E5%BA%A6%E3%80%81%E5%AF%B9%E6%AF%94%E5%BA%A6%E8%B0%83%E8%8A%82"><span class="nav-number">4.3.</span> <span class="nav-text">色彩亮度、对比度调节</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">220</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/09/07/FFmpeg_batch_work_on_photos/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="FFmpeg针对图片的批量操作 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          FFmpeg针对图片的批量操作
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-09-07 10:00:00" itemprop="dateCreated datePublished" datetime="2024-09-07T10:00:00+08:00">2024-09-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-09-08 23:34:08" itemprop="dateModified" datetime="2024-09-08T23:34:08+08:00">2024-09-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在生活中，我们有时候会碰到这样一种场景：外出参加学术会议，回来整理PPT时发现所有的照片都需要裁剪；或者下载了一本扫描版的书，但扫描的图片对比度太低根本看不清字体。对于单张图片，我们可以很方便的使用各种编辑工具进行修改，但是如果图片一多，事情就要麻烦多了。</p>
+<span id="more"></span>
+
+<p>许多同学可能会提出，PhotoShop提供了批处理工具，可以实现对图片的批量操作。不过本文我们将探讨另一种可能性：使用ffmpeg在命令行下实现批量操作。</p>
+<h2 id="什么是FFmpeg"><a href="#什么是FFmpeg" class="headerlink" title="什么是FFmpeg"></a>什么是FFmpeg</h2><p><a target="_blank" rel="noopener" href="https://ffmpeg.org/">FFmpeg</a>是一个开源的、跨平台的多媒体处理框架，全称为 Fast Forward MPEG (Moving Picture Experts Group)，由神一般的开发者 —— 法国程序员法布里斯・贝拉（Fabrice Bellard）创建并开源。它以其强大的功能和灵活性在音视频处理领域独树一帜。这个工具集不仅包含了丰富的编解码库、容器处理库和滤镜库，还提供了命令行工具，用于录制、转换、编辑、合并、流化以及播放几乎所有的音频和视频格式， <strong>当然也包括图片格式</strong> 。无论是MP3、AAC音频，还是H.264、H.265视频，FFmpeg都能轻松应对，实现高效的数据处理和转换。无怪乎有人称之为“多媒体处理的瑞士军刀”。（甚至有许多著名的播放器或转码工具都是基于FFmpeg二次开发的：迅雷，QQ影音，VLC player，格式工厂……）</p>
+<p>作为一个跨平台的应用程序，FFmpeg提供了包括Linux、Windows、macOS在内的多种系统上的安装包，可以在<a target="_blank" rel="noopener" href="https://ffmpeg.org/download.html">官网的下载页面</a>进行下载（如下图），当然也可以下载源代码包自行编译。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908202217.png" alt="image.png"></p>
+<p>FFmpeg的核心应用程序包括三个可执行文件，分别是<code>ffmpeg.exe</code>、<code>ffplay.exe</code> 、<code>ffprobe.exe</code> 。其中，ffmpeg是FFmpeg项目中最常用的命令行工具之一，主要用于音视频数据的编解码、转码、剪辑、合并、提取等操作；ffplay是FFmpeg项目中的一个简单而强大的视频播放器工具，不仅支持多种音视频格式的本地播放，还支持网络流媒体的播放，常用于快速预览音视频文件；ffprobe是一个多媒体流分析工具，用于检测多媒体文件的各种信息，如格式、编解码器、帧率、比特率等，广泛应用于音视频文件的质量检测。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908202438.png" alt="image.png"></p>
+<p>在博客先前的文章中，我们介绍过如何<a href="https://wz.anoms.top/2022/08/11/%E4%BD%BF%E7%94%A8ffmpeg%E5%B7%A5%E5%85%B7%E5%B0%86%E5%AD%97%E5%B9%95%E5%B5%8C%E5%85%A5%E8%A7%86%E9%A2%91%E4%B8%AD/">使用ffmpeg工具将字幕嵌入视频中</a>，其利用了ffmpeg的视频编辑功能。本文则将介绍ffmpeg的图片编辑功能。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908204809.png" alt="image.png"></p>
+<p>FFmpeg的处理原理很容易理解，如上图所示，它其会把输入的内容看作一个输入流，并将用户指定的滤波器（包括视频滤波器<code>-vf</code>和音频滤波器<code>-af</code>）作用在这个输入流当中，最终把结果传进输出流。</p>
+<h2 id="图片的批量裁剪"><a href="#图片的批量裁剪" class="headerlink" title="图片的批量裁剪"></a>图片的批量裁剪</h2><p>裁剪图片的指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &lt;input&gt; -vf crop=w:h:x:y &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li><code>-i</code> 参数指定输入的图片的文件路径。</li>
+<li><code>-vf</code> 是”video filter”的缩写，意为视频滤波器（当然它可以处理单张图片）。其后接参数，用于指定对输入对象流的图像部分的处理逻辑。在这里，<code>crop=w:h:x:y</code> 意味着以坐标<code>(x,y)</code> 为起点，截取宽度和高度分别为<code>(w,h)</code>的图片。另外一点需要注意，在图片处理中，坐标起点一般为左上角，并且x轴正方向是向右、y轴正方向是向下，这与数学中的坐标系有所不同。</li>
+<li>另外，如果要强制覆盖已经存在的图片，则需要加上<code>-y</code>参数</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908205346.png" alt="image.png"></p>
+<p>例如上面这些图片，尺寸为<code>1414x794</code>，我想把PPT两侧的黑边给去掉。使用绘图工具测得黑边的坐标范围是 <code>0~180px</code>和<code>1240~1414px</code> ，因此截图的坐标起点是<code>(180,0)</code> ，截图尺寸为<code>(1060,794)</code>，我们可以使用指令 <code>ffmpeg -i 01.jpg -vf crop=1060:794:180:0 output/01.jpg</code> 进行转换。考虑到要进行批量转换，我们可以配合shell语句写出下面的指令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p output <span class="comment"># 防止没有创建文件夹导致报错</span></span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> `<span class="built_in">ls</span> *.jpg`;<span class="keyword">do</span> ffmpeg -i <span class="variable">$f</span> -vf crop=1060:794:180:0 output/<span class="variable">$f</span> -y ;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>如果一切正常的话，屏幕上大概会滚过类似下图的信息</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908210500.png" alt="image.png"></p>
+<p>同时，在输出文件下也能找到新产生的图片文件</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908210559.png" alt="image.png"></p>
+<h2 id="图片的大小调整"><a href="#图片的大小调整" class="headerlink" title="图片的大小调整"></a>图片的大小调整</h2><p>Windows PowerToy工具提供了图片大小调整器，但是非Windows用户想要批量调整图片大小依然很麻烦。但是FFmpeg也可以实现这一点，指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &lt;input&gt; -vf &#x27;scale=w:h&#x27; &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>和前面一样：</p>
+<ul>
+<li><code>-vf</code> 指定了视频滤波器参数。这里采用的滤波器是<code>scale=w:h</code>，意味着将输入的图片大小重新调整为<code>(w,h)</code> 。</li>
+<li>FFmpeg允许多个滤波器的串联，参数格式大概类似于 <code>&lt;filter1&gt;,&lt;filter2&gt;,...</code>。例如我们想先裁剪图片，随后压缩图片画质，可以这么做： <code>ffmpeg -i &lt;input&gt; -vf &#39;crop=w:h:x:y,scale=w:h&#39; &lt;output&gt;</code> 。</li>
+</ul>
+<p>下面是一个例子。还是前面的那些图片，现在我们要裁剪掉黑边，并且把图片尺寸缩小到<code>720x480px</code> ：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> `<span class="built_in">ls</span> *.jpg`;<span class="keyword">do</span> ffmpeg -i <span class="variable">$f</span> -vf <span class="string">&#x27;crop=1060:794:180:0,scale=720:480&#x27;</span> output/<span class="variable">$f</span>.resize.jpg -y ;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>新产生的图片文件如下图（右边那一列）。注意，调整图片尺寸后，图像长宽比也会受到影响。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908211644.png" alt="image.png"></p>
+<h2 id="图片色彩调节（去色、亮度、对比度、锐化等）"><a href="#图片色彩调节（去色、亮度、对比度、锐化等）" class="headerlink" title="图片色彩调节（去色、亮度、对比度、锐化等）"></a>图片色彩调节（去色、亮度、对比度、锐化等）</h2><p>对于扫描的书籍或笔记，有时候我们希望将颜色转为灰白以减小存储空间，此外对于一些不清晰或色彩过淡的页面，我们也希望能够调整色彩。这些工作FFmpeg都可以做。</p>
+<h3 id="图片去色（彩色图片转灰白）"><a href="#图片去色（彩色图片转灰白）" class="headerlink" title="图片去色（彩色图片转灰白）"></a>图片去色（彩色图片转灰白）</h3><p>在查询资料的时候，我看到了三种不同的滤波器参数组合，分别如下：</p>
+<ul>
+<li><code>-vf lut=c1=128:c2=128</code> 或者 <code>-vf lutyuv=u=128:v=128</code>：利用查找表（Lookup Table，<code>lut</code>）修改像素点的YUV色彩空间属性，从而实现修改视频帧的颜色。这两种写法是等价的，都是将视频帧像素信息的色彩分量设置为某个固定值（而明亮度分量保持不变）以实现去色效果<ul>
+<li>YUV色彩空间是一种为了彩色电视信号传输而开发的色彩模型，其中第一个分量Y代表明亮度，后两个分量U和V编码色彩信号。</li>
+<li>相比于RGB色彩空间，YUV在存储色彩信号分量时可以适当降低采样率（请注意只要Y信号还在，图像质量就不会受到影响），从而节省传输带宽。</li>
+<li><code>-vf lutyuv=u=128:v=128</code> 将色彩信号分量U和V全部设置为128，因此所有像素点全部不包含色彩信息，只有Y分量携带的明亮度信息还在，因此图片就成了黑白色。</li>
+</ul>
+</li>
+<li><code>hue=s=0</code> ：<code>hue</code>滤波器用于调整视频的色调、饱和度和亮度（基于HSV色彩模型）。 <code>s=0</code>将饱和度设置为0，这意味着去除所有颜色信息，只保留灰度信息。</li>
+<li><code>format=gray</code> ： <code>format</code>滤波器用于改变视频帧的格式。<code>gray</code>将视频帧转换为灰度格式，这是最直接和有效的将彩色图像转换为灰度图像的方法（但是输出图片的体积在三种方法中最大）。</li>
+</ul>
+<p>实际测试中，这三种滤波器组合都能够实现图片去色，但是输出的图片大小存在差异。经过比较发现，前两种参数组合的输出图片的色彩空间为 <code>yuvj420p</code>，而<code>format=gray</code>这种方法是 <code>yuvj444p</code> 。参考知乎文章 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/248116694">《YUV图解 （YUV444, YUV422, YUV420, YV12, NV12, NV21）》</a> ，我们可以知道<code>yuvj420p</code>和 <code>yuvj444p</code> 分别代表了两种像素信息的采样方式，其中 <code>yuvj444p</code> 采样了更多的信息，这就是文件体积会更大一点的原因。由于我们将图片转灰白，根本目的是为了减小存储空间，因此<code>format=gray</code>这种方法不可取。</p>
+<p>最后总结一下：要实现图片去色，可以使用下面的指令实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &lt;input&gt; -vf lut=c1=128:c2=128 &lt;output&gt;</span><br><span class="line">ffmpeg -i &lt;input&gt; -vf lutyuv=u=128:v=128 &lt;output&gt;</span><br><span class="line">ffmpeg -i &lt;input&gt; -vf hue=s=0 &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="图像锐化"><a href="#图像锐化" class="headerlink" title="图像锐化"></a>图像锐化</h3><p>可以使用下面的指令实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i  &lt;input&gt; -vf &quot;cas=strength=0.95&quot; &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>cas</code> 指定了一个对比度自适应锐化滤波器，其可调节的参数包括<code>strength</code>（锐化强度）和<code>planes</code> （作用的色彩通道）。</p>
+<p>另一种指令是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &lt;input&gt;  -vf unsharp=5:5:1.5 &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>众所周知，图片的锐化或者模糊本质上是用一个卷积核对整幅图像进行卷积的结果，而卷积核的差异决定了效果是锐化还是模糊。这个滤波器名叫<code>unsharp</code>，实际上既可以实现模糊也可以实现锐化。滤波器参数常用的有前三个，分别是<code>luma_msize_x</code>、<code>luma_msize_y</code>（这两个参数可以理解为卷积核的尺寸）、<code>luma_amount</code>（滤波器数值。取值范围是<code>[-1.5,1.5]</code>，其中负值表示模糊，正值表示锐化）。</p>
+<p>上述两种滤波的实际效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908222935.png" alt="image.png"></p>
+<h3 id="色彩亮度、对比度调节"><a href="#色彩亮度、对比度调节" class="headerlink" title="色彩亮度、对比度调节"></a>色彩亮度、对比度调节</h3><p>可以使用下面的指令实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i  &lt;input&gt; -vf &quot;eq=brightness=-0.2:contrast=1.6&quot; &lt;output&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>eq</code> 指定了一个调节亮度、对比度等信息的滤波器，其可调节的参数包括<code>brightness</code>（亮度，取值范围 <code>[-1.0,1.0]</code> ，默认0）和<code>contrast</code> （对比度，取值范围 <code>[-1000.0,1000.0]</code> ，默认1）。</p>
+<p>上述滤波的实际效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240908224811.png" alt="image.png"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45736829/article/details/108399151">https://blog.csdn.net/weixin_45736829/article/details/108399151</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/milerwj/article/details/118336041">https://blog.csdn.net/milerwj/article/details/118336041</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/culuo8053/article/details/107910348">https://blog.csdn.net/culuo8053/article/details/107910348</a></li>
+<li><a target="_blank" rel="noopener" href="https://jishuchi.com/read/ffmpeg-basics/12452">https://jishuchi.com/read/ffmpeg-basics/12452</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/248116694">https://zhuanlan.zhihu.com/p/248116694</a></li>
+<li><a target="_blank" rel="noopener" href="https://ffmpeg.org/ffmpeg-all.html">https://ffmpeg.org/ffmpeg-all.html</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/09/07/FFmpeg_batch_work_on_photos/" title="FFmpeg针对图片的批量操作">https://wz.anoms.top/2024/09/07/FFmpeg_batch_work_on_photos/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/FFmpeg/" rel="tag"><i class="fa fa-tag"></i> FFmpeg</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/01/20240901_updatelog/" rel="prev" title="八月总结与碎碎念合集">
+                  <i class="fa fa-chevron-left"></i> 八月总结与碎碎念合集
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/09/08/20240908_updatelog/" rel="next" title="又是一年九月天（aka.一周碎碎念）">
+                  又是一年九月天（aka.一周碎碎念） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
