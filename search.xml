@@ -13888,4 +13888,88 @@
         <tag>Rest API</tag>
       </tags>
   </entry>
+  <entry>
+    <title>FFmpeg捕获直播串流m3u8数据并保存为mp4</title>
+    <url>/2024/09/27/FFmpeg_catch_m3u8_live_stream/</url>
+    <content><![CDATA[<p>是的，FFmpeg还能干这件事。</p>
+<span id="more"></span>
+
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>周四，浙江大学在b站上开了一场“演化生物学青年学者论坛”的直播，其中有几位报告人的题目令我感兴趣。可惜周四全天都抽不开身，只能寄希望于对直播进行录制之后看回放。</p>
+<p>放在以前，我可能会直接开一个格式工厂的录屏，之后换台电脑接着干活。但是毕竟之前录的都是腾讯会议，今天第一次录这种b站直播，于是突发奇想，搜了一下有哪些录制b站直播的方法，得知了捕获m3u8串流数据这种奇淫巧计。</p>
+<h2 id="m3u8串流格式介绍"><a href="#m3u8串流格式介绍" class="headerlink" title="m3u8串流格式介绍"></a>m3u8串流格式介绍</h2><blockquote>
+<p>这一段内容整合了文心一言等多个AI的回答。</p>
+</blockquote>
+<p>M3U8是一种基于HTTP Live Streaming（HLS）协议的流媒体播放列 表文件，它在现代在线视频服务中扮演着重要角色。</p>
+<p><strong>起源：</strong></p>
+<p>M3U8格式的起源可以追溯到苹果公司，它是为了适应HLS协议而被提出的。HLS是一种实时流传输协议，主要应用于在线视频直播和点播。在此之前，流媒体传输面临诸多挑战，如网络带宽波动、不同设备的兼容性等。M3U8作为HLS协议的核心之一，通过其独特的索引文件和多码率适配特性，为流媒体传输提供了更灵活和高效的解决方案。</p>
+<p>M3U8格式的前身是M3U格式，这是一种较早的播放列表文件格式，主要用于存储音频文件的URL 列表。M3U8基本上可以认为是M3U格式的扩展，主要区别在于M3U8文件使用UTF-8字符编码，并 且支持更多的标签和特性，以适应HLS协议的需求。</p>
+<p><strong>格式：</strong></p>
+<p>M3U8文件是一种基于文本的播放列表格式，使用UTF-8编码，以<code>.m3u8</code>作为文件扩展名（同时也是网络资源URL的网址后缀）。M3U8文件作为索引文件，它包含了多个音频或视频文件的URL链接，以及一些播放参数和标签。这些标签定义了播放列表的特性，如媒体文件的持续时间、码率、加密信息等。播放器通过解析M3U8文件，可以按需加载相应的视频分段，并根据网络状况动态调整播放码率，从而实现流畅的观看体验。</p>
+<p>HLS协议通过M3U8文件实现了流媒体的分段传输和自适应码率功能。视频文件被切分成多个小段（通常为TS格式），并通过HTTP协议实时传输。TS（Transport Stream）是一种基于MPEG-2标准的视频封装格式，支持多路复用、错误恢复、内置时间戳、任意位置独立解码等特性，相比于MP4等格式，TS格式更适合于需要高可靠性和多路复用能力的场景。</p>
+<p><strong>应用场景：</strong></p>
+<p>M3U8文件在在线视频播放领域得到了广泛应用，尤其是对于希望提供高质量流媒体服务的平台 来说，这一格式提供了必要的技术支持。其主要用途包括在线视频直播、视频点播、跨平台视频服务、流式文件传输等。由于M3U8文件支持视频分段，视频可以在不下载完整个文件的情况下开始播放，这大大减少了启动延迟和数据使用量。</p>
+<h2 id="FFmpeg的介绍与使用"><a href="#FFmpeg的介绍与使用" class="headerlink" title="FFmpeg的介绍与使用"></a>FFmpeg的介绍与使用</h2><p>FFmpeg这个工具就不多介绍了吧。对于这么一款瑞士军刀般的软件，之前的博客里面写过很多了。</p>
+<p>具体到使用FFmpeg捕获直播串流这件事上，我们需要用到的指令如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg -i <span class="string">&quot;http://example.com/path/to/video.m3u8&quot;</span> -c copy -bsf:a aac_adtstoasc output.mp4</span><br></pre></td></tr></table></figure>
+
+<p>这条命令的作用是从指定的URL下载m3u8串流，并将音视频流复制（不重新编码）到输出的MP4文件中。<code>-bsf:a aac_adtstoasc</code> 参数是为了确保AAC音频流能正确地封装进MP4容器中。</p>
+<h2 id="实操：如何找到一个直播的m3u8串流地址，并实现内容捕获"><a href="#实操：如何找到一个直播的m3u8串流地址，并实现内容捕获" class="headerlink" title="实操：如何找到一个直播的m3u8串流地址，并实现内容捕获"></a>实操：如何找到一个直播的m3u8串流地址，并实现内容捕获</h2><p>然而，仅仅知道捕获直播串流的命令行指令，依然无济于事，因为m3u8串流地址才是核心。对于b站这样的视频网站来说，我们在浏览器地址栏里看到的那一串URL仅仅是直播页面的网址，而m3u8串流地址则另有其它。因此，下面将介绍一下我们如何使用网页开发者工具找到这个m3u8的地址。</p>
+<p>以Firefox浏览器为例。首先，我们打开b站直播页面，并按下键盘上的”F12”按钮，此时将会打开如下图所示的开发者工具（或者也可以在菜单栏→“更多工具”里找到网页开发者工具的入口）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240929110847.png" alt="image.png"></p>
+<p>接下来，我们在网页开发者工具的栏目中切换到<code>Network</code>标签页（这个标签页记录了当前网页所有的流量和数据包），选择所有类型为<code>Media</code>的数据包，并在筛选器中输入<code>m3u8</code>以过滤出所有<code>m3u8</code>格式的串流链接，如下图所示。注意，下图红框框里标出来的就是这个直播的串流URL。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1727585059955.png" alt="1727585059955.png"></p>
+<p>现在我们选中其中任意一条数据记录，按下鼠标右键，在菜单栏里选择<code>copy value</code> → <code>copy URL</code> ，就能获得这个URL的链接。 </p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240929124652.png" alt="image.png"></p>
+<p>Edge浏览器的资源嗅探方法有点区别，它似乎把b站的m3u8直播串流数据包归类为了Fetch类型而不是media类型（如下图），需要注意一下区分。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240929130118.png" alt="image.png"></p>
+<p>总之，不管使用哪一种浏览器，最后我们复制到的URL大概都长下面这个样子：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://d1--cn-gotcha204-2.bilivideo.com/live-bvc/584477/live_1732959538_49081492/index.m3u8?expires=1727588571&amp;len=0&amp;oi=975321898&amp;pt=web&amp;qn=10000&amp;trid=100732efe5d8f47c8c565c3461656366f8da&amp;sigparams=cdn,expires,len,oi,pt,qn,trid&amp;cdn=cn-gotcha204&amp;sign=5d9c2ac82f198dc33df86d4d02804299&amp;site=302fd3c3e6cf4084876d1f3aea392009&amp;free_type=0&amp;mid=398122142&amp;sche=ban&amp;bvchls=1&amp;trace=16&amp;isp=ct&amp;rg=East&amp;pv=Shanghai&amp;pp=rtmp&amp;source=puv3_onetier&amp;deploy_env=prod&amp;score=5&amp;suffix=origin&amp;p2p_type=1&amp;origin_bitrate=396276&amp;sl=1&amp;hot_cdn=0&amp;sk=bc9191c9d2d0ca7362288c156d0a1a39&amp;qp=de_0&amp;flvsk=9f91530c840c4772d1b03c74821d7442&amp;vd=bc&amp;src=puv3&amp;order=2</span><br></pre></td></tr></table></figure>
+
+
+<p>有点儿长，不过没关系。现在让我们打开一个命令行窗口，并输入下面的指令进行串流数据捕获：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">URL=<span class="string">&quot;https://d1--cn-gotcha204-2.bilivideo.com/live-bvc/584477/live_1732959538_49081492/index.m3u8?expires=1727588571&amp;len=0&amp;oi=975321898&amp;pt=web&amp;qn=10000&amp;trid=100732efe5d8f47c8c565c3461656366f8da&amp;sigparams=cdn,expires,len,oi,pt,qn,trid&amp;cdn=cn-gotcha204&amp;sign=5d9c2ac82f198dc33df86d4d02804299&amp;site=302fd3c3e6cf4084876d1f3aea392009&amp;free_type=0&amp;mid=398122142&amp;sche=ban&amp;bvchls=1&amp;trace=16&amp;isp=ct&amp;rg=East&amp;pv=Shanghai&amp;pp=rtmp&amp;source=puv3_onetier&amp;deploy_env=prod&amp;score=5&amp;suffix=origin&amp;p2p_type=1&amp;origin_bitrate=396276&amp;sl=1&amp;hot_cdn=0&amp;sk=bc9191c9d2d0ca7362288c156d0a1a39&amp;qp=de_0&amp;flvsk=9f91530c840c4772d1b03c74821d7442&amp;vd=bc&amp;src=puv3&amp;order=2&quot;</span></span><br><span class="line"></span><br><span class="line">ffmpeg -i <span class="variable">$URL</span> -c copy -bsf:a aac_adtstoasc output.mp4</span><br></pre></td></tr></table></figure>
+
+<p>命令行会滚过如下的输出内容。这些内容会随着直播的进行而持续输出，同时<code>output.mp4</code>文件也会不断变大，实时记录下直播的内容。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240929125126.png" alt="image.png"></p>
+<p>要停止对直播内容的捕获，一种方法是按下<code>Ctrl+C</code>键终止当前任务，另一种方法就是等主播下播，直播结束，这样ffmpeg会自动停止捕获。</p>
+<p>最后，我们看一下捕获到的<code>output.mp4</code>的效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20240929125415.png" alt="image.png"></p>
+<h2 id="拓展：基于app的b站直播录屏"><a href="#拓展：基于app的b站直播录屏" class="headerlink" title="拓展：基于app的b站直播录屏"></a>拓展：基于app的b站直播录屏</h2><p>有一款APP叫做<a href="http://www.icoolby.com/vf/">KB视频工厂</a> ，将上面这些功能全部包在了APP里，用户只需要输入b站直播的页面地址，就能实现自动m3u8资源嗅探+串流捕获。</p>
+<p>不过这个APP是会员制的，免费版用户只能捕获10分钟的视频，对于较长时间的直播需要分好几段进行捕获，稍微有点儿不方便。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>FFmpeg</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python科目三灯光模拟</title>
+    <url>/2024/09/29/python%E7%A7%91%E7%9B%AE%E4%B8%89%E7%81%AF%E5%85%89%E6%A8%A1%E6%8B%9F/</url>
+    <content><![CDATA[<p>这段时间在备考驾照科目三，昨天考过，成功拿本。备考过程中写过一个小脚本，帮助自己复习夜间灯光模拟的操作，此处浅浅开源一下，供有需求的朋友使用。</p>
+<span id="more"></span>
+
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>代码如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"><span class="comment"># 选项含义</span></span><br><span class="line"><span class="comment"># 1:近光灯</span></span><br><span class="line"><span class="comment"># 2:远光灯</span></span><br><span class="line"><span class="comment"># 3:远近交替</span></span><br><span class="line"><span class="comment"># 4:远近交替+转向灯</span></span><br><span class="line"><span class="comment"># 5:示廓灯+报警灯</span></span><br><span class="line">dt = &#123;</span><br><span class="line">    <span class="string">&quot;请开启前照灯&quot;</span>:<span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;路口直行&quot;</span>:<span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;会车&quot;</span>:<span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;有路灯且照明良好的路口&quot;</span>:<span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;同方向近距离跟车&quot;</span>:<span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;交通信号灯控制的路口&quot;</span>:<span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;无照明的路段&quot;</span>:<span class="number">2</span>,</span><br><span class="line">    <span class="string">&quot;照明不良的路段&quot;</span>:<span class="number">2</span>,</span><br><span class="line">    <span class="string">&quot;超车&quot;</span>:<span class="number">4</span>,</span><br><span class="line">    <span class="string">&quot;通过急弯&quot;</span>:<span class="number">3</span>,</span><br><span class="line">    <span class="string">&quot;通过坡道&quot;</span>:<span class="number">3</span>,</span><br><span class="line">    <span class="string">&quot;通过拱桥&quot;</span>:<span class="number">3</span>,</span><br><span class="line">    <span class="string">&quot;通过人行横道&quot;</span>:<span class="number">3</span>,</span><br><span class="line">    <span class="string">&quot;通过没有信号灯的路口&quot;</span>:<span class="number">3</span>,</span><br><span class="line">    <span class="string">&quot;路边临时停车&quot;</span>:<span class="number">5</span>,</span><br><span class="line">    <span class="string">&quot;路上发生故障&quot;</span>:<span class="number">5</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">key_list = <span class="built_in">list</span>(dt.keys())</span><br><span class="line">length   = <span class="built_in">len</span> ( key_list)</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line">random.seed(time.time())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 随机抽取n道题</span></span><br><span class="line">count = <span class="number">0</span></span><br><span class="line">subject_num = <span class="number">10</span></span><br><span class="line">subject_idx = -<span class="number">1</span> <span class="comment"># 题号下标赋初始值。初始值是多少不重要，但是得赋值</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(subject_num):</span><br><span class="line">    <span class="comment"># 生成一个随机数，对应于抽取的题号下标</span></span><br><span class="line">    new_subject_idx = random.randint(<span class="number">0</span>,length-<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">while</span>(new_subject_idx==subject_idx): <span class="comment"># while loop防止两次抽到一样的题目</span></span><br><span class="line">        new_subject_idx = random.randint(<span class="number">0</span>,length-<span class="number">1</span>)</span><br><span class="line">    subject_idx = new_subject_idx</span><br><span class="line">    subject = key_list[subject_idx]</span><br><span class="line">    answer  = dt[subject]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n[<span class="subst">&#123;i&#125;</span>]\t<span class="subst">&#123;subject&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;1:近光灯; 2:远光灯; 3:远近交替; 4:远近交替+转向灯; 5:示廓灯+报警灯. &quot;</span>)</span><br><span class="line">    a = <span class="string">&quot;&quot;</span> <span class="comment"># 用户输入。如果输入为空则继续loop直到有输入。</span></span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">len</span>(a)&lt;<span class="number">1</span>:</span><br><span class="line">        a = <span class="built_in">input</span>(<span class="string">&quot;&gt;&gt;&gt; &quot;</span>)</span><br><span class="line">    b = <span class="built_in">int</span>(a) </span><br><span class="line">    <span class="keyword">if</span>(b!=answer):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Wrong! The correct choice is <span class="subst">&#123;answer&#125;</span>&quot;</span>)</span><br><span class="line">        count += <span class="number">1</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Total wrong answer num: <span class="subst">&#123;count&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用方法："><a href="#使用方法：" class="headerlink" title="使用方法："></a>使用方法：</h2><p>将上述代码保存为 <code>科目三灯光模拟.py</code> 文件，然后使用下面的指令运行代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python 科目三灯光模拟.py</span><br></pre></td></tr></table></figure>
+
+<p>这样可以进入一个灯光模拟题的交互界面。程序会随机抽取10个场景，用户需要输入数字<code>1~5</code>以选择合适的灯光操作。如果选择错误，这个脚本会立即指出错误并给出正确的灯光操作。</p>
+<p>下面是运行截图：</p>
+<p><img src="https://pic.imgdb.cn/item/66f8c39af21886ccc0207428.png" alt="科目三灯光模拟"></p>
+<p>以上。</p>
+<p>祝参加科目三考试的朋友们都能考出好成绩~</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>科目三考试</tag>
+        <tag>夜间灯光模拟</tag>
+      </tags>
+  </entry>
 </search>
