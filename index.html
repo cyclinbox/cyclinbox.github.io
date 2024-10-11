@@ -158,7 +158,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">143</span>
+          <span class="site-state-item-count">144</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -215,6 +215,119 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/10/11/macOS_installation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/10/11/macOS_installation/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-10-11 21:31:05" itemprop="dateCreated datePublished" datetime="2024-10-11T21:31:05+08:00">2024-10-11</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>virtualBox安装macOS的教程</p>
+<blockquote>
+<p>在 virtualbox 安装 mac os - 赤小翼的文章 - 知乎 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/47707748">https://zhuanlan.zhihu.com/p/47707748</a></p>
+</blockquote>
+<blockquote>
+<p>另外参考： <a target="_blank" rel="noopener" href="https://www.mfpud.com/topics/11002/">https://www.mfpud.com/topics/11002/</a></p>
+</blockquote>
+<h2 id="新建虚拟电脑"><a href="#新建虚拟电脑" class="headerlink" title="新建虚拟电脑"></a>新建虚拟电脑</h2><p>新建虚拟电脑。这里的虚拟电脑名称我设置为了macOS1013，记住这个名字，后面会用到。</p>
+<p><img src="https://pic.imgdb.cn/item/67054a59d29ded1a8ccb2461.png" alt="新建虚拟电脑"></p>
+<p>进行硬件设置时，需要注意CPU核数需要设置为1核。设置更多的核可能导致启动失败。</p>
+<p><img src="https://pic.imgdb.cn/item/67054a7dd29ded1a8ccb47a1.png" alt="硬件设置"></p>
+<p><img src="https://pic.imgdb.cn/item/67054acfd29ded1a8ccb99ca.png" alt="硬盘空间设置"></p>
+<p>完成虚拟电脑的创建之后，我们需要打开Windows命令行窗口，并切换到VirtualBox的安装目录。如果不知道VirtualBox的安装目录在哪里，可以按Ctrl+Shift+ESC打开任务管理器界面，并右键VirtualBox Manager进程，点击“打开文件所在的位置”（如下图）</p>
+<p><img src="https://pic.imgdb.cn/item/67054b6dd29ded1a8ccc2eea.png" alt="任务管理器打开文件所在位置"></p>
+<p>在这个目录下，我们执行下面这几行指令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">VBoxManage.exe modifyvm <span class="string">&quot;macOS1013&quot;</span> --cpuidset 00000001 000106e5 00100800 0098e3fd bfebfbff</span><br><span class="line">VBoxManage setextradata <span class="string">&quot;macOS1013&quot;</span> <span class="string">&quot;VBoxInternal/Devices/efi/0/Config/DmiSystemProduct&quot;</span> <span class="string">&quot;iMac11,3&quot;</span></span><br><span class="line">VBoxManage setextradata <span class="string">&quot;macOS1013&quot;</span> <span class="string">&quot;VBoxInternal/Devices/efi/0/Config/DmiSystemVersion&quot;</span> <span class="string">&quot;1.0&quot;</span></span><br><span class="line">VBoxManage setextradata <span class="string">&quot;macOS1013&quot;</span> <span class="string">&quot;VBoxInternal/Devices/efi/0/Config/DmiBoardProduct&quot;</span> <span class="string">&quot;Iloveapple&quot;</span></span><br><span class="line">VBoxManage setextradata <span class="string">&quot;macOS1013&quot;</span> <span class="string">&quot;VBoxInternal/Devices/smc/0/Config/DeviceKey&quot;</span> <span class="string">&quot;ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc&quot;</span></span><br><span class="line">VBoxManage setextradata <span class="string">&quot;macOS1013&quot;</span> <span class="string">&quot;VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC&quot;</span> 0</span><br></pre></td></tr></table></figure>
+
+<p>注意这里的 <code>&quot;macOS1013&quot;</code> 就是前面我们设置过的虚拟机名称，如果读者设置了其他名称，此处执行指令时需要记得修改。执行这几行指令的目的是修改虚拟机的元数据，以欺骗macOS的安装镜像以为这是iMac实机。</p>
+<p>如果我们的电脑是AMD品牌的CPU，还得额外执行一句指令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">VBoxManage modifyvm <span class="string">&quot;macOS&quot;</span> --cpu-profile <span class="string">&quot;Intel Core i7-6700K&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic.imgdb.cn/item/67054be5d29ded1a8ccc9c50.png" alt="CMD虚拟机设置界面"></p>
+<h2 id="虚拟机的启动与镜像安装"><a href="#虚拟机的启动与镜像安装" class="headerlink" title="虚拟机的启动与镜像安装"></a>虚拟机的启动与镜像安装</h2><p>在VirtualBox主页启动macOS的虚拟机。</p>
+<p><img src="https://pic.imgdb.cn/item/67054d01d29ded1a8ccdb05d.png" alt="VirtualBox启动页"></p>
+<p>启动后，屏幕上首先会滚过许多字符信息，这是正常现象，一般情况下等个一两分钟就能进入GUI界面。如果迟迟进不了GUI界面，可能是哪里设置有问题，建议从头排查一下。</p>
+<p>首先进入到的界面是计算机语言选择，这里我们选简体中文。</p>
+<p><img src="https://pic.imgdb.cn/item/67054e1bd29ded1a8ccec1ba.png" alt="语言选择"></p>
+<p>进入下一步，按提示同意几个条款</p>
+<p><img src="https://pic.imgdb.cn/item/67054e59d29ded1a8ccefe69.png" alt="继续"></p>
+<p><img src="https://pic.imgdb.cn/item/67054e77d29ded1a8ccf1bf9.png" alt="同意条款"></p>
+<p>选择要安装的磁盘。由于虚拟机分配的磁盘还没有格式化，此处我们无法选择该磁盘。需要在菜单栏“实用工具”里面选择“磁盘工具”，在磁盘工具里操作</p>
+<p><img src="https://pic.imgdb.cn/item/67054ea5d29ded1a8ccf4853.png" alt="磁盘工具"></p>
+<p>在磁盘工具页面，选中刚刚分配的60GB虚拟磁盘空间，点击“抹掉”（等同于Windows上面的格式化），磁盘类型用默认选项即可。</p>
+<p><img src="https://pic.imgdb.cn/item/67054f18d29ded1a8ccfb7eb.png" alt="抹掉"></p>
+<p>完成这一步操作以后，点击磁盘工具左上角的红色叉号关闭窗口，我们就又回到了安装的过程。此时，我们选择新出现的这块硬盘，点击继续，即可进行后续安装</p>
+<p><img src="https://pic.imgdb.cn/item/67054f71d29ded1a8cd0107c.png" alt="选择新盘"></p>
+<p>安装过程大概会持续十多分钟，耐心等待即可。</p>
+<p><img src="https://pic.imgdb.cn/item/67054fd0d29ded1a8cd06f37.png" alt="安装15min"></p>
+<p>安装结束后，记得在VirtualBox中弹出iso盘片，否则启动时可能卡字符界面。</p>
+<p>弹出iso盘片后启动虚拟机，这一步耗时也相对较长，需要耐心等待。</p>
+<p><img src="https://pic.imgdb.cn/item/670559e9d29ded1a8cdb2bcc.png" alt="国家和地区"></p>
+<p><img src="https://pic.imgdb.cn/item/67055b16d29ded1a8cdc2013.png" alt="键盘"></p>
+<p><img src="https://pic.imgdb.cn/item/67055c3dd29ded1a8cdd05e3.png" alt="apple account"></p>
+<p><img src="https://pic.imgdb.cn/item/67055f34d29ded1a8cdf67bd.png" alt="进入桌面"></p>
+<p><img src="https://pic.imgdb.cn/item/67056086d29ded1a8ce07ee0.png" alt="about system"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -4692,99 +4805,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/02/03/jupyter-magic-cmd/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/01/28/Linux-service-operation-notes-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/cyclinbox.png">
-      <meta itemprop="name" content="Warren Z">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Warren's Blog">
-      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Warren's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/01/28/Linux-service-operation-notes-01/" class="post-title-link" itemprop="url">Linux服务器维护零碎知识点整理</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-01-28 19:00:00" itemprop="dateCreated datePublished" datetime="2024-01-28T19:00:00+08:00">2024-01-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-02-17 20:03:58" itemprop="dateModified" datetime="2024-02-17T20:03:58+08:00">2024-02-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>如题。</p>
-<p>原先的服务器快到期了，因此这周初新购进一台华为云的服务器。在配置服务器的时候，顺带温习了一下这些知识点。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/28/Linux-service-operation-notes-01/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
