@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="这一篇教程节选自第一次助教课的课程内容。上周末准备助教课花了不少时间，也顺带复习了RNA-seq数据分析流程的相关知识。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RNA-seq数据的归一化">
+<meta property="og:url" content="https://wz.anoms.top/2024/10/20/RNA-seq-normalization/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="这一篇教程节选自第一次助教课的课程内容。上周末准备助教课花了不少时间，也顺带复习了RNA-seq数据分析流程的相关知识。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020162225.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/2024-06-17-144535.webp">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/2024-06-17-144544.webp">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/2024-06-17-144556.webp">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020165635.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020173813.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020174826.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020174839.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020174845.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020181856.png">
+<meta property="article:published_time" content="2024-10-20T09:00:00.000Z">
+<meta property="article:modified_time" content="2024-10-20T10:34:19.975Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="RNA-seq">
+<meta property="article:tag" content="生物信息学">
+<meta property="article:tag" content="归一化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020162225.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/10/20/RNA-seq-normalization/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/10/20/RNA-seq-normalization/","path":"2024/10/20/RNA-seq-normalization/","title":"RNA-seq数据的归一化"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>RNA-seq数据的归一化 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%81%9ARNA-seq%E7%9A%84%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">背景：为什么要做RNA-seq的归一化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%B1%E5%93%8D%E6%A0%87%E5%87%86%E5%8C%96%E7%9A%84%E4%B8%89%E4%B8%AA%E5%9B%A0%E7%B4%A0"><span class="nav-number">2.</span> <span class="nav-text">影响标准化的三个因素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E5%BA%8F%E6%B7%B1%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">测序深度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E5%9B%A0%E9%95%BF%E5%BA%A6"><span class="nav-number">2.2.</span> <span class="nav-text">基因长度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RNA%E7%BB%84%E6%88%90"><span class="nav-number">2.3.</span> <span class="nav-text">RNA组成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%92%E4%B8%80%E5%8C%96%E6%96%B9%E6%B3%95%E7%AE%80%E4%BB%8B"><span class="nav-number">3.</span> <span class="nav-text">归一化方法简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CPM-counts-per-million"><span class="nav-number">3.1.</span> <span class="nav-text">CPM(counts per million)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPKM%E4%B8%8EFPKM"><span class="nav-number">3.2.</span> <span class="nav-text">RPKM与FPKM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TPM-transcripts-per-kilobase-million"><span class="nav-number">3.3.</span> <span class="nav-text">TPM(transcripts per kilobase million)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E4%BD%8D%E6%95%B0%E7%9F%AB%E6%AD%A3%EF%BC%88quantiles-normalization%EF%BC%8CQN%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">分位数矫正（quantiles normalization，QN）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DESeq2"><span class="nav-number">3.5.</span> <span class="nav-text">DESeq2</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%88%9B%E5%BB%BA%E4%BC%AA%E5%8F%82%E8%80%83%E6%A0%B7%E6%9C%AC%EF%BC%88Pseudo-Reference-Sample%EF%BC%89"><span class="nav-number">3.5.1.</span> <span class="nav-text">1. 创建伪参考样本（Pseudo-Reference Sample）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%AE%A1%E7%AE%97%E6%AF%8F%E4%B8%AA%E6%A0%B7%E6%9C%AC%E4%B8%8E%E5%8F%82%E8%80%83%E6%A0%B7%E6%9C%AC%E7%9A%84%E6%AF%94%E5%80%BC"><span class="nav-number">3.5.2.</span> <span class="nav-text">2. 计算每个样本与参考样本的比值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E8%AE%A1%E7%AE%97%E6%AF%8F%E4%B8%AA%E6%A0%B7%E6%9C%AC%E7%9A%84%E5%BD%92%E4%B8%80%E5%8C%96%E5%9B%A0%E5%AD%90%EF%BC%88Size-Factor%EF%BC%89"><span class="nav-number">3.5.3.</span> <span class="nav-text">3. 计算每个样本的归一化因子（Size Factor）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8%E5%BD%92%E4%B8%80%E5%8C%96%E5%9B%A0%E5%AD%90%E8%AE%A1%E7%AE%97%E5%BD%92%E4%B8%80%E5%8C%96%E5%90%8E%E7%9A%84%E8%AE%A1%E6%95%B0%E5%80%BC"><span class="nav-number">3.5.4.</span> <span class="nav-text">4. 使用归一化因子计算归一化后的计数值</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#edgeR%E7%9A%84TMM%E7%9F%AB%E6%AD%A3"><span class="nav-number">4.</span> <span class="nav-text">edgeR的TMM矫正</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93%E4%B8%8E%E5%AF%B9%E6%AF%94"><span class="nav-number">5.</span> <span class="nav-text">方法总结与对比</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">145</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">238</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/10/20/RNA-seq-normalization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="RNA-seq数据的归一化 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RNA-seq数据的归一化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-10-20 17:00:00 / 修改时间：18:34:19" itemprop="dateCreated datePublished" datetime="2024-10-20T17:00:00+08:00">2024-10-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%89%A9/" itemprop="url" rel="index"><span itemprop="name">生物</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>这一篇教程节选自第一次助教课的课程内容。上周末准备助教课花了不少时间，也顺带复习了RNA-seq数据分析流程的相关知识。</p>
+<span id="more"></span>
+
+<h2 id="背景：为什么要做RNA-seq的归一化"><a href="#背景：为什么要做RNA-seq的归一化" class="headerlink" title="背景：为什么要做RNA-seq的归一化"></a>背景：为什么要做RNA-seq的归一化</h2><p>如下图所示，基于RNA-seq的差异表达研究的一般流程包括实验设计、RNA纯化、文库制备、测序以及下游分析等步骤。不同测序运行之间产生的读取数量存在很大差异，文库制备方案、测序平台和核苷酸组成也会带来许多技术偏差。要获得真实有效的科学发现，需要排除上面这些因素带来的偏差，而标准化（normalization）就是这样的一个过程。标准化旨在准确比较样本之间的基因表达。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020162225.png" alt="image.png"></p>
+<h2 id="影响标准化的三个因素"><a href="#影响标准化的三个因素" class="headerlink" title="影响标准化的三个因素"></a>影响标准化的三个因素</h2><blockquote>
+<p>参考： <a target="_blank" rel="noopener" href="https://www.jieandze1314.com/post/cnposts/168/">《跟着刘小泽一起回顾标准化方法》</a></p>
+</blockquote>
+<p>三大因素如下：</p>
+<ul>
+<li>测序深度（Sequencing depth）</li>
+<li>基因长度（Gene length）</li>
+<li>RNA组成（RNA composition）</li>
+</ul>
+<h3 id="测序深度"><a href="#测序深度" class="headerlink" title="测序深度"></a>测序深度</h3><p>如果要比较两个样本的同一个基因表达量，那么首先要保证外部因素一致，最直接的体现就是测序深度。不同批次的测序，它的测序深度可能不同，因此可能导致下图这种情况。</p>
+<p>如图所示，图中所有红色和绿色的小长条就是比对到基因的测序read，我们也是按它们的数量来判断某个基因表达量的；看到有的长条之间连了一条虚线，这表示它是跨越内含子比对的测序read。从图上看，貌似A样本的所有基因表达量都是B的两倍。</p>
+<p>然而，实际情况下我们会遵循这样的一个前提假设，即不同样本当中绝大部分基因的表达量是不存在差异的，因此图中这种差异更有可能是测序深度导致的不同，例如sample A测了20x，但是sample B只测了10x，那么定量以后的raw count就有可能是图中这个样子，这种偏差当然要排除。排除这个因素的方法也很简单，用各个基因的reads除以对应sample的总reads就行（这也就是CPM矫正方法的原理）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/2024-06-17-144535.webp" alt="2024-06-17-144535.webp"></p>
+<h3 id="基因长度"><a href="#基因长度" class="headerlink" title="基因长度"></a>基因长度</h3><p>如果要比较同一个样本中的不同基因，那么就要处理好“内部矛盾”——基因长度的问题。基因的长度是固定的，如果要比较的两个基因中，一个基因本身就很长，那么理所应当，落在上面的reads数量应该也越多。因此可能导致下图这种情况，例如虽然都是sample A的基因，且从图中我们能感觉到基因X和Y的表达水平应该差不多，然而基因X比Y要长，也有更多的reads落在基因X上，这就会导致在做统计检验时很有可能会错判基因X表达量更高。</p>
+<p>排除这个因素的方法也很简单，用各个基因的reads除以对应的基因长度即可。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/2024-06-17-144544.webp" alt="2024-06-17-144544.webp"></p>
+<h3 id="RNA组成"><a href="#RNA组成" class="headerlink" title="RNA组成"></a>RNA组成</h3><p>这种情况也可以理解为：找出搅局者。依然是在组间比较，但可能某个样本中就是存在这样的“异类”：它本身很强大，表达量超级高，拉高了整体的表达量，造成一种“虚假繁荣”。于是当按照前面的情况对测序深度做归一化处理时，“异类”的所有小伙伴都要陪着它一起缩小，为了减小所谓的“测序深度影响”。但它的小伙伴亏啊，本来和对照样本中的基因单挑是完胜的，但这一缩减，就不行了。就像下图中sample A的 gene DE，由于它的存在，sample A中其他基因的表达水平整体都要被拉低。</p>
+<p>排除这一点可不太容易，因为这要求我们预先识别出这些“异类”基因，并且先把这些异类基因挑出去，剩下的才是用来做归一化的基因。不过现在已经有一些方法能够对其进行矫正了，下文中会详细介绍。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/2024-06-17-144556.webp" alt="2024-06-17-144556.webp"></p>
+<h2 id="归一化方法简介"><a href="#归一化方法简介" class="headerlink" title="归一化方法简介"></a>归一化方法简介</h2><h3 id="CPM-counts-per-million"><a href="#CPM-counts-per-million" class="headerlink" title="CPM(counts per million)"></a>CPM(counts per million)</h3><p>CPM（每百万映射读数）是指将映射到转录本的原始读数数量，经过测序样本中的读数数量标准化后，乘以一百万。</p>
+<p>具体来说，假设有n个基因（准确来说是基因的片段）映射到了参考基因组上，对于某个基因 $i$ ，其映射到参考基因组上的reads计数为 $x_i$ ，而全部基因在参考基因组上的reads计数和（map到所有基因的总reads数）为 $R=Σ(x_i)$   ，则CPM的计算公式是：</p>
+<p>$$<br>CPM=\frac{x_i}{\sum x_i} \times 10^6<br>$$</p>
+<p>由于 $R$ 是所有映射到参考基因组上基因计数的和，因此还有 $x_i/Σ(x_i)∈[0,1], Σ(x_i/Σ(x_i))=1$</p>
+<p>举个例子，某次RNA-seq中测序了一个包含500万个reads读数的文库。其中，总共有400万个reads读数与基因组序列匹配，对于某个基因，有5000个计数在参考基因组上，则CPM为：</p>
+<p>$$<br>(5000 \times 10^6)/(4 \times 10^6)=1250<br>$$</p>
+<p>CPM对RNA-seq数据进行了测序深度的标准化，但没有考虑基因长度。因此，尽管它是一种样本内标准化方法，但CPM标准化不适用于对基因表达进行样本内比较。</p>
+<h3 id="RPKM与FPKM"><a href="#RPKM与FPKM" class="headerlink" title="RPKM与FPKM"></a>RPKM与FPKM</h3><ul>
+<li>RPKM=reads per kilobase of exon per million reads mapped</li>
+<li>FPKM=fragments per kilobase of exon per million fragments mapped</li>
+</ul>
+<p>FPKM 与 RPKM 非常相似。RPKM 是为单端 RNA-seq 制作的，其中每个读数对应一个已测序的片段。FPKM 是为配对末端 RNA-seq （双端测序）制作的。使用配对末端 RNA-seq，两个读数可以对应一个片段，或者，如果对中的一个读数没有映射，一个读数可以对应一个片段。RPKM 和 FPKM 之间的唯一区别是 FPKM 考虑到两个读取可以映射到一个片段（因此它不会将该片段计算两次）。</p>
+<p>计算方法是，对于第 $i$ 个基因， $x_i$ 是map到这个基因的reads数， $N=Σ(x_i)$ 是总reads数， $l_i$ 是基因 $i$ 的长度。RPKM/FPKM的公式与CPM极为相似，除了分母多了  $l_i/10^3$ 这一项，用于矫正基因长度的影响。</p>
+<p>$$<br>RPKM_i=\frac{x_i}{(l_i/10^3)(N/10^6)}<br>$$</p>
+<p>RPKM/FPKM标准化方法只适用与样本内的比较，不适合用于样本间的比较。原因在于，对于不同的样本，总计数 $N=Σ(x_i)$ 是不相同的。举一个例子，样本1和样本2中的基因A的FPKM都是3.33，但是这两个样本的总计数 $N=Σ(x_i)$ 不一定相同，因此我们无法判断基因A在两个样本中的表达量是否相同。</p>
+<h3 id="TPM-transcripts-per-kilobase-million"><a href="#TPM-transcripts-per-kilobase-million" class="headerlink" title="TPM(transcripts per kilobase million)"></a>TPM(transcripts per kilobase million)</h3><p>CPM矫正了测序深度，适合相同基因在不同样本之间的比较；RPKM/FPKM矫正了基因长度，适合不同基因在同一个样本内的比较。有没有方法可以兼顾二者，既能样本内比较又能样本间比较呢？</p>
+<p>当然有，这就是TPM方法，它既考虑测序深度，又考虑基因长度。对于TPM，其将分母部分的总计数 $N=Σ(x_i)$ 改为了使用基因长度标准化以后的总计数 $Σ_j(x_j/l_j)$ ，其计算方法可以等价为对RPKM的进一步标准化。</p>
+<p>$$<br>TPM_i=\frac{x_i}{l_i}\times\frac{1}{\sum_j(x_j/l_j)}\times 10^6<br>$$</p>
+<p>在使用TPM时，每个样本中所有TPM的总和是相同的，这样可以更轻松地比较每个样本中映射到基因的读数的比例。</p>
+<p>可以这样认为：RPKM/FPKM方法首先考虑了测序深度，其次考虑了基因长度，而TPM先对基因长度进行标准化，然后对测序深度进行标准化。这种数学原理上的差异也导致上述归一化方法有不同的使用场景。</p>
+<p>另外，我们可以按下述公式这么理解TPM：TPM相当于对RPKM的再一次矫正，弥补了RPKM跨样本比较时的不足之处。</p>
+<p>$$<br>TPM_i \iff \frac{RPKM_i}{\sum_{j=1}^nRPKM_j}\times 10^6<br>$$</p>
+<p>关于使用场景：</p>
+<ul>
+<li>CPM适用于between-sample，不适用于within-sample</li>
+<li>FPKM/RPKM适用于within-sample，不适用于between-sample</li>
+<li>TPM都适用，但是由于没有对RNA composition做矫正，因此无法用于差异表达分析（DE analysis）</li>
+</ul>
+<h3 id="分位数矫正（quantiles-normalization，QN）"><a href="#分位数矫正（quantiles-normalization，QN）" class="headerlink" title="分位数矫正（quantiles normalization，QN）"></a>分位数矫正（quantiles normalization，QN）</h3><p>分位数归一化是为了矫正RNA composition而出现的。简单来说，就是排序后求平均，然后再回序。</p>
+<p>最初这种方法是为基因表达微阵列开发的（参考 <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41598-020-72664-6">https://www.nature.com/articles/s41598-020-72664-6</a> ），但现在几乎可以用于任何类型高通量测序数据的归一化分析，包括RNA测序和蛋白质组学。</p>
+<p>下图展示了QN的步骤：</p>
+<ul>
+<li>首先在每个样本内对基因按表达量进行排序，并用排序的rank代替原先的表达量（表达量相同的基因用同一个rank；如下图的图1-2）；</li>
+<li>随后在样本之间计算每一个特定位序的rank的平均值（例如，各个样本在第二位序上基因表达量的rank分别是 <code>[3,3,4,4,5,3,4,5]</code> ，则计算平均值为 3.875，将其作为矫正之后的值（保留小数点后两位为3.88，如下图的图3）</li>
+<li>最后，将所有基因恢复为最初的排序，并且对于原先表达量相同（rank一致）但现在由于归一化而rank不一致的基因，再求一次均值（如下图的图4）</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020165635.png" alt="image.png"></p>
+<p>QN的原理简单易懂，且不需要提供基因长度等先验信息，因此在一些场景下很有用。然而，使用QN的一个特别危险是，外行分析师很容易被相当“完美”的归一化后结果误导：QN归一化样本看起来很相似，即使底层类别实际上非常不同。此外，QN可以在数据分析过程中消除真实信号并产生虚假信号。因此，在实际工作中，这种归一化方法应该谨慎使用。</p>
+<p>在R包 <a target="_blank" rel="noopener" href="https://bioconductor.org/packages/release/bioc/html/preprocessCore.html">preprocessCore</a> 当中，已经提供了QN归一化的完整实现，因此如果需要QN归一化，直接调用上述R包即可。</p>
+<h3 id="DESeq2"><a href="#DESeq2" class="headerlink" title="DESeq2"></a>DESeq2</h3><p>DESeq2是一个很经典的差异表达分析工具包，最初发表于2014年，关于这个包的使用方法，网上的教程已经很丰富了，本文不再赘述。对于这个包的底层数学原理感兴趣的读者可以参考下面两篇参考文献</p>
+<ul>
+<li>Anders, S., Huber, W. Genome Biol(2010). <a target="_blank" rel="noopener" href="https://doi.org/doi:10.1186/gb-2010-11-10-r106">doi:10.1186/gb-2010-11-10-r106</a></li>
+<li>Love, M.I., Huber, W. &amp; Anders, S. Genome Biol(2014). <a target="_blank" rel="noopener" href="https://doi.org/doi:10.1186/s13059-014-0550-8">doi:10.1186/s13059-014-0550-8</a></li>
+</ul>
+<p>DESeq2采用一种叫做median of ratio的方法对raw count做归一化，步骤大致如下：</p>
+<h4 id="1-创建伪参考样本（Pseudo-Reference-Sample）"><a href="#1-创建伪参考样本（Pseudo-Reference-Sample）" class="headerlink" title="1. 创建伪参考样本（Pseudo-Reference Sample）"></a>1. 创建伪参考样本（Pseudo-Reference Sample）</h4><ul>
+<li>DESeq2 会为每个基因计算所有样本中表达量的几何平均值，形成一个“伪参考样本”。这个伪参考样本代表了所有样本中每个基因的“标准”表达水平。</li>
+<li>此处使用几何平均数而不是代数平均数，因为几何平均数对极端值不敏感，可以排除RNA composition的影响。</li>
+<li>计算方法：对于每个基因 $i$ ，计算所有样本中该基因计数的几何平均数</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020173813.png" alt="image.png"></p>
+<h4 id="2-计算每个样本与参考样本的比值"><a href="#2-计算每个样本与参考样本的比值" class="headerlink" title="2. 计算每个样本与参考样本的比值"></a>2. 计算每个样本与参考样本的比值</h4><ul>
+<li>对于每个样本  $j$ ，计算每个基因 $i$  在该样本中的计数 $k_{ij}$ 与几何平均数（伪参考样本中该基因表达量）的比值。这些比值反映了每个样本相对于参考样本的表达水平变化。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020174826.png" alt="image.png"></p>
+<h4 id="3-计算每个样本的归一化因子（Size-Factor）"><a href="#3-计算每个样本的归一化因子（Size-Factor）" class="headerlink" title="3. 计算每个样本的归一化因子（Size Factor）"></a>3. 计算每个样本的归一化因子（Size Factor）</h4><ul>
+<li><p>根据上一步计算的比值，确定每个样本的归一化因子（也称为大小因子）。这个因子用来校正不同样本之间的测序深度差异。</p>
+</li>
+<li><p>计算方法：对于每个样本  $j$ ，计算step2中比率的中位数，这个中位数就是size factor</p>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020174839.png" alt="image.png"></p>
+<h4 id="4-使用归一化因子计算归一化后的计数值"><a href="#4-使用归一化因子计算归一化后的计数值" class="headerlink" title="4. 使用归一化因子计算归一化后的计数值"></a>4. 使用归一化因子计算归一化后的计数值</h4><ul>
+<li>最后，使用计算出的归一化因子（大小因子）来调整每个样本的原始计数数据。</li>
+<li>具体来说，将每个样本的原始计数除以其对应的大小因子，得到归一化的计数值。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020174845.png" alt="image.png"></p>
+<h2 id="edgeR的TMM矫正"><a href="#edgeR的TMM矫正" class="headerlink" title="edgeR的TMM矫正"></a>edgeR的TMM矫正</h2><p>同DESeq2一样，edgeR也是一个著名的差异表达分析工具包，网上的使用教程非常丰富。想要了解算法细节的读者可以阅读下面的论文：</p>
+<ul>
+<li>Robinson, M.D., Oshlack, A. Genome Biol(2010). <a target="_blank" rel="noopener" href="https://doi.org/doi:10.1186/gb-2010-11-3-r25">doi:10.1186/gb-2010-11-3-r25</a></li>
+</ul>
+<p>edgeR的归一化方法是trimmed mean of M values (TMM)方法。TMM 方法的核心思想是通过比较两个样本之间的整体表达水平来估计相对 RNA 产量。假设大多数基因不是差异表达的，可以通过这些基因的表达水平来估计相对 RNA 产量。</p>
+<p>首先需要定义一下M值和A值。假设我们正在做样本k对样本r的差异表达分析，对于每一个基因 $g$ ，M值和A值定义如下：</p>
+<p>$$<br>M_g=log_2\frac{Y_{gk}/N_{gk}}{Y_{gr}/N_{gr}}<br>$$</p>
+<p>$$<br>A_g=\frac{1}{2}log_2((Y_{gk}/N_{gk})\times(Y_{gr}/N_{gr})), \text{ for } Y_{g·}\neq 0<br>$$</p>
+<p>其中：</p>
+<ul>
+<li> $Y_{gk}$ ：基因  $g$  在样本  $k$  中的raw count原始观察计数。</li>
+<li> $N_k$ ：样本  $k$  的总reads count次数。</li>
+<li> $Y_{gr}$ ：基因  $g$  在样本  $r$  中的raw count原始观察计数。</li>
+<li> $N_r$ ：样本  $r$  的总reads count次数。</li>
+</ul>
+<p>这两个值的生物学意义分别如下：</p>
+<ul>
+<li>M值表示待比较组相对于参考组的表达水平变化程度（分母是实验组第g个基因的raw count在总count中占比，分子同理。M值就是实验组第g个基因相对于对照组的变化程度的对数值）。M值的正值表示待比较组的表达水平较高，负值表示待比较组的表达水平较低。</li>
+<li>A值表示第g个基因在两组样本中的平均表达水平。</li>
+</ul>
+<p>在TMM这个归一化方法中，我们主要用到的是M-value。例如，我们现在做样本k对样本r的差异表达分析，那么首先对样本k中的每一个基因g都算一下M-value，并根据edgeR方法推荐的阈值（M值修剪最大和最小的30%，A值修剪最大和最小的5%）对一些偏离较大的基因的M-value做截尾【也就是从M-value列表里删除这个基因的M-value】。剩下的M-value即为trimmed M-value，这些M-value对应的基因构成了集合 <code>G*</code>  （如下图，我们对每个基因的M-value和A-value绘制散点图，如左图所示；trimmed M-value修剪步骤相当于右图中把外面这一圈的基因全都当作差异表达基因、给丢弃了，剩下中间那一圈基因被用来做后面的归一化处理）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241020181856.png" alt="image.png"></p>
+<p>计算TMM回归系数还需要另外一个变量：基因权重 $w^r_{gk}$  。这是raw count的逆方差。<br>$$<br>w^r_{gk}=\frac{N_k-Y_{gk}}{N_kY_{gk}}+\frac{N_r-Y_{gr}}{N_rY_{gr}}<br>$$</p>
+<p>我们将集合 <code>G*</code> 中的M-value进行一个加权平均，得到的结果即为归一化因子TMM的对数（如下列公式所示）。将其进行log2的指数变换，即可得到样本k对样本r的归一化因子TMM。</p>
+<p>$$<br>log_2(TMM^{(r)}<em>k)=\frac{\sum</em>{g\in G*}w^r_{gk}M^r_{gk}}{\sum_{g\in G*}w^r_{gk}}<br>$$</p>
+<h2 id="方法总结与对比"><a href="#方法总结与对比" class="headerlink" title="方法总结与对比"></a>方法总结与对比</h2><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>基本原理</th>
+<th>数学公式</th>
+<th>优点</th>
+<th>缺点</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CPM (Counts Per Million)</td>
+<td>计算每个基因在特定样本中的计数值相对于总计数值的比例</td>
+<td>CPM = Counts for gene / Total counts in library * 1,000,000</td>
+<td>简单易懂，直观表示每个基因的相对丰度</td>
+<td>受到样本间总计数差异的影响，不适用于比较不同样本的表达水平</td>
+<td>用于快速评估样本间特定基因的相对表达水平</td>
+</tr>
+<tr>
+<td>RPKM (Reads Per Kilobase per Million mapped reads)</td>
+<td>计算每千碱基对每百万映射读数</td>
+<td>RPKM = (Number of mapped reads for gene / Length of gene in kilobases) * (Total number of mapped reads in library / 1,000,000)</td>
+<td>能够反映基因大小和表达量，适用于比较基因组大小不同的基因</td>
+<td>需要对基因长度进行标准化，对基因长度分布不均的基因组不适用</td>
+<td>用于基因组大小差异较大的物种或 基因组</td>
+</tr>
+<tr>
+<td>FPKM (Fragments Per Kilobase per Million mapped fragments)</td>
+<td>类似于RPKM，但基于片段而不是读数</td>
+<td>FPKM = (Number of mapped fragments for gene / Length of gene in kilobases) * (Total number of mapped fragments in library / 1,000,000)</td>
+<td>消除了基因大小的影响，更加准确地反映了基因表达量</td>
+<td>同样需要对基因长度进行标准化，对基因长度分布不均的基因组不适用</td>
+<td>与RPKM类似，适 用于基因组大小差异较大的物种或基因组</td>
+</tr>
+<tr>
+<td>TPM (Transcripts Per Million)</td>
+<td>计算每百万转录本的数量</td>
+<td>TPM = (Number of mapped reads for gene / Total number of mapped reads in library) * (Length of gene in kilobases / Total length of all genes in kilobases) * (1,000,000)</td>
+<td>通过转录本数量进行标准化，避免了基因大小的影响，更准确地反映基因表达量</td>
+<td>需要转录本长度信息，对于不完全注释的基因组不适用</td>
+<td>用于转录本数量较多的基因组，特别适用于多转录本基因的表达分析</td>
+</tr>
+<tr>
+<td>TMM (Trimmed Mean of M-values)</td>
+<td>通过去除极端值后计算的平均变异率进行标准化</td>
+<td>不直接给出公式，而是基于M-values的计算，M-value = log2(Count) / Average count in sample</td>
+<td>有效地减少了 极端值的影响，提高了数据的稳健性，适用于多种实验设计</td>
+<td>对于小样本或数据分布不均匀的情况效果可能不佳</td>
+<td>适用于需要标准化测序深度影响的各种RNA-seq实验设计，特别是当样本间存在显著的测序深度差异时</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/10/20/RNA-seq-normalization/" title="RNA-seq数据的归一化">https://wz.anoms.top/2024/10/20/RNA-seq-normalization/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/RNA-seq/" rel="tag"><i class="fa fa-tag"></i> RNA-seq</a>
+              <a href="/tags/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag"><i class="fa fa-tag"></i> 生物信息学</a>
+              <a href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 归一化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/10/11/macOS_installation/" rel="prev" title="教程：在virtualBox中安装macOS虚拟机">
+                  <i class="fa fa-chevron-left"></i> 教程：在virtualBox中安装macOS虚拟机
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
