@@ -14348,4 +14348,63 @@
         <tag>归一化</tag>
       </tags>
   </entry>
+  <entry>
+    <title>tabby和vscode配置跳板机登录</title>
+    <url>/2024/11/01/tabby_vscode_jumping_machine/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+<p>这个问题源于实际需求：如下图，实验室的网络环境造成了内网和公网的隔离，其中计算任务都需要在内网主机1上运行。然而内网主机1不具有公网IP，一旦离开实验室的内网环境（例如断开WIFI回到宿舍），那么就无法访问主机1了。好在内网环境下有跳板机（或称之为gate节点），其拥有公网IP，意味着在实验室外也可以访问。因此，公网环境的PC若想访问内网环境下的主机1，需要以内网主机2为跳板机，先登录内网主机2，再从内网主机2登录主机1。</p>
+<p>然而，每次登录实验室服务器（内网主机1）都需要从内网主机2做跳转，这个过程要登录两次，实在太麻烦。有没有一种工具可以简化这个登陆的过程，实现自动化的跳转登录呢？</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241101152412.png" alt="image.png"></p>
+<p>经过一些资料收集和与同学的交流，大致了解到两种方法可以实现这一需求：①使用Tabby这款命令行工具进行登录，其内置了对跳板机登录的支持；②使用vscode的远程登陆功能，只不过需要进行一些额外的配置。下面我们将依次介绍这两种方法。</p>
+<h2 id="基于Tabby的跳板机登录方法"><a href="#基于Tabby的跳板机登录方法" class="headerlink" title="基于Tabby的跳板机登录方法"></a>基于Tabby的跳板机登录方法</h2><p>Tabby是一款开源的命令行工具（Github链接： <a href="https://github.com/Eugeny/tabby">https://github.com/Eugeny/tabby</a> ），其使用electron技术开发，因此颜值非常高（缺点是略微有点消耗性能，算是高颜值的代价）。在GitHub仓库的<a href="https://github.com/Eugeny/tabby/releases">release页面</a> 上提供了下载链接，可以选择适合自己系统版本的安装包进行下载和安装，安装之后的界面如下。</p>
+<p><img src="https://pic.imgdb.cn/item/67134b29d29ded1a8c27f6c3.png" alt="tabby main window"></p>
+<h3 id="配置跳板机登录"><a href="#配置跳板机登录" class="headerlink" title="配置跳板机登录"></a>配置跳板机登录</h3><p>下面我们来创建连接。创建新连接配置的方法如下图所示，在设置页面的“Profiles&amp;connections”里面点击“+New”即可进入配置界面。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241101160854.png" alt="image.png"></p>
+<p>在Tabby里面，创建需要经过跳板机登陆的远程连接，需要两步。假设我们的跳板机域名是<code>gate.example.com</code>，内网主机的IP地址为 <code>192.168.10.10</code>，下面我们首先进行跳板机的连接。</p>
+<p>如下图，在选择profile template这里，选择SSH connection。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/e8b7c12c6598ebe3fc37e3aa100bbba.png" alt="e8b7c12c6598ebe3fc37e3aa100bbba.png"></p>
+<p>这里设置一个连接名称，简单易记即可。后面要用到。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/dcb21a43b1235b6f3608314a23c02d6.png" alt="dcb21a43b1235b6f3608314a23c02d6.png"></p>
+<p>这个界面继续往下滚动，可以看到更多的设置。在这里配置好跳板机的主机名，设置登陆密码，之后点击保存，即完成了跳板机的设置。可以在连接窗口中连接一下跳板机，测试是否配置成功。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/028d163a1aed9917f01475ce61907e9.png" alt="028d163a1aed9917f01475ce61907e9.png"></p>
+<h3 id="配置内网主机登录"><a href="#配置内网主机登录" class="headerlink" title="配置内网主机登录"></a>配置内网主机登录</h3><p>之后，再创建登录内网服务器的连接。</p>
+<p>我们依然在设置页面的“Profiles&amp;connections”里面点击“+New”，选择SSH连接为模板，进入配置界面。这里我们把新的连接命名为 <code>server host 1</code> ，以便与之前的连接做区分。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/c7750a6d94d72019f10fea209a4d4aa.png" alt="c7750a6d94d72019f10fea209a4d4aa.png"></p>
+<p>下面，我们配置内网服务器的IP等信息。如下图，首先在Connection方式里选择“Jump host”（跳板主机），并在Jump host栏里选择刚刚创建的gate主机。之后，按实际情况配置Host、Port、Username等信息，并设置登陆密码，如此我们就完成了配置。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241101160634.png" alt="image.png"></p>
+<h3 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h3><p>在“Profiles&amp;connections”列表里面选择刚刚配置的连接，点击三角符号即可启动连接。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241101161244.png" alt="image.png"></p>
+<p>连接过程如下。首先，tabby会自动登录到跳板机，屏幕上输出下面这些信息：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1730448911745.png" alt="1730448911745.png"></p>
+<p>随后，tabby会自动的完成从跳板机到内网主机的登录，屏幕输出如下所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1730448988554.png" alt="1730448988554.png"></p>
+<p>tabby还支持通过Jump Host的SFTP传文件，如下图所示。这一功能非常方便，免去了ssh登录的两次scp拷贝文件的麻烦。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1730449063191.png" alt="1730449063191.png"></p>
+<h2 id="基于vscode的跳板机配置"><a href="#基于vscode的跳板机配置" class="headerlink" title="基于vscode的跳板机配置"></a>基于vscode的跳板机配置</h2><blockquote>
+<p>参考： <a href="https://zhuanlan.zhihu.com/p/103578899">《VSCode Remote ssh跳板机配置（windows平台）》 - shsjxzh的文章 - 知乎</a></p>
+</blockquote>
+<p>vscode自身并不支持远程连接，但是vscode插件市场提供了远程登陆的插件，可以帮助我们连接远程服务器（参考博客的往期文章 <a href="https://wz.anoms.top/2023/12/10/vscode%E9%85%8D%E7%BD%AE%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8/?highlight=vscode">《VS Code配置远程服务器插件》</a>）。</p>
+<p>相比于tabby，vscode虽然也支持跳板机登录，但支持的并不是很直白。我们需要手动修改一些配置文件，才能实现跳板机登录。如下图，首先我们打开vscode远程登陆的配置文件。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241101194026.png" alt="image.png"></p>
+<p>打开以后，我们在文件里添加下面这些内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Host JumpMachine</span><br><span class="line">    # 跳板机的域名或ip地址</span><br><span class="line">    HostName gate.example.com</span><br><span class="line">    # 你跳板机的用户名</span><br><span class="line">    User yourname</span><br><span class="line">    # 跳板机登录端口 </span><br><span class="line">    Port 22</span><br><span class="line"></span><br><span class="line">Host TargetMachine</span><br><span class="line">    # 目标机的ip地址</span><br><span class="line">    HostName 192.168.10.10</span><br><span class="line">    # 你目标机的用户名</span><br><span class="line">    User yourname</span><br><span class="line">    # 目标机登录端口 </span><br><span class="line">    Port 22</span><br><span class="line">    ProxyCommand ssh -W %h:%p JumpMachine</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1730463066749.png" alt="1730463066749.png"></p>
+<p>保存以后，点刷新，左侧远程连接的列表里面就会显示出JumpMachine、TargetMachine的信息。要连接时，点击TargetMachine即可实现跳板机连接内网主机。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1730464318846.png" alt="1730464318846.png"></p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>ssh</tag>
+        <tag>vscode</tag>
+        <tag>tabby</tag>
+        <tag>跳板机登录</tag>
+      </tags>
+  </entry>
 </search>
