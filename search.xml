@@ -14524,4 +14524,251 @@
         <tag>J.D万斯</tag>
       </tags>
   </entry>
+  <entry>
+    <title>计算生物学部分知识点整理</title>
+    <url>/2024/11/24/ComputationalBiology_TakeHomeMessage_20241124/</url>
+    <content><![CDATA[<p>来自最近的助教课备课笔记。主要涉及两部分内容：生物节律检测，以及系统发育分析（包括序列比对和建树算法）。</p>
+<span id="more"></span>
+
+
+<h2 id="一、生物节律"><a href="#一、生物节律" class="headerlink" title="一、生物节律"></a>一、生物节律</h2><h3 id="（一）生物节律的研究背景"><a href="#（一）生物节律的研究背景" class="headerlink" title="（一）生物节律的研究背景"></a>（一）生物节律的研究背景</h3><p>昼夜节律（Circadian Rhythms）指的是身体在 <strong>24小时</strong> 内经历的身体、心理和行为变化的自然循环。</p>
+<ul>
+<li>它是一种 <strong>内源性的节律</strong> ，会影响睡眠、体温、激素、食欲和其他身体功能。</li>
+<li>昼夜节律主要受光和暗的影响，并由大脑中部的一个小区域控制。</li>
+<li>昼夜节律异常可能与肥胖、糖尿病、抑郁症、双相情感障碍、季节性情感障碍和失眠等睡眠障碍有关。</li>
+<li>昼夜节律有时被称为“生物钟”</li>
+</ul>
+<p><strong>2017年的诺贝尔生理学和医学奖授予了Jeffrey C. Hall、Michael Rosbash和Michael W. Young，以表彰他们对生物昼夜节律分子机制的研究</strong> 。1984年，Jeffrey和Michael合作克隆了控制果蝇昼夜节律的基因，即period基因（per），其编码的PER蛋白水平在夜晚积累，在白天降解，呈现出24小时的周期性变化。1994年，Michael W. Young发现了另一个与昼夜节律相关的基因，即timeless基因（tim），其编码的TIM蛋白与PER蛋白相互作用，共同调节生物钟。</p>
+<p>另外这里分享一篇论文： </p>
+<blockquote>
+<p>Young, Michael W. “Time Travels: A 40-Year Journey from Drosophila’s Clock Mutants to Human Circadian Disorders (Nobel Lecture).” <em>Angewandte Chemie (International ed. in English)</em> vol. 57,36 (2018): 11532-11539. <a href="https://onlinelibrary.wiley.com/doi/10.1002/anie.201803337">doi:10.1002/anie.201803337</a></p>
+</blockquote>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124144859.png" alt="image.png"></p>
+<p>这篇文章（Michael Young等），主要讲了果蝇和人类当中的节律调控系统，以及隐花色素（Cry）上的突变与睡眠周期障碍的关联。</p>
+<p>首先是Michael Young等人最初在果蝇里面筛选到了几个重要的突变体：Period（PER）、Timeless（TIM）、dClock（dCLK）、Cycle（CYC），其中在全暗环境下，最初缺乏PER/TIM二聚体，此时dCLK和CYC会发挥转录因子活性，驱动PER和TIM表达；随着时间积累，PER/TIM二聚体，反过来抑制dCLK和CYC活性。随着PER/TIM水平降低（被降解），dCLK和CYC的活性会再次出现，如此往复形成循环（A图）。</p>
+<p>在果蝇当中，还存在两个重要的调控蛋白：Doubletime（DBT）和Cryptochrome（隐花色素，CRY）。前者抑制单体状态下的PER，导致周期延长；后者在有光照的条件下抑制TIM，同样导致周期延长（B图）。</p>
+<p>在人类当中，没有TIM蛋白，隐花色素CRY此时充当了TIM的角色（而失去了光感受器的功能）。其他蛋白则如常（C图）。</p>
+<p>跨时区旅行“倒时差”行为促进了不同器官的节律周期非同步调相的研究。而对于一种睡眠障碍（Delayed sleep phase disorder，DSPD）的家系研究，在CRY基因上定位到了几个突变，影响了生物时钟节律的调整与同步。</p>
+<h3 id="（二）检测生物节律信号的数学原理"><a href="#（二）检测生物节律信号的数学原理" class="headerlink" title="（二）检测生物节律信号的数学原理"></a>（二）检测生物节律信号的数学原理</h3><h4 id="谐波回归-Harmonic-Regression"><a href="#谐波回归-Harmonic-Regression" class="headerlink" title="谐波回归(Harmonic Regression)"></a>谐波回归(Harmonic Regression)</h4><p>谐波回归(Harmonic Regression)是一种统计技术，通过结合周期函数（特别是正弦和余弦项）来扩展传统回归分析，以对时间序列数据中的周期性模式进行建模。通过最小化下列公式的AICc值，从而实现参数的最优化。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124184550.png" alt="image.png"></p>
+<p>优点</p>
+<ul>
+<li>允许任何长度的周期</li>
+<li>对于复杂的时间序列数据，可以纳入多个不同频率的谐波项以更好地拟合</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>假设周期固定，可能并不适用于所有数据集。</li>
+<li>此外，如果包含太多谐波项，谐波回归可能会变得过于复杂，导致过度拟合</li>
+</ul>
+<h4 id="JTK-cycle"><a href="#JTK-cycle" class="headerlink" title="JTK_cycle"></a>JTK_cycle</h4><p>JTK_cycle是Karl Kornacker和John Hogensch教授合作开发的非参数算法。其目的是识别大型基因组规模数据集中的节律成分，并估计其周期长度、相位和振幅。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124184729.png" alt="image.png"></p>
+<p>通过计算时间序列数据与不同周期长度和相位的余弦波形之间的相关性，来判断是否存在周期性变化以及周期性变化的参数。使用Kendall’s S 统计量进行非参数的统计检验</p>
+<p>优点：可以区分振幅较小的周期模式，特异性和灵敏性高，对异常值的容抵抗力高；在大数据计算中，速度比较快。</p>
+<p>缺点：余弦拟合类算法的固有问题（不能识别出非固定周期的信号；较难识别非正弦波信号）；</p>
+<p>另外可以参考以下论文和代码实现：</p>
+<blockquote>
+<p>Hughes ME, et al. J Biol Rhythms(2010).doi:10.1177/0748730410379711<br><a href="https://openwetware.org/wiki/HughesLab:JTK_Cycle">https://openwetware.org/wiki/HughesLab:JTK_Cycle</a><br><a href="https://openwetware.org/wiki/File:JTKversion3.zip">https://openwetware.org/wiki/File:JTKversion3.zip</a></p>
+</blockquote>
+<h4 id="RAIN算法"><a href="#RAIN算法" class="headerlink" title="RAIN算法"></a>RAIN算法</h4><p>RAIN（Rhythmicity Analysis Incorporating Non-parametric Methods）也是一种非参数检验的方法，但原理和JTK_Cycle有所不同，它是通过按时间点（如昼夜节律或时间段）对测量值进行分组来工作。用于统计检验的是数据点的rank而不是value，并将各组数据点与上升模式和下降模式的替代假设（ $H_A$ ）进行比较。只有属于相同模式（上升或下降）的群体才会相互比较。这拓宽了对波形的许多限制，允许检测例如“鱼翅”波等不同波形。通过循环重新排序组，并通过进一步改变伞形峰位置，可以进一步测试不对称性和相位。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124185107.png" alt="image.png"></p>
+<p>另外参考：</p>
+<blockquote>
+<p><a href="https://rdrr.io/bioc/rain/">https://rdrr.io/bioc/rain/</a><br>Thaben PF, Westermark PO. Journal of Biological Rhythms(2014). doi:10.1177/0748730414553029</p>
+</blockquote>
+<h4 id="ARSER"><a href="#ARSER" class="headerlink" title="ARSER"></a>ARSER</h4><p>ARSER是一种基于自回归谱（autoregressive spectral, AR）的分析方法。在自回归模型中，我们基于目标变量历史数据的组合对目标变量进行预测。所谓自回归，“自”字即表明其是对变量自身进行的回归。其使用多个历史数据去预测当前数据，Φ1，Φ2，……的不同组合会造就不同的周期模式。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124185424.png" alt="image.png"></p>
+<p>另外参考：</p>
+<blockquote>
+<p>Rendong Yang, Zhen Su. Bioinformatics(2010). doi:10.1093/bioinformatics/btq189<br><a href="https://otexts.com/fppcn/AR.html">https://otexts.com/fppcn/AR.html</a></p>
+</blockquote>
+<h4 id="傅里叶变换和小波变换（Fourier-transform-and-Wavelet-transform）"><a href="#傅里叶变换和小波变换（Fourier-transform-and-Wavelet-transform）" class="headerlink" title="傅里叶变换和小波变换（Fourier transform and Wavelet transform）"></a>傅里叶变换和小波变换（Fourier transform and Wavelet transform）</h4><p>如图。</p>
+<p>傅里叶变换是将信号从时域到频域的变换，其假设信号是由不同周期的正弦波叠加形成。</p>
+<p>由于日常生活中的信号并不是一直光滑的，而且奇异点是平凡的，傅立叶在奇异点的表现很糟糕（会产生Gibbs效应，即在信号突变的位置出现明显的振荡），因此小波变换应运而生。所谓小波（wavelet）指的是具有有限的持续时间和突变的频率和振幅的波，其有许多不同种类，可以用于对不同类型的信号进行小波变换。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124185650.png" alt="image.png"></p>
+<p>另外参考：</p>
+<blockquote>
+<p><a href="https://zhuanlan.zhihu.com/p/19763358">https://zhuanlan.zhihu.com/p/19763358</a><br><a href="https://www.cnblogs.com/jfdwd/p/9249850.html">https://www.cnblogs.com/jfdwd/p/9249850.html</a></p>
+</blockquote>
+<h4 id="MetaCycle：一个用于检测生物节律信号的R包"><a href="#MetaCycle：一个用于检测生物节律信号的R包" class="headerlink" title="MetaCycle：一个用于检测生物节律信号的R包"></a>MetaCycle：一个用于检测生物节律信号的R包</h4><p>MetaCycle包主要用于从大规模时间序列数据中检测节律信号。根据每个时间序列数据的特征，MetaCycle内置了ARSER（ARS）、JTK_CYCLE（JTK）和Lomb Scargle（LS）等算法，进行周期性信号检测。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124192611.png" alt="image.png"></p>
+<p>另外参考：</p>
+<blockquote>
+<p><a href="https://rdrr.io/cran/MetaCycle/f/vignettes/implementation.Rmd">https://rdrr.io/cran/MetaCycle/f/vignettes/implementation.Rmd</a><br><a href="https://github.com/gangwug/MetaCycle">https://github.com/gangwug/MetaCycle</a></p>
+</blockquote>
+<h2 id="二、系统发育分析与建树算法"><a href="#二、系统发育分析与建树算法" class="headerlink" title="二、系统发育分析与建树算法"></a>二、系统发育分析与建树算法</h2><p>系统发育进化树 (Phylogenetic tree)：一般也叫系统进化树，进化树。它可以利用树状分支图形来表示各物种或基因间的亲缘关系。</p>
+<p>分支系统发育分析 (Molecular phylogenetic analysis)：是用来研究物种或序列进化和系统分类的一种方法。一般研究对象是碱基序列或氨基酸序列，通过数理统计算法来计算生物间进化关系。最后，根据计算结果，可视化为系统进化树。</p>
+<p>系统发育分析的大致流程一般如下：</p>
+<ul>
+<li>(1) 选择需要分析的序列（selection of sequences for analysis）</li>
+<li>(2) 多重序列比对（multiple sequence alignment，MSA）</li>
+<li>(3) 进化模型的确定（specification of a statistical model of evolution）</li>
+<li>(4) 构建系统发育树（tree building）<ul>
+<li>基于距离的建树方法（Distance-based method）：e.g. UPGMA, NJ</li>
+<li>最大简约法（Maximum parsimony method）</li>
+<li>最大似然法（Maximum likelihood method）</li>
+<li>贝叶斯方法（Bayesian inference method）</li>
+</ul>
+</li>
+<li>(5) 系统发育树的评估（tree evaluation）与下游分析</li>
+</ul>
+<h3 id="（一）两条序列之间的比对"><a href="#（一）两条序列之间的比对" class="headerlink" title="（一）两条序列之间的比对"></a>（一）两条序列之间的比对</h3><p>序列比对大致分为下面几种：</p>
+<ul>
+<li>全局比对（Global alignment）：<ul>
+<li>序列全长的比较，旨在揭示序列间的整体相似性和差异性。</li>
+<li>如：两个基因的比对。</li>
+</ul>
+</li>
+<li>半全局比对（Semi-global alignment）：<ul>
+<li>用一条短序列比对另一条长序列。</li>
+<li>如：数据库搜索。</li>
+</ul>
+</li>
+<li>局部比对（Local alignment）：<ul>
+<li>寻找整条序列上比对最好（相似度最高）的局部区域。</li>
+<li>如：两条基因组之间的比对。</li>
+</ul>
+</li>
+</ul>
+<p>动态规划法是序列比对的常用方法，其大致原理如下：</p>
+<p>第一步，打分。将两条序列分别写在打分矩阵的横行和纵列上。左上角单元格的初始值赋值为0，从这个单元格开始，基于给定的打分系统，向右、下、右下三个方向进行打分。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124194222.png" alt="image.png"></p>
+<p>第二步，回溯。从右下的单元格开始往左上回溯，回溯的方向取决于当前单元格中的score来自哪一个方向（例如，如果当前单元格中的分数是从左上方单元格+1 match来的，则回溯方向是左上；如果当前单元格中的分数是从左侧单元格+1 gap来的，则回溯方向是左。当分数有多个来源时，代表存在多条可行的回溯路径）。根据回溯路径，我们就可以写出序列比对的结果。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124194158.png" alt="image.png"></p>
+<p>用于序列比对的动态规划算法包括Needleman and Wunsch algorithm和Smith and Waterman algorithm等，其中前者用于全局比对，后者用于局部比对。二者的差异主要在于，局部比对的打分系统不允许负值分数的存在；如果一个单元格的分数从三个方向上看都小于0，则将这个单元格的分数赋值为0。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124194204.png" alt="image.png"></p>
+<p>此外，针对序列比对时空位出现位置不连续的问题，有两个tricky的手段：仿射空位罚分和Gotoh算法，其具体原理如下图所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124195127.png" alt="image.png"></p>
+<h3 id="（二）多重序列比对"><a href="#（二）多重序列比对" class="headerlink" title="（二）多重序列比对"></a>（二）多重序列比对</h3><p>最简单粗暴的多重序列比对方法就是直接比对，构建一个高维的打分矩阵，然后用动态规划的思路去寻找最优的比对路径。然而这种方法的缺点在于时间复杂度过高 （ $O(2^NL^N)$  ，$N$ 是序列数量，$L$ 是平均序列长度，下同 ）。因此，需要一些更高效的方法。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124200651.png" alt="image.png"></p>
+<p>ClustalW等软件采用了一种渐进式（“progressive”）的比对策略，首先在序列之间进行两两比对并构建进化距离矩阵，这个进化距离矩阵将用于构建一颗前导树（guide tree），之后ClustalW会基于这棵先导树进行多重序列比对结果的构建。时间复杂度更低，为 $O(N^4L^2)$ 。然而，渐进式比对策略具有一些局限性，例如一旦比对过程中出现错误，就无法纠正。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124200825.png" alt="image.png"></p>
+<p>MAFFT等软件则更进一步，采用了一种迭代策略进行更精细的比对方法。首先，基于渐进式的比对策略创建一个初始比对，然后通过逐轮迭代对其进行改进，使用一些目标函数来最大化分数。渐进式比对策略一旦比对过程中出现错误，就无法纠正，而迭代策略可以很好的克服这一点。目前MAFFT是最常用的多重序列比对软件之一。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124201157.png" alt="image.png"></p>
+<h3 id="（三）建树算法"><a href="#（三）建树算法" class="headerlink" title="（三）建树算法"></a>（三）建树算法</h3><h4 id="UPGMA法"><a href="#UPGMA法" class="headerlink" title="UPGMA法"></a>UPGMA法</h4><p>UPGMA=“Unweighted pair group method with arithmetic mean”，这是一种基于进化距离的建树方法。其计算原理和过程如下：</p>
+<ul>
+<li>①以已求得的距离系数,所有比较的分类单元的成对距离构成一个 <code>t×t</code>方阵,即建立一个距离矩阵M。</li>
+<li>②对于一个给定的距离矩阵,寻求最小距离值<code>Dpq</code>。</li>
+<li>③定义类群p和q之间的分支深度<code>Lpq=Dpq/2</code>。</li>
+<li>④若p和q是最后一个类群,侧聚类过程完成,否侧合并p和q成一个新类群r。</li>
+<li>⑤定义并计算新类群r到其他各类群 <code>i(i≠p和q)</code> 的距离<code>Dir=(Dpi+Dqi)/2</code>。 </li>
+<li>⑥回到第一步,在矩阵中消除p和q,加入新类群r,矩阵减少一阶,重复进行直至达到最后归群。</li>
+</ul>
+<p>UPGMA法比较直观和简单,运算速度快,应用很广。它的缺点在于当分子进化速率差异较大时,在建树过程会引入系统误差。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124203611.png" alt="image.png"></p>
+<h4 id="NJ法"><a href="#NJ法" class="headerlink" title="NJ法"></a>NJ法</h4><p>NJ=“Neighbor-joining”，同样也是一种基于进化距离的建树方法。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124203950.png" alt="image.png"></p>
+<p>NJ法的具体计算过程如下图所示。相比于UPGMA法，NJ法主要有两点不同：</p>
+<ul>
+<li>（1）NJ法是从一棵星型树开始，逐步添加中间节点（自顶向下），而UPGMA法是从单独的叶子节点开始逐步构树（自底向上）；</li>
+<li>（2）在计算过程中，使用校正后的进化距离矩阵 $M$ 代替原始的进化距离矩阵，其中 <code>M(i,j)=d(i,j)-(r(i)+r(j))/(n-2)</code> 这个步骤是在矫正不同分支上进化速率的误差。因此，对于亲缘关系较远的物种，NJ法比UPGMA法的适应性更好。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124204111.png" alt="image.png"></p>
+<h4 id="最大简约法"><a href="#最大简约法" class="headerlink" title="最大简约法"></a>最大简约法</h4><p>最大简约背后的主要思想是，最好的树是分支长度尽可能短的树（Czelusniak等人，1990）（这里的分支长度可以用突变数来表示）。</p>
+<p>根据最大简约理论，用较少的变化来解释一组序列的进化方式比更复杂的分子进化解释更可取。因此，我们寻求对观测数据的最简约的解释。</p>
+<p>最大简约法的原理就是尽可能地穷举所有可能的树形，并计算树上的总突变数。总突变数最少的树形将被看作是最优树形。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124204542.png" alt="image.png"></p>
+<p>缺点：长枝吸引问题。由于最大简约法倾向于选择碱基替换数最少的进化树结构，就会错误的把一些长枝分类到外群上，或者错误将趋同/平行进化推断为同源。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124204645.png" alt="image.png"></p>
+<p>对于最大简约法，也有一些tricky的手段以加快计算速度，如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124204943.png" alt="image.png"></p>
+<h4 id="最大似然法"><a href="#最大似然法" class="headerlink" title="最大似然法"></a>最大似然法</h4><p>如图。</p>
+<p>这种方法基于概率模型进行推断，计算量最大，但也最为精准。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124204905.png" alt="image.png"></p>
+<p>步骤如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241124204910.png" alt="image.png"></p>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>生物信息学</tag>
+        <tag>生物节律</tag>
+        <tag>序列比对</tag>
+        <tag>建树算法</tag>
+        <tag>系统发育分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL数据损坏修复的一些踩坑和探索</title>
+    <url>/2024/11/24/MySQL_data_crash_repair/</url>
+    <content><![CDATA[<p>事情是这样的。本周一，所里断电进行供电系统维护，电力恢复后服务器上的MySQL数据出现了损坏，无法正常登录。花了很长时间解决这个问题，下面是踩坑记录。</p>
+<span id="more"></span>
+
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>断电重启后MySQL无法登录。</p>
+<p>首先，MySQL的docker容器运行状况如下。其状态为 <code>Exited(255)</code> ，且当我使用 <code>docker start mysql_zhangwanyu</code> 启动以后，再次登录MySQL，会经历 ”成功登录→连接数据库→进程崩溃闪退“ 的循环。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [zhangwanyu@lih-svr01]~$ docker ps --all</span><br><span class="line">CONTAINER ID   IMAGE       COMMAND                  CREATED        STATUS                     PORTS                                                  NAMES</span><br><span class="line">5e43b24b4376   mysql:5.7   &quot;docker-entrypoint.s…&quot;   2 months ago   Exited (255) 3 hours ago   0.0.0.0:3306-&gt;3306/tcp, :::3306-&gt;3306/tcp, 33060/tcp   mysql_zhangwanyu</span><br><span class="line">(base) [zhangwanyu@lih-svr01]~$ docker exec -it mysql bash</span><br><span class="line">Error response from daemon: No such container: mysql</span><br><span class="line">(base) [zhangwanyu@lih-svr01]~$ docker exec -it mysql_zhangwanyu bash</span><br><span class="line">Error response from daemon: container 5e43b24b43760a4b6f268a6eda048dc6225a74d1e4aab78d8835273a836ab49a is not running</span><br><span class="line">(base) [zhangwanyu@lih-svr01]~$</span><br></pre></td></tr></table></figure>
+
+
+<p>使用 <code>docker logs</code> 指令查询docker容器的运行日志，其部分输出如下（部分敏感信息已用 <code>*</code> 星号打码）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2024-11-18T04:50:57.454136Z 0 [Note] InnoDB: Buffer pool(s) load completed at 241118  4:50:57</span><br><span class="line">2024-11-18T04:51:05.361318Z 3 [ERROR] InnoDB: Unable to lock ./********/*******.ibd error: 11</span><br><span class="line">2024-11-18T04:51:05.361329Z 3 [Note] InnoDB: Check that you do not already have another mysqld process using the same InnoDB data or log files.</span><br><span class="line">2024-11-18 04:51:05 0x7f1284063700  InnoDB: Assertion failure in thread 139717501138688 in file fil0fil.cc line 922</span><br><span class="line">InnoDB: Failing assertion: success</span><br><span class="line">InnoDB: We intentionally generate a memory trap.</span><br><span class="line">InnoDB: Submit a detailed bug report to http://bugs.mysql.com.</span><br><span class="line">InnoDB: If you get repeated assertion failures or crashes, even</span><br><span class="line">InnoDB: immediately after the mysqld startup, there may be</span><br><span class="line">InnoDB: corruption in the InnoDB tablespace. Please refer to</span><br><span class="line">InnoDB: http://dev.mysql.com/doc/refman/5.7/en/forcing-innodb-recovery.html</span><br><span class="line">InnoDB: about forcing recovery.</span><br></pre></td></tr></table></figure>
+
+<p>这表明在上次服务器或容器断电后，MySQL 数据库并未正常关闭，导致一些文件损坏， InnoDB 引擎需要进行崩溃恢复。如果恢复操作遇到问题或失败，可能会导致容器崩溃。</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>关键点有两个：</p>
+<ol>
+<li>使用innodb_force_recovery参数进入恢复模式</li>
+<li>从文件系统底层出发直接删除损坏的文件，然后再次从头构建数据表</li>
+</ol>
+<h3 id="（一）使用-innodb-force-recovery参数进入恢复模式"><a href="#（一）使用-innodb-force-recovery参数进入恢复模式" class="headerlink" title="（一）使用 innodb_force_recovery参数进入恢复模式"></a>（一）使用 <code>innodb_force_recovery</code>参数进入恢复模式</h3><p>MySQL的 <code>innodb_force_recovery</code> 参数有6个不同的级别，每个级别代表了不同程度的恢复操作。这些级别用于在MySQL数据库遇到严重的InnoDB表空间损坏或崩溃时进行数据恢复。每个级别逐步增加了恢复的力度和数据的保护措施。</p>
+<p>不同level的含义可以参考这个网页： <a href="https://dev.mysql.com/doc/refman/8.4/en/forcing-innodb-recovery.html">https://dev.mysql.com/doc/refman/8.4/en/forcing-innodb-recovery.html</a> 。以下是每个级别的详细说明及其使用场景：</p>
+<p><code>innodb_force_recovery=1</code>（跳过故障页清理）</p>
+<ul>
+<li><strong>描述</strong>：禁用后台的 <em>purge</em> 线程（负责删除已经提交的事务的undo日志）。</li>
+<li><strong>使用场景</strong>：当数据库在崩溃恢复过程中出现问题或不能正常启动时，可以尝试使用该级别来跳过数据清理的步骤。</li>
+<li><strong>风险</strong>：此级别对数据完整性的影响最小，通常是数据恢复的第一步。</li>
+</ul>
+<p><code>innodb_force_recovery=2</code>（跳过插入缓冲和合并）</p>
+<ul>
+<li><strong>描述</strong>：除了级别1的动作外，还禁用插入缓冲（insert buffer）和二次写（doublewrite）。</li>
+<li><strong>使用场景</strong>：当数据库在启动时因插入缓冲或合并操作出错而崩溃，可以使用此级别来绕过这些操作。</li>
+<li><strong>风险</strong>：该级别对数据库数据安全的影响较小，但如果数据有缺失，可能不会立即发现。</li>
+</ul>
+<p><code>innodb_force_recovery=3</code>（禁用崩溃恢复）</p>
+<ul>
+<li><strong>描述</strong>：进一步限制恢复操作，不执行崩溃恢复过程。</li>
+<li><strong>使用场景</strong>：用于无法通过级别1和2恢复的情况，避免数据在崩溃恢复过程中因损坏数据页而导致服务器崩溃。</li>
+<li><strong>风险</strong>：数据库只能以只读模式运行，数据一致性可能受到影响。</li>
+</ul>
+<p><code>innodb_force_recovery=4</code>（跳过重做日志应用）</p>
+<ul>
+<li><strong>描述</strong>：跳过事务日志的回放，即不应用重做日志来恢复数据。</li>
+<li><strong>使用场景</strong>：适用于数据页可能有损坏、回放重做日志会导致崩溃的情况。</li>
+<li><strong>风险</strong>：不执行重做日志意味着有未提交的事务数据可能丢失，但允许对数据库进行只读访问。</li>
+</ul>
+<p><code>innodb_force_recovery=5</code>（跳过未提交事务的回滚）</p>
+<ul>
+<li><strong>描述</strong>：不回滚未提交的事务，防止崩溃恢复时处理损坏的undo日志。</li>
+<li><strong>使用场景</strong>：适用于回滚未提交事务会导致崩溃的情况，可以用于数据导出或备份。</li>
+<li><strong>风险</strong>：使用此级别可能会导致数据库中有不一致的数据，因为未提交事务不会被回滚。</li>
+</ul>
+<p><code>innodb_force_recovery=6</code>（禁用所有的InnoDB崩溃恢复机制）</p>
+<ul>
+<li><strong>描述</strong>：跳过所有的InnoDB崩溃恢复过程，包括检查损坏的数据页。</li>
+<li><strong>使用场景</strong>：这是最高级别的恢复方式，通常只在其他级别无法恢复数据库时使用。此时数据库可以进行只读访问。</li>
+<li><strong>风险</strong>：这个级别风险最大，数据库中可能有数据丢失或不一致的情况。此模式下仅建议用于导出数据以进行备份或迁移，随后应重建数据库。</li>
+</ul>
+<p><code>innodb_force_recovery</code> 参数的级别是逐渐递增的，级别越高，对数据的一致性和完整性的影响越大。通常从级别1开始尝试，如果不能解决问题，再逐步增加级别。应注意，在较高级别（如4、5、6）下，数据库只能进行只读访问，修改数据可能会导致更多的问题。因此，在这些级别下通常建议导出数据，备份后重建数据库。</p>
+<p>如果是docker启动，则<code>innodb_force_recovery</code> 参数可以直接传递给启动脚本。例如启动脚本可以改成下面这样（加上参数 <code>--innodb_force_recovery=4</code> 指定进入level4的恢复模式。参数 <code>-v</code> 设置了容器与宿主机的共享目录的挂载路径。参数 <code>MYSQL_ROOT_PASSWORD</code> 指定MySQL的登陆密码，可以根据情况自行修改）。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">docker run -p 3306:3306 --name mysql_zhangwanyu_recovery \</span><br><span class="line">-v /home/zhangwanyu/var/mysql/log:/var/log/mysql \</span><br><span class="line">-v /home/zhangwanyu/var/mysql/data:/var/lib/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=123456 \</span><br><span class="line">-u $(id -u):$(id -g) \</span><br><span class="line">-d mysql:5.7 \</span><br><span class="line">--innodb_force_recovery=4</span><br></pre></td></tr></table></figure>
+
+<p>我尝试了 <code>--innodb_force_recovery</code> 的1到6的取值，最后发现只有level4以上的级别才能保证MySQL启动后不崩溃。考虑到level越高，功能限制就越多，因此最后我选择了level4启动。</p>
+<p>然后就是，恢复模式并非长久之计，最好能够导出数据，然后在新环境下重建MySQL数据表。下面是导出数据的指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mysqldump -u root -p --all-databases &gt; all_databases_backup.sql</span><br></pre></td></tr></table></figure>
+
+<h3 id="二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件"><a href="#二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件" class="headerlink" title="(二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件"></a>(二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件</h3><p>假设，我的数据表如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">+----------------------+</span><br><span class="line">| Tables_in_model_data |</span><br><span class="line">+----------------------+</span><br><span class="line">| information_tab1     |</span><br><span class="line">| information_tab2     |</span><br><span class="line">| information_tab3     |</span><br><span class="line">+----------------------+</span><br></pre></td></tr></table></figure>
+
+<p>要判断哪一个表损坏，可以依次尝试对这些表中的数据进行query操作 （<code>select * from information_tab1 limit 10</code> ，另外几张表以此类推）。一旦在query某一张表的过程中MySQL崩溃，基本就可以确定是这张表的文件损坏了。</p>
+<p>例如，如果其中 <code>information_tab3</code> 损坏，无法select，也无法drop（<code>DROP TABLE information_tab3;</code> 提示 <code>ERROR 1051 (42S02): Unknown table &#39;model_data.information_tab3&#39;</code> ）。此时，我们可以从文件系统定位到上述数据表所在位置，即 <code>/var/lib/mysql/&lt;databasename&gt;/information_tab3.frm</code> 和 <code>/var/lib/mysql/&lt;databasename&gt;/information_tab3.ibd</code> ：</p>
+<p>删除上述文件，然后进入MySQL，一切就恢复正常了。至于被物理删除的那个表，需要再重新创建和写入一下。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux运维</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
 </search>

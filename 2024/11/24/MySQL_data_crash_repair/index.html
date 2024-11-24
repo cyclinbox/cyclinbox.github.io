@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="事情是这样的。本周一，所里断电进行供电系统维护，电力恢复后服务器上的MySQL数据出现了损坏，无法正常登录。花了很长时间解决这个问题，下面是踩坑记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL数据损坏修复的一些踩坑和探索">
+<meta property="og:url" content="https://wz.anoms.top/2024/11/24/MySQL_data_crash_repair/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="事情是这样的。本周一，所里断电进行供电系统维护，电力恢复后服务器上的MySQL数据出现了损坏，无法正常登录。花了很长时间解决这个问题，下面是踩坑记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-24T11:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-24T14:02:05.951Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="Linux运维">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/11/24/MySQL_data_crash_repair/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/11/24/MySQL_data_crash_repair/","path":"2024/11/24/MySQL_data_crash_repair/","title":"MySQL数据损坏修复的一些踩坑和探索"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MySQL数据损坏修复的一些踩坑和探索 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E4%BD%BF%E7%94%A8-innodb-force-recovery%E5%8F%82%E6%95%B0%E8%BF%9B%E5%85%A5%E6%81%A2%E5%A4%8D%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">（一）使用 innodb_force_recovery参数进入恢复模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%EF%BC%89%E5%A6%82%E6%9E%9C%E6%98%AF%E6%9F%90%E4%B8%AA%E6%95%B0%E6%8D%AE%E8%A1%A8%E6%8D%9F%E5%9D%8F%E4%B8%94%E6%97%A0%E6%B3%95%E6%81%A2%E5%A4%8D%EF%BC%8C%E5%88%99%E4%BB%8E%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%BA%95%E5%B1%82%E5%87%BA%E5%8F%91%E7%9B%B4%E6%8E%A5%E5%88%A0%E6%96%87%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text">(二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">150</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">248</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/11/24/MySQL_data_crash_repair/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MySQL数据损坏修复的一些踩坑和探索 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL数据损坏修复的一些踩坑和探索
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-11-24 19:00:00 / 修改时间：22:02:05" itemprop="dateCreated datePublished" datetime="2024-11-24T19:00:00+08:00">2024-11-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>事情是这样的。本周一，所里断电进行供电系统维护，电力恢复后服务器上的MySQL数据出现了损坏，无法正常登录。花了很长时间解决这个问题，下面是踩坑记录。</p>
+<span id="more"></span>
+
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>断电重启后MySQL无法登录。</p>
+<p>首先，MySQL的docker容器运行状况如下。其状态为 <code>Exited(255)</code> ，且当我使用 <code>docker start mysql_zhangwanyu</code> 启动以后，再次登录MySQL，会经历 ”成功登录→连接数据库→进程崩溃闪退“ 的循环。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(base) [zhangwanyu@lih-svr01]~$ docker ps --all</span><br><span class="line">CONTAINER ID   IMAGE       COMMAND                  CREATED        STATUS                     PORTS                                                  NAMES</span><br><span class="line">5e43b24b4376   mysql:5.7   &quot;docker-entrypoint.s…&quot;   2 months ago   Exited (255) 3 hours ago   0.0.0.0:3306-&gt;3306/tcp, :::3306-&gt;3306/tcp, 33060/tcp   mysql_zhangwanyu</span><br><span class="line">(base) [zhangwanyu@lih-svr01]~$ docker exec -it mysql bash</span><br><span class="line">Error response from daemon: No such container: mysql</span><br><span class="line">(base) [zhangwanyu@lih-svr01]~$ docker exec -it mysql_zhangwanyu bash</span><br><span class="line">Error response from daemon: container 5e43b24b43760a4b6f268a6eda048dc6225a74d1e4aab78d8835273a836ab49a is not running</span><br><span class="line">(base) [zhangwanyu@lih-svr01]~$</span><br></pre></td></tr></table></figure>
+
+
+<p>使用 <code>docker logs</code> 指令查询docker容器的运行日志，其部分输出如下（部分敏感信息已用 <code>*</code> 星号打码）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">2024-11-18T04:50:57.454136Z 0 [Note] InnoDB: Buffer pool(s) load completed at 241118  4:50:57</span><br><span class="line">2024-11-18T04:51:05.361318Z 3 [ERROR] InnoDB: Unable to lock ./********/*******.ibd error: 11</span><br><span class="line">2024-11-18T04:51:05.361329Z 3 [Note] InnoDB: Check that you do not already have another mysqld process using the same InnoDB data or log files.</span><br><span class="line">2024-11-18 04:51:05 0x7f1284063700  InnoDB: Assertion failure in thread 139717501138688 in file fil0fil.cc line 922</span><br><span class="line">InnoDB: Failing assertion: success</span><br><span class="line">InnoDB: We intentionally generate a memory trap.</span><br><span class="line">InnoDB: Submit a detailed bug report to http://bugs.mysql.com.</span><br><span class="line">InnoDB: If you get repeated assertion failures or crashes, even</span><br><span class="line">InnoDB: immediately after the mysqld startup, there may be</span><br><span class="line">InnoDB: corruption in the InnoDB tablespace. Please refer to</span><br><span class="line">InnoDB: http://dev.mysql.com/doc/refman/5.7/en/forcing-innodb-recovery.html</span><br><span class="line">InnoDB: about forcing recovery.</span><br></pre></td></tr></table></figure>
+
+<p>这表明在上次服务器或容器断电后，MySQL 数据库并未正常关闭，导致一些文件损坏， InnoDB 引擎需要进行崩溃恢复。如果恢复操作遇到问题或失败，可能会导致容器崩溃。</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>关键点有两个：</p>
+<ol>
+<li>使用innodb_force_recovery参数进入恢复模式</li>
+<li>从文件系统底层出发直接删除损坏的文件，然后再次从头构建数据表</li>
+</ol>
+<h3 id="（一）使用-innodb-force-recovery参数进入恢复模式"><a href="#（一）使用-innodb-force-recovery参数进入恢复模式" class="headerlink" title="（一）使用 innodb_force_recovery参数进入恢复模式"></a>（一）使用 <code>innodb_force_recovery</code>参数进入恢复模式</h3><p>MySQL的 <code>innodb_force_recovery</code> 参数有6个不同的级别，每个级别代表了不同程度的恢复操作。这些级别用于在MySQL数据库遇到严重的InnoDB表空间损坏或崩溃时进行数据恢复。每个级别逐步增加了恢复的力度和数据的保护措施。</p>
+<p>不同level的含义可以参考这个网页： <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.4/en/forcing-innodb-recovery.html">https://dev.mysql.com/doc/refman/8.4/en/forcing-innodb-recovery.html</a> 。以下是每个级别的详细说明及其使用场景：</p>
+<p><code>innodb_force_recovery=1</code>（跳过故障页清理）</p>
+<ul>
+<li><strong>描述</strong>：禁用后台的 <em>purge</em> 线程（负责删除已经提交的事务的undo日志）。</li>
+<li><strong>使用场景</strong>：当数据库在崩溃恢复过程中出现问题或不能正常启动时，可以尝试使用该级别来跳过数据清理的步骤。</li>
+<li><strong>风险</strong>：此级别对数据完整性的影响最小，通常是数据恢复的第一步。</li>
+</ul>
+<p><code>innodb_force_recovery=2</code>（跳过插入缓冲和合并）</p>
+<ul>
+<li><strong>描述</strong>：除了级别1的动作外，还禁用插入缓冲（insert buffer）和二次写（doublewrite）。</li>
+<li><strong>使用场景</strong>：当数据库在启动时因插入缓冲或合并操作出错而崩溃，可以使用此级别来绕过这些操作。</li>
+<li><strong>风险</strong>：该级别对数据库数据安全的影响较小，但如果数据有缺失，可能不会立即发现。</li>
+</ul>
+<p><code>innodb_force_recovery=3</code>（禁用崩溃恢复）</p>
+<ul>
+<li><strong>描述</strong>：进一步限制恢复操作，不执行崩溃恢复过程。</li>
+<li><strong>使用场景</strong>：用于无法通过级别1和2恢复的情况，避免数据在崩溃恢复过程中因损坏数据页而导致服务器崩溃。</li>
+<li><strong>风险</strong>：数据库只能以只读模式运行，数据一致性可能受到影响。</li>
+</ul>
+<p><code>innodb_force_recovery=4</code>（跳过重做日志应用）</p>
+<ul>
+<li><strong>描述</strong>：跳过事务日志的回放，即不应用重做日志来恢复数据。</li>
+<li><strong>使用场景</strong>：适用于数据页可能有损坏、回放重做日志会导致崩溃的情况。</li>
+<li><strong>风险</strong>：不执行重做日志意味着有未提交的事务数据可能丢失，但允许对数据库进行只读访问。</li>
+</ul>
+<p><code>innodb_force_recovery=5</code>（跳过未提交事务的回滚）</p>
+<ul>
+<li><strong>描述</strong>：不回滚未提交的事务，防止崩溃恢复时处理损坏的undo日志。</li>
+<li><strong>使用场景</strong>：适用于回滚未提交事务会导致崩溃的情况，可以用于数据导出或备份。</li>
+<li><strong>风险</strong>：使用此级别可能会导致数据库中有不一致的数据，因为未提交事务不会被回滚。</li>
+</ul>
+<p><code>innodb_force_recovery=6</code>（禁用所有的InnoDB崩溃恢复机制）</p>
+<ul>
+<li><strong>描述</strong>：跳过所有的InnoDB崩溃恢复过程，包括检查损坏的数据页。</li>
+<li><strong>使用场景</strong>：这是最高级别的恢复方式，通常只在其他级别无法恢复数据库时使用。此时数据库可以进行只读访问。</li>
+<li><strong>风险</strong>：这个级别风险最大，数据库中可能有数据丢失或不一致的情况。此模式下仅建议用于导出数据以进行备份或迁移，随后应重建数据库。</li>
+</ul>
+<p><code>innodb_force_recovery</code> 参数的级别是逐渐递增的，级别越高，对数据的一致性和完整性的影响越大。通常从级别1开始尝试，如果不能解决问题，再逐步增加级别。应注意，在较高级别（如4、5、6）下，数据库只能进行只读访问，修改数据可能会导致更多的问题。因此，在这些级别下通常建议导出数据，备份后重建数据库。</p>
+<p>如果是docker启动，则<code>innodb_force_recovery</code> 参数可以直接传递给启动脚本。例如启动脚本可以改成下面这样（加上参数 <code>--innodb_force_recovery=4</code> 指定进入level4的恢复模式。参数 <code>-v</code> 设置了容器与宿主机的共享目录的挂载路径。参数 <code>MYSQL_ROOT_PASSWORD</code> 指定MySQL的登陆密码，可以根据情况自行修改）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">docker run -p 3306:3306 --name mysql_zhangwanyu_recovery \</span><br><span class="line">-v /home/zhangwanyu/var/mysql/log:/var/log/mysql \</span><br><span class="line">-v /home/zhangwanyu/var/mysql/data:/var/lib/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=123456 \</span><br><span class="line">-u $(id -u):$(id -g) \</span><br><span class="line">-d mysql:5.7 \</span><br><span class="line">--innodb_force_recovery=4</span><br></pre></td></tr></table></figure>
+
+<p>我尝试了 <code>--innodb_force_recovery</code> 的1到6的取值，最后发现只有level4以上的级别才能保证MySQL启动后不崩溃。考虑到level越高，功能限制就越多，因此最后我选择了level4启动。</p>
+<p>然后就是，恢复模式并非长久之计，最好能够导出数据，然后在新环境下重建MySQL数据表。下面是导出数据的指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u root -p --all-databases &gt; all_databases_backup.sql</span><br></pre></td></tr></table></figure>
+
+<h3 id="二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件"><a href="#二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件" class="headerlink" title="(二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件"></a>(二）如果是某个数据表损坏且无法恢复，则从文件系统底层出发直接删文件</h3><p>假设，我的数据表如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+----------------------+</span><br><span class="line">| Tables_in_model_data |</span><br><span class="line">+----------------------+</span><br><span class="line">| information_tab1     |</span><br><span class="line">| information_tab2     |</span><br><span class="line">| information_tab3     |</span><br><span class="line">+----------------------+</span><br></pre></td></tr></table></figure>
+
+<p>要判断哪一个表损坏，可以依次尝试对这些表中的数据进行query操作 （<code>select * from information_tab1 limit 10</code> ，另外几张表以此类推）。一旦在query某一张表的过程中MySQL崩溃，基本就可以确定是这张表的文件损坏了。</p>
+<p>例如，如果其中 <code>information_tab3</code> 损坏，无法select，也无法drop（<code>DROP TABLE information_tab3;</code> 提示 <code>ERROR 1051 (42S02): Unknown table &#39;model_data.information_tab3&#39;</code> ）。此时，我们可以从文件系统定位到上述数据表所在位置，即 <code>/var/lib/mysql/&lt;databasename&gt;/information_tab3.frm</code> 和 <code>/var/lib/mysql/&lt;databasename&gt;/information_tab3.ibd</code> ：</p>
+<p>删除上述文件，然后进入MySQL，一切就恢复正常了。至于被物理删除的那个表，需要再重新创建和写入一下。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/11/24/MySQL_data_crash_repair/" title="MySQL数据损坏修复的一些踩坑和探索">https://wz.anoms.top/2024/11/24/MySQL_data_crash_repair/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/Linux%E8%BF%90%E7%BB%B4/" rel="tag"><i class="fa fa-tag"></i> Linux运维</a>
+              <a href="/tags/MySQL/" rel="tag"><i class="fa fa-tag"></i> MySQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/11/24/ComputationalBiology_TakeHomeMessage_20241124/" rel="prev" title="计算生物学部分知识点整理">
+                  <i class="fa fa-chevron-left"></i> 计算生物学部分知识点整理
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
