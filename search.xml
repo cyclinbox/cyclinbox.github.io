@@ -14692,7 +14692,8 @@
   <entry>
     <title>MySQL数据损坏修复的一些踩坑和探索</title>
     <url>/2024/11/24/MySQL_data_crash_repair/</url>
-    <content><![CDATA[<p>事情是这样的。本周一，所里断电进行供电系统维护，电力恢复后服务器上的MySQL数据出现了损坏，无法正常登录。花了很长时间解决这个问题，下面是踩坑记录。</p>
+    <content><![CDATA[<p>事情是这样的。本周一，所里断电进行供电系统维护，电力恢复后服务器上的MySQL数据出现了损坏，无法正常登录。</p>
+<p>后来花了很长时间解决这个问题，下面是踩坑记录。</p>
 <span id="more"></span>
 
 <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>断电重启后MySQL无法登录。</p>
