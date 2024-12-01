@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如题。 因为工作需要，要从GEO数据库上批量下载一些数据集文件。鉴于手动下载文件太麻烦，于是折腾出这样一个用来批量下载文件的python脚本。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GEOdown：一个下载GSE数据集的python脚本">
+<meta property="og:url" content="https://wz.anoms.top/2024/11/30/GEOdown_a_script_for_GSE_downloading/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="如题。 因为工作需要，要从GEO数据库上批量下载一些数据集文件。鉴于手动下载文件太麻烦，于是折腾出这样一个用来批量下载文件的python脚本。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201190827.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201190846.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201191246.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201191310.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201192431.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201195748.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201195812.png">
+<meta property="article:published_time" content="2024-11-30T10:10:12.000Z">
+<meta property="article:modified_time" content="2024-12-01T14:04:18.966Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="GEO数据库">
+<meta property="article:tag" content="requests">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201190827.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/11/30/GEOdown_a_script_for_GSE_downloading/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/11/30/GEOdown_a_script_for_GSE_downloading/","path":"2024/11/30/GEOdown_a_script_for_GSE_downloading/","title":"GEOdown：一个下载GSE数据集的python脚本"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>GEOdown：一个下载GSE数据集的python脚本 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">一、背景知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89HTML"><span class="nav-number">1.1.</span> <span class="nav-text">（一）HTML</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89Python-Requests%E5%BA%93%EF%BC%9A%E7%AE%80%E5%8C%96HTTP%E8%AF%B7%E6%B1%82"><span class="nav-number">1.2.</span> <span class="nav-text">（二）Python Requests库：简化HTTP请求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81GEO%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E9%A1%B5%E9%9D%A2%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">二、GEO数据库的页面解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81GEOdown%E5%B7%A5%E5%85%B7%E7%9A%84%E7%BC%96%E5%86%99"><span class="nav-number">3.</span> <span class="nav-text">三、GEOdown工具的编写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%80%9D%E8%B7%AF"><span class="nav-number">3.1.</span> <span class="nav-text">（一）思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E8%AF%86%E5%88%AB%E6%A0%B9%E7%9B%AE%E5%BD%95%E5%86%85%E5%AE%B9"><span class="nav-number">3.2.</span> <span class="nav-text">（二）识别根目录内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E8%AF%86%E5%88%AB%E5%AD%90%E7%9B%AE%E5%BD%95%E5%86%85%E5%AE%B9%EF%BC%8C%E5%B9%B6%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6"><span class="nav-number">3.3.</span> <span class="nav-text">（三）识别子目录内容，并下载文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89%E4%B8%BB%E5%87%BD%E6%95%B0"><span class="nav-number">3.4.</span> <span class="nav-text">（四）主函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%94%EF%BC%89%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="nav-number">3.5.</span> <span class="nav-text">（五）完整代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">3.6.</span> <span class="nav-text">（六）使用方法</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">152</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">250</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/11/30/GEOdown_a_script_for_GSE_downloading/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="GEOdown：一个下载GSE数据集的python脚本 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GEOdown：一个下载GSE数据集的python脚本
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-11-30 18:10:12" itemprop="dateCreated datePublished" datetime="2024-11-30T18:10:12+08:00">2024-11-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-12-01 22:04:18" itemprop="dateModified" datetime="2024-12-01T22:04:18+08:00">2024-12-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如题。</p>
+<p>因为工作需要，要从GEO数据库上批量下载一些数据集文件。鉴于手动下载文件太麻烦，于是折腾出这样一个用来批量下载文件的python脚本。</p>
+<span id="more"></span>
+
+<h2 id="一、背景知识"><a href="#一、背景知识" class="headerlink" title="一、背景知识"></a>一、背景知识</h2><h3 id="（一）HTML"><a href="#（一）HTML" class="headerlink" title="（一）HTML"></a>（一）HTML</h3><p>超文本标记语言（HTML, HyperText Markup Language）是用于创建网页的标准标记语言。HTML 文档由一系列的元素组成，每个元素都以标签的形式存在，这些标签定义了文档的结构和内容展示方式。例如，<code>&lt;p&gt;</code> 标签用于表示一个段落，<code>&lt;img&gt;</code> 标签用于嵌入图像，而 <code>&lt;a&gt;</code> 标签则用来创建超链接。</p>
+<p>当浏览器加载一个网页时，它解析HTML代码并根据其中的标签将内容呈现给用户。了解HTML对于理解网页的构造至关重要，这不仅有助于开发者构建网站，也是进行网络数据抓取时不可或缺的知识。</p>
+<h3 id="（二）Python-Requests库：简化HTTP请求"><a href="#（二）Python-Requests库：简化HTTP请求" class="headerlink" title="（二）Python Requests库：简化HTTP请求"></a>（二）Python Requests库：简化HTTP请求</h3><p>Python 是一种广泛使用的高级编程语言，以其简洁清晰的语法和强大的功能库而闻名。在进行网络数据抓取时，<code>requests</code> 库是Python社区中非常流行的一个第三方库，它提供了简单易用的API来发送HTTP/1.1 请求。</p>
+<p>使用 <code>requests</code> 库，开发者可以通过几行代码轻松发起GET或POST请求，获取远程服务器的数据。该库内部实现了对HTTP协议的支持，包括处理连接、发送请求头、接收响应等操作，并且能够自动处理一些常见的HTTP特性，如重定向、身份验证和会话管理。</p>
+<p>在本文中，我们将介绍如何结合HTML知识与Python <code>requests</code> 库开发一款用于GEO数据集下载的小工具，演示如何高效地抓取网络资源。</p>
+<h2 id="二、GEO数据库的页面解析"><a href="#二、GEO数据库的页面解析" class="headerlink" title="二、GEO数据库的页面解析"></a>二、GEO数据库的页面解析</h2><p>对于GEO数据库来说，其页面大致如下图所示（随便举一个GEO数据集的例子）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201190827.png" alt="image.png"></p>
+<p>其中的附件会以下面这样的超链接形式列出：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201190846.png" alt="image.png"></p>
+<p>对我们来说，最重要的其实不是这个页面本身，而是这个页面提供的文件下载超链接。</p>
+<p>仍然以上述GEO数据集为例，其supplementary file列出的几个文件的FTP下载链接依次如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184167/suppl/GSE184167%5FDESeq2%5Fkallisto%5FGC007%5FGC008%5FGC009%5Fvs%5FGC010%5FGC011%5FGC012%2DDEG%5Flist%2Ecsv%2Egz</span><br><span class="line">https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184167/suppl/GSE184167%5FDESeq2%5Fkallisto%5FGC007%5FGC008%5FGC009%5Fvs%5FGC010%5FGC011%5FGC012%5Fcounts%5Ftable%5Fnormalized%2Etxt%2Egz</span><br><span class="line">https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184167/suppl/GSE184167%5FDESeq2%5Fkallisto%5FGC007%5FGC008%5FGC009%5Fvs%5FGC010%5FGC011%5FGC012%5Fvsd%2Ecsv%2Egz</span><br><span class="line">https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184167/suppl/GSE184167%5Fest%5Fcounts%5Ftranscipts%5Fkallisto%2Etxt%2Egz</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+
+<p>这几个文件的超链接都指向了一个共同的URL，既 <code>https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184167/suppl/</code> ，在此URL之后则跟上的是几个文件各自的文件名。因此这给我们提供了一个思路，或许我们可以解析这个URL，获取各个文件的下载链接。</p>
+<p>上述URL对应的页面如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201191246.png" alt="image.png"></p>
+<p>继续点开上一级目录（“Parent Directory”按钮）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201191310.png" alt="image.png"></p>
+<p>通过这样的操作，我们大致就能够知道GEO的这个FTP站点是如何存储数据集文件的： </p>
+<ul>
+<li>根目录是 <code>https://ftp.ncbi.nlm.nih.gov/geo/series/&lt;GEO part number&gt;nnn/&lt;GEO number&gt;/</code> <ul>
+<li>（其中 <code>&lt;GEO part number&gt;</code> 是GEO识别号的前6个字符，例如如果GEO号是 <code>GSE184167</code> ，那么 <code>&lt;GEO part number&gt;</code>  就是 <code>GSE184</code>）</li>
+</ul>
+</li>
+<li>其下面有 <code>matrix</code>, <code>miniml</code>, <code>soft</code>, <code>suppl</code> 四个目录，分别存储不同的文件。</li>
+<li>各个目录下面是文件下载的链接。</li>
+</ul>
+<p>我们可以在浏览器界面中按下键盘上的F12按钮查看网页源代码，其大约长这个样子：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201192431.png" alt="image.png"></p>
+<p>整个网页的结构是一个<code>&lt;body&gt;</code>标签内嵌一个 <code>&lt;pre&gt;</code> 标签，<code>&lt;pre&gt;</code> 标签又内嵌了多个 <code>&lt;a&gt;</code> 标签，<code>&lt;a&gt;</code> 标签内即为下一级目录的链接，或文件下载链接。</p>
+<h2 id="三、GEOdown工具的编写"><a href="#三、GEOdown工具的编写" class="headerlink" title="三、GEOdown工具的编写"></a>三、GEOdown工具的编写</h2><h3 id="（一）思路"><a href="#（一）思路" class="headerlink" title="（一）思路"></a>（一）思路</h3><p>给定一个GEO识别号，我们就可以获得根目录的URL。接下来，我们从根目录识别各个子目录的链接，并解析子目录的内容，获得各个文件的链接，并调用系统的 <code>curl</code> 指令进行下载。</p>
+<p><code>curl</code> 指令在下载文件时的使用方法： <code>curl -OJX GET &lt;url&gt;</code> 。</p>
+<h3 id="（二）识别根目录内容"><a href="#（二）识别根目录内容" class="headerlink" title="（二）识别根目录内容"></a>（二）识别根目录内容</h3><p>代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> urllib <span class="keyword">import</span> request</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">exec</span>(<span class="params">cmd</span>): <span class="comment"># 这个函数用于执行系统shell的指令</span></span><br><span class="line">    os.system(cmd)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">geo_root_page_process</span>(<span class="params">GEO</span>):</span><br><span class="line">    <span class="comment"># 创建文件夹。针对不同的系统平台，调用的指令不同。</span></span><br><span class="line">    <span class="keyword">if</span>(sys.platform==<span class="string">&quot;win32&quot;</span>): <span class="built_in">exec</span>(<span class="string">&quot;mkdir    &#123;&#125;&quot;</span>.<span class="built_in">format</span>(GEO))</span><br><span class="line">    <span class="keyword">else</span>:                      <span class="built_in">exec</span>(<span class="string">&quot;mkdir -p &#123;&#125;&quot;</span>.<span class="built_in">format</span>(GEO))</span><br><span class="line">    os.chdir(GEO)</span><br><span class="line">    url_prefix = <span class="string">&quot;https://ftp.ncbi.nlm.nih.gov/geo/series/&#123;&#125;nnn/&#123;&#125;/&quot;</span>.<span class="built_in">format</span>(GEO[<span class="number">0</span>:-<span class="number">3</span>],GEO)</span><br><span class="line">    sub_dir_ls = geo_common_page_process(url_prefix)</span><br><span class="line">    <span class="keyword">for</span> d <span class="keyword">in</span> sub_dir_ls: <span class="comment"># 并根据当前页面内容，创建对应的几个子目录。</span></span><br><span class="line">        file_ls = geo_common_page_process(url_prefix+<span class="string">&quot;/&quot;</span>+d)</span><br><span class="line">        download(url_prefix,file_ls,d) <span class="comment"># 调用download函数下载文件。函数定义见下一节。</span></span><br><span class="line">    os.chdir(<span class="string">&quot;..&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="（三）识别子目录内容，并下载文件"><a href="#（三）识别子目录内容，并下载文件" class="headerlink" title="（三）识别子目录内容，并下载文件"></a>（三）识别子目录内容，并下载文件</h3><p>代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这个函数用于下载文件</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download</span>(<span class="params">url_prefix,file_ls,dir_name</span>):</span><br><span class="line">    <span class="comment"># param url_prefix: the url prefix of geo link. for example: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE43nnn/GSE43013/</span></span><br><span class="line">    <span class="comment"># param text:       the file list information on the web page.</span></span><br><span class="line">    <span class="comment"># param dir_name:   the dir&#x27;s name to storage.</span></span><br><span class="line">    <span class="keyword">if</span>(sys.platform==<span class="string">&quot;win32&quot;</span>): <span class="built_in">exec</span>(<span class="string">&quot;mkdir &quot;</span>   +dir_name.replace(<span class="string">&quot;/&quot;</span>,<span class="string">&quot;\\&quot;</span>))</span><br><span class="line">    <span class="keyword">else</span>:                      <span class="built_in">exec</span>(<span class="string">&quot;mkdir -p &quot;</span>+dir_name)</span><br><span class="line">    os.chdir(dir_name)</span><br><span class="line">    <span class="keyword">for</span> f <span class="keyword">in</span> file_ls:</span><br><span class="line">        url = url_prefix+<span class="string">&quot;/&quot;</span>+dir_name+<span class="string">&quot;/&quot;</span>+f</span><br><span class="line">        <span class="built_in">print</span>(url)</span><br><span class="line">        <span class="built_in">exec</span>(<span class="string">&quot;curl --insecure -OJX GET \&quot;&quot;</span>+url+<span class="string">&quot;\&quot;&quot;</span>)</span><br><span class="line">    os.chdir(<span class="string">&quot;..&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 解析子目录页面内容，获得各个文件的下载链接，并返回下载链接列表</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">geo_common_page_process</span>(<span class="params">url</span>):</span><br><span class="line">    res = request.urlopen(url)</span><br><span class="line">    txt = res.read().decode()</span><br><span class="line">    start_pos = txt.index(<span class="string">&quot;&lt;pre&gt;Name&quot;</span>)</span><br><span class="line">    end_pos = txt.index(<span class="string">&quot;&lt;hr&gt;&lt;/pre&gt;&quot;</span>)</span><br><span class="line">    txt1 = txt[start_pos:end_pos].strip().split(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">    href_ls = []</span><br><span class="line">    <span class="keyword">for</span> href_txt <span class="keyword">in</span> txt1[<span class="number">1</span>:]:</span><br><span class="line">        href = href_txt.split()[<span class="number">1</span>].replace(<span class="string">&quot;&lt;/a&gt;&quot;</span>,<span class="string">&#x27;&#x27;</span>).split(<span class="string">&quot;&gt;&quot;</span>)[<span class="number">1</span>]</span><br><span class="line">        <span class="keyword">if</span>(href==<span class="string">&#x27;Parent Directory&#x27;</span>):<span class="keyword">continue</span></span><br><span class="line">        href_ls.append(href)</span><br><span class="line">    <span class="keyword">return</span> href_ls</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="（四）主函数"><a href="#（四）主函数" class="headerlink" title="（四）主函数"></a>（四）主函数</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(__name__==<span class="string">&#x27;__main__&#x27;</span>):</span><br><span class="line">    usage=<span class="string">&quot;&quot;&quot;Usage:</span></span><br><span class="line"><span class="string">    python GEOdown.py &lt;GEO&gt;</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">len</span>(sys.argv)&lt;<span class="number">2</span>):</span><br><span class="line">        <span class="built_in">print</span>(usage)</span><br><span class="line">        sys.exit(<span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line">    GEO = sys.argv[<span class="number">1</span>]</span><br><span class="line">    geo_root_page_process(GEO)</span><br></pre></td></tr></table></figure>
+
+<h3 id="（五）完整代码"><a href="#（五）完整代码" class="headerlink" title="（五）完整代码"></a>（五）完整代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> urllib <span class="keyword">import</span> request</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">exec</span>(<span class="params">cmd</span>):</span><br><span class="line">    os.system(cmd)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download</span>(<span class="params">url_prefix,file_ls,dir_name</span>):</span><br><span class="line">    <span class="comment"># param url_prefix: the url prefix of geo link. for example: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE43nnn/GSE43013/</span></span><br><span class="line">    <span class="comment"># param text:       the file list information on the web page.</span></span><br><span class="line">    <span class="comment"># param dir_name:   the dir&#x27;s name to storage.</span></span><br><span class="line">    <span class="keyword">if</span>(sys.platform==<span class="string">&quot;win32&quot;</span>): <span class="built_in">exec</span>(<span class="string">&quot;mkdir &quot;</span>   +dir_name.replace(<span class="string">&quot;/&quot;</span>,<span class="string">&quot;\\&quot;</span>))</span><br><span class="line">    <span class="keyword">else</span>:                      <span class="built_in">exec</span>(<span class="string">&quot;mkdir -p &quot;</span>+dir_name)</span><br><span class="line">    os.chdir(dir_name)</span><br><span class="line">    <span class="keyword">for</span> f <span class="keyword">in</span> file_ls:</span><br><span class="line">        url = url_prefix+<span class="string">&quot;/&quot;</span>+dir_name+<span class="string">&quot;/&quot;</span>+f</span><br><span class="line">        <span class="built_in">print</span>(url)</span><br><span class="line">        <span class="built_in">exec</span>(<span class="string">&quot;curl --insecure -OJX GET \&quot;&quot;</span>+url+<span class="string">&quot;\&quot;&quot;</span>)</span><br><span class="line">    os.chdir(<span class="string">&quot;..&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">geo_common_page_process</span>(<span class="params">url</span>):</span><br><span class="line">    res = request.urlopen(url)</span><br><span class="line">    txt = res.read().decode()</span><br><span class="line">    start_pos = txt.index(<span class="string">&quot;&lt;pre&gt;Name&quot;</span>)</span><br><span class="line">    end_pos = txt.index(<span class="string">&quot;&lt;hr&gt;&lt;/pre&gt;&quot;</span>)</span><br><span class="line">    txt1 = txt[start_pos:end_pos].strip().split(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">    href_ls = []</span><br><span class="line">    <span class="keyword">for</span> href_txt <span class="keyword">in</span> txt1[<span class="number">1</span>:]:</span><br><span class="line">        href = href_txt.split()[<span class="number">1</span>].replace(<span class="string">&quot;&lt;/a&gt;&quot;</span>,<span class="string">&#x27;&#x27;</span>).split(<span class="string">&quot;&gt;&quot;</span>)[<span class="number">1</span>]</span><br><span class="line">        <span class="keyword">if</span>(href==<span class="string">&#x27;Parent Directory&#x27;</span>):<span class="keyword">continue</span></span><br><span class="line">        href_ls.append(href)</span><br><span class="line">    <span class="keyword">return</span> href_ls</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">geo_root_page_process</span>(<span class="params">GEO</span>):</span><br><span class="line">    <span class="keyword">if</span>(sys.platform==<span class="string">&quot;win32&quot;</span>): <span class="built_in">exec</span>(<span class="string">&quot;mkdir    &#123;&#125;&quot;</span>.<span class="built_in">format</span>(GEO))</span><br><span class="line">    <span class="keyword">else</span>:                      <span class="built_in">exec</span>(<span class="string">&quot;mkdir -p &#123;&#125;&quot;</span>.<span class="built_in">format</span>(GEO))</span><br><span class="line">    os.chdir(GEO)</span><br><span class="line">    url_prefix = <span class="string">&quot;https://ftp.ncbi.nlm.nih.gov/geo/series/&#123;&#125;nnn/&#123;&#125;/&quot;</span>.<span class="built_in">format</span>(GEO[<span class="number">0</span>:-<span class="number">3</span>],GEO)</span><br><span class="line">    sub_dir_ls = geo_common_page_process(url_prefix)</span><br><span class="line">    <span class="keyword">for</span> d <span class="keyword">in</span> sub_dir_ls:</span><br><span class="line">        file_ls = geo_common_page_process(url_prefix+<span class="string">&quot;/&quot;</span>+d)</span><br><span class="line">        download(url_prefix,file_ls,d)</span><br><span class="line">    os.chdir(<span class="string">&quot;..&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(__name__==<span class="string">&#x27;__main__&#x27;</span>):</span><br><span class="line">    usage=<span class="string">&quot;&quot;&quot;Usage:</span></span><br><span class="line"><span class="string">    python GEOdown.py &lt;GEO&gt;</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">len</span>(sys.argv)&lt;<span class="number">2</span>):</span><br><span class="line">        <span class="built_in">print</span>(usage)</span><br><span class="line">        sys.exit(<span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line">    GEO = sys.argv[<span class="number">1</span>]</span><br><span class="line">    geo_root_page_process(GEO)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="（六）使用方法"><a href="#（六）使用方法" class="headerlink" title="（六）使用方法"></a>（六）使用方法</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python GEOdown.py &lt;GEO&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以批量下载一个GSE数据集的文件了。</p>
+<p>效果如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201195748.png" alt="image.png"></p>
+<p>文件列表如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241201195812.png" alt="image.png"></p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/11/30/GEOdown_a_script_for_GSE_downloading/" title="GEOdown：一个下载GSE数据集的python脚本">https://wz.anoms.top/2024/11/30/GEOdown_a_script_for_GSE_downloading/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/GEO%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"><i class="fa fa-tag"></i> GEO数据库</a>
+              <a href="/tags/requests/" rel="tag"><i class="fa fa-tag"></i> requests</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/11/24/MySQL_data_crash_repair/" rel="prev" title="MySQL数据损坏修复的一些踩坑和探索">
+                  <i class="fa fa-chevron-left"></i> MySQL数据损坏修复的一些踩坑和探索
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/12/01/20241201_updatelog/" rel="next" title="十一月总结">
+                  十一月总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
