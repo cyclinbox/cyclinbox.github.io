@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="这篇文章的起源是这样的。前段时间，eGPS 项目组的ydl师兄在修bug的时候遇到了Java类加载机制的问题，于是进行了一番探索，并在群里分享了他的学习心得 。随后，师兄提出让我写一写python类加载机制方面的内容。遂，利用空余时间查了点资料，形成了这样一篇文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编程语言的类加载机制：以python为例">
+<meta property="og:url" content="https://wz.anoms.top/2024/12/08/Module_and_Class_loading_mechanism_in_programming_languages/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="这篇文章的起源是这样的。前段时间，eGPS 项目组的ydl师兄在修bug的时候遇到了Java类加载机制的问题，于是进行了一番探索，并在群里分享了他的学习心得 。随后，师兄提出让我写一写python类加载机制方面的内容。遂，利用空余时间查了点资料，形成了这样一篇文章。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241208200235.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241208210008.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1733660569354.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1733661246125.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1733662073442.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241208212230.png">
+<meta property="article:published_time" content="2024-12-08T13:00:00.000Z">
+<meta property="article:modified_time" content="2024-12-08T13:34:33.933Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="类加载机制">
+<meta property="article:tag" content="编程语言">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241208200235.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2024/12/08/Module_and_Class_loading_mechanism_in_programming_languages/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2024/12/08/Module_and_Class_loading_mechanism_in_programming_languages/","path":"2024/12/08/Module_and_Class_loading_mechanism_in_programming_languages/","title":"编程语言的类加载机制：以python为例"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>编程语言的类加载机制：以python为例 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Python%E7%9A%84%E6%A8%A1%E5%9D%97%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%8C%85"><span class="nav-number">1.</span> <span class="nav-text">一、Python的模块和软件包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%BD%93%E6%88%91%E4%BB%ACimport%E4%B8%80%E4%B8%AA%E8%BD%AF%E4%BB%B6%E5%8C%85%E6%97%B6%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">2.</span> <span class="nav-text">二、当我们import一个软件包时发生了什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%86%E5%87%A0%E7%A7%8Dimport%E8%AF%AD%E5%8F%A5"><span class="nav-number">2.1.</span> <span class="nav-text">区分几种import语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%E7%9A%84%E5%AE%9A%E5%88%B6"><span class="nav-number">2.2.</span> <span class="nav-text">类加载过程的定制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%AF%B9%E6%AF%94%EF%BC%9AR-java-js%E7%AD%89%E8%AF%AD%E8%A8%80%E7%9A%84%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%EF%BC%8C%E4%BB%A5%E5%8F%8AC-C-%E7%9A%84include%E8%AF%AD%E5%8F%A5"><span class="nav-number">3.</span> <span class="nav-text">三、对比：R&#x2F;java&#x2F;js等语言的类加载机制，以及C&#x2F;C++的include语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#R%E8%AF%AD%E8%A8%80"><span class="nav-number">3.1.</span> <span class="nav-text">R语言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java"><span class="nav-number">3.2.</span> <span class="nav-text">Java</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript"><span class="nav-number">3.3.</span> <span class="nav-text">JavaScript</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NET-%EF%BC%88%E5%A6%82-C-%EF%BC%8CVB-NET-F-%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">.NET （如 C# ，VB.NET , F#）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-C-%E7%9A%84-include"><span class="nav-number">3.5.</span> <span class="nav-text">C&#x2F;C++ 的 #include</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">252</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2024/12/08/Module_and_Class_loading_mechanism_in_programming_languages/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="编程语言的类加载机制：以python为例 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          编程语言的类加载机制：以python为例
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-12-08 21:00:00 / 修改时间：21:34:33" itemprop="dateCreated datePublished" datetime="2024-12-08T21:00:00+08:00">2024-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>这篇文章的起源是这样的。前段时间，<a target="_blank" rel="noopener" href="https://ngdc.cncb.ac.cn/egpscloud/">eGPS</a> 项目组的ydl师兄在修bug的时候遇到了Java类加载机制的问题，于是进行了一番探索，并在群里分享了他的<a target="_blank" rel="noopener" href="https://www.yuque.com/u21499046/egpsdoc/bo3gb1zsfdm7zbot#">学习心得</a> 。随后，师兄提出让我写一写python类加载机制方面的内容。遂，利用空余时间查了点资料，形成了这样一篇文章。</p>
+<span id="more"></span>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241208200235.png" alt="image.png"></p>
+<p>先来回答师兄的问题：python的namespace是什么。</p>
+<blockquote>
+<p>命名空间 (Namespace) 是 Python 中用于存储符号名称到对象的映射的一种系统。在 Python 中，每个模块、函数调用以及类定义都会创建一个新的命名空间。命名空间确保了不同作用域内的变量名不会冲突。（另外参考下面通义千问的解释）</p>
+</blockquote>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241208210008.png" alt="image.png"></p>
+<p>接下来，我们再依次介绍python的模块和软件包、python的类加载机制，最后我们还会把python与其他软件的类加载机制做一下比较。</p>
+<h2 id="一、Python的模块和软件包"><a href="#一、Python的模块和软件包" class="headerlink" title="一、Python的模块和软件包"></a>一、Python的模块和软件包</h2><p>我们需要区分两个概念：模块（module）、软件包（package）</p>
+<ul>
+<li><strong>模块（Module）</strong> ：模块是一个包含 Python 定义和语句的文件，其扩展名为 <code>.py</code>。每个 Python 文件可以被认为是一个模块，它可以定义函数、类和变量等。    </li>
+<li><strong>软件包（Package）</strong> ：包是模块的集合，它提供了层次结构来组织模块。包通常存在于一个目录中，并且该目录中有一个名为 <code>__init__.py</code> 的文件。通过这种结构，我们可以创建子包和子模块，形成树状结构。</li>
+</ul>
+<p>下图中我们展示了一个模块的定义方法，它本质上就是一个python文件。某种意义上，任何python文件都可以看作一个模块。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1733660569354.png" alt="1733660569354.png"></p>
+<p>下图则展示了一个python软件包的结构（以numpy库为例）。可以看到，numpy软件包本质上是一个目录，其内部还有许多python文件和子目录。其中的 <code>__init__.py</code> 文件通常用于包的初始化操作，比如设置包级别的变量、注册包内的模块或类、执行必要的检查等，它会在包被首次导入时自动执行。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1733661246125.png" alt="1733661246125.png"></p>
+<h2 id="二、当我们import一个软件包时发生了什么"><a href="#二、当我们import一个软件包时发生了什么" class="headerlink" title="二、当我们import一个软件包时发生了什么"></a>二、当我们import一个软件包时发生了什么</h2><p>当我们在 Python 中使用 <code>import</code> 语句导入一个模块或包时，Python 内部会经历一系列步骤来解析和加载该模块或包。</p>
+<p><strong>首先是软件包的存储路径搜索。</strong> 正如前面我们所说，（除了内部模块以外）所有的模块和软件包本质上都是python文件或存放python文件的目录，因此要加载这些包，就需要找到它们的存储位置。首先，Python 会检查是否请求的是一个内置模块（例如 <code>sys</code> 或 <code>math</code>），这些模块是用 C 编写的，并且直接编译进了 Python 解释器中。如果请求的不是内置模块，Python 将根据 <code>sys.path</code> 列表中的路径顺序来查找模块文件。</p>
+<p>在python中定义了一个 <code>sys.path</code> 的内部变量（如下图），其指定了python将按照何种路径搜索文件系统以寻找模块和包（因为是按顺序搜索的，所以当正在import的包在多个位置都存在时，python只会import最先找到的那一个）。如果import的是一个软件包，Python 还会递归地在子目录中查找，特别是那些包含 <code>__init__.py</code> 文件的目录（对于 Python 3.3 及以上版本，这个文件不是必须的）。每个这样的目录被视为一个包，允许进一步嵌套。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1733662073442.png" alt="1733662073442.png"></p>
+<p>此外，Python 支持虚拟环境（virtual environments），它可以帮助隔离项目依赖关系，减少不同项目之间模块版本冲突的可能性。通过创建独立的虚拟环境，可以为每个项目维护一套独立的库和工具链。</p>
+<p><strong>一旦找到了模块或包，Python 会进行模块或包的加载过程。</strong> 具体来说，会执行以下操作：</p>
+<ul>
+<li><strong>缓存检查</strong>：Python 首先会在内部的模块缓存（<code>sys.modules</code> 字典）中查找模块名。如果已经加载过，则直接返回缓存的模块对象，而不会再次加载。</li>
+<li><strong>读取源代码</strong>：如果没有找到缓存，Python 会读取模块或包对应的 <code>.py</code> 文件的内容。</li>
+<li><strong>编译字节码</strong>：然后将读取到的源代码编译成字节码。对于模块，这通常会产生一个 <code>.pyc</code> 文件存储在 <code>__pycache__</code> 目录下，以便下次更快加载。</li>
+<li><strong>执行模块代码</strong>：接下来，Python 执行编译后的字节码，初始化模块级别的变量、函数和其他定义，并创建模块对象。</li>
+<li><strong>注册模块</strong>：最后，新创建的模块对象被添加到 <code>sys.modules</code> 字典中，以供后续引用。</li>
+</ul>
+<h3 id="区分几种import语句"><a href="#区分几种import语句" class="headerlink" title="区分几种import语句"></a>区分几种import语句</h3><p>另外，在日常实践中，我们通常会用到下面几种语句： <code>import xxx</code> ， <code>import xxx as zzz</code> ， <code>from xxx import yyy</code> ， <code>from xxx import *</code> 。 这里也顺便讲一下它们的区别：</p>
+<ul>
+<li>使用 <code>import xxx</code> 时，我们实际上是将整个模块作为一个对象导入到了当前的命名空间。这意味着需要使用 <code>xxx.yyy</code> 来访问模块 <code>xxx</code> 中的成员 <code>yyy</code>，因为 <code>xxx</code> 是模块对象，而 <code>yyy</code> 是该模块内的一个属性或函数。</li>
+<li> <code>import xxx as zzz</code> 和 <code>import xxx</code>  本质上是一样的，只不过这里对模块做了一下重命名操作，将其从 <code>xxx</code> 重命名为 <code>zzz</code> 以便我们访问。这种情况很多见，例如 <code>import numpy as np</code> , <code>import pandas as pd</code> 等等，以至于 <code>np</code> 和 <code>pd</code> 几乎已经成为了 <code>numpy</code> 和 <code>pandas</code> 的固定缩写词。</li>
+<li>使用 <code>from xxx import yyy</code> 则是只将 <code>yyy</code> 这个特定的成员从模块 <code>xxx</code> 中导入到当前的命名空间。因此，我们可以直接使用 <code>yyy</code> 而不需要前缀 <code>xxx.</code>，因为我们已经把 <code>yyy</code> 引入到了局部或全局命名空间。</li>
+<li> <code>from xxx import *</code> 和 <code>from xxx import yyy</code> 本质上一样，只不过 <code>*</code> 通配符会匹配所有的公共成员，因此这句话会将模块 <code>xxx</code> 中所有公共成员（即，不以下划线开头的成员）都导入到当前命名空间。</li>
+</ul>
+<h3 id="类加载过程的定制"><a href="#类加载过程的定制" class="headerlink" title="类加载过程的定制"></a>类加载过程的定制</h3><p>此外，python还提供了一个<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/importlib.html#module-importlib">内部模块  <code>importlib</code> </a> 允许用户对模块的加载过程进行一些定制和干预，例如在运行时动态加载类（根据用户输入动态加载不同的模块），或者开发过程中热更新类（不重启程序的情况下更新代码）。这些功能可以通过 <code>importlib.import_module(module_name)</code> 和 <code>importlib.reload(module)</code> 来实现，更详细的介绍可以参考 <a target="_blank" rel="noopener" href="https://www.oryoy.com/news/python-lei-jia-zai-ji-zhi-xiang-jie-shen-ru-li-jie-classloader-de-gong-zuo-yuan-li-yu-ying-yong-chan.html">《Python类加载机制详解：深入理解ClassLoader的工作原理与应用场景》</a> 。</p>
+<h2 id="三、对比：R-java-js等语言的类加载机制，以及C-C-的include语句"><a href="#三、对比：R-java-js等语言的类加载机制，以及C-C-的include语句" class="headerlink" title="三、对比：R/java/js等语言的类加载机制，以及C/C++的include语句"></a>三、对比：R/java/js等语言的类加载机制，以及C/C++的include语句</h2><h3 id="R语言"><a href="#R语言" class="headerlink" title="R语言"></a>R语言</h3><p>师兄说，「R的类加载机制是一个 enviroment 变量」，这其实指的是R语言的 s4 面向对象系统。在 R 中，主要的面向对象系统包括 S3 和 S4 。对于 S4 类，有一个特殊的环境（environment），它用来存储关于该类的信息，包括方法和属性。这个环境实际上就是一种哈希表结构，可以快速查找和访问类相关的数据。当使用 <code>setClass()</code> 函数创建新的 S4 类时，会生成一个新的环境来保存这些信息。此外，S4 支持通过 <code>setMethod()</code> 来绑定方法到泛型函数，这种绑定是在类环境中完成的，确保了方法与类之间的紧密联系。</p>
+<p>相比之下，S3 是一个非常简单的 OOP 系统，它并不提供正式的类定义或方法绑定机制。相反，它依赖于约定和命名惯例来实现多态性。具体来说：</p>
+<ul>
+<li><strong>类标记</strong>：在 S3 中，一个对象可以通过设置其 <code>class</code> 属性来被赋予“类”。例如，<code>attr(x, &quot;class&quot;) &lt;- &quot;myClass&quot;</code> 会将对象 <code>x</code> 标记为 <code>myClass</code> 类型。</li>
+<li><strong>泛型函数</strong>：S3 使用泛型函数（generic functions）来实现多态行为。这些函数通常有一个默认的方法，以及针对特定类的特殊方法。比如，<code>print()</code> 函数可以有不同的实现方式，具体取决于传递给它的对象所属的类。</li>
+<li><strong>方法查找</strong>：当调用一个泛型函数时，R 会检查参数对象的 <code>class</code> 属性，并尝试找到与该类相匹配的方法。如果找不到，则回退到更通用的方法。这个过程是动态的，在运行时进行。</li>
+<li><strong>没有明确的类环境</strong>：与 S4 不同，S3 并不维护专门的环境来存储类信息。所有方法都是全局定义的，并且通过命名惯例（如 <code>myGeneric.myClass</code>）关联到特定的类上。</li>
+</ul>
+<p>然后就是R语言的类加载过程（参考通义千问的回答）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241208212230.png" alt="image.png"></p>
+<h3 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h3><p>在 Java 中，类加载是一个动态的过程，它由 JVM（Java 虚拟机）执行。JVM 使用类加载器（ClassLoader）来加载类文件到内存中。类加载器分为三种主要类型：引导类加载器（Bootstrap ClassLoader）、扩展类加载器（Extension ClassLoader），以及应用程序类加载器（Application ClassLoader）。类加载遵循父委托模型，即首先尝试通过父类加载器加载类，如果找不到，则使用子类加载器。</p>
+<h3 id="JavaScript"><a href="#JavaScript" class="headerlink" title="JavaScript"></a>JavaScript</h3><p>对于 JavaScript，在浏览器环境中，没有传统意义上的“类加载”概念，因为代码通常直接嵌入网页中或以 <code>&lt;script&gt;</code> 标签的形式引入。然而，随着 ES6 引入了模块系统，现在可以通过 <code>import</code> 和 <code>export</code> 语句来导入和导出模块。Node.js 环境下，也支持类似的模块化编程，并且有 CommonJS 模块格式，它使用 <code>require()</code> 函数来加载模块。此外，还有动态 <code>import()</code> 表达式，允许按需加载模块。</p>
+<h3 id="NET-（如-C-，VB-NET-F-）"><a href="#NET-（如-C-，VB-NET-F-）" class="headerlink" title=".NET （如 C# ，VB.NET , F#）"></a>.NET （如 <code>C#</code> ，<code>VB.NET</code> , <code>F#</code>）</h3><p>.NET 平台上的类加载是通过 CLR（公共语言运行时）完成的。CLR 负责管理应用程序的执行，包括 JIT 编译、内存分配、垃圾回收等。当程序启动时，CLR 加载程序集（Assembly），其中包含元数据和中间语言（IL）代码。程序集可以包含多个类。CLR 在需要时即时编译 IL 代码为本机代码，并确保类型安全性和安全性。</p>
+<h3 id="C-C-的-include"><a href="#C-C-的-include" class="headerlink" title="C/C++ 的 #include"></a>C/C++ 的 <code>#include</code></h3><p>C 和 C++ 使用预处理器指令 <code>#include</code> 来包含头文件中的定义和声明。这实际上是 <strong>在编译阶段发生的文本替换操作</strong> ，即将指定文件的内容插入到当前源文件的位置。这个过程不是动态的，所有必要的代码都必须在编译前准备好，并且会被直接编译进最终的可执行文件或库中。因此，C/C++ 中并没有像 Java 或 .NET 那样的运行时类加载机制。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.yuque.com/u21499046/egpsdoc/bo3gb1zsfdm7zbot#">《R语言的理解讲义（使用手册类型的文档）》</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.oryoy.com/news/python-lei-jia-zai-ji-zhi-xiang-jie-shen-ru-li-jie-classloader-de-gong-zuo-yuan-li-yu-ying-yong-chan.html">《Python类加载机制详解：深入理解ClassLoader的工作原理与应用场景》</a> </li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_65482549/article/details/142419801">《Python中的<code>__init__.py</code>到底有啥用》</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/gaifuxi9518/article/details/81038818">《Python笔记03：python中用import导入包的机制原理是什么》</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/importlib.html#module-importlib">《python官方文档|importlib - import 的实现》</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2024/12/08/Module_and_Class_loading_mechanism_in_programming_languages/" title="编程语言的类加载机制：以python为例">https://wz.anoms.top/2024/12/08/Module_and_Class_loading_mechanism_in_programming_languages/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" rel="tag"><i class="fa fa-tag"></i> 类加载机制</a>
+              <a href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="tag"><i class="fa fa-tag"></i> 编程语言</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/12/01/20241201_updatelog/" rel="prev" title="十一月总结">
+                  <i class="fa fa-chevron-left"></i> 十一月总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
