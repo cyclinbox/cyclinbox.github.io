@@ -15144,7 +15144,7 @@
 
 <p>似乎很久没讨论这个话题了。许久不提，并不是因为我不再是以前那个缺爱的Warren了，而是因为确实有一些更重要的事情（aka.科研，以及生活中的各种杂事）需要做，而且自己的社交圈子依然不太稳定，所以不太敢谈论。虽然，在我心中爱情和婚姻的地位依然是很重的（而且某种意义上我以为二者等价），并且即使我的情感经历依旧接近一片空白，但我依然向往爱情。</p>
 <p>巩高峰老师的观点则完全不相同——「简而言之，就是我觉得婚姻制度迟早会消失，而且可能很快，几十一百年内」。在这篇文章里，巩老师将婚姻比喻为“两只刺猬拥抱”，因此人类的婚姻大多有三种结果：刺对刺，刺对肉身，拔了刺肉身对肉身。「第三种情况叫赤诚，大多数婚姻很难如此赤诚，因为刺猬没了刺，经不起风雨，非死即残。第一种刺对刺也有点少见，针尖对麦芒的激烈，电视剧里多这种狗血剧情，现实生活里少如此的针锋相对。大部分人进入婚姻后，就是第二种，刺对肉身的状态。经过谈恋爱的阶段，彼此无比熟悉，满心憧憬，奔跑着进入“围城”，甜蜜几年之后才发现，婚姻和社会没啥区别。哪怕只有两个人，也有强弱，也分高下，甚至有高手过招或菜鸡互啄」，高峰老师如是说。</p>
-<p>比喻很形象，但是让我沮丧。原来我理想中的爱情，虽有“拔了刺肉身对肉身”的赤诚，却更有可能经不起雨雪风霜。而其他类型的婚姻，或多或少都会有矛盾和冲突，某种意义上或多或少都会受伤。可是，我很害怕在关系中受伤。</p>
+<p>比喻很形象，但是让我沮丧。原来我理想中的爱情，虽有“拔了刺肉身对肉身”的赤诚和理想，却更有可能经不起雨雪风霜。而其他类型的婚姻，或多或少都会有矛盾冲突和失望，某种意义上或多或少都会受伤。可是可是，我很害怕在关系中受伤。</p>
 <p>然而“害怕在关系中受伤”，似乎最好的解决方法是完完全全把自己包裹起来不与外人接触：只要不越出安全区，就没人能伤害的了我——但对于我来说这根本不现实。我更愿意建立一些真实的社交关系，也更希望在这些真实的关系中收获深厚的友情或爱情。对于IxFx人来说，关系的深度远比广度更可贵。</p>
 <p>所以我其实一直在等。等待一个真诚的、能够互相卸下防备而赤诚相见的人。你说，两个恋爱脑碰在一块，那样的恋爱是不是很甜呢？可是我几乎未很少见到过这样的人，也很少见到这样相处却长久不分手的情侣。也许真的如文章所说，“刺猬没了刺，经不起风雨，非死即残”。</p>
 <p>恋爱和婚姻有时候需要两套标准——这个事实我是最近才发现的。前段时间刷到过一些相关的帖子，才知道在许多人心目中这是正常现象，恋爱可以更看重情绪价值和颜值，要是真的谈婚论嫁还是经济因素和社会地位占主导。甚至在我身边，有前辈也表达过类似的观点。惊讶于人类竟然能如此双标，而且双标的还如此坦然，更为自己的天真无知感到后怕，竟然妄想把恋爱和婚姻混为一谈——估计如果没有I人性格的保护，自己早该被欺骗感情无数次了。</p>
@@ -15155,8 +15155,6 @@
 <p>一开始我以为这句话出自同名散文集，但是找寻半天都没有找到，去网上搜了一下才发现是电视剧里的台词（是啊，虽然李娟的文笔很细腻，但这句话有点过于细腻了，倒有点不太符合散文的风格）。不管怎么说，能够被清楚的看见，或者能够看清楚对方，这样的关系，依然珍贵且值得珍惜啊。</p>
 <p>愿每个人都可以被温柔相待，愿所爱皆所得，愿每个人都可以遇到温暖而美好的爱情。</p>
 <p>以上。</p>
-<hr>
-<p>组会PPT还没做完。干活干活！</p>
 ]]></content>
       <categories>
         <category>杂思</category>
@@ -15166,6 +15164,147 @@
         <tag>爱情</tag>
         <tag>日记</tag>
         <tag>婚姻</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu系统的从头安装、显卡驱动与CUDA安装</title>
+    <url>/2024/12/22/Ubuntu_installation_and_CPU_driver_installation/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+<h2 id="一、特定版本显卡支持的系统的核实"><a href="#一、特定版本显卡支持的系统的核实" class="headerlink" title="一、特定版本显卡支持的系统的核实"></a>一、特定版本显卡支持的系统的核实</h2><p>可以在下面的网址进行查询，找到适合版本的显卡驱动，以及合适的系统：</p>
+<p><a href="https://www.nvidia.cn/drivers/lookup/">https://www.nvidia.cn/drivers/lookup/</a></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241222144156.png" alt="image.png"></p>
+<p>经过查询，我们要安装的显卡支持Ubuntu24.04 LTS系统，因此我们可以安装这一系统。</p>
+<h2 id="二、系统镜像下载与启动盘制作"><a href="#二、系统镜像下载与启动盘制作" class="headerlink" title="二、系统镜像下载与启动盘制作"></a>二、系统镜像下载与启动盘制作</h2><p>Ubuntu官方网站是 <a href="https://ubuntu.com/download">https://ubuntu.com/download</a></p>
+<p>里面提供了Desktop版系统和Server版系统两种不同的系统版本，区别在于Desktop版自带桌面，Server版不带桌面但是带有一些和服务器部署有关的服务。</p>
+<p>为了加快下载速度，我们可以在<a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/">清华大学镜像站</a>上下载镜像文件。</p>
+<p>在清华大学镜像站上搜索ubuntu-release，找到ubuntu发行版的启动盘iso镜像文件。</p>
+<p>下载链接： <a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/24.04.1/ubuntu-24.04.1-live-server-amd64.iso">https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/24.04.1/ubuntu-24.04.1-live-server-amd64.iso</a></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1734854670574.png" alt="1734854670574.png"></p>
+<p>我们使用<a href="https://rufus.ie/en/">rufus</a>进行启动盘制作，需要一块格式化过的空U盘。Rufus设备选项的配置如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241222160525.png" alt="image.png"></p>
+<p>点击开始按钮，rufus会自动进行启动盘的分区与镜像写入，并开始走进度条。等进度条走完，即可关闭rufus这个界面，拔出U盘。</p>
+<h2 id="三、BIOS配置更改与新系统安装"><a href="#三、BIOS配置更改与新系统安装" class="headerlink" title="三、BIOS配置更改与新系统安装"></a>三、BIOS配置更改与新系统安装</h2><h3 id="（一）BIOS配置更改"><a href="#（一）BIOS配置更改" class="headerlink" title="（一）BIOS配置更改"></a>（一）BIOS配置更改</h3><p>由于GPU设备的特殊性，需要在BIOS里开启 “Memory Map IO above 4GB” 这个选项。</p>
+<p>下面是具体流程：</p>
+<p>开机，当屏幕上显示出电脑厂商logo时按下键盘上的F12按钮（有些电脑则是按F2或者Shift，具体需要查询设备制造商），这将会进入BIOS设置界面。</p>
+<p>通过键盘方向键移动光标，进入bios configuration，在这个页面里寻找“Memory Map IO above 4GB” 这个选项并将其打开。</p>
+<p>随后，保存配置，电脑会自动重启。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241222160615.png" alt="image.png"></p>
+<h3 id="（二）新系统安装："><a href="#（二）新系统安装：" class="headerlink" title="（二）新系统安装："></a>（二）新系统安装：</h3><p>在关机状态下插入我们刚刚制作好的启动盘U盘。</p>
+<p>开机，当屏幕上显示出电脑厂商logo时按下键盘上的F12按钮（有些电脑则是按F2或者Shift，具体需要查询设备制造商），这将会进入BIOS设置界面。在这个界面里通过键盘方向键移动光标，选择U盘启动的选项（一般会是Udisk或者xxx UData Driver之类名称。此处无图）。</p>
+<p>按下回车键，即可从启动盘启动。此时会进入系统安装的界面，这里面的大部分选项都使用默认参数即可，不需要改，直接选done即可。</p>
+<h4 id="一些需要注意的地方："><a href="#一些需要注意的地方：" class="headerlink" title="一些需要注意的地方："></a>一些需要注意的地方：</h4><p>（1）网络设置这里，一般来说使用自动分配的IP地址即可。但是在一些单位或者公司内网，由于网络环境的特殊性，可能需要需要手动绑定IP地址。</p>
+<p>首先需要将设备的mac地址报给网管老师（获取mac地址的方法此处略过），并从网管老师那里获得一个分配好的IP地址（此处假设是 <code>192.168.xxx.yyy</code> ）。在系统安装的网络设置界面，选择网卡，进入配置，然后依次输入下面这些值，保存以后等它自己完成一次apply即可。</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>含义</th>
+<th>值</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Subnet</td>
+<td>子网掩码</td>
+<td><code>10.10.0.0/16</code></td>
+<td>斜杠后的数字取10-22之间的值，但是需要依次尝试有效的数值</td>
+</tr>
+<tr>
+<td>Address</td>
+<td>主机IP地址</td>
+<td><code>192.168.xxx.yyy</code></td>
+<td>由网管老师分配</td>
+</tr>
+<tr>
+<td>Gateway</td>
+<td>网关</td>
+<td>略</td>
+<td>询问网管老师获得</td>
+</tr>
+<tr>
+<td>Name servers</td>
+<td>DNS服务器</td>
+<td>略</td>
+<td>询问网管老师获得</td>
+</tr>
+<tr>
+<td>Search domain</td>
+<td>搜索域</td>
+<td>-</td>
+<td>可以不填</td>
+</tr>
+</tbody></table>
+<p>（2）硬盘设置。注意可能会有一个free space 的空间没有分配，这里需要记得分配一下，将其挂载到分区 <code>/home</code>  。</p>
+<p>完成安装以后根据提示移除启动盘U盘并重启即可。</p>
+<h2 id="四、安装之后要做的事情"><a href="#四、安装之后要做的事情" class="headerlink" title="四、安装之后要做的事情"></a>四、安装之后要做的事情</h2><h3 id="1、新建用户并授予sudo权限"><a href="#1、新建用户并授予sudo权限" class="headerlink" title="1、新建用户并授予sudo权限"></a>1、新建用户并授予sudo权限</h3><p>（1）新建用户：使用 <code>sudo adduser &lt;username&gt;</code> 建立。<br>（2）授予sudo权限：使用root用户身份编辑 <code>/etc/sudoers</code> 文件，将 <code>root    ALL=(ALL:ALL) ALL</code> 这一行复制到新的一行，并把 <code>root</code> 改成具体的用户名即可（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1734855184679.png" alt="1734855184679.png"></p>
+<h3 id="2、检查系统相关信息"><a href="#2、检查系统相关信息" class="headerlink" title="2、检查系统相关信息"></a>2、检查系统相关信息</h3><p>可以使用下面这些指令查询：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">lsb_release -a # 查询系统发行版信息</span><br><span class="line">uname -r # 查询内核版本号</span><br><span class="line">df -h # 查询硬盘使用情况</span><br><span class="line">free -h # 查询内存使用情况</span><br><span class="line">cat /proc/cpuinfo # 查询CPU信息</span><br></pre></td></tr></table></figure>
+
+<p>例如下图：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1734855283417.png" alt="1734855283417.png"></p>
+<h2 id="五、安装显卡驱动与CUDA-Toolkit的尝试"><a href="#五、安装显卡驱动与CUDA-Toolkit的尝试" class="headerlink" title="五、安装显卡驱动与CUDA Toolkit的尝试"></a>五、安装显卡驱动与CUDA Toolkit的尝试</h2><h3 id="（一）下载合适版本的runfile文件"><a href="#（一）下载合适版本的runfile文件" class="headerlink" title="（一）下载合适版本的runfile文件"></a>（一）下载合适版本的runfile文件</h3><p>网站：</p>
+<p><a href="https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=24.04&target_type=runfile_local">https://developer.nvidia.com/cuda-downloads</a></p>
+<p>从上述网站中搜索适合自己系统的CUDA版本，然后下载runfile文件。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241222161746.png" alt="image.png"></p>
+<h3 id="（二）检查显卡供电，禁用开源驱动"><a href="#（二）检查显卡供电，禁用开源驱动" class="headerlink" title="（二）检查显卡供电，禁用开源驱动"></a>（二）检查显卡供电，禁用开源驱动</h3><p>使用 <code>dmesg</code> 指令做查询。如果显卡有问题，会有下面这些报错信息：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241222161804.png" alt="image.png"></p>
+<p>此时需要去禁用一下开源驱动并重启。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo echo &quot;blacklist nouveau&quot; | sudo tee /etc/modprobe.d/blacklist-nouveau.conf</span><br><span class="line">sudo echo &quot;options nouveau modeset=0&quot; | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf</span><br><span class="line">sudo update-initramfs -u</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+
+
+<p>如果没有，说明显卡连接和供电是正常的。</p>
+<h3 id="（三）使用runfile安装驱动"><a href="#（三）使用runfile安装驱动" class="headerlink" title="（三）使用runfile安装驱动"></a>（三）使用runfile安装驱动</h3><p>需要在 <code>dmesg</code> 指令检查无报错的前提下进行这一步的操作。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">假设我们刚刚下载的runfile文件是 ./cuda_12.6.3_560.35.05_linux.run</span> </span><br><span class="line">sudo sh ./cuda_12.6.3_560.35.05_linux.run</span><br></pre></td></tr></table></figure>
+
+<p>accept一下EULA协议，然后安装选项都使用默认设置即可。</p>
+<p>安装完成以后，记得去 <code>/etc/profile</code> 文件中修改一下环境变量（我们安装的是CUDA12.6因此这里就写 <code>cuda-12.6</code> ，如果是别的版本的CUDA，路径里面的版本号要改为对应版本）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241222161946.png" alt="image.png"></p>
+<p>然后再次重启。</p>
+<p>当然也可以用 <code>sudo apt install nvidia-driver-550</code> 指令安装驱动和cuda。其与runfile安装方式基本等价。</p>
+<p>如果安装一切顺利，则 <code>nvidia-smi</code> 指令可以正常输出如下图所示的显卡信息：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1734855786249.png" alt="1734855786249.png"></p>
+<h2 id="六、一些有用的指令"><a href="#六、一些有用的指令" class="headerlink" title="六、一些有用的指令"></a>六、一些有用的指令</h2><p>如图（markdown表格放shell指令不方便，就直接截图了）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20241222162542.png" alt="image.png"></p>
+<p>这些指令的可复制文本：</p>
+<ul>
+<li><code>lspci|grep -i nvidia</code></li>
+<li><code>sudo lsmod|grep -i nvidia</code></li>
+<li><code>sudo modprobe nvidia</code></li>
+<li><code>nvidia-smi</code></li>
+<li><code>sudo dmesg</code></li>
+</ul>
+<p>下图是安装过程中的一个示例，当时显卡的PCI连接正常，但内核模块找不到相关文件，<code>nvcc</code>和<code>nvidia-smi</code>指令均可以运行，但是连接不到显卡（<code>couldn&#39;t communicate with the NVIDIA driver</code> ）。这种状态就说明驱动没装好，需要排查问题之后重新安装。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1734856069491.png" alt="1734856069491.png"></p>
+<h2 id="七、一些有用的网站"><a href="#七、一些有用的网站" class="headerlink" title="七、一些有用的网站"></a>七、一些有用的网站</h2><ul>
+<li>清华大学Linux镜像站（ubuntu24.04.1系统镜像下载页面）： <a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/24.04.1/">https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/24.04.1/</a></li>
+<li>CUDA安装教程： <a href="https://docs.nvidia.com/cuda/archive/12.4.0/cuda-installation-guide-linux/index.html#additional-package-manager-capabilities">https://docs.nvidia.com/cuda/archive/12.4.0/cuda-installation-guide-linux/index.html#additional-package-manager-capabilities</a></li>
+<li>同样是CUDA安装教程： <a href="https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html">https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html</a></li>
+<li>CUDA runfile下载页面： <a href="https://developer.nvidia.com/cuda-downloads">https://developer.nvidia.com/cuda-downloads</a></li>
+<li>NVIDIA驱动安装教程： <a href="https://docs.nvidia.com/vgpu/gpus-supported-by-vgpu.html">https://docs.nvidia.com/vgpu/gpus-supported-by-vgpu.html</a></li>
+<li>同样是NVIDIA驱动安装教程： <a href="https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html">https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html</a></li>
+</ul>
+<p>另外，排查问题时也参考过一些博客或文章，下面一并列举：</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/89714824">https://zhuanlan.zhihu.com/p/89714824</a></li>
+<li><a href="https://forums.developer.nvidia.com/t/nvrm-this-pci-i-o-region-assigned-to-your-nvidia-device-is-invalid/229899">https://forums.developer.nvidia.com/t/nvrm-this-pci-i-o-region-assigned-to-your-nvidia-device-is-invalid/229899</a></li>
+<li><a href="https://www.cnblogs.com/nannandbk/p/18144618">https://www.cnblogs.com/nannandbk/p/18144618</a></li>
+<li><a href="https://blog.csdn.net/liuyang_xyz/article/details/120684134">https://blog.csdn.net/liuyang_xyz/article/details/120684134</a></li>
+<li><a href="https://blog.csdn.net/qq_64671439/article/details/135730107">https://blog.csdn.net/qq_64671439/article/details/135730107</a></li>
+<li><a href="https://blog.csdn.net/very_big_house/article/details/135626122">https://blog.csdn.net/very_big_house/article/details/135626122</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Ubuntu</tag>
+        <tag>GPU</tag>
+        <tag>Nvidia</tag>
+        <tag>CUDA</tag>
       </tags>
   </entry>
 </search>
