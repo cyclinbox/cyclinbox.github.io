@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在生态学和临床医学中，有这样几个非常类似的概念很容易混淆：生命表（生态学），存活曲线（生态学），生存分析与生存曲线（临床医学）。这篇文章中我们将辨析一下这些概念，并介绍生态学研究中的矩阵群体模型（Matrix Population Models，MPM），后者是与生命表密切相关的一个数学模型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生命表、矩阵群体模型与生存曲线">
+<meta property="og:url" content="https://wz.anoms.top/2025/01/05/lifetable_MPM_survivalcurve_etc/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="在生态学和临床医学中，有这样几个非常类似的概念很容易混淆：生命表（生态学），存活曲线（生态学），生存分析与生存曲线（临床医学）。这篇文章中我们将辨析一下这些概念，并介绍生态学研究中的矩阵群体模型（Matrix Population Models，MPM），后者是与生命表密切相关的一个数学模型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104125753.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104125851.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104222254.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/Untitled.png">
+<meta property="article:published_time" content="2025-01-05T05:00:00.000Z">
+<meta property="article:modified_time" content="2025-01-05T04:47:27.653Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="生态学">
+<meta property="article:tag" content="生命表">
+<meta property="article:tag" content="矩阵群体模型">
+<meta property="article:tag" content="生存曲线">
+<meta property="article:tag" content="生存分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104125753.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/01/05/lifetable_MPM_survivalcurve_etc/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/01/05/lifetable_MPM_survivalcurve_etc/","path":"2025/01/05/lifetable_MPM_survivalcurve_etc/","title":"生命表、矩阵群体模型与生存曲线"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>生命表、矩阵群体模型与生存曲线 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E5%91%BD%E8%A1%A8%EF%BC%88life-table%EF%BC%89%EF%BC%88%E7%94%9F%E6%80%81%E5%AD%A6%EF%BC%89%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">生命表（life table）（生态学）：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E6%B4%BB%E6%9B%B2%E7%BA%BF%EF%BC%88survivorship-curve%EF%BC%89%EF%BC%88%E7%94%9F%E6%80%81%E5%AD%A6%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">存活曲线（survivorship curve）（生态学）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E7%BE%A4%E4%BD%93%E6%A8%A1%E5%9E%8B%EF%BC%88Matrix-Population-Models%EF%BC%8CMPM%EF%BC%89%EF%BC%88%E7%94%9F%E6%80%81%E5%AD%A6%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">矩阵群体模型（Matrix Population Models，MPM）（生态学）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80"><span class="nav-number">3.0.1.</span> <span class="nav-text">1. 模型基础</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA"><span class="nav-number">3.0.2.</span> <span class="nav-text">2. 矩阵表示</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E7%BE%A4%E4%BD%93%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%94%9F%E5%91%BD%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BA%92%E8%BD%AC"><span class="nav-number">3.1.</span> <span class="nav-text">矩阵群体模型与生命表数据的互转</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E7%94%9F%E5%91%BD%E8%A1%A8%E5%88%B0%E7%9F%A9%E9%98%B5%E7%BE%A4%E4%BD%93%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.1.1.</span> <span class="nav-text">从生命表到矩阵群体模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E7%9F%A9%E9%98%B5%E7%BE%A4%E4%BD%93%E6%A8%A1%E5%9E%8B%E5%88%B0%E7%94%9F%E5%91%BD%E8%A1%A8"><span class="nav-number">3.1.2.</span> <span class="nav-text">从矩阵群体模型到生命表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88Survival-Analysis%EF%BC%89%E4%B8%8E%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF%EF%BC%88Survival-Curve%EF%BC%89%EF%BC%88%E4%B8%B4%E5%BA%8A%E5%8C%BB%E5%AD%A6%EF%BC%89%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">生存分析（Survival Analysis）与生存曲线（Survival Curve）（临床医学）：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">两种常用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kaplan-Meier%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF%E7%9A%84%E7%BB%98%E5%88%B6%E6%AD%A5%E9%AA%A4"><span class="nav-number">4.2.</span> <span class="nav-text">Kaplan-Meier生存曲线的绘制步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%88%A0%E5%A4%B1%E6%95%B0%E6%8D%AE%EF%BC%88Censoring%EF%BC%89%E7%9A%84%E4%B8%80%E7%82%B9%E8%AE%A8%E8%AE%BA"><span class="nav-number">4.3.</span> <span class="nav-text">关于删失数据（Censoring）的一点讨论</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">266</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/01/05/lifetable_MPM_survivalcurve_etc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="生命表、矩阵群体模型与生存曲线 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          生命表、矩阵群体模型与生存曲线
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-01-05 13:00:00 / 修改时间：12:47:27" itemprop="dateCreated datePublished" datetime="2025-01-05T13:00:00+08:00">2025-01-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%89%A9/" itemprop="url" rel="index"><span itemprop="name">生物</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在生态学和临床医学中，有这样几个非常类似的概念很容易混淆：生命表（生态学），存活曲线（生态学），生存分析与生存曲线（临床医学）。这篇文章中我们将辨析一下这些概念，并介绍生态学研究中的矩阵群体模型（Matrix Population Models，MPM），后者是与生命表密切相关的一个数学模型。</p>
+<span id="more"></span>
+
+<h2 id="生命表（life-table）（生态学）："><a href="#生命表（life-table）（生态学）：" class="headerlink" title="生命表（life table）（生态学）："></a>生命表（life table）（生态学）：</h2><p>死亡是决定种群数量动态变化的关键因素之一。我们可以用生命表(life table)这种有用的工具来描述种群的死亡过程。有关死亡率的信息是通过调查不同生活时期死亡个体的数目而获得的，这些数据通过生命表来呈现和分析。动态生命表总结的是一组大约同时出生的个体从出生到死亡的命运，这样的一组个体称作同生群(cohort),这样的研究叫做同生群分析(cohort analysis)。还有一类生命表是根据某一特定时间对种群做一年龄结构的调查资料而编制的，称作静态生命表。静态生命表一般用于难以获得动态生命表数据的情况下的补充。——《基础生态学》pp.71-74</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104125753.png" alt="image.png"></p>
+<p>表中 $l_x$ 这一栏是最重要的，描述了种群在各年龄段的存活率。另一重要的栏目是 $q_x$ 栏，描述了种群死亡率随年龄而变化的过程。 $e_x$ 栏主要用于人类生命表，对保险业制定不同年龄人群的保险政策有实用价值。</p>
+<h2 id="存活曲线（survivorship-curve）（生态学）"><a href="#存活曲线（survivorship-curve）（生态学）" class="headerlink" title="存活曲线（survivorship curve）（生态学）"></a>存活曲线（survivorship curve）（生态学）</h2><p>存活率数据通常可用图表示为存活曲线(survivorship curve)。以lg(nx)栏（或lg(lx)栏）对x栏作图即可得存活曲线（图4-7）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104125851.png" alt="image.png"></p>
+<p>存活曲线直观地表达了同生群的存活过程。为了方便不同动物的比较，横轴的年龄可以各年龄期占总存活年限的百分数来表示。一般可将存活曲线分为如下3种基本类型（图4-8）：</p>
+<ul>
+<li>I型：曲线凸型，表示幼体存活率高，而老年个体死亡率高，在接近生理寿命前只有少数个体死亡。如大型哺乳动物和人的存活曲线。</li>
+<li>II型：曲线呈对角线型，表示在整个生活期中，有一个较稳定的死亡率。如一些鸟类中出现的模式。图4-7所示的存活曲线就是一个较为典型的鸟类存活曲线。在出生后很短的一段时间内，幼体死亡率很高，呈现III型模式，但1年后死亡率趋于稳定，为II型模式。</li>
+<li>III型：曲线凹型，表示幼体死亡率很高，如产卵鱼类、贝类和松树的存活模式。</li>
+</ul>
+<p>实际生活的大部分生物种群的存活曲线不是典型的存活曲线，但可表现出接近某种类型或中间型。大多数野生动物种群的存活曲线类型在II型和II型之间变化，而大多数植物种群的存活曲线则接近III型。伊藤(1980)在其《比较生态学》一书中认为随着动物进化从海洋进入陆地的过程，动物的产仔数量也按上述顺序减少，促使存活曲线由III型—II型—I型进化。——《基础生态学》pp.71-74</p>
+<h2 id="矩阵群体模型（Matrix-Population-Models，MPM）（生态学）"><a href="#矩阵群体模型（Matrix-Population-Models，MPM）（生态学）" class="headerlink" title="矩阵群体模型（Matrix Population Models，MPM）（生态学）"></a>矩阵群体模型（Matrix Population Models，MPM）（生态学）</h2><p><strong>Matrix Population Models</strong>（矩阵种群模型）是一种强大的工具，用于研究种群动态，特别是当种群的个体按照<strong>年龄</strong>、<strong>生命阶段</strong>或<strong>空间分布</strong>分组时。这些模型在生态学中被广泛用于预测种群增长、了解种群对环境变化的响应、以及评估管理或保护措施的影响。</p>
+<h4 id="1-模型基础"><a href="#1-模型基础" class="headerlink" title="1. 模型基础"></a><strong>1. 模型基础</strong></h4><ul>
+<li>矩阵种群模型基于离散时间步长。</li>
+<li>种群由多个状态组（如年龄组或生命阶段）构成。</li>
+<li>每个时间步中，个体可以：</li>
+<li><strong>存活</strong>并留在当前组；</li>
+<li><strong>过渡</strong>到下一个组；</li>
+<li><strong>繁殖</strong>并产生新的个体进入第一个组。</li>
+</ul>
+<h4 id="2-矩阵表示"><a href="#2-矩阵表示" class="headerlink" title="2. 矩阵表示"></a><strong>2. 矩阵表示</strong></h4><p>矩阵模型的核心是一个<strong>投影矩阵</strong>（Projection Matrix，或称 Leslie Matrix），用来表示各状态组之间的转移关系。</p>
+<p>假设种群分为 $n$ 个组，用向量表示每个组的个体数 $\mathbf{n}_t = [n_1, n_2, \dots, n_n]^T$，投影矩阵 $\mathbf{A}$ 表示每组之间的过渡关系：</p>
+<p>$$<br>\mathbf{n}_{t+1} = \mathbf{A} \cdot \mathbf{n}_t<br>$$</p>
+<p>矩阵 $\mathbf{A}$ 的形式通常为：</p>
+<p>$$<br>\mathbf{A} =<br>\begin{bmatrix}<br>f_1 &amp; f_2 &amp; \cdots &amp; f_n \\<br>s_1 &amp; 0   &amp; \cdots &amp; 0   \\<br>0   &amp; s_2 &amp; \cdots &amp; 0   \\<br>\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\<br>0   &amp; 0   &amp; \cdots &amp; s_{n-1}<br>\end{bmatrix}<br>$$</p>
+<ul>
+<li>$f_i$：第 $i$ 组的繁殖率。</li>
+<li>$s_i$：第 $i$ 组的存活率。</li>
+</ul>
+<h3 id="矩阵群体模型与生命表数据的互转"><a href="#矩阵群体模型与生命表数据的互转" class="headerlink" title="矩阵群体模型与生命表数据的互转"></a>矩阵群体模型与生命表数据的互转</h3><p>矩阵群体模型（Matrix Population Models）与生命表（Life Table）虽然在形式上不同，但都描述了种群在时间上的动态变化，且可以相互转换。</p>
+<h4 id="从生命表到矩阵群体模型"><a href="#从生命表到矩阵群体模型" class="headerlink" title="从生命表到矩阵群体模型"></a>从生命表到矩阵群体模型</h4><p>将生命表数据转化为矩阵群体模型的步骤如下：</p>
+<p>（1）计算繁殖率 $F_i$ </p>
+<p>$$<br>F_i = l_i \cdot m_i<br>$$</p>
+<ul>
+<li>$l_i$ ：年龄阶段 $i$  的存活率。</li>
+<li>$m_i$ ：年龄阶段 $i$  的生殖率。</li>
+</ul>
+<p>（2）计算阶段间存活概率 $P_i$</p>
+<p>$$<br>P_i = \frac{l_{i+1}}{l_i}<br>$$</p>
+<ul>
+<li>$l_{i+1}$ ：下一阶段的存活率。</li>
+<li>$l_i$ ：当前阶段的存活率。</li>
+</ul>
+<p>（3）构建勒斯利矩阵</p>
+<p>将 $F_i$ 放在矩阵的第一行（繁殖率），$P_i$ 放在次对角线（阶段间存活率）。</p>
+<h4 id="从矩阵群体模型到生命表"><a href="#从矩阵群体模型到生命表" class="headerlink" title="从矩阵群体模型到生命表"></a>从矩阵群体模型到生命表</h4><p>如果已知转移矩阵 $\mathbf{A}$ ，可以反向推导生命表：</p>
+<p>（1）计算存活率 $l_x$</p>
+<ol>
+<li>假设种群初始分布 $\mathbf{n}(0)$，如 $\mathbf{n}(0) = [1, 0, 0, \dots, 0]$ （所有个体初始处于第一个年龄段）。</li>
+<li>通过矩阵迭代计算种群分布： $\mathbf{n}(t) = \mathbf{A}^t \cdot \mathbf{n}(0)$</li>
+<li>对每个阶段计算存活比例 $l_x$： $l_x = \frac{n_x(t)}{\text{初始种群规模}}$</li>
+</ol>
+<p>（2）计算生殖率 $m_x$</p>
+<p>从矩阵第一行 $F_i$ 和 $l_i$ 的关系反推出 $m_i$： $m_i = \frac{F_i}{l_i}$</p>
+<h2 id="生存分析（Survival-Analysis）与生存曲线（Survival-Curve）（临床医学）："><a href="#生存分析（Survival-Analysis）与生存曲线（Survival-Curve）（临床医学）：" class="headerlink" title="生存分析（Survival Analysis）与生存曲线（Survival Curve）（临床医学）："></a>生存分析（Survival Analysis）与生存曲线（Survival Curve）（临床医学）：</h2><p>生存曲线是一种用来描述个体从某个时间点（如治疗开始）到某个事件发生（如死亡、疾病复发、痊愈等）之间的时间分布的图形。其数学方法包括参数法、半参数法和非参数法（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104222254.png" alt="image.png"></p>
+<h3 id="两种常用方法"><a href="#两种常用方法" class="headerlink" title="两种常用方法"></a>两种常用方法</h3><ol>
+<li>Kaplan-Meier方法（KM曲线）：<ul>
+<li>属于非参数法</li>
+<li>最常用的生存曲线绘制方法。</li>
+<li>以时间为横轴，生存概率为纵轴，通过统计每个时间点的生存率来绘制。</li>
+<li>常用于描述群体存活率的时间变化，并常用于两个不同处理的群体的比较研究。<strong>可以用直观的图形进行展示。</strong></li>
+</ul>
+</li>
+<li>Cox比例风险模型：<ul>
+<li>属于半参数法</li>
+<li>用于分析多个变量（如年龄、治疗方法）对生存时间的影响。</li>
+<li>不直接绘制生存曲线，但可用于调整风险后生成生存曲线。</li>
+</ul>
+</li>
+</ol>
+<h3 id="Kaplan-Meier生存曲线的绘制步骤"><a href="#Kaplan-Meier生存曲线的绘制步骤" class="headerlink" title="Kaplan-Meier生存曲线的绘制步骤"></a>Kaplan-Meier生存曲线的绘制步骤</h3><ul>
+<li><p>数据准备：</p>
+<ul>
+<li>定义生存时间（time to event）：从起始点到事件发生或随访结束的时间。</li>
+<li>确定结局事件（event of interest）：例如死亡、疾病复发。</li>
+<li>区分完全数据（事件发生）和删失数据（事件未发生但随访结束）。</li>
+</ul>
+</li>
+<li><p>计算生存率：</p>
+<ul>
+<li>事件发生概率（q）： 每个时间点的事件数 / 在风险中的总人数。</li>
+<li>生存概率（S）： 生存概率是累积的，计算公式为： <code>S(t)=S(t−1)×(1−事件数/在风险人数)</code></li>
+<li>起始时间点的生存概率定义为 1（即 100% 存活）。</li>
+</ul>
+</li>
+<li><p>绘制曲线：</p>
+<ul>
+<li>使用阶梯式的“阶梯函数”图（step function）。</li>
+<li>横轴为时间，纵轴为生存概率（S(t)）。</li>
+<li>事件发生时，曲线向下阶梯变化；删失点用竖线或符号标记。</li>
+</ul>
+</li>
+</ul>
+<p>下面我们以一个R语言代码实例介绍一下Kaplan-Meier生存曲线。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### 1. 安装和加载R包</span></span><br><span class="line"><span class="comment"># 绘制Kaplan-Meier生存曲线需要用到的R包：survminer和survival。</span></span><br><span class="line"><span class="comment"># 如果没有安装就先安装。</span></span><br><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;survminer&quot;</span><span class="punctuation">)</span> <span class="comment"># 安装survminer包</span></span><br><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;survival&quot;</span><span class="punctuation">)</span> <span class="comment"># 安装survival包</span></span><br><span class="line">library<span class="punctuation">(</span>survminer<span class="punctuation">)</span> <span class="comment"># 加载包</span></span><br><span class="line">library<span class="punctuation">(</span>survival<span class="punctuation">)</span> <span class="comment"># 加载包</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 2. 导入内置数据集</span></span><br><span class="line"><span class="comment"># 使用survival包的lung数据集进行演示。</span></span><br><span class="line">data<span class="punctuation">(</span>lung<span class="punctuation">)</span> <span class="comment"># 加载lung数据集</span></span><br><span class="line">head<span class="punctuation">(</span>lung<span class="punctuation">)</span> <span class="comment"># 查看数据集。这个数据集的前6行如下：</span></span><br><span class="line"><span class="comment">##   inst time status age sex ph.ecog ph.karno pat.karno meal.cal wt.loss</span></span><br><span class="line"><span class="comment">## 1    3  306      2  74   1       1       90       100     1175      NA</span></span><br><span class="line"><span class="comment">## 2    3  455      2  68   1       0       90        90     1225      15</span></span><br><span class="line"><span class="comment">## 3    3 1010      1  56   1       0       90        90       NA      15</span></span><br><span class="line"><span class="comment">## 4    5  210      2  57   1       1       90        60     1150      11</span></span><br><span class="line"><span class="comment">## 5    1  883      2  60   1       0      100        90       NA       0</span></span><br><span class="line"><span class="comment">## 6   12 1022      1  74   1       1       50        80      513       0</span></span><br><span class="line"><span class="comment"># lung数据集：NCCTG晚期肺癌患者的生存率。</span></span><br><span class="line"><span class="comment"># inst # 机构代码；</span></span><br><span class="line"><span class="comment"># time # 生存天数；</span></span><br><span class="line"><span class="comment"># status # 生存状态，1为删失，2为死亡；</span></span><br><span class="line"><span class="comment"># age # 年龄；</span></span><br><span class="line"><span class="comment"># sex # 性别，1为男性，2为女性；</span></span><br><span class="line"><span class="comment"># ph.ecog、ph.karno、pat.karno # 为病人和患者评分，这里用不到；</span></span><br><span class="line"><span class="comment"># meal.cal # 进食时消耗的卡路里；</span></span><br><span class="line"><span class="comment"># wt.loss # 最近6个月内的体重下降。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 3. 拟合生存曲线</span></span><br><span class="line"><span class="comment">## 3.1 创建生存对象</span></span><br><span class="line"><span class="comment"># 在survival包中先使用Surv()函数创建生存对象，生存对象是将事件时间和删失信息合并在一起的数据结构。</span></span><br><span class="line">attach<span class="punctuation">(</span>lung<span class="punctuation">)</span> <span class="comment"># 绑定数据集</span></span><br><span class="line">Surv<span class="punctuation">(</span>time<span class="punctuation">,</span>status<span class="punctuation">)</span> <span class="comment"># 创建生存对象</span></span><br><span class="line"><span class="comment"># 在上面输出的生存对象中，带&quot;+&quot;号的表示右删失数据。</span></span><br><span class="line"><span class="comment">## 3.2 拟合曲线</span></span><br><span class="line"><span class="comment"># R中使用survfit()函数来拟合生存曲线。</span></span><br><span class="line">fit <span class="operator">&lt;-</span> survfit<span class="punctuation">(</span>Surv<span class="punctuation">(</span>time<span class="punctuation">,</span>status<span class="punctuation">)</span> <span class="operator">~</span> sex<span class="punctuation">,</span>  <span class="comment"># 创建生存对象 </span></span><br><span class="line">               data <span class="operator">=</span> lung<span class="punctuation">)</span> <span class="comment"># 数据集来源</span></span><br><span class="line">fit <span class="comment"># 查看拟合曲线信息</span></span><br><span class="line"><span class="comment">## Call: survfit(formula = Surv(time, status) ~ sex, data = lung)</span></span><br><span class="line"><span class="comment">## </span></span><br><span class="line"><span class="comment">##         n events median 0.95LCL 0.95UCL</span></span><br><span class="line"><span class="comment">## sex=1 138    112    270     212     310</span></span><br><span class="line"><span class="comment">## sex=2  90     53    426     348     550</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 4. 绘制曲线+中位生存时间+置信区间</span></span><br><span class="line">ggsurvplot<span class="punctuation">(</span>fit<span class="punctuation">,</span> data <span class="operator">=</span> lung<span class="punctuation">,</span></span><br><span class="line">           surv.median.line <span class="operator">=</span> <span class="string">&quot;hv&quot;</span><span class="punctuation">,</span>  <span class="comment"># 增加中位生存时间</span></span><br><span class="line">           conf.int <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span> <span class="comment"># 增加置信区间</span></span><br></pre></td></tr></table></figure>
+
+<p>从 <code>fit</code> 的输出可以得知，lung数据集中的样本包含138例男性和90例女性；男性和女性发生感兴趣结局事件（包括死亡和删失）分别有112例和53例。男性和女性的中位生存时间分别为270天和426天。</p>
+<p>上面的代码最终绘制出的结果图（KM曲线）如下图。两条曲线分别显示了两种性别患者的生存率随时间的变化。</p>
+<p>中位生存时间(median survival time)又称为生存时间的中位数，表示刚好有50%的个体其存活期大于该时间，是生存分析中常用的概括性统计量。图解法是计算中位生存时间的方法，其利用生存曲线图，从纵轴生存率为50%处画一条与横轴平行的线，并与生存曲线相交，然后自交点画垂线与横轴相交，此交点对应的时间即为中位生存时间（如下图虚线）。可以看出，在lung数据集中，男性患者（sex=1）的中位生存时间低于女性患者（sex=2）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/Untitled.png" alt="Untitled.png"></p>
+<h3 id="关于删失数据（Censoring）的一点讨论"><a href="#关于删失数据（Censoring）的一点讨论" class="headerlink" title="关于删失数据（Censoring）的一点讨论"></a>关于删失数据（Censoring）的一点讨论</h3><p>在生存分析中，删失数据指在研究结束前，研究对象未发生感兴趣事件的情况，包括：</p>
+<ul>
+<li><strong>右删失（Right Censoring）：</strong> 在随访期结束时，事件未发生。</li>
+<li><strong>左删失（Left Censoring）：</strong> 事件发生在观察期开始之前（较少用）。</li>
+<li><strong>区间删失（Interval Censoring）：</strong> 事件发生的确切时间未知，只知道发生在某个时间区间内。</li>
+</ul>
+<p>其中，右删失最常见，例如，在癌症患者的生存分析中，一部分患者在研究结束时仍存活，但无法继续随访。这些患者的数据被视为右删失。在 Kaplan-Meier 方法中，通过如下策略处理删失数据：</p>
+<ol>
+<li><strong>删失点的标记：</strong> 在生存曲线上标出删失的时间点（通常用竖线或其他符号表示）。</li>
+<li><strong>删除删失患者后重新计算：</strong><ul>
+<li>Kaplan-Meier 方法计算每个时间点的生存概率时，仅基于<strong>该时间点仍在研究中的受试者</strong>。</li>
+<li>如果时间点 $t_i$ 有 $d_i$ 人发生事件且 $n_i$ 人仍在研究中，则生存概率为 $S(t_i) = S(t_{i-1}) \times \left(1 - \frac{d_i}{n_i}\right)$</li>
+<li>删失患者只影响 $n_i$ 的值，但不直接改变生存概率。</li>
+</ul>
+</li>
+</ol>
+<p>另外，生态学中的生命表和生存曲线中，也有类似删失数据的处理情况。不过生态学通常更注重总体趋势，不刻意标注删失：一些生命表将这些个体视为右删失（未能完整跟踪其生命状态）；另一些则选择忽略这些个体对生存概率的影响。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/01/05/lifetable_MPM_survivalcurve_etc/" title="生命表、矩阵群体模型与生存曲线">https://wz.anoms.top/2025/01/05/lifetable_MPM_survivalcurve_etc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%94%9F%E6%80%81%E5%AD%A6/" rel="tag"><i class="fa fa-tag"></i> 生态学</a>
+              <a href="/tags/%E7%94%9F%E5%91%BD%E8%A1%A8/" rel="tag"><i class="fa fa-tag"></i> 生命表</a>
+              <a href="/tags/%E7%9F%A9%E9%98%B5%E7%BE%A4%E4%BD%93%E6%A8%A1%E5%9E%8B/" rel="tag"><i class="fa fa-tag"></i> 矩阵群体模型</a>
+              <a href="/tags/%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF/" rel="tag"><i class="fa fa-tag"></i> 生存曲线</a>
+              <a href="/tags/%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/" rel="tag"><i class="fa fa-tag"></i> 生存分析</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/01/05/%E4%B9%9D%E7%AF%87%E9%9B%AA/" rel="prev" title="【摘抄】《九篇雪》李娟">
+                  <i class="fa fa-chevron-left"></i> 【摘抄】《九篇雪》李娟
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

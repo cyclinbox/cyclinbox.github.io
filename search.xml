@@ -15398,4 +15398,226 @@
         <tag>新年献词</tag>
       </tags>
   </entry>
+  <entry>
+    <title>生命表、矩阵群体模型与生存曲线</title>
+    <url>/2025/01/05/lifetable_MPM_survivalcurve_etc/</url>
+    <content><![CDATA[<p>在生态学和临床医学中，有这样几个非常类似的概念很容易混淆：生命表（生态学），存活曲线（生态学），生存分析与生存曲线（临床医学）。这篇文章中我们将辨析一下这些概念，并介绍生态学研究中的矩阵群体模型（Matrix Population Models，MPM），后者是与生命表密切相关的一个数学模型。</p>
+<span id="more"></span>
+
+<h2 id="生命表（life-table）（生态学）："><a href="#生命表（life-table）（生态学）：" class="headerlink" title="生命表（life table）（生态学）："></a>生命表（life table）（生态学）：</h2><p>死亡是决定种群数量动态变化的关键因素之一。我们可以用生命表(life table)这种有用的工具来描述种群的死亡过程。有关死亡率的信息是通过调查不同生活时期死亡个体的数目而获得的，这些数据通过生命表来呈现和分析。动态生命表总结的是一组大约同时出生的个体从出生到死亡的命运，这样的一组个体称作同生群(cohort),这样的研究叫做同生群分析(cohort analysis)。还有一类生命表是根据某一特定时间对种群做一年龄结构的调查资料而编制的，称作静态生命表。静态生命表一般用于难以获得动态生命表数据的情况下的补充。——《基础生态学》pp.71-74</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104125753.png" alt="image.png"></p>
+<p>表中 $l_x$ 这一栏是最重要的，描述了种群在各年龄段的存活率。另一重要的栏目是 $q_x$ 栏，描述了种群死亡率随年龄而变化的过程。 $e_x$ 栏主要用于人类生命表，对保险业制定不同年龄人群的保险政策有实用价值。</p>
+<h2 id="存活曲线（survivorship-curve）（生态学）"><a href="#存活曲线（survivorship-curve）（生态学）" class="headerlink" title="存活曲线（survivorship curve）（生态学）"></a>存活曲线（survivorship curve）（生态学）</h2><p>存活率数据通常可用图表示为存活曲线(survivorship curve)。以lg(nx)栏（或lg(lx)栏）对x栏作图即可得存活曲线（图4-7）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104125851.png" alt="image.png"></p>
+<p>存活曲线直观地表达了同生群的存活过程。为了方便不同动物的比较，横轴的年龄可以各年龄期占总存活年限的百分数来表示。一般可将存活曲线分为如下3种基本类型（图4-8）：</p>
+<ul>
+<li>I型：曲线凸型，表示幼体存活率高，而老年个体死亡率高，在接近生理寿命前只有少数个体死亡。如大型哺乳动物和人的存活曲线。</li>
+<li>II型：曲线呈对角线型，表示在整个生活期中，有一个较稳定的死亡率。如一些鸟类中出现的模式。图4-7所示的存活曲线就是一个较为典型的鸟类存活曲线。在出生后很短的一段时间内，幼体死亡率很高，呈现III型模式，但1年后死亡率趋于稳定，为II型模式。</li>
+<li>III型：曲线凹型，表示幼体死亡率很高，如产卵鱼类、贝类和松树的存活模式。</li>
+</ul>
+<p>实际生活的大部分生物种群的存活曲线不是典型的存活曲线，但可表现出接近某种类型或中间型。大多数野生动物种群的存活曲线类型在II型和II型之间变化，而大多数植物种群的存活曲线则接近III型。伊藤(1980)在其《比较生态学》一书中认为随着动物进化从海洋进入陆地的过程，动物的产仔数量也按上述顺序减少，促使存活曲线由III型—II型—I型进化。——《基础生态学》pp.71-74</p>
+<h2 id="矩阵群体模型（Matrix-Population-Models，MPM）（生态学）"><a href="#矩阵群体模型（Matrix-Population-Models，MPM）（生态学）" class="headerlink" title="矩阵群体模型（Matrix Population Models，MPM）（生态学）"></a>矩阵群体模型（Matrix Population Models，MPM）（生态学）</h2><p><strong>Matrix Population Models</strong>（矩阵种群模型）是一种强大的工具，用于研究种群动态，特别是当种群的个体按照<strong>年龄</strong>、<strong>生命阶段</strong>或<strong>空间分布</strong>分组时。这些模型在生态学中被广泛用于预测种群增长、了解种群对环境变化的响应、以及评估管理或保护措施的影响。</p>
+<h4 id="1-模型基础"><a href="#1-模型基础" class="headerlink" title="1. 模型基础"></a><strong>1. 模型基础</strong></h4><ul>
+<li>矩阵种群模型基于离散时间步长。</li>
+<li>种群由多个状态组（如年龄组或生命阶段）构成。</li>
+<li>每个时间步中，个体可以：</li>
+<li><strong>存活</strong>并留在当前组；</li>
+<li><strong>过渡</strong>到下一个组；</li>
+<li><strong>繁殖</strong>并产生新的个体进入第一个组。</li>
+</ul>
+<h4 id="2-矩阵表示"><a href="#2-矩阵表示" class="headerlink" title="2. 矩阵表示"></a><strong>2. 矩阵表示</strong></h4><p>矩阵模型的核心是一个<strong>投影矩阵</strong>（Projection Matrix，或称 Leslie Matrix），用来表示各状态组之间的转移关系。</p>
+<p>假设种群分为 $n$ 个组，用向量表示每个组的个体数 $\mathbf{n}_t = [n_1, n_2, \dots, n_n]^T$，投影矩阵 $\mathbf{A}$ 表示每组之间的过渡关系：</p>
+<p>$$<br>\mathbf{n}_{t+1} = \mathbf{A} \cdot \mathbf{n}_t<br>$$</p>
+<p>矩阵 $\mathbf{A}$ 的形式通常为：</p>
+<p>$$<br>\mathbf{A} =<br>\begin{bmatrix}<br>f_1 &amp; f_2 &amp; \cdots &amp; f_n \\<br>s_1 &amp; 0   &amp; \cdots &amp; 0   \\<br>0   &amp; s_2 &amp; \cdots &amp; 0   \\<br>\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\<br>0   &amp; 0   &amp; \cdots &amp; s_{n-1}<br>\end{bmatrix}<br>$$</p>
+<ul>
+<li>$f_i$：第 $i$ 组的繁殖率。</li>
+<li>$s_i$：第 $i$ 组的存活率。</li>
+</ul>
+<h3 id="矩阵群体模型与生命表数据的互转"><a href="#矩阵群体模型与生命表数据的互转" class="headerlink" title="矩阵群体模型与生命表数据的互转"></a>矩阵群体模型与生命表数据的互转</h3><p>矩阵群体模型（Matrix Population Models）与生命表（Life Table）虽然在形式上不同，但都描述了种群在时间上的动态变化，且可以相互转换。</p>
+<h4 id="从生命表到矩阵群体模型"><a href="#从生命表到矩阵群体模型" class="headerlink" title="从生命表到矩阵群体模型"></a>从生命表到矩阵群体模型</h4><p>将生命表数据转化为矩阵群体模型的步骤如下：</p>
+<p>（1）计算繁殖率 $F_i$ </p>
+<p>$$<br>F_i = l_i \cdot m_i<br>$$</p>
+<ul>
+<li>$l_i$ ：年龄阶段 $i$  的存活率。</li>
+<li>$m_i$ ：年龄阶段 $i$  的生殖率。</li>
+</ul>
+<p>（2）计算阶段间存活概率 $P_i$</p>
+<p>$$<br>P_i = \frac{l_{i+1}}{l_i}<br>$$</p>
+<ul>
+<li>$l_{i+1}$ ：下一阶段的存活率。</li>
+<li>$l_i$ ：当前阶段的存活率。</li>
+</ul>
+<p>（3）构建勒斯利矩阵</p>
+<p>将 $F_i$ 放在矩阵的第一行（繁殖率），$P_i$ 放在次对角线（阶段间存活率）。</p>
+<h4 id="从矩阵群体模型到生命表"><a href="#从矩阵群体模型到生命表" class="headerlink" title="从矩阵群体模型到生命表"></a>从矩阵群体模型到生命表</h4><p>如果已知转移矩阵 $\mathbf{A}$ ，可以反向推导生命表：</p>
+<p>（1）计算存活率 $l_x$</p>
+<ol>
+<li>假设种群初始分布 $\mathbf{n}(0)$，如 $\mathbf{n}(0) = [1, 0, 0, \dots, 0]$ （所有个体初始处于第一个年龄段）。</li>
+<li>通过矩阵迭代计算种群分布： $\mathbf{n}(t) = \mathbf{A}^t \cdot \mathbf{n}(0)$</li>
+<li>对每个阶段计算存活比例 $l_x$： $l_x = \frac{n_x(t)}{\text{初始种群规模}}$</li>
+</ol>
+<p>（2）计算生殖率 $m_x$</p>
+<p>从矩阵第一行 $F_i$ 和 $l_i$ 的关系反推出 $m_i$： $m_i = \frac{F_i}{l_i}$</p>
+<h2 id="生存分析（Survival-Analysis）与生存曲线（Survival-Curve）（临床医学）："><a href="#生存分析（Survival-Analysis）与生存曲线（Survival-Curve）（临床医学）：" class="headerlink" title="生存分析（Survival Analysis）与生存曲线（Survival Curve）（临床医学）："></a>生存分析（Survival Analysis）与生存曲线（Survival Curve）（临床医学）：</h2><p>生存曲线是一种用来描述个体从某个时间点（如治疗开始）到某个事件发生（如死亡、疾病复发、痊愈等）之间的时间分布的图形。其数学方法包括参数法、半参数法和非参数法（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250104222254.png" alt="image.png"></p>
+<h3 id="两种常用方法"><a href="#两种常用方法" class="headerlink" title="两种常用方法"></a>两种常用方法</h3><ol>
+<li>Kaplan-Meier方法（KM曲线）：<ul>
+<li>属于非参数法</li>
+<li>最常用的生存曲线绘制方法。</li>
+<li>以时间为横轴，生存概率为纵轴，通过统计每个时间点的生存率来绘制。</li>
+<li>常用于描述群体存活率的时间变化，并常用于两个不同处理的群体的比较研究。<strong>可以用直观的图形进行展示。</strong></li>
+</ul>
+</li>
+<li>Cox比例风险模型：<ul>
+<li>属于半参数法</li>
+<li>用于分析多个变量（如年龄、治疗方法）对生存时间的影响。</li>
+<li>不直接绘制生存曲线，但可用于调整风险后生成生存曲线。</li>
+</ul>
+</li>
+</ol>
+<h3 id="Kaplan-Meier生存曲线的绘制步骤"><a href="#Kaplan-Meier生存曲线的绘制步骤" class="headerlink" title="Kaplan-Meier生存曲线的绘制步骤"></a>Kaplan-Meier生存曲线的绘制步骤</h3><ul>
+<li><p>数据准备：</p>
+<ul>
+<li>定义生存时间（time to event）：从起始点到事件发生或随访结束的时间。</li>
+<li>确定结局事件（event of interest）：例如死亡、疾病复发。</li>
+<li>区分完全数据（事件发生）和删失数据（事件未发生但随访结束）。</li>
+</ul>
+</li>
+<li><p>计算生存率：</p>
+<ul>
+<li>事件发生概率（q）： 每个时间点的事件数 / 在风险中的总人数。</li>
+<li>生存概率（S）： 生存概率是累积的，计算公式为： <code>S(t)=S(t−1)×(1−事件数/在风险人数)</code></li>
+<li>起始时间点的生存概率定义为 1（即 100% 存活）。</li>
+</ul>
+</li>
+<li><p>绘制曲线：</p>
+<ul>
+<li>使用阶梯式的“阶梯函数”图（step function）。</li>
+<li>横轴为时间，纵轴为生存概率（S(t)）。</li>
+<li>事件发生时，曲线向下阶梯变化；删失点用竖线或符号标记。</li>
+</ul>
+</li>
+</ul>
+<p>下面我们以一个R语言代码实例介绍一下Kaplan-Meier生存曲线。</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment">### 1. 安装和加载R包</span></span><br><span class="line"><span class="comment"># 绘制Kaplan-Meier生存曲线需要用到的R包：survminer和survival。</span></span><br><span class="line"><span class="comment"># 如果没有安装就先安装。</span></span><br><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;survminer&quot;</span><span class="punctuation">)</span> <span class="comment"># 安装survminer包</span></span><br><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;survival&quot;</span><span class="punctuation">)</span> <span class="comment"># 安装survival包</span></span><br><span class="line">library<span class="punctuation">(</span>survminer<span class="punctuation">)</span> <span class="comment"># 加载包</span></span><br><span class="line">library<span class="punctuation">(</span>survival<span class="punctuation">)</span> <span class="comment"># 加载包</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 2. 导入内置数据集</span></span><br><span class="line"><span class="comment"># 使用survival包的lung数据集进行演示。</span></span><br><span class="line">data<span class="punctuation">(</span>lung<span class="punctuation">)</span> <span class="comment"># 加载lung数据集</span></span><br><span class="line">head<span class="punctuation">(</span>lung<span class="punctuation">)</span> <span class="comment"># 查看数据集。这个数据集的前6行如下：</span></span><br><span class="line"><span class="comment">##   inst time status age sex ph.ecog ph.karno pat.karno meal.cal wt.loss</span></span><br><span class="line"><span class="comment">## 1    3  306      2  74   1       1       90       100     1175      NA</span></span><br><span class="line"><span class="comment">## 2    3  455      2  68   1       0       90        90     1225      15</span></span><br><span class="line"><span class="comment">## 3    3 1010      1  56   1       0       90        90       NA      15</span></span><br><span class="line"><span class="comment">## 4    5  210      2  57   1       1       90        60     1150      11</span></span><br><span class="line"><span class="comment">## 5    1  883      2  60   1       0      100        90       NA       0</span></span><br><span class="line"><span class="comment">## 6   12 1022      1  74   1       1       50        80      513       0</span></span><br><span class="line"><span class="comment"># lung数据集：NCCTG晚期肺癌患者的生存率。</span></span><br><span class="line"><span class="comment"># inst # 机构代码；</span></span><br><span class="line"><span class="comment"># time # 生存天数；</span></span><br><span class="line"><span class="comment"># status # 生存状态，1为删失，2为死亡；</span></span><br><span class="line"><span class="comment"># age # 年龄；</span></span><br><span class="line"><span class="comment"># sex # 性别，1为男性，2为女性；</span></span><br><span class="line"><span class="comment"># ph.ecog、ph.karno、pat.karno # 为病人和患者评分，这里用不到；</span></span><br><span class="line"><span class="comment"># meal.cal # 进食时消耗的卡路里；</span></span><br><span class="line"><span class="comment"># wt.loss # 最近6个月内的体重下降。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 3. 拟合生存曲线</span></span><br><span class="line"><span class="comment">## 3.1 创建生存对象</span></span><br><span class="line"><span class="comment"># 在survival包中先使用Surv()函数创建生存对象，生存对象是将事件时间和删失信息合并在一起的数据结构。</span></span><br><span class="line">attach<span class="punctuation">(</span>lung<span class="punctuation">)</span> <span class="comment"># 绑定数据集</span></span><br><span class="line">Surv<span class="punctuation">(</span>time<span class="punctuation">,</span>status<span class="punctuation">)</span> <span class="comment"># 创建生存对象</span></span><br><span class="line"><span class="comment"># 在上面输出的生存对象中，带&quot;+&quot;号的表示右删失数据。</span></span><br><span class="line"><span class="comment">## 3.2 拟合曲线</span></span><br><span class="line"><span class="comment"># R中使用survfit()函数来拟合生存曲线。</span></span><br><span class="line">fit <span class="operator">&lt;-</span> survfit<span class="punctuation">(</span>Surv<span class="punctuation">(</span>time<span class="punctuation">,</span>status<span class="punctuation">)</span> <span class="operator">~</span> sex<span class="punctuation">,</span>  <span class="comment"># 创建生存对象 </span></span><br><span class="line">               data <span class="operator">=</span> lung<span class="punctuation">)</span> <span class="comment"># 数据集来源</span></span><br><span class="line">fit <span class="comment"># 查看拟合曲线信息</span></span><br><span class="line"><span class="comment">## Call: survfit(formula = Surv(time, status) ~ sex, data = lung)</span></span><br><span class="line"><span class="comment">## </span></span><br><span class="line"><span class="comment">##         n events median 0.95LCL 0.95UCL</span></span><br><span class="line"><span class="comment">## sex=1 138    112    270     212     310</span></span><br><span class="line"><span class="comment">## sex=2  90     53    426     348     550</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 4. 绘制曲线+中位生存时间+置信区间</span></span><br><span class="line">ggsurvplot<span class="punctuation">(</span>fit<span class="punctuation">,</span> data <span class="operator">=</span> lung<span class="punctuation">,</span></span><br><span class="line">           surv.median.line <span class="operator">=</span> <span class="string">&quot;hv&quot;</span><span class="punctuation">,</span>  <span class="comment"># 增加中位生存时间</span></span><br><span class="line">           conf.int <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span> <span class="comment"># 增加置信区间</span></span><br></pre></td></tr></table></figure>
+
+<p>从 <code>fit</code> 的输出可以得知，lung数据集中的样本包含138例男性和90例女性；男性和女性发生感兴趣结局事件（包括死亡和删失）分别有112例和53例。男性和女性的中位生存时间分别为270天和426天。</p>
+<p>上面的代码最终绘制出的结果图（KM曲线）如下图。两条曲线分别显示了两种性别患者的生存率随时间的变化。</p>
+<p>中位生存时间(median survival time)又称为生存时间的中位数，表示刚好有50%的个体其存活期大于该时间，是生存分析中常用的概括性统计量。图解法是计算中位生存时间的方法，其利用生存曲线图，从纵轴生存率为50%处画一条与横轴平行的线，并与生存曲线相交，然后自交点画垂线与横轴相交，此交点对应的时间即为中位生存时间（如下图虚线）。可以看出，在lung数据集中，男性患者（sex=1）的中位生存时间低于女性患者（sex=2）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/Untitled.png" alt="Untitled.png"></p>
+<h3 id="关于删失数据（Censoring）的一点讨论"><a href="#关于删失数据（Censoring）的一点讨论" class="headerlink" title="关于删失数据（Censoring）的一点讨论"></a>关于删失数据（Censoring）的一点讨论</h3><p>在生存分析中，删失数据指在研究结束前，研究对象未发生感兴趣事件的情况，包括：</p>
+<ul>
+<li><strong>右删失（Right Censoring）：</strong> 在随访期结束时，事件未发生。</li>
+<li><strong>左删失（Left Censoring）：</strong> 事件发生在观察期开始之前（较少用）。</li>
+<li><strong>区间删失（Interval Censoring）：</strong> 事件发生的确切时间未知，只知道发生在某个时间区间内。</li>
+</ul>
+<p>其中，右删失最常见，例如，在癌症患者的生存分析中，一部分患者在研究结束时仍存活，但无法继续随访。这些患者的数据被视为右删失。在 Kaplan-Meier 方法中，通过如下策略处理删失数据：</p>
+<ol>
+<li><strong>删失点的标记：</strong> 在生存曲线上标出删失的时间点（通常用竖线或其他符号表示）。</li>
+<li><strong>删除删失患者后重新计算：</strong><ul>
+<li>Kaplan-Meier 方法计算每个时间点的生存概率时，仅基于<strong>该时间点仍在研究中的受试者</strong>。</li>
+<li>如果时间点 $t_i$ 有 $d_i$ 人发生事件且 $n_i$ 人仍在研究中，则生存概率为 $S(t_i) = S(t_{i-1}) \times \left(1 - \frac{d_i}{n_i}\right)$</li>
+<li>删失患者只影响 $n_i$ 的值，但不直接改变生存概率。</li>
+</ul>
+</li>
+</ol>
+<p>另外，生态学中的生命表和生存曲线中，也有类似删失数据的处理情况。不过生态学通常更注重总体趋势，不刻意标注删失：一些生命表将这些个体视为右删失（未能完整跟踪其生命状态）；另一些则选择忽略这些个体对生存概率的影响。</p>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>生态学</tag>
+        <tag>生命表</tag>
+        <tag>矩阵群体模型</tag>
+        <tag>生存曲线</tag>
+        <tag>生存分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【摘抄】《九篇雪》李娟</title>
+    <url>/2025/01/05/%E4%B9%9D%E7%AF%87%E9%9B%AA/</url>
+    <content><![CDATA[<p><em>「一年被雪，以及其他的——春天的，秋天的，夏天的——什么东西所埋葬后，十二月才进入到它的最后一天。一年过后，我们走在雪野上，含泪想到，又是一年了。但是，雪下的时候，却留下了去年经过雪地时的一行脚印，叫我们知道，他也一样一直从去年走到现在。」</em></p>
+<p>前段时间读到的一篇很喜欢的散文，现在读来依然很感动。收藏在此，以便回顾。</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="九篇雪"><a href="#九篇雪" class="headerlink" title="九篇雪"></a>九篇雪</h1><blockquote>
+<p>李娟</p>
+</blockquote>
+<h2 id="一"><a href="#一" class="headerlink" title="一"></a>一</h2><p>我说：“又下雪了。”我悄悄起床，趴在窗台上往外看。外面黑乎乎的。我又说：“又下雪了。”睁大了眼睛，什么也看不见。此时，雪的白不知正在谁的梦中白着。我咳嗽了一声，清清嗓子第三次大声说道：“下雪了！”——黑暗中没有一丝响应。许久，房子的某个角落传来打鼾声。我忍不住流下泪来：“真的下雪了……”</p>
+<p>就像我说“我真的爱你”一样。这世上总是有那么多的事情不能让人相信。我真的知道每个夜晚雪其实都在下。我无法把这件事告诉别人，是因为我不能解释那些落下的雪又是如何穿行在一个神秘的通道中，然后在天亮前消失。我也并不是真的什么都知道了。当夜深人静时，自己突然从床上坐起，脱口而出的那句话——我也弄不清是不是梦话。</p>
+<p>那么，雪到底下了还是没下？</p>
+<h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>真正下雪的夜晚，绝对不会只让我一个人知道。首先天气预报就会提前好几天公布。一推开门世界就变白变厚了的大怪事也只在童年里出现。下雪的夜里，通夜都有人在忙碌，这人刚刚回到家，那人又推开门踏雪而去，说不上究竟是谁第一个经历了雪。</p>
+<p>我穿好衣服，戴好围巾手套，早早地推门出去，但还是看到有人在四十厘米厚的大雪上留下了脚印。这行脚印横在门口，从东到西，让我没法过去，只好踩进脚印坑里前进。天色漆黑，路灯昏暗，街道冷清。走在这行脚印中，想着到底是谁，比我更加孤独。</p>
+<p>踩着这脚印一直往前走，渐渐丢失了自己原来的方向。我曾停下来想了一会儿，再抬起脚时，不由自主又踩入下一个脚印。我发现我已经无法离开那人留给我的路了。虽然也曾试着从经过的一个路口踏入别的方向，可踩出去一脚，就在雪上跌了一跤。</p>
+<p>我接着向前走，渐渐发现，我走他的路是为了追上他，为了看看他的容颜。</p>
+<p>我知道他是谁了。</p>
+<p>接下来我又渐渐感觉到那行脚印在每一处岔路口的迟疑。也许我可以追上他，我没有丝毫的迟疑。我便跑了起来。路灯突然没有了，天却朦朦胧胧亮了起来，我的心怦怦直跳，呼吸急促。每跨出一步我都感觉他在下一步等我。近了，快了……我跌跌撞撞，不停地摔跤。天渐亮了，我愈发清晰地感觉到了他的气息，我甚至真的听到了他的呼吸和叹气。我心中狂喜，不能自已——我看到前面的脚印停止了下来！我马上就见着他了！我连跑几步，在脚印消失的地方，欲往前再走一步——马上就要见着他的最后一步——时，却赫然惊觉，自己正站在一处悬崖的尽头……</p>
+<p>——天一下子重新黑了。我从梦中惊醒，穿好衣服，坐到天明。</p>
+<h2 id="三"><a href="#三" class="headerlink" title="三"></a>三</h2><p>雪是多么不可思议的一种事物！</p>
+<p>首先它是白的。它没有杂质，它耀眼。它白，它就是白。它总会让人想起一个咬着嘴唇的沉默而倔强的女孩。它从上面重重积云中下来，云却是灰的。</p>
+<p>其次，它是飘落下来的。漫天地飘落，从天到地缠绵着。我们也渴望那种飘——当流星和雨点笔直迅疾地坠落，当鸟儿拍着翅膀呼啦啦啦远去，我渴望升入高处，再慢慢悠悠地落向大地。慢慢悠悠地，什么都看见了，什么都记住了。</p>
+<p>然后，它是图案精致的。让人得知有一个人曾多么寂寞，他在那么漫长的岁月中，一片一片反复雕琢出这些精美的尤物。再在剩下的时间里将它们一把一把抛撒、丢弃。这些尤物，在静处和近处给你指出迷宫，然后淡淡一笑，自己却欠身堵住了出口。它展示着它的六片花瓣。树叶有这种形状吗？石头有这种形状吗？梦有吗？死亡有吗？如果世上没有雪，人类永远无法靠现有的想象将这种东西凭空合成。</p>
+<p>雪还可以堆积和覆盖。在这世上，能够完完全全去覆盖什么的只有雪和坟墓吧？因此，雪地总是有着墓地的美。我们走在雪上，想到雪被下面的那些，会想到自己就这样走过了。会回头张望。</p>
+<p>雪还可以融化，在手心消失，在春天消失。我们留不住雪，以及更多的东西。抓一大把雪将它攥紧吧，去感觉冰凉的、泪水流逝一般的流逝。如果此时你不能把它融化，你就将被它冻僵。雪冷冷地看你，消失了还在梦中这样看你。</p>
+<p>但是小的时候我们不知道有关雪的这么多。我们只知道雪可以堆雪人，一个和我们一样大的雪人，而且和我们一样站在大地上。它的一切都由我们来给。胡萝卜的鼻子，煤炭的眼睛，还戴过我的眼镜，围过你的围巾。有一天，它因我们年幼的记忆而产生了奇迹，它和我们一起奔跑过大街和广场，有了生命。后来天暗了，我们回家时不该把它独自留在那里。我们什么都给它的时候没有想到也会给它孤独。我们真的没有想到。当我们纷纷隔着窗子远远凝望着它，在各自温暖如春的家里。</p>
+<p>我们来自于生命中的第一次寂寞，是看到了一个雪人的寂寞吧？如果它没有眼睛和鼻子，如果它仍是一摊平整的雪。如果我们没有惊醒雪，我们没有惊醒它。</p>
+<p>我们可能将替它，站过一个又一个冬天。</p>
+<h2 id="四"><a href="#四" class="headerlink" title="四"></a>四</h2><p>我不会悲叹任何一朵落下的花，因为它们已经落下，而我还在这里。而我还不曾老去。我不会悲叹的，当漫天雪花从冬的枝头落下，会看到我仍没有离开。</p>
+<p>漫天雪花落下，像舞台落幕一样落下。我站在雪地中频频欠身谢幕，又在空旷的观众席上独自热烈鼓掌。我不会哀叹。任何的落去的花，我看见它们已经把青春落下，然后是爱情，最后是生命。落在我脚边的地方。最后才是雪，像墓土一样层层覆盖，洁白温柔，柔软一地。</p>
+<p>等待我的落下。等待我的悲叹。最后它们只等到我亲人们的悲叹。我的亲人们掘开冰雪和泥土，以及一切落下的尘埃，把我深深埋葬，然后落泪离去。我最后看到的是他们的身影在天边落下。</p>
+<h2 id="五"><a href="#五" class="headerlink" title="五"></a>五</h2><p>雪一个冬天一个冬天地下。在我们看得见的地方陆续融化，却在我们看不见的地方一层一层堆积、加厚。这就是为什么童年时代丢失在操场上的那双红手套再也找不回来了。它被埋得那样深。</p>
+<p>还有春天、夏天和秋天，它们过去也总会有什么一层一层留下。我们看不到。但我们能看到冬天的雪在经过它们时的迟疑和吃力——雪花是一片一片，纷纷扬扬地下的，而不是倾巢出动，轰然从云层里坍塌下来的。每一片雪都是在经过漫长的旅程后，才侧身抱着双肩，小心穿梭行进，一步一步地到达大地。在空中左突右闪，回旋辗转。我们还小的时候只能看到它们的轻盈和优雅，看不到它们正经历着的岁月。</p>
+<p>一年被雪，以及其他的——春天的，秋天的，夏天的——什么东西所埋葬后，十二月才进入到它的最后一天。</p>
+<p>一年过后，我们走在雪野上，含泪想到，又是一年了。</p>
+<p>但是，雪下的时候，却留下了去年经过雪地时的一行脚印，叫我们知道，他也一样一直从去年走到现在。</p>
+<h2 id="六"><a href="#六" class="headerlink" title="六"></a>六</h2><p>雪霁天晴。碎雪仍在若有若无地飘荡。我抬头望着深蓝的天空，看星星点点的碎雪从白茫茫的大地上浮起，像水底的气泡一样缓慢地通过空气向天空浮起，一粒一粒消失在上方的蓝色中。</p>
+<p>很少有人注意到雪落地后还会重新升起、回去。他们只会偶尔惊诧一下为什么雪晴后，阳光照耀下的空气会闪闪地发光。</p>
+<p>没有风。碎雪左右飘荡，盘旋漫舞，像在风中一样，又像在音乐中一样。</p>
+<p>上升，上升。就像眼泪滑落那样上升。天空蓝得能蜇出人的泪水。是不是正是天空的那种比蓝还蓝的蓝，动荡在上空几百米的高处，磁铁一样吸吮着皑皑积雪中没有分量的那部分——那一部分因重量而下坠，落地过程中却不小心将它的重量从手中失落，先它自己掉下来。它便轻轻飘飘失重了。在茫茫大雪中，我们总能看到纷纷扬扬的飞雪中有几粒在犹豫——就是它们；雪停天晴后，我们又看到总有隐隐碎雪浮在空中渐渐上升——也是它们。</p>
+<p>那一片亮闪闪的空气中，微缈的碎雪四起时，我正在兀自前行，不住回头张望。假如有一天，我也像一粒落下又飞起的雪那样，那么我又是在为着什么？……这么想着的时候，远方似乎还在等我向它坠落，我踩出的一个个脚印却轻轻牵住了我。并且轻轻，向未来某个日子里浮显，等我有朝一日再次踏上去，再次回到这一步，回到四起的碎雪中去，继续向前。</p>
+<p>我不停地回头，不停仰面张望。乍然看去，空中什么也没有，直到眼泪被天地间的明亮刺激出来时，上升的碎雪才一粒一粒被我看见，又一粒一粒在视力可及的范围内向上方的深处消失。</p>
+<p>很多故事里，大结局之后我们所不知道的情节又是如何继续的？我们翻过了最后一页，仍然什么也不能知道。除了那个故事结尾的最后一句话，整本书什么也没有说。</p>
+<p>难道一切真的不会停止，真的没有结束的时候？</p>
+<p>落下又扬起的雪走了，那些落下并积起的雪也不会停留多久。它们离开的过程更复杂，更不易发现。它们的经历更曲折，更不可想象。</p>
+<p>而我的行进已经停了下来，在碎雪四处闪烁浮扬的雪野上停了下来。</p>
+<p>就像落下的雪那样停了下来。</p>
+<p>我最后一次回头望，并仰望蓝天。</p>
+<h2 id="七"><a href="#七" class="headerlink" title="七"></a>七</h2><p>经年雪封、亘古不化的冰山，是被遗弃得最彻底的东西。四季没法找到它，甚至连冬天也这么说：“这可能是另外一个冬天的尸体。”它说：“是很久很久以前的一个冬天——我不认识它，我们相隔太多的岁月。”那些相隔太多的岁月闻言，便年复一年降落着大雪。</p>
+<p>有一天大山深处喷出了汹涌激荡的岩浆，一泻千里，势不可挡。亿年积雪烟蒸气氲，万古冰层四处迸裂；天为之倾，地为之崩，复活的声音撕裂寰宇，震荡天际，久久不绝，久久不绝。</p>
+<p>后来这声音渐渐远去并消逝。又一场更大的雪降临，一切被埋葬了过去。整个世界仍然什么都不知道。四季仍然沉默，甚至冬天也说：</p>
+<p>“我真的不认识它。它可能是死亡了亿万年的，曾有过的第五个季节。”</p>
+<h2 id="八"><a href="#八" class="headerlink" title="八"></a>八</h2><p>下雪与冬天没有多大关系，一年四季都在下。只是别的日子里的雪在落下的过程中渐渐变成了另外的事物，有时以雨的形象出现，有时则是一些落叶，有时则是一场灾难，更多的时候是无边的寂寞。只有冬天的寒冷才能将它原封不动地保存下来，洁白剔透地降临人间。</p>
+<p>或者我们所看到的，所谓的“雪”，也是另外某种事物的最终命运，最后的化身。</p>
+<p>那么雪到底是什么？</p>
+<p>有一种东西到底是什么？</p>
+<p>我们只知年年岁岁都在落下一些东西。一次幸福、一些年轻、一个孩子、一场车祸，或一块陨石。就像雪从铅灰虚茫的天空落下，这些事物的来处也同样渺茫未知。但我们接受了它们，直到我们因越来越多的接受而变得越来越沉重时，我们自己也不能自拔地落下。</p>
+<p>那些绝对不是雪。雪的轻盈和精致是一切下落事物的典范。做这典范的人说：“你此时，就像这样飘荡人世。看你多么美丽！可惜你看不到你自己……”</p>
+<p>叫我们如何去相信！</p>
+<p>我们永远无法忍心舍弃的美好，永远不肯罢休的痛苦，还有爱情、童年、孤独、欺骗，还有罪过、仇恨、热望、抵抗……当我们携着这所有落下，我们怎么相信，此时的我们，仅仅只是一片雪？</p>
+<p>他又说：“雪的心，本也是一粒灰尘，只不过衣了重重的华裳。”</p>
+<p>可我们的心却是在怦怦跳动，泵起血液向高处喷涌。我们的四肢和面孔健康而年轻。我们怎能只是像一些雪花那样简单？是谁随随便便就用了这种比拟来搪塞我们激情纷扬的一生，是谁仅用一些雪就欺骗了整个冬天，蒙蔽了我们的眼睛。让一些不该落下的落下，又立即用别的落下的东西，掩盖了它。</p>
+<h2 id="九"><a href="#九" class="headerlink" title="九"></a>九</h2><p>雪下得如此平静，好像它什么都不知道似的。好像它在一边下，一边思量、冥想。在想好之前，绝不愿惊动人似的。</p>
+<p>好像它真的什么都不曾做过。它轻轻地摇头，再落下。</p>
+<p>而雪地更加平静。平静到看不出它正在延伸。</p>
+<p>久久地看，久久地看，也看出了。此种延伸的不易察觉是因为它是以万物的渐渐沉静渐渐休止而延伸。</p>
+<p>雪地微颤了一下是因为有人从那边过来了。雪地最后的颤动则是他已经永远地离开。雪地是世间最大的一片空白，填满它吧！于是又下起了一场更安静的雪。</p>
+<p>而最静寂最空洞的要数那些雪夜了。夜色把一切动静含在嘴里，雪落像是在梦中落，无凭无依。睡意正滴水般，秒针一格一格地移动般一下一下叩击心灵。入睡后，雪更静更遥远了，梦悄悄地把人向相反的地方带。如果带去的地方也在下雪的话，它又会立即轻轻把你带回来。会让你暂醒片刻。</p>
+<p>室内的安静被整个世界的安静所挤压。睡醒的人静静听了一会儿，又更沉地睡去。隔着墙壁和梦，雪纷纷扬扬地下，它既不濡湿什么也不击打什么。它只是一层层覆盖，不露声色。把你留在夜里，不着痕迹。</p>
+<p>就这样安静地埋葬你在你的梦境里。</p>
+<p>如果有人此时敲打你的院门，深夜里大声呼喊你的名字，它会把所有声响引向别处，引向很多年以后，才让你被唤醒。</p>
+<p>雪和夜愈来愈靠近你，又渐渐远去，去到世界上最遥远的地方。再回来，在你的梦里告诉你一些你所不知的事情。再愈来愈近地靠近你。</p>
+<p>雪越下，天越黑。雪层一点一点加厚，挤缩着黑夜的空间，使夜退守得更浓，更放低了呼吸。</p>
+<p>——正是在这样一个平静异常的深夜里，我突然大汗淋漓，惊梦而起。并失声叫道：</p>
+<p>“下雪了！”</p>
+]]></content>
+      <categories>
+        <category>摘抄</category>
+      </categories>
+      <tags>
+        <tag>散文摘抄</tag>
+      </tags>
+  </entry>
 </search>
