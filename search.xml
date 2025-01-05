@@ -15620,4 +15620,47 @@
         <tag>散文摘抄</tag>
       </tags>
   </entry>
+  <entry>
+    <title>MemoTrace：微信年度报告生成工具</title>
+    <url>/2025/01/05/MemoTrace_a_tool_for_WeChat_AnnualSummary/</url>
+    <content><![CDATA[<p>这两天在网上看到了一个开源的小工具叫<a href="https://memotrace.cn/">MemoTrace</a>，可以用来管理微信聊天记录和生成年度报告，感觉很有意思，浅浅探索了一下。</p>
+<span id="more"></span>
+
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>MemoTrace是一个使用python编写的、基于微信PC客户端（仅Windows版微信）的聊天记录管理工具，其在<a href="https://github.com/LC044/WeChatMsg/">Github</a>上开源，同时也有自己的<a href="https://memotrace.cn/">主页</a> 。下面是主页的样子：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250105223211.png" alt="image.png"></p>
+<p>由于涉及到微信聊天记录这样的隐私数据，作者在Github页面上贴出来了下面这段声明，强调这个工具只能在本地使用，并且只能用于分析聊天记录，无法找回已删除聊天或者篡改聊天记录。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250105223717.png" alt="image.png"></p>
+<p>安装方法很简单：在主页上点击下载按钮，选择最新版本的exe安装包下载即可。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/cf978db404a25c10826ea1bb6dd61f90.clipboard-2024-09-04.webp" alt="cf978db404a25c10826ea1bb6dd61f90.clipboard-2024-09-04.webp"></p>
+<p>安装完成之后，初次启动时需要参考<a href="https://memotrace.cn/doc/posts/deploy/parser-db.html">使用手册</a> 进行数据解析（如上图），这一步会检测系统中存在的微信客户端和用户数据，并将用户数据转码为MemoTrace可读的数据库格式，将其存储在 <code>&lt;软件安装目录&gt;/app/DataBase/Msg/&lt;wxid&gt;</code> 文件夹下面（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1736088409166.png" alt="1736088409166.png"></p>
+<p>如此，我们完成了安装和数据解析，后续就可以用它来管理和分析数据了。由于本文只关注这个工具的“年度总结报告”功能，因此下文只简要介绍如何获取单个好友的年度报告和自己的年度报告。</p>
+<p>另外要注意的是，这个软件的所有分析全部基于微信PC版的聊天记录数据，因此可能有记录不全的可能性；如果想要更加齐全的分析，可以在启动MemoTrace前先进行<a href="https://mp.weixin.qq.com/s/0Tokq3kPSh9uHDz7L9IhsA">微信手机端向PC端的数据迁移</a>。</p>
+<h2 id="获取年度报告"><a href="#获取年度报告" class="headerlink" title="获取年度报告"></a>获取年度报告</h2><p>年度报告分两种：单个好友的年度报告，以及整体的年度报告。</p>
+<h3 id="单个好友的年度报告"><a href="#单个好友的年度报告" class="headerlink" title="单个好友的年度报告"></a>单个好友的年度报告</h3><p>单个好友的年度报告，在“好友”→选择联系人→“年度报告”里。选择我们想要查看年度报告的好友，点击“年度报告”按钮，MemoTrace会启动一个浏览器窗口，在浏览器窗口中展示H5动态报告，包括聊天次数、双方聊天关键词、聊天时间分布等信息。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1736088780704.png" alt="1736088780704.png"></p>
+<p>以我和我自己的小号之间的聊天为例，其生成的报告内容大致如下（这个报告有许多页，稍微拼了一下图）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250105230626.png" alt="image.png"></p>
+<p>可以用这个功能去查看一些自己感兴趣（或者很重视）的联系人，看一看你们这一年留下了哪些共同记忆。</p>
+<h3 id="整体的年度报告"><a href="#整体的年度报告" class="headerlink" title="整体的年度报告"></a>整体的年度报告</h3><p>整体的年度报告，在“我的”→“我的年度聊天报告”里。同样的，MemoTrace会启动一个浏览器窗口，在浏览器窗口中展示H5动态报告，但是报告内容会结合我们和所有好友的聊天进行分析，统计出聊天次数最多的几位好友，聊天关键词词云图等信息。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1736088844737.png" alt="1736088844737.png"></p>
+<h2 id="我的微信年度报告"><a href="#我的微信年度报告" class="headerlink" title="我的微信年度报告"></a>我的微信年度报告</h2><p>部分涉及隐私的内容已打码。</p>
+<p>聊天时间段：果然很符合我夜猫子的作息习惯。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/Screenshot%202025-01-05%20at%2023-08-48%20%E5%B9%B4%E5%BA%A6%E8%81%8A%E5%A4%A9%E6%8A%A5%E5%91%8A.png" alt="Screenshot 2025-01-05 at 23-08-48 年度聊天报告.png"></p>
+<p>聊天关键词（笑死，感觉师兄被我cue到的次数真多）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/Screenshot%202025-01-05%20at%2013-10-28%20%E5%B9%B4%E5%BA%A6%E8%81%8A%E5%A4%A9%E6%8A%A5%E5%91%8A%E5%89%AF%E6%9C%AC2.jpg" alt="Screenshot 2025-01-05 at 13-10-28 年度聊天报告副本2.jpg"></p>
+<p>以及最终的总结（虽然这里打了码，但是依然感谢出现在我好友榜单的6位好友！不论如何，你们都是我枯燥平凡生活中的一抹亮色！谢谢你们！）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/Screenshot%202025-01-05%20at%2013-11-59%20%E5%B9%B4%E5%BA%A6%E8%81%8A%E5%A4%A9%E6%8A%A5%E5%91%8A%20-%20%E5%89%AF%E6%9C%AC.png" alt="Screenshot 2025-01-05 at 13-11-59 年度聊天报告 - 副本.png"></p>
+<p>以上。</p>
+<p>欢迎大家自行下载体验这款年度报告生成工具（手动狗头）。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>微信</tag>
+        <tag>年度报告</tag>
+      </tags>
+  </entry>
 </search>
