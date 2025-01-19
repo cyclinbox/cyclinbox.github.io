@@ -15697,4 +15697,296 @@
         <tag>边界感</tag>
       </tags>
   </entry>
+  <entry>
+    <title>常用机器学习库和深度学习库整理</title>
+    <url>/2025/01/19/Common-used-machine-learning-library/</url>
+    <content><![CDATA[<p>这一年多以来的科研工作中，调研了不少机器学习库的相关知识，临近年底，事情不多，感觉正好可以整理一下。由于笔者主要使用python的缘故，这里介绍的函数库以python库居多，但也顺带介绍了一些其他编程语言的机器学习库。</p>
+<span id="more"></span>
+
+<h2 id="python库"><a href="#python库" class="headerlink" title="python库"></a>python库</h2><h3 id="scikit-learn"><a href="#scikit-learn" class="headerlink" title="scikit-learn"></a>scikit-learn</h3><p>官网： <a href="https://scikit-learn.org/">https://scikit-learn.org/</a></p>
+<p>学过统计学和机器学习的同学们对这个库应该不陌生。这个库提供了许多统计学习算法的API，几乎涵盖了机器学习的绝大多数方面（如下图），包括线性回归、逻辑回归、PCA、KNN、决策树等，甚至还支持搭建比较简单的神经网络。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119195811.png" alt="image.png"></p>
+<h3 id="Pytorch"><a href="#Pytorch" class="headerlink" title="Pytorch"></a>Pytorch</h3><p>官网： <a href="https://pytorch.org/">https://pytorch.org/</a></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119201815.png" alt="image.png"></p>
+<p>这个库的前身是torch，一个使用Lua语言实现的深度学习库，其在2010年前后比较热门。后来，Facebook母公司Meta基于这个库，使用C++等编程语言重写了核心代码，并基于 Python 生态开发了 PyTorch，使其更适合研究和工业应用。目前PyTorch是最流行的深度学习库之一。几年前其排名已经超过了TensorFlow。Pytorch相比于TensorFlow的一个优点在于其对动态图计算（Dynamic Computational Graph）的支持。</p>
+<blockquote>
+<p>一个图 (Graph)代表一个计算任务,且在 模型 运行时,需要把图放入会话 (session)里被启动。 一旦模型开始运行,图就无法修改了。 TensorFlow 把这种图一般称为静态图。 动态图 是指在Python中代码被调用后,其操作立即被执行的计算。 它与静态图最大的区别是不需要使用session来建立会话。 即在静态图中,需要在会话中调用run方法才可以获得某个张量、常量或变量的具体值,而在动态图里,在创建动态图的过程中,默认已经建立了一个session。 所有的代码都在该session中进行,而且该session具有进程相同的 生命周期。</p>
+</blockquote>
+<h3 id="TensorFlow"><a href="#TensorFlow" class="headerlink" title="TensorFlow"></a>TensorFlow</h3><p>官网： <a href="https://www.tensorflow.org/">https://www.tensorflow.org/</a></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119202852.png" alt="image.png"></p>
+<p>谷歌旗下的一个深度学习库。</p>
+<p>曾经是最流行的深度学习库之一，但是在pytorch出现以后日渐式微，因为缺乏对动态图的支持（TF v1仅支持静态图计算）。</p>
+<p>最新版的TensorFlow（TF v2）倒是支持了动态图，但是并没有能挽回多少用户的流失，据说是因为TF 1到TF 2的许多API有变动（参考知乎问题<a href="https://www.zhihu.com/question/350445991/answer/865965124">《TensorFlow 真的要被 PyTorch 比下去了吗？》</a> ），导致存在大量兼容性问题，迁移成本很高。</p>
+<p>目前应该只有一些工业界的应用在使用TensorFlow的框架，而在学术界几乎一边倒的用起了Pytorch。</p>
+<h3 id="Keras"><a href="#Keras" class="headerlink" title="Keras"></a>Keras</h3><p>官网： <a href="https://keras.io/">https://keras.io/</a></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119202333.png" alt="image.png"></p>
+<p>Keras 最初是一个独立的高级神经网络 API，支持多个后端（Theano、TensorFlow、CNTK）。  </p>
+<p>到了2017年，Keras 被集到TensorFlow中，成为其官方高级 API，成为 <code>tf.keras</code>，不再支持其他后端。</p>
+<p>但是2023年keras又宣布从TensorFlow中重新独立。现在TensorFlow只是keras支持的后端之一(keras目前主要支持jax torch TensorFlow numpy)</p>
+<p>Keras这个框架目前用的人应该是比较多的。</p>
+<h3 id="Theano"><a href="#Theano" class="headerlink" title="Theano"></a>Theano</h3><blockquote>
+<p>It is being continued as PyTensor: <a href="http://www.github.com/pymc-devs/pytensor">www.github.com/pymc-devs/pytensor</a></p>
+</blockquote>
+<p>是一个很古早的深度学习库（大约10多年前）。</p>
+<p>目前其原本的开发者已经停止开发，由PyMC团队接手后改名为pyTensor继续开发。Theano曾是 Keras 的后端，但已停止维护，被 JAX 和 TensorFlow 取代。</p>
+<p>Theano的知名度不如Pytorch和TensorFlow，但是在早些年的深度学习项目里还能看见它的身影（尤其记得去年清明节假期，我花了整整一个下午的时间编译安装Theano，就是因为那个项目用到的python太老了，需要整个重装……说多了都是泪）。</p>
+<h3 id="Paddle-Paddle飞桨平台"><a href="#Paddle-Paddle飞桨平台" class="headerlink" title="Paddle Paddle飞桨平台"></a>Paddle Paddle飞桨平台</h3><p>官网： <a href="https://www.paddlepaddle.org.cn/">https://www.paddlepaddle.org.cn/</a></p>
+<p>国货之星，来自百度的深度学习框架。其API与Pytorch高度兼容，甚至有人调侃只需要 <code>import paddle as torch</code> 就可以实现代码从torch到paddle的迁移。</p>
+<p>关于paddle paddle本身的性能，看网上的评论应该还行，和TF、pytorch打得有来有回，特别是在图片文字识别（OCR）方面性能领先。</p>
+<p>Paddle Paddle飞桨平台的另一个优点在于，百度提供了基于这一框架的AI在线算力平台 <a href="https://aistudio.baidu.com/overview">PP飞桨AI Studio</a>  ，可以通过签到和完成任务免费领取GPU算力（感觉有点对标Google colab，不过看起来比colab好用一些）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119204225.png" alt="image.png"></p>
+<h2 id="R库"><a href="#R库" class="headerlink" title="R库"></a>R库</h2><p>某种意义上，R语言自身就支持一些机器学习算法，例如线性回归、主成分分析（<code>prcomp()</code>函数）等。然而，相比于Python语言，针对R语言开发的通用机器学习框架相对较少。下面列举一些相对比较有名的：</p>
+<ul>
+<li><a href="https://github.com/boost-R/mboost"><strong>mboost</strong></a> ： 一个比较老的库，实现了boosting这一类集成学习算法，其底层的基学习器依然是<br>传统的回归模型（线性回归、逻辑回归、广义加性模型等）。在一些用到boosting算法的软件或程序包中会引用这个库，例如<a href="https://academic.oup.com/genetics/article/187/1/229/6063654?login=true">evolBoosting</a>（一个在基因组上检测正选择信号的软件）。</li>
+<li><a href="https://mlr3.mlr-org.com/"><strong>mlr3</strong></a> :  相对比较新的一个机器学习库，<code>mlr3</code> 采用模块化的设计理念，使得用户可以根据需要选择不同 的组件来构建机器学习工作流；另外，其使用 R6 类实现对象，以提高计算效率和内存管理。<code>mlr3</code> 提供了一致的接口来处理不同的机器学习任务，如分类、 回归、聚类等，这种一致性的接口设计大大提高了开发过程的灵活性。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119205512.png" alt="image.png"></p>
+<p>如上图所示是<a href="https://mlr3.mlr-org.com/">mlr3的官网页面</a>。 mlr3的官网上提供了非常详细的<a href="https://mlr3book.mlr-org.com/">使用说明和API参考手册</a>，以便于开发人员的查找阅读，这也是mlr3的优势之一。</p>
+<h2 id="Java库"><a href="#Java库" class="headerlink" title="Java库"></a>Java库</h2><p>针对Java编程语言也有一些机器学习的库，不过这些库在Java程序员群体之外的知名度可能不算特别高。</p>
+<ul>
+<li><a href="https://ml.cms.waikato.ac.nz/weka"><strong>Weka</strong></a> ： Weka 是 Waikato Environment for Knowledge Analysis（Waikato 智能分析环境）的缩写，是新西兰 Waikato 大学开发的机器学习库。Weka 是一个通用的库，能够解决各种机器学习任务，如分类、回归和聚类。它具有丰富的图形用户界面、命令行界面和 Java API。</li>
+<li><a href="https://github.com/deeplearning4j"><strong>DeepLearning4j</strong></a> ：一个用 Java 编写的深度学习库。它具有分布式和单机深度学习框架，包括并支持各种神经网络结构，如前馈神经网络、RBM（Restricted Boltzmann Machine，受限玻尔兹曼机）、卷积神经网络、深度信念网络、自动编码器等。DL4J 可以解决不同的问题，比如识别面孔、声音、垃圾邮件和电子商务欺诈。</li>
+<li><a href="https://docs.h2o.ai/"><strong>H2O</strong></a> : 这是一个开源的、内存中的、分布式的、快速的、可扩展的机器学习和预测分析平台。其核心代码均由Java编写，并提供REST API ，允许通过 HTTP 上的 JSON 从外部程序或脚本访问 H2O-3 的所有功能。因此H2O与其说是一个机器学习框架，不如说是一个分析软件，并且这个分析软件允许外部程序通过REST API进行外部调用，因此其支持的编程语言不止Java，还包括python、R等等。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119211356.png" alt="image.png"></p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>机器学习</tag>
+        <tag>R</tag>
+        <tag>深度学习</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译安装php7.4的一些踩坑和探索</title>
+    <url>/2025/01/18/Compile-and-install-php7.4/</url>
+    <content><![CDATA[<p>周六进行服务器数据迁移时踩的坑。浅浅记录一下探索过程，以防未来再度踩坑。</p>
+<span id="more"></span>
+
+<p>事情是这样的。</p>
+<p>先前的云服务器快到期了，由于续费很贵，于是我换了一家服务商，最近在断断续续利用闲暇时间做数据迁移。</p>
+<p>在这个服务器上我有一个dokuwiki的页面，平时用来存放一些笔记和日记的内容，但是迁移到新机器以后，我发现dokuwiki的页面显示出了些问题，所有页面元素渲染全部不正确。查看控制台日志发现在进行 <code>GET http://125.122.22.249/doku/dokuwiki/lib/exe/css.php?t=dokuwiki&amp;tseed=f690c2922e3bb08ba4733d36a34533de</code> 时收到了500 Internal Server Error错误。进一步排查日志，怀疑是php的问题。</p>
+<p>原先那台机器上的php版本为7.4，新机器的系统是Ubuntu 22.04.5，能够用apt安装到的只有php8以上的版本，而dokuwiki的框架是以php7的语法编写的，因此存在一些兼容性的问题（例如， <code>PHP Fatal error: Array and string offset access syntax with curly braces is no longer supported in /var/www/html/doku/dokuwiki/vendor/marcusschwarz/lesserphp/lessc.inc.php on line 761</code> ）。</p>
+<p>要解决这个问题，有两种策略：①升级dokuwiki到支持php8的版本；②降级php到php7的版本。</p>
+<p>经过一些并不严谨的搜索，我以为dokuwiki依然没有提供php8支持（但后来发现，好像只要升级到最新版就能支持php8），于是采取了第二种策略，降级php到php7。以下是详细步骤：</p>
+<h2 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h2><p>使用apt移除已有的php版本</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo apt autoremove php</span><br></pre></td></tr></table></figure>
+
+<p>然后下载php-7的源代码包，将其解压至 <code>/opt</code> 目录，并进入这一目录。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /opt</span><br><span class="line">sudo wget https://www.php.net/distributions/php-7.4.33.tar.gz</span><br><span class="line">sudo tar -zxvf php-7.4.33.tar.gz </span><br><span class="line"><span class="built_in">cd</span> php-7.4.33</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="二、编译、测试与运行"><a href="#二、编译、测试与运行" class="headerlink" title="二、编译、测试与运行"></a>二、编译、测试与运行</h2><p>编译前，需要安装下面几个工具库。（这一块的内容可能有所不同，取决于 <code>./configure</code> 阶段会发生什么样的报错。简单来说，<code>./configure</code> 阶段说缺乏哪个工具，就安装那个工具）</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo apt install pkg-config</span><br><span class="line">sudo apt install libxml2-dev</span><br><span class="line">sudo apt install libsqlite3-dev</span><br></pre></td></tr></table></figure>
+
+<p>进行make前的configuration：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo ./configure --enable-fpm <span class="comment"># 启动fpm模块的编译</span></span><br></pre></td></tr></table></figure>
+
+<p>这里额外补充一点知识：当服务器上的httpd是由apache2控制时，php有两种不同的工作模式。</p>
+<ul>
+<li>第一种方式：Mod-PHP（Apache PHP 模块），即PHP 直接嵌入 Apache，并通过 <code>libphp</code> 模块执行 PHP 代码。这种模式是 <code>apt install php</code> 安装的默认工作模式，只需要 <code>apt install libapache2-mod-php</code> 就可以工作。</li>
+<li>第二种方式：FastCGI（php-fpm 进程），即PHP 以 <code>php-fpm</code> 服务的形式，运行在单独的进程池中，Apache 通过 <code>mod_proxy_fcgi</code> 与 <code>php-fpm</code> 进程通信。</li>
+</ul>
+<p>我们现在编译安装php，要选择的工作模式是FastCGI（php-fpm 进程）模式，这种模式编译比较简单（不需要生成so文件然后去apache2那边再做配置），且进程独立，比较好控制。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250118232345.png" alt="image.png"></p>
+<p>完成configuration以后，我们进行编译与安装的步骤：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo make</span><br><span class="line">sudo make install</span><br><span class="line">sudo make <span class="built_in">test</span> <span class="comment"># 这一步是可选步骤，仅用于测试编译是否成功</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250118232736.png" alt="image.png"></p>
+<p>编译过程大约需要十多分钟，在此期间我们可以稍作休息。编译完成之后运行 <code>make install</code> ，则php的相关文件就会被复制到相应的系统路径下（如上图），其中包括 <code>/usr/local/bin/,/usr/local/sbin/</code> 等。</p>
+<p>保险起见，我们此时最好编辑一下 <code>/etc/profile</code> 文件，将上述路径写入环境变量PATH当中（如下图，   <code>PATH=$PATH:/usr/local/bin/:/usr/local/lib/:/usr/local/sbin/</code> ）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250118233123.png" alt="image.png"></p>
+<h2 id="三、配置php自身的配置文件"><a href="#三、配置php自身的配置文件" class="headerlink" title="三、配置php自身的配置文件"></a>三、配置php自身的配置文件</h2><p>编译安装好的php，其配置文件路径在 <code>/usr/local/etc</code> 目录下，主要包括 <code>/usr/local/etc/php-fpm.conf</code> 和 <code>/usr/local/etc/php-fpm.d/www.conf</code> ，前者用于php本身的配置，后者用于工作池（pool）的配置。两个以 <code>.default</code> 结尾的文件是配置文件模板，如果配置文件不存在，可以使用cp指令从模板文件创建新的配置文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cyclin@vm:/usr/local/etc$ tree</span><br><span class="line">.</span><br><span class="line">├── php-fpm.conf</span><br><span class="line">├── php-fpm.conf.default</span><br><span class="line">└── php-fpm.d</span><br><span class="line">    ├── www.conf</span><br><span class="line">    └── www.conf.default</span><br><span class="line"></span><br><span class="line">1 directory, 4 files</span><br></pre></td></tr></table></figure>
+
+<p>第一个配置文件 <code>/usr/local/etc/php-fpm.conf</code> ：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[global]</span><br><span class="line">pid = run/php-fpm.pid</span><br><span class="line">error_log = log/php-fpm.log</span><br><span class="line">syslog.facility = daemon</span><br><span class="line">syslog.ident = php-fpm</span><br><span class="line">log_level = notice</span><br><span class="line">log_limit = 4096</span><br><span class="line">log_buffering = no</span><br><span class="line">emergency_restart_threshold = 0</span><br><span class="line">emergency_restart_interval = 0</span><br><span class="line">process_control_timeout = 0</span><br><span class="line"></span><br><span class="line">daemonize = yes</span><br><span class="line">rlimit_files = 1024</span><br><span class="line">rlimit_core = 0</span><br><span class="line">events.mechanism = epoll</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">include=/usr/local/etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
+
+<p>第二个配置文件 <code>/usr/local/etc/php-fpm.d/www.conf</code> ：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[www]</span><br><span class="line">user  = www-data</span><br><span class="line">group = www-data</span><br><span class="line">listen = /run/php/php7.4-fpm.sock</span><br><span class="line"></span><br><span class="line">listen.owner = www-data</span><br><span class="line">listen.group = www-data</span><br><span class="line">listen.mode = 0660</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">pm = dynamic</span><br><span class="line">pm.max_children = 5</span><br><span class="line">pm.start_servers = 2</span><br><span class="line">pm.min_spare_servers = 1</span><br><span class="line">pm.max_spare_servers = 3</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>listen</code> 字段指定了php进程和apache2进程之间的通信方式。 <code>listen = /run/php/php7.4-fpm.sock</code> 即通过 <code>/run/php/php7.4-fpm.sock</code> 套接字文件进行通信。另一种通信方式是 <code>listen = 127.0.0.1:9000</code> ，通过9000网络端口进行通信。相比之下，sock套接字文件的通信效率高一点，因此我们也采取这种方法进行配置。</p>
+<p>可以使用 <code>php-fpm -t</code> 检测配置文件是否编写正确。如果输出 ”test is successful“（如下代码块），则表明一切正常。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cyclin@vm:/usr/local/etc/php-fpm.d$ sudo php-fpm -t</span><br><span class="line">[18-Jan-2025 23:44:07] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、将php-fpm设置为系统服务"><a href="#四、将php-fpm设置为系统服务" class="headerlink" title="四、将php-fpm设置为系统服务"></a>四、将php-fpm设置为系统服务</h2><p>现代Linux系统使用systemctl管理系统服务，其配置文件全部存放在 <code>/etc/systemd/system/</code> 目录下。我们在这里创建一个文件 <code>php7.4-fpm.service</code> ，即可创建相关服务（服务的名称就是 <code>php7.4-fpm</code> ）</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/systemd/system/</span><br><span class="line">sudo vim php7.4-fpm.service <span class="comment">#使用vim编辑器创建这个文件。读者也可以换用nano、emacs或其他编辑器</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个文件中，写入以下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=PHP 7.4 FastCGI Process Manager</span><br><span class="line">After=network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStartPre=/bin/mkdir -p /run/php</span><br><span class="line">ExecStartPre=/bin/chown www-data:www-data /run/php</span><br><span class="line">ExecStart=/usr/local/sbin/php-fpm --nodaemonize</span><br><span class="line">ExecStop=/bin/kill -QUIT $MAINPID</span><br><span class="line">Restart=always</span><br><span class="line">User=root</span><br><span class="line">Group=root</span><br><span class="line">PIDFile=/run/php/php7.4-fpm.pid</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>解释一下 <code>ExecStartPre</code> 字段的意思：这里设置的是每次启动服务前需要执行的操作。对于php-fpm的服务来说，我们需要提前执行的操作有两个，分别是 <code>/bin/mkdir -p /run/php</code> 和 <code>/bin/chown www-data:www-data /run/php</code> ，即创建 <code>/run/php</code> 目录并赋予<code>www-data</code> 访问权限。因为php服务需要在这个目录下创建套接字文件，但是php服务本身的权限不足以创建和修改这个目录，因此我们在这里使用root用户的身份进行提前创建和赋权。</p>
+<p>完成上述配置以后，我们启动php-fpm服务，并查看服务状态：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload     <span class="comment">#重新加载所有系统服务</span></span><br><span class="line">sudo systemctl <span class="built_in">enable</span> php7.4-fpm <span class="comment">#设置开机自启动</span></span><br><span class="line">sudo systemctl start php7.4-fpm  <span class="comment">#立即启动服务</span></span><br><span class="line">sudo systemctl status php7.4-fpm <span class="comment">#检查服务运行状态</span></span><br></pre></td></tr></table></figure>
+
+<p>如果服务运行正常，我们可以看到类似下面这样的输出：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119001701.png" alt="image.png"></p>
+<p>如果服务运行不正常，则 <code>sudo systemctl status php7.4-fpm</code> 会输出错误状态，此时我们也可以使用 <code>sudo journalctl -u php7.4-fpm --no-pager | tail -30</code> 查看更详细的报错信息，以便排查错误。</p>
+<h2 id="五、配置apache2方面的配置文件"><a href="#五、配置apache2方面的配置文件" class="headerlink" title="五、配置apache2方面的配置文件"></a>五、配置apache2方面的配置文件</h2><p>当我们在浏览器中访问一个php页面时（例如 <code>xxx.com/index.php</code> ），apache2会去查询服务器上的 <code>/var/www/html/index.php</code> 这个文件，然后调用php进行php代码的执行，随后将执行完代码的html版本的页面返回给浏览器。因此，apache2与php的进程间通信很重要。使用apt安装的apache2默认没有开启与php的进程间通信，我们需要手动开启。</p>
+<p>首先，我们创建配置文件 <code>/etc/apache2/conf-available/php7.4-fpm.conf</code> ，在这个文件中写入下面的内容：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">IfModule</span> <span class="attr">mod_proxy_fcgi.c</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">FilesMatch</span> &quot;\<span class="attr">.php</span>$&quot;&gt;</span></span><br><span class="line">        SetHandler &quot;proxy:unix:/run/php/php7.4-fpm.sock|fcgi://localhost/&quot;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">FilesMatch</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">IfModule</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>随后，通过下面的指令启动php支持并重启apache2的服务：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo apt install libapache2-mod-fcgid <span class="comment"># 安装apache2的相关功能模块</span></span><br><span class="line">sudo a2enmod proxy_fcgi setenvif <span class="comment"># 启动FastCGI 和setenvif模块，其中FastCGI用于代理访问 php-fpm</span></span><br><span class="line">sudo a2enconf php7.4-fpm <span class="comment"># 确保 `php7.4-fpm` 相关的 Apache 配置已启用</span></span><br><span class="line">sudo systemctl restart apache2 <span class="comment"># 重启apache2服务。</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="完结撒花！"><a href="#完结撒花！" class="headerlink" title="完结撒花！"></a>完结撒花！</h2><p>要测试php的效果，可以使用下面的指令创建一个phpinfo文件：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&lt;?php phpinfo(); ?&gt;&quot;</span> | sudo <span class="built_in">tee</span> /var/www/html/info.php</span><br></pre></td></tr></table></figure>
+
+<p>如果一切顺利，当我们使用浏览器访问这一页面时，将会看到如下图的内容：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1737217852558.png" alt="1737217852558.png"></p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux</tag>
+        <tag>php</tag>
+        <tag>云服务器维护</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>文献阅读笔记：从祖先重组图推断选择性扫荡的深度学习方法</title>
+    <url>/2025/01/17/PaperNote_Deep-Learning_Approach_for_Inference_Selective_Sweeps_from_ARG/</url>
+    <content><![CDATA[<p>论文信息： <em>Hejase, Hussein A et al. “A Deep-Learning Approach for Inference of Selective Sweeps from the Ancestral Recombination Graph.” Molecular biology and evolution vol. 39,1 (2022): msab332. doi:10.1093/molbev/msab332</em> </p>
+<span id="more"></span>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119211454.png" alt="image.png"></p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>这篇文章提出了一种基于LSTM神经网络的正选择检测方法。</p>
+<h3 id="作者介绍"><a href="#作者介绍" class="headerlink" title="作者介绍"></a>作者介绍</h3><p>本文的通讯作者是来自冷泉港西蒙斯定量生物学中心的Adam Siepel，他的实验室在发表本方法前已经在包括Nature、Nature genetics在内的期刊上发表了一百多篇文章，并开发了<a href="https://repository.cshl.edu/id/eprint/31072">PHAST</a>、ARGweaver等知名群体遗传学方法。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119211839.png" alt="image.png"></p>
+<p>两位共同一作分别是博士后学生侯赛因和博士研究生Mo ZIYI</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119212725.png" alt="image.png"></p>
+<h3 id="关于LSTM"><a href="#关于LSTM" class="headerlink" title="关于LSTM"></a>关于LSTM</h3><p>本文是深度学习方法在群体遗传学中的一个重要应用。深度学习方法又称为深度神经网络，其可以基于给定的数据训练出预测模型，用于分类任务或者回归任务。由于神经网络中不同神经元连接方式的灵活性，经过精心设计和训练的深度学习模型可以达到很好的预测效果（如下图， <em>Zou J, Huss M, Abid A, Mohammadi P, Torkamani A, Telenti A. Nat Genet. 2019;51(1):12-18</em> ）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119212814.png" alt="image.png"></p>
+<p>循环神经网络（RNN，如下图）是深度神经网络的一种类型，其输入为序列数据，而模型的输出会基于当前神经元的输入和之前的若干神经元的输出，这样的结构很适合基因组这样的序列数据。</p>
+<p>长短时程记忆神经网络（LSTM）是一种经过改进的RNN模型，其单个神经元的模型如右图所示。LSTM引入了长时程记忆的机制，因此可以很好的应对传统RNN模型在训练中容易发生的梯度爆炸和梯度消失问题，因此有着非常广泛的应用。在LSTM的基础上发展出了Transform模型，这是今天非常火爆的chatGPT等大型语言模型的基础。</p>
+<p>这篇文章则是将LSTM应用在了祖先重组图谱（ARG）当中，从而实现了对选择压力即所谓selective sweep的检测。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119213026.png" alt="image.png"></p>
+<h3 id="关于祖先重组图（ARG）"><a href="#关于祖先重组图（ARG）" class="headerlink" title="关于祖先重组图（ARG）"></a>关于祖先重组图（ARG）</h3><p>我们先介绍一下祖先重组图（ARG）。在说ARG之前，我们简单回顾一下溯祖模型。如下图，所谓溯祖（Coalescence）是指在时间上回溯，一组等位基因的谱系在共同祖先处合并的过程。我们可以通过从一个群体中采样的等位基因来研究基因的祖先历史，从而推断群体的遗传特征（如果想要了解更多，可以阅读 <em>Principle Of Population Genomics(3rd)</em> 中 <a href="https://wz.anoms.top/PrincipleOfPopulationGenomics/chapter3.html#36-%E5%9F%BA%E5%9B%A0%E6%A0%91%E5%92%8C%E6%BA%AF%E7%A5%96%E4%BA%8B%E4%BB%B6">chapter3</a>  的相关章节）。</p>
+<p>例如，下图左图，当前群体的所有等位基因（黄色圆圈）经过6个世代的回溯能够找到同一个共同祖先，在这个回溯过程中我们可以得到一棵遗传谱系树，其拓扑结构和枝长等属性包含了许多重要的信息，可以帮助我们确定每个等位基因的出现时间以及群体频率变化情况。</p>
+<p>由于基因组不同区域存在重组，因此如果我们根据基因组不同区域去建立溯祖树，那么我们将得到一系列枝长和拓扑结构存在差异的树，当我们把这些差异考虑进去以后就构成了一个祖先重组图（如下图的右图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119213112.png" alt="image.png"></p>
+<p>不同选择压力条件下，基因组区域所呈现出的ARG的拓扑结构也存在差异。下图中，黄色五角星标记了群体中出现的有益突变，从图中可以看出在有益突变出现后，携带该有益突变的谱系在短期内出现了大量扩张，产生了大量极短的分支，这是受到选择的基因组区域的ARG的显著特征之一（ <em>Hejase HA, Dukler N, Siepel A. Trends in Genetics. 2020;36(4):243-258.</em> ）。因此，我们可以利用ARG的这种拓扑结构特点进行正选择检验。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119214725.png" alt="image.png"></p>
+<h2 id="方法构建"><a href="#方法构建" class="headerlink" title="方法构建"></a>方法构建</h2><p>本文提出了SIA方法，基于LSTM和ARG信息检测正选择信号。其大体流程分为这样几步：</p>
+<ul>
+<li>1、估计研究对象的群体历史</li>
+<li>2、基于群体历史的参数，我们使用discoal simulator获得了中性区域和正选择区域的基因组模拟数据。</li>
+<li>3、对模拟数据进行ARG的推断</li>
+<li>4、进行特征提取</li>
+<li>5、基于上述数据进行神经网络的训练，并将训练好的模型用于真实数据，从而推断正选择事件、选择强度、等位基因频率轨迹</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119215135.png" alt="image.png"></p>
+<p>第一步：估计研究对象的群体历史。</p>
+<p>选择事件和群体历史事件（如群体的扩张和收缩）常常在基因组中留下相似的印记。为了避免这些混杂因素的干扰，需要先对研究对象的群里历史进行推测。这篇文章的研究对象是CEU人群，即有北欧和西欧祖先血统的犹他州居民人群，因此使用了前人研究的结果；然而，这一步也可以用软件进行估计，例如Relate、smc++等</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119215157.png" alt="image.png"></p>
+<p>第二步，训练数据的获得，这里采用的是数据模拟的方法。作者使用了discoal simulator这一模拟软件，基于群体历史参数，获得了中性区域和正选择区域的基因组模拟数据。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119215222.png" alt="image.png"></p>
+<p>第三步，对模拟数据进行ARG的推断。本文作者推荐使用Relate这个软件做ARG推断。</p>
+<p>这里其实有一个很有意思的点，前面在介绍作者的时候提到过，本文通讯作者Adam Siepel实验室开发过多款软件，其中就有一个名叫ARGweaver的软件是专门做ARG推断的。但是此处作者却使用了另一个软件Relate，实在有些奇怪。</p>
+<p>Relate是牛津大学的Leo Speidel和Simon R. Myers开发的一款基于隐马尔科夫链的ARG推断工具，据作者宣称Relate可以处理几千甚至上万级别的基因组数据，并且速度比ARGweaver快得多，或许这就是SIA方法不用ARGweaver却用Relate的原因。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119215407.png" alt="image.png"></p>
+<p>第四步，进行特征提取。</p>
+<p>如图所示，特征提取方法如下：将树分成100个离散的时间点，这些时间点以指数函数均匀分布在树上，然后统计每个时间点上的祖先谱系数量和衍生谱系数量，这样就构成了一个100维的特征向量。为了增强泛化能力，SIA方法还会考虑上下游各两个侧翼位点，因此最终获得的是一个600维的向量。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119215426.png" alt="image.png"></p>
+<p>第五步，基于上述数据进行神经网络的训练，并将训练好的模型用于真实数据，从而推断正选择事件、选择强度、等位基因频率轨迹。</p>
+<p>由于LSTM的输入是ARG树上不同时间点的谱系数量，这在一定程度上可以反映ARG树的拓扑结构，因此训练出的模型可以学会用ARG树的拓扑结构预测正选择。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119215439.png" alt="image.png"></p>
+<h2 id="与其他方法的比较"><a href="#与其他方法的比较" class="headerlink" title="与其他方法的比较"></a>与其他方法的比较</h2><p>作者在不同的选择强度参数（s）和等位基因频率参数（f）下比较了SIA方法和其他模型的性能（包括Tajima’s D, iHS, RELATE等）。</p>
+<p>当选择压力更强【右】、DAF更高【下】时，所有方法的效果普遍都很好。</p>
+<p>但是，如果选择压力更弱一点【左】、DAF更低一点【上】时，则SIA表现最好。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119215634.png" alt="image.png"></p>
+<p>作者还在有真实ARG树的数据上比较了SIA方法和CLUES方法，以排除ARG推断过程中的误差对结果的干扰。</p>
+<p>CLUES也是一种基于ARG的正选择推断工具，由加州大学伯克利分校的Aaron J. Stern（亚伦J.斯特恩）等人开发，于2019年发表于PLOS genetics杂志上，其文献和原理如下图的左图所示。与SIA不同，CLUES使用马尔科夫链蒙特卡洛模型（MCMC）进行建模，这是一种无监督学习算法，因此不需要预先生成模拟数据和训练，这排除了模拟数据过程中可能产生的偏差；然而，CLUES只考虑中心位点的ARG树，而不考虑侧翼树，因此在某些情况下预测结果可能存在偏差。</p>
+<p>本文的作者在同一个数据集上比较了SIA方法和CLUES方法，结果如右图所示。</p>
+<p>CLUES与SIA表现相似，但是在中性区域（S=0）处对选择强度（S）有些高估，在选择压力较高的区域对选择强度（S）有些低估，这在S=0和S=0.01的情况下尤为明显。</p>
+<p>此外，SIA在估计选择强度（S）时的错误率比CLUES低，这可能是SIA考虑了侧翼序列带来的好处。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250119215738.png" alt="image.png"></p>
+<h2 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h2><p>首先是SIA与CLUES的对比。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>SIA</th>
+<th>CLUES</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>算法</td>
+<td>LSTM，是一种监督学习</td>
+<td>HMM，是一种无监督学习</td>
+</tr>
+<tr>
+<td>训练集</td>
+<td>使用模拟软件生成，对参数敏感</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td>输入</td>
+<td>Focal site及上下游位点的ARG</td>
+<td>只考虑focal site的ARG</td>
+</tr>
+<tr>
+<td>各自优势</td>
+<td>稳健性更强，对推断的ARG所包含的偏差更加不敏感</td>
+<td>不会受到训练集的分布偏差带来的影响</td>
+</tr>
+</tbody></table>
+<p>然后是以SIA、CLUES等方法为代表的基于ARG树和机器学习算法的新方法与传统方法的比较。</p>
+<p>传统方法主要指的是基于等位基因频率谱（SFS）等信息汇总得到的统计量，例如Tajima’s D，Fay and Wu’s H，Fu and Li test等，这些传统方法的优点在于数学原理简单，且计算量相对较小，可以更快速的获得检测结果。</p>
+<p>相比于传统方法，基于ARG的诸多方法使用了祖先重组图（ARG）的数据，这使得计算过程更多地考虑到了群体的基因组特征，因此更加精准。当然这样的精确性是有代价的，SIA一类的方法的算法更复杂，需要的计算量也更大。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>传统方法</th>
+<th>SIA（以及类似方法）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数学基础</td>
+<td>汇总统计量、等位基因频率谱等</td>
+<td>ARG</td>
+</tr>
+<tr>
+<td>算法</td>
+<td>各个方法都有自己的算法，但是数学表达式都比较直观</td>
+<td>深度神经网络（LSTM）</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>速度快，原理简单</td>
+<td>尽可能多地考虑到了基因组特征，更加精准</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>不够精准；在计算汇总统计量时丢失了许多基因组所携带的信息</td>
+<td>算法比较复杂</td>
+</tr>
+</tbody></table>
+<p>作者也反思了SIA目前存在的一些问题：</p>
+<ul>
+<li>（1）SIA的输入是一系列离散时间点上ARG树的谱系数量，这样的向量并不能精确表示整棵树</li>
+<li>（2）SIA依赖上游ARG树的构建方法，因此会受到ARG构建方法的影响。这也是作者推荐用Relate建树的原因</li>
+<li>（3）SIA需要用模拟数据训练，模拟数据的生成参数对于训练结果有影响。因此需要先估计群体历史，再用群体历史参数生成训练集</li>
+</ul>
+<p>但即使这样，SIA依然是一个非常优秀的正选择推断方法，可以在正选择检测中发挥重要作用。</p>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>深度学习</tag>
+        <tag>ARG</tag>
+        <tag>Ancestral Recombination Graph</tag>
+        <tag>Selective Sweeps</tag>
+      </tags>
+  </entry>
 </search>
