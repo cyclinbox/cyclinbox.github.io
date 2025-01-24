@@ -15986,4 +15986,144 @@
         <tag>Selective Sweeps</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Linux内核的一些探索</title>
+    <url>/2025/01/22/Linux-kernal-and-grub/</url>
+    <content><![CDATA[<p>这两天测试组里的服务器时踩的坑。浅浅记录一下探索过程，以防未来再度踩坑。</p>
+<span id="more"></span>
+
+<p>事情是这样的。最近这几天接到任务，需要帮忙测试组里的一台服务器，其间由于电源供电功率不足，我使用了一台主机的GPU供电线为另一台主机GPU进行了供电（这台主机原本有GPU）。测试结束后，我装回了原先的GPU，却发现这台机器启动后出现了显示器无输出、ssh无法连接的问题——由于显示器无输出，甚至我都不知道启动进行到了哪一步，遑论排查问题了。</p>
+<p>这下可把我急坏了。好在，第二天在GPT老师和实验室师姐的帮助下，我们找到了重置主板BIOS设置的方法（即，扣除主板纽扣电池进行放电，并按照主机维护手册的说明，安装了主板CMOS复位跳线并短暂重启，之后移除CMOS复位跳线），总算解决了问题——终于在显示器上看见了输出，ssh登录也正常了。</p>
+<p>然而问题接踵而来。虽然现在能进入系统，但是检测不到显卡驱动（在供电测试前，显卡驱动是正常的）。前面做测试时我们并没有动系统，按理说显卡驱动应该都还在呀，为什么突然检测不到了呢？这不太对劲。于是进行了一些更深入的挖掘，并终于了解到一些关于系统内核的知识点。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250123171859.png" alt="image.png"></p>
+<h2 id="一、关于Linux启动顺序的一些知识点"><a href="#一、关于Linux启动顺序的一些知识点" class="headerlink" title="一、关于Linux启动顺序的一些知识点"></a>一、关于Linux启动顺序的一些知识点</h2><p>Linux 启动过程大致如下：</p>
+<ol>
+<li><strong>BIOS/UEFI 加载引导程序（GRUB）</strong>：按下电源键时，计算机的 CPU 还无法直接运行操作系统，而是先执行主板上的 <strong>固件（Firmware）</strong>，即 BIOS 或 UEFI。BIOS/UEFI 进行 <strong>POST（Power-On Self Test，自检）</strong>，检测 CPU、内存、硬盘、显卡等是否正常。随后，查找 <strong>引导设备</strong>（通常是 SSD/HDD，或 U 盘/光盘），并从引导设备中读取引导扇区的内容——对Linux来说，引导扇区的内容通常是<strong>GRUB（GRand Unified Bootloader）</strong> ，这是 Linux 最常见的引导加载程序。</li>
+<li>**GRUB 选择内核并加载 <code>initramfs</code>**：GRUB 显示启动菜单（如 Advanced options for Ubuntu），交由用户选择内核（或自动选择默认内核）。随后，GRUB将依次加载内核（ <code>vmlinuz-&lt;version&gt;</code> ）和 <code>initramfs（initrd.img-&lt;version&gt;</code> ），并将控制权交给 Linux 内核。</li>
+<li><strong>内核启动，并执行 <code>initramfs</code> 内部的 <code>init</code> 脚本</strong> ： vmlinuz 是压缩后的内核，启动时会解压到内存中。内核必须能访问磁盘、USB、网络等设备，但此时文件系统未挂载，因此需要 initramfs 提供最小的运行环境。initramfs是一个临时的根文件系统，内部有一个 init 脚本，负责查找真正的根文件系统，并加载存储驱动。</li>
+<li><strong><code>initramfs</code> 挂载真正的根文件系统（如 <code>/dev/sda2</code>）</strong>：当initramfs完成根文件系统的查找和存储驱动加载以后，就通过<code>switch_root</code> 命令将控制权交给真正的文件系统。</li>
+<li><strong>切换到根文件系统并启动系统服务</strong>：Linux 内核成功挂载真正的根文件系统后，开始执行用户空间的 <code>init</code> 进程（PID 1）， 这个 <code>init</code> 进程是整个系统的第一个用户态进程，负责启动所有服务。对于现代Linux来说，init进程通常由 <code>systemd</code> 程序担任。 <code>systemd</code> 程序将按照 <code>/etc/systemd/system/default.target</code> 文件启动到对应的目标，并按照 <code>/etc/systemd/system/</code> 里的 <strong>unit</strong> 文件启动各个系统服务。如此，就完成了Linux整个系统的启动。</li>
+</ol>
+<p>多说一句，在Linux上可以使用 <code>journalctl -b</code> 查看启动日志。<code>journalctl --list-boots</code> 可以列出所有启动日志（其输出大致如下图）。如果某一次启动在这个日志中查询不到，一般可能的原因就是启动失败，直接连系统都没有进去。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250123173759.png" alt="image.png"></p>
+<h3 id="（一）grub是干什么的"><a href="#（一）grub是干什么的" class="headerlink" title="（一）grub是干什么的"></a>（一）grub是干什么的</h3><p>如下图：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250123174018.png" alt="image.png"></p>
+<h3 id="（二）什么是initramfs"><a href="#（二）什么是initramfs" class="headerlink" title="（二）什么是initramfs"></a>（二）什么是initramfs</h3><p><code>initramfs</code>（Initial RAM Filesystem，初始 RAM 文件系统）是 Linux 启动过程中用于引导的一个临时文件系统，它的主要作用是在系统启动时，为内核提供必要的驱动和工具，以便正确挂载根文件系统并启动 Linux 进程。</p>
+<p><code>initramfs</code> 主要在 <strong>内核引导阶段</strong> 发挥作用。一旦系统成功挂载真正的根文件系统（如 <code>/dev/sda2</code>），<code>initramfs</code> 的任务就完成了，并且它会被 <strong>释放（discarded）</strong>。</p>
+<p>虽然正常情况下 <code>initramfs</code> 会被丢弃，但在以下特殊情况下，它可能会 <strong>一直保持在 RAM 中</strong>：</p>
+<ol>
+<li><strong>根文件系统损坏或未找到</strong>（进入 “initramfs shell”）<ul>
+<li>例如 <code>/etc/fstab</code> 配置错误，导致系统无法挂载 <code>/</code>，你可能会进入 <code>initramfs</code> 维护模式 (<code>(initramfs) shell</code>)。</li>
+</ul>
+</li>
+<li><strong>系统采用了完全基于 <code>initramfs</code> 的 <code>rootfs</code></strong><ul>
+<li>某些嵌入式 Linux 设备（如路由器、IoT 设备）可能会使用 <code>initramfs</code> 作为主要文件系统，而不再挂载磁盘上的根文件系统。</li>
+</ul>
+</li>
+<li><strong><code>dracut</code> 的 <code>rd.break</code> 选项</strong><ul>
+<li>在 RHEL/CentOS 里，可以通过 <code>rd.break</code> 让 <code>initramfs</code> 进入调试模式，以便手动修复系统。</li>
+</ul>
+</li>
+</ol>
+<h2 id="二、查看和修改默认内核"><a href="#二、查看和修改默认内核" class="headerlink" title="二、查看和修改默认内核"></a>二、查看和修改默认内核</h2><h3 id="（一）查看到系统中已存在的内核和模块"><a href="#（一）查看到系统中已存在的内核和模块" class="headerlink" title="（一）查看到系统中已存在的内核和模块"></a>（一）查看到系统中已存在的内核和模块</h3><p>使用 <code>ls -lhF /lib/modules</code>  和 <code>dpkg --list</code> 指令，可以查看到系统中已存在的内核以及内核模块：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">(base) zhangwanyu@lih-workstation:~$ ls -lhF /lib/modules</span><br><span class="line">total 16K</span><br><span class="line">drwxr-xr-x 2 root root 4.0K Dec 26 06:09 5.15.0-124-generic/</span><br><span class="line">drwxr-xr-x 5 root root 4.0K Nov 16 23:43 5.15.0-125-generic/</span><br><span class="line">drwxr-xr-x 2 root root 4.0K Jan  7 06:10 5.15.0-127-generic/</span><br><span class="line">drwxr-xr-x 5 root root 4.0K Jan  7 06:09 5.15.0-130-generic/</span><br><span class="line">(base) zhangwanyu@lih-workstation:~$ dpkg --list | grep linux-image</span><br><span class="line">rc  linux-image-5.15.0-124-generic         5.15.0-124.134                          amd64        Signed kernel image generic</span><br><span class="line">ii  linux-image-5.15.0-125-generic         5.15.0-125.135                          amd64        Signed kernel image generic</span><br><span class="line">rc  linux-image-5.15.0-127-generic         5.15.0-127.137                          amd64        Signed kernel image generic</span><br><span class="line">ii  linux-image-5.15.0-130-generic         5.15.0-130.140                          amd64        Signed kernel image generic</span><br><span class="line">ii  linux-image-generic                    5.15.0.130.128                          amd64        Generic Linux kernel image</span><br><span class="line">(base) zhangwanyu@lih-workstation:~$</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，这个系统里面有4个不同版本的内核。</p>
+<p>可以使用 <code>ls /lib/modules/*/kernel/drivers/video/nvidia*</code> 查询在哪些内核当中有GPU相关驱动：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) zhangwanyu@lih-workstation:~$ ls /lib/modules</span><br><span class="line">5.15.0-124-generic  5.15.0-125-generic  5.15.0-127-generic  5.15.0-130-generic</span><br><span class="line">(base) zhangwanyu@lih-workstation:~$ ls /lib/modules/*/kernel/drivers/video/nvidia*</span><br><span class="line">/lib/modules/5.15.0-125-generic/kernel/drivers/video/nvidia-drm.ko      /lib/modules/5.15.0-125-generic/kernel/drivers/video/nvidia-peermem.ko</span><br><span class="line">/lib/modules/5.15.0-125-generic/kernel/drivers/video/nvidia.ko          /lib/modules/5.15.0-125-generic/kernel/drivers/video/nvidia-uvm.ko</span><br><span class="line">/lib/modules/5.15.0-125-generic/kernel/drivers/video/nvidia-modeset.ko</span><br><span class="line">(base) zhangwanyu@lih-workstation:~$ uname -r</span><br><span class="line">5.15.0-130-generic</span><br><span class="line">(base) zhangwanyu@lih-workstation:~$</span><br></pre></td></tr></table></figure>
+
+<p>可以看到， 内核 <code>5.15.0-125-generic</code> 中有驱动。但是我们现在的内核版本（ 使用 <code>uname -r</code> 查询）是 <code>5.15.0-130-generic</code> 。启动的内核错了，必然找不到GPU驱动。</p>
+<h3 id="（二）通过调整GRUB选项切换内核"><a href="#（二）通过调整GRUB选项切换内核" class="headerlink" title="（二）通过调整GRUB选项切换内核"></a>（二）通过调整GRUB选项切换内核</h3><p>要切换到上述内核，最直观的方法是启动过程中进入GRUB菜单选项：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250123174739.png" alt="image.png"></p>
+<p>但是我们希望的是能够让默认内核变成  <code>5.15.0-125-generic</code> ，这样我们每次启动就不需要手动设置了。</p>
+<p>默认内核设置（GRUB选项）在 <code>/etc/default/grub</code> 中配置，其内容大致如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GRUB_DEFAULT=0</span><br><span class="line">GRUB_TIMEOUT_STYLE=hidden</span><br><span class="line">GRUB_TIMEOUT=0</span><br><span class="line">GRUB_DISTRIBUTOR=`lsb_release -i -s 2&gt; /dev/null || echo Debian`</span><br><span class="line">GRUB_CMDLINE_LINUX_DEFAULT=&quot;&quot;</span><br><span class="line">GRUB_CMDLINE_LINUX=&quot;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>其中最关键的一句是 <code>GRUB_DEFAULT=0</code> ，其决定了GRUB选择哪一个内核进行启动。</p>
+<p>关于这里的调整方法，我们参考了CSDN上的一个教程 <a href="https://blog.csdn.net/bby1987/article/details/104264285">《Ubuntu修改默认启动的内核版本（grub）》</a> 。</p>
+<p>首先，使用 <code>grep -i &quot;menuentry&quot; /boot/grub/grub.cfg | cut -d &quot;&#39;&quot; -f2</code> 指令列出所有启动项：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250123175336.png" alt="image.png"></p>
+<p>从中选取包含 <code>Linux 5.15.0-125-generic</code> 字样的启动项内容，然后将其写入GRUB选项（依然在 <code>/etc/default/grub</code> 文件中）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#GRUB_DEFAULT=0 # 这一行给注释掉</span><br><span class="line">GRUB_DEFAULT=&quot;Advanced options for Ubuntu&gt;Ubuntu, with Linux 5.15.0-125-generic&quot;</span><br></pre></td></tr></table></figure>
+
+<p>随后，运行 <code>sudo update-grub</code> 更新GRUB设置。</p>
+<p>此后，重启计算机，则可以默认使用 <code>Linux 5.15.0-125-generic</code> 的内核。</p>
+<p>重启，运行 <code>nvidia-smi</code> 指令，成功识别到显卡（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1737626238714.png" alt="1737626238714.png"></p>
+<p>完结撒花！</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux</tag>
+        <tag>云服务器维护</tag>
+        <tag>grub</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>obsidian探索小记（三）——使用obsidian与坚果云免费实现win、ipad与安卓三端笔记同步</title>
+    <url>/2025/01/24/obsidian-remotely-save-config/</url>
+    <content><![CDATA[<p>按：假期临近，由于想要在家里也能查看obsidian的笔记，就去找了一下obsidian多端同步的相关教程，看到知乎上这篇文章写的很好，遂收藏于此。文章中的部分插图，我根据实践情况进行了少量修改。如果想了解更多，也可以点击下面的链接阅读原文。</p>
+<blockquote>
+<p>本文转载自知乎专栏。原文链接： <a href="https://zhuanlan.zhihu.com/p/594955199">《使用obsidian与坚果云免费实现win、ipad与安卓三端笔记同步》 - 我不是一个简单的的文章 - 知乎</a></p>
+</blockquote>
+<span id="more"></span>
+
+<hr>
+<p>写在前面：该方法需要一点折腾，但是全免费，没有需要额外付费购买软件的步骤。</p>
+<p>坚果云本身是有一定限制的，比如不能在公共环境下使用（报503），文件同步数不能超过特定值等等。如果可以接受小钱的话，建议花点钱使用阿里云的S3存储，多端同步的方法一样，不一样的地方就是填写remotely-save插件时不一样。</p>
+<h3 id="一-win端："><a href="#一-win端：" class="headerlink" title="一. win端："></a>一. win端：</h3><p>安装好obsidian后，将要同步的文件夹设为一个仓库。下载好<a href="https://github.com/remotely-save/remotely-save">remotely-save</a>插件并安装好。（obsidian的使用是有一点门槛的，未使用过该软件的建议去b站上花点时间学习一下）</p>
+<p>【安装插件的方法如下图】</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1737702406720.png" alt="1737702406720.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1737702538674.png" alt="1737702538674.png"></p>
+<p>下面是插件设置的方法</p>
+<p>打开obsidian，点开设置，在第三方插件中打开remotely Save。随后，点击该插件的设置齿轮跳转或者下拉到下面选择remotely Save</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1737702691709.png" alt="1737702691709.png"></p>
+<p>为了实现webdav备份，需要一个坚果云账号（未注册的先注册一个）。在<a href="https://link.zhihu.com/?target=https://www.jianguoyun.com/d/home%23/">坚果云网页版</a>，点击右上角的账号名称处，选择账户信息，点击安全选项，下拉，点击左下角的添加应用 ，输入名称（随便一个即可，最好与软件obsidian或要同步的文件名称相关，避免以后忘记），点击生成密码。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1737703183059.png" alt="1737703183059.png"></p>
+<p>将上述在坚果云得到的账户信息填到obsidian的remotely save插件设置页面中。①处选择Webdav，②处填写网址 <code>https://dav.jianguoyun.com/dav/</code>（可以在上图的页面中看到），③处填写自己的坚果云账号（是<strong>邮箱</strong>，不是昵称，这个信息也可以在上图的页面中看到），④处填写上一步生成的<strong>密码</strong>。  </p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250124151808.png" alt="image.png"></p>
+<p>由于墙的缘故，我们不能直接打开obsidian上的社区插件，故下方的同步配置文件夹看你需不需要在ipad端和安卓端安装一些插件，要的话，建议打开。。其它的保持默认即可。（建议开启同步配置文件夹，以后插件也可以直接同步了）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250124152113.png" alt="image.png"></p>
+<p>关闭obsidian的设置，点击下图所示的同步键，即可实现将该仓库上传到坚果云上。到此为止，win端的配置基本上算是完成了，接下来的就是安卓端和ipad端的配置了。  </p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1737703352288.png" alt="1737703352288.png"></p>
+<h3 id="二-、ipad端（看不到隐藏文件，较为麻烦）"><a href="#二-、ipad端（看不到隐藏文件，较为麻烦）" class="headerlink" title="二 、ipad端（看不到隐藏文件，较为麻烦）"></a>二 、ipad端（看不到隐藏文件，较为麻烦）</h3><ol>
+<li>下载好obsidian，打开obsidian软件，点击<code>Create new vault</code>，新建一个仓库，仓库名与win端同步的仓库名要一致。  </li>
+<li>在官方文件管理器<code>文件</code>上找到 obsidian的位置（文件 =》 我的ipad =》 obsidian ）  </li>
+<li>在<strong>win端</strong>上将仓库中的<code>.obsidian</code>文件夹打包成压缩包<code>.obsidian.zip</code>。发送到QQ上，在qq中下载后选择保存到<code>文件</code>中上述找的的位置上的新建仓库名文件夹中。（在QQ上点击分享，选择“ 拷贝到‘文件’ ”，再选择文件夹）  </li>
+<li>由于ipad端是看不到隐藏文件的，因此需要一个第三方软件 （ES文件浏览器） 来实现对隐藏文件的解压缩。在store上安装好就行了。      </li>
+<li>打开ES文件浏览器，点击“我的ipad”，点击右上角的“+”号，选择的文件路径为上述找到的 Obsidian 软件的存储位置，在点击右上角的完成即可。  </li>
+</ol>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250124152326.png" alt="image.png"></p>
+<ol start="6">
+<li>进去对应的文件目录中，搜索<code>.ob</code>，这时候就可以看到隐藏文件了。没有出现搜索框的可以先新建一个空白文件夹，后面完成解压后再删除就行。</li>
+</ol>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250124152513.png" alt="image.png"></p>
+<ol start="7">
+<li>接下来是最重要的一步了，先将原来的<code>.obsidian</code>文件夹删除掉，再点击<code>.obsidian.zip</code>压缩包，即可实现解压缩。</li>
+<li>回去重新打开的obsidan软件就行了，点击同步键就可以了。</li>
+</ol>
+<h3 id="三-、安卓端"><a href="#三-、安卓端" class="headerlink" title="三 、安卓端"></a>三 、安卓端</h3><p>安卓端是可以看到隐藏文件的，因此就简单多了。</p>
+<ol>
+<li>使用数据线连接好手机和电脑，点击“打开设备以查看文件”，（第一次需要手机上点击同意）</li>
+<li>进入手机的文件目录中，找到位置建立一个obsidian文件夹，接着把要同步的仓库的.obsidian文件夹复制过去（记得把仓库名称那个文件夹也复制过去）</li>
+<li>最终效果：</li>
+</ol>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250124152605.png" alt="image.png"></p>
+<ol start="4">
+<li>手机端安装好obsidian软件，点击<code>Open folder as vault</code>，选择刚刚传过去的文件夹即可。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>obsidian探索小记</tag>
+        <tag>nodejs</tag>
+        <tag>笔记同步</tag>
+      </tags>
+  </entry>
 </search>
