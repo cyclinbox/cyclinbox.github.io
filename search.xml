@@ -16063,7 +16063,7 @@
       </tags>
   </entry>
   <entry>
-    <title>obsidian探索小记（三）——使用obsidian与坚果云免费实现win、ipad与安卓三端笔记同步</title>
+    <title>obsidian探索小记（四）——使用obsidian与坚果云免费实现win、ipad与安卓三端笔记同步</title>
     <url>/2025/01/24/obsidian-remotely-save-config/</url>
     <content><![CDATA[<p>按：假期临近，由于想要在家里也能查看obsidian的笔记，就去找了一下obsidian多端同步的相关教程，看到知乎上这篇文章写的很好，遂收藏于此。文章中的部分插图，我根据实践情况进行了少量修改。如果想了解更多，也可以点击下面的链接阅读原文。</p>
 <p>对了，提前祝大家春节快乐呀！</p>
@@ -16125,6 +16125,113 @@
         <tag>obsidian探索小记</tag>
         <tag>nodejs</tag>
         <tag>笔记同步</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>本地部署DeepSeek-R1（1.5b）模型</title>
+    <url>/2025/02/03/DeepSeek-R1-local-deploy-by-ollama/</url>
+    <content><![CDATA[<p>春节假期忙于各种家庭事务，没太多精力打理博客。前段时间被安利了DeepSeek-R1模型，被模型表现惊艳到了，于是也在空闲时间稍稍探索了一下本地部署的方法。</p>
+<span id="more"></span>
+
+<h2 id="一、背景介绍"><a href="#一、背景介绍" class="headerlink" title="一、背景介绍"></a>一、背景介绍</h2><h3 id="（一）DeepSeek-R1"><a href="#（一）DeepSeek-R1" class="headerlink" title="（一）DeepSeek-R1"></a>（一）DeepSeek-R1</h3><p>DeepSeek，今年年初引爆舆论的大模型，来自杭州的量化基金公司幻方量化（这家低调的量化交易公司曾经“无意间”囤积了大量的GPU，颇有种高筑墙广积粮的风范）。</p>
+<p>DeepSeek到目前为止已经发布了3个大版本（v1,v2,v3），其中2024年12月25日发布的V3版本一经发布就引起了国际范围的轰动，因为它在多个参数上，<a href="https://api-docs.deepseek.com/news/news1120">击败</a>了 OpenAI 公司最新的 o1 模型。而且，它的运行效率很高，训练成本估计只有 Meta 公司的 Llama 3.1 405B 模型的11分之一。</p>
+<p>DeepSeek-R1是基于V3的、带思维链（Chain-of-Thought, CoT）的模型，通过强化学习（RL）和蒸馏技术提升推理能力。在思维链的加持下，其有更强大的表现。</p>
+<p>DeepSeek模型已在Github开源，可以在下面这些存储库中查看：</p>
+<ul>
+<li><a href="https://github.com/deepseek-ai/DeepSeek-R1">https://github.com/deepseek-ai/DeepSeek-R1</a></li>
+<li><a href="https://github.com/deepseek-ai/DeepSeek-V3">https://github.com/deepseek-ai/DeepSeek-V3</a></li>
+</ul>
+<h3 id="（二）ollama"><a href="#（二）ollama" class="headerlink" title="（二）ollama"></a>（二）ollama</h3><p>Ollama是一个强大的本地大语言模型<strong>运行框架</strong>，它让用户能够在本地设备上轻松运行和管理各种大语言模型。其支持Windows，Linux和macOS。</p>
+<p><img src="https://pic1.imgdb.cn/item/67a0a06fd0e0a243d4f9b9a5.png"></p>
+<h3 id="（三）模型蒸馏"><a href="#（三）模型蒸馏" class="headerlink" title="（三）模型蒸馏"></a>（三）模型蒸馏</h3><p>大模型蒸馏技术是一种将大型模型（教师模型）的知识迁移到小型模型（学生模型）的高效方法，旨在保留大模型性能的同时降低计算和存储成本。</p>
+<p><img src="https://pic1.imgdb.cn/item/67a0a0d7d0e0a243d4f9b9ac.png"></p>
+<p>对于DeepSeek-R1的本地模型来说，其提供了从1.5b到671b不等的多个规模的模型，其中671b模型是原始模型，而其余小模型是从原始模型蒸馏而来。DeepSeek-R1 的蒸馏过程通过 <strong>软标签引导</strong>、<strong>中间层特征对齐</strong> 和 <strong>动态训练策略</strong>，在保留 Qwen/LLaMA 基础架构的同时，将全量版模型的复杂知识压缩至小模型中。其核心是通过多粒度知识迁移（从 token 级到序列级）和模型结构适配，在参数量减少的情况下最大化性能保留。这一技术路线与 TinyBERT、DistilBERT 等经典工作一脉相承，但针对生成式 LLM 的特点进行了扩展优化。</p>
+<p>由于笔者的电脑内存限制，下文中将以最小的1.5b模型为例展示如何进行本地部署。</p>
+<h2 id="二、本地部署DeepSeek-R1（1-5b）模型步骤"><a href="#二、本地部署DeepSeek-R1（1-5b）模型步骤" class="headerlink" title="二、本地部署DeepSeek-R1（1.5b）模型步骤"></a>二、本地部署DeepSeek-R1（1.5b）模型步骤</h2><h3 id="（一）安装ollama"><a href="#（一）安装ollama" class="headerlink" title="（一）安装ollama"></a>（一）安装ollama</h3><p>在<a href="https://ollama.com/download">ollama下载页面</a>上下载安装包。</p>
+<p><img src="https://pic1.imgdb.cn/item/67a0a39ed0e0a243d4f9ba2f.png"></p>
+<p>打开安装包，直接点击install进行安装。以Windows为例，ollama不支持修改安装路径，其默认会将可执行文件解压缩到 <code>C:\Users\&lt;username&gt;\AppData\Local\Programs\Ollama</code> 下，安装结束后其会将可执行文件添加到环境变量当中，从而允许我们在命令行中使用 <code>ollama</code> 指令调用这一应用。</p>
+<p><img src="https://pic1.imgdb.cn/item/67a0a3e0d0e0a243d4f9ba33.png"></p>
+<p><img src="https://pic1.imgdb.cn/item/67a0a430d0e0a243d4f9ba3d.png"></p>
+<p><img src="https://pic1.imgdb.cn/item/67a0a4ded0e0a243d4f9ba4a.png"></p>
+<h3 id="（二）使用ollama部署DeepSeek-R1本地版模型"><a href="#（二）使用ollama部署DeepSeek-R1本地版模型" class="headerlink" title="（二）使用ollama部署DeepSeek-R1本地版模型"></a>（二）使用ollama部署DeepSeek-R1本地版模型</h3><p>我们回到ollama的官网。在这里，我们搜索DeepSeek-R1，可以进入这一模型的<a href="https://ollama.com/library/deepseek-r1:1.5b">模型介绍界面</a>，如下图。在这里我们选择1.5b的模型，在页面右上角就会显示出部署这一模型需要用到的指令（此处为 <code>ollama run deepseek-r1:1.5b</code> ）。</p>
+<p><img src="https://pic1.imgdb.cn/item/67a0a51ed0e0a243d4f9ba4d.png"></p>
+<p>我们打开命令行（cmd，或者powershell，或者windows terminal），执行上述指令，就会开始模型文件的下载（如下图）。当模型下载完成，屏幕上显示出 <code>&gt;&gt;&gt;</code> 提示符时，说明模型部署完成，可以开始聊天了。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1738581400414.png" alt="1738581400414.png"></p>
+<h3 id="（三）使用"><a href="#（三）使用" class="headerlink" title="（三）使用"></a>（三）使用</h3><p>直接运行 <code>ollama run deepseek-r1:1.5b</code> 即可启动模型对话框。在这里输入问题，回车以后就可以得到回答。</p>
+<p>1.5b的小模型，响应速度还是很快的，大约能够做到每秒5-10字左右。从下图中可以看到，deepseek-r1在生成内容时，首先会在 <code>&lt;think&gt;&lt;/think&gt;</code> 标签之间开展思考过程，在思考结束以后会给出更为正式的回答。</p>
+<p><img src="https://pic1.imgdb.cn/item/67a0a61fd0e0a243d4f9ba63.png"></p>
+<p>也可以使用 <code>/?</code> 查看ollama的命令行程序帮助，ollama支持通过指令清空历史聊天记录、设置模型参数等。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; /?</span><br><span class="line">Available Commands:</span><br><span class="line">  /set            Set session variables</span><br><span class="line">  /show           Show model information</span><br><span class="line">  /load &lt;model&gt;   Load a session or model</span><br><span class="line">  /save &lt;model&gt;   Save your current session</span><br><span class="line">  /clear          Clear session context</span><br><span class="line">  /bye            Exit</span><br><span class="line">  /?, /help       Help for a command</span><br><span class="line">  /? shortcuts    Help for keyboard shortcuts</span><br><span class="line"></span><br><span class="line">Use &quot;&quot;&quot; to begin a multi-line message.</span><br></pre></td></tr></table></figure>
+
+<p>以上。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/20280968593">《DeepSeek R1本地部署指南》 - 数据控的文章 - 知乎</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2025/01/weekly-issue-332.html">《科技爱好者周刊（第 332 期）：西蒙·威利森的年终总结，梁文锋的访谈》 - 阮一峰的网络日志</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/20986866361">《DEEPSEEK学习笔记5——从V3到R1》 - 东晓一家的文章 - 知乎</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/20748560635">《Ollama完全指南：从入门到精通》 - 凡超 FanChao的文章 - 知乎</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>计算机代数系统</tag>
+        <tag>LLM</tag>
+        <tag>ollama</tag>
+        <tag>DeepSeek-R1</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>浏览器插件推荐：沉浸式翻译（immersivetranslate）</title>
+    <url>/2025/02/10/immersivetranslate_browser_addon/</url>
+    <content><![CDATA[<p>下午师兄推荐给大家的一个插件。</p>
+<span id="more"></span>
+
+<h2 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h2><p>如下图所示，在<a href="https://immersivetranslate.com/zh-Hans/">沉浸式翻译官网</a>上支持edge、chrome、firefox、safari等多个不同的浏览器。根据用户的浏览器，选择合适的版本即可进入安装界面（一般是跳转到浏览器自带的插件商城）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250210184252.png" alt="image.png"></p>
+<p>这一插件也提供了crx格式安装包的下载。对于以chromium为内核的一众国产浏览器（360极速浏览器，搜狗浏览器等），可以通过crx包进行安装。</p>
+<blockquote>
+<p>CRX是Google Chrome浏览器扩展程序的文件格式。CRX文件是一种压缩文件，通常包含HTML、CSS、JavaScript等文件以及一些资源文件，用于实现Chrome浏览器的各种功能和特性。CRX文件通常以<code>.crx</code>为后缀名，可以通过Chrome Web Store下载安装，也可以通过开发者模式在本地安装。</p>
+</blockquote>
+<p>安装完成后，点击菜单栏里的插件按钮，会弹出这个插件的主界面，其外观如下。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250210190038.png" alt="image.png"></p>
+<h2 id="二、配置大模型翻译API"><a href="#二、配置大模型翻译API" class="headerlink" title="二、配置大模型翻译API"></a>二、配置大模型翻译API</h2><p>下面以配置百度千帆大模型平台（aka.文心一言为例），讲一讲如何配置大模型翻译的API。</p>
+<blockquote>
+<p>用户如果想要了解百度千帆大模型平台，可以访问下面这几个网站： <a href="https://console.bce.baidu.com/qianfan/ais/console/onlineService">百度智能云在线推理服务</a> ，<a href="https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Nlks5zkzu">百度智能云文档 - API列表</a> ， <a href="https://cloud.baidu.com/doc/WENXINWORKSHOP/s/hlrk4akp7">百度智能云文档 - 模型计费</a></p>
+</blockquote>
+<p>会员服务可以使用包括GPT/DeepL/质谱GLM等在内的AI翻译服务。师兄为了追求翻译体验开通了会员服务，但是我们也可不必开通会员——只要有大模型API，同样能体验到更加精准的AI翻译功能。</p>
+<p>如下图，首先我们打开设置界面。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250210193456.png" alt="image.png"></p>
+<p>在“翻译服务”这里，将页面往下滚动，可以看到有许多大模型的设置。以百度千帆大模型为例，我们点击粉色按钮启动这个翻译引擎，然后点击“去修改”按钮，进入API key的设置界面。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250210193509.png" alt="image.png"></p>
+<p>在这个界面里，填入百度模型的API key，然后在模型选择那里，选 <code>ERNIE-Speed-128K</code> ，这个模型兼顾翻译的准确性以及速度，使用体验会很好。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739187430839.png" alt="1739187430839.png"></p>
+<p>上述设置界面的所有项目都是自动保存的，改完以后直接返回主页，设置会自动生效。</p>
+<p>为了方便本文的读者朋友，这里直接分享一个百度千帆大模型的API key（本人自用，可以使用包括Speed-128K、ERNIE-3.5和ERNIE-4.0在内的多个文心大模型）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API Key:    TtcbZoabEtmST0y0VMcap6jE</span><br><span class="line">Secret Key: MbtjZjHKYWerAucTW7SZsFmSO4zd5D8Y</span><br></pre></td></tr></table></figure>
+
+<p>把这两个key填入上图页面中的对应位置即可。</p>
+<p>其他的大模型平台同理。</p>
+<h2 id="三、使用示例"><a href="#三、使用示例" class="headerlink" title="三、使用示例"></a>三、使用示例</h2><h3 id="（一）网页翻译"><a href="#（一）网页翻译" class="headerlink" title="（一）网页翻译"></a>（一）网页翻译</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739188799746.png" alt="1739188799746.png"></p>
+<p>翻译效果如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250210200152.png" alt="image.png"></p>
+<h3 id="（二）PDF翻译"><a href="#（二）PDF翻译" class="headerlink" title="（二）PDF翻译"></a>（二）PDF翻译</h3><p>在插件主页中点击”PDF/ePub“按钮：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739189009903.png" alt="1739189009903.png"></p>
+<p>它会跳转到下面这个网页（<code>https://app.immersivetranslate.com/?utm_source=extension&amp;utm_medium=extension&amp;utm_campaign=popup_btn_document</code>）。</p>
+<p>在这个页面上传要阅读的PDF文件（虽然名义上是上传，实际上调用的是浏览器自带的PDF阅读器，文件还在本地）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250210200342.png" alt="image.png"></p>
+<p>这样就可以进入一个双屏的阅读器视图，左边是PDF原文，右边是翻译的PDF，这样读起来方便多了。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250210200559.png" alt="image.png"></p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>LLM</tag>
+        <tag>浏览器插件推荐</tag>
+        <tag>网页翻译</tag>
       </tags>
   </entry>
 </search>
