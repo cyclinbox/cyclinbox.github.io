@@ -16176,7 +16176,6 @@
       </categories>
       <tags>
         <tag>计算机技术杂谈</tag>
-        <tag>计算机代数系统</tag>
         <tag>LLM</tag>
         <tag>ollama</tag>
         <tag>DeepSeek-R1</tag>
@@ -16232,6 +16231,149 @@
         <tag>LLM</tag>
         <tag>浏览器插件推荐</tag>
         <tag>网页翻译</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>碎碎念（2025年1月-2月）</title>
+    <url>/2025/02/16/20250216_updatelog/</url>
+    <content><![CDATA[<p>最近一段时间的生活记录。</p>
+<span id="more"></span>
+
+<h2 id="2025-1-23"><a href="#2025-1-23" class="headerlink" title="2025-1-23"></a>2025-1-23</h2><p>放假前夕的工作日。 </p>
+<p>实验室的成员陆陆续续已经回家了。往日热闹的实验室突然变得空旷了起来，感觉有点不适应，更平添了几分孤独。  </p>
+<p>前天半夜1点多，因为服务器启动失败的问题发了会儿疯，随后一气之下把手机扔在实验室直接回去睡觉了。幸运的是，昨天在Y师姐的帮助下最终定位到了问题的根源，并逐步<a href="https://wz.anoms.top/2025/01/22/Linux-kernal-and-grub/#more">解决了问题</a>。师姐的帮助功不可没（感谢Y师姐！）。</p>
+<p>昨天组里的同学们一起去食堂吃了饭，又去了天钥桥路购买年货；晚上回来，和师弟师妹打了羽毛球，回来还被科普了扑克的玩法。一天走了很多路，很累，但也很热闹。可是昨天的热闹反衬出今天的孤独。百无聊赖开始刷手机，在朋友圈里看到了一个学妹脱单的动态，打开知乎，又被喂了许多关于找对象或者社交冲突的帖子。突然感觉好悲伤：2025年了，我怎么依然还没脱单？（虽然，也许现阶段我可能还不太适合恋爱）  </p>
+<p>午休期间，半梦半醒的状态下又有一些胡思乱想。有些人觉得我追求“一生一世的爱情”，好古板好守旧，但其实我还挺开放和新潮来着——就像我对LGBT持开放态度，也真诚的祝福每一对相爱的情侣，不论是同性还是异性。我所不能容忍的，是对爱情的儿戏和践踏，而那些无法长久的短期恋爱关系在我看来正在此列。 </p>
+<p>一些情感问题，不论是异性伴侣还是同性伴侣之间其实都会遇到——例如争吵与吃醋，已读不回的消息和拉黑删除的感叹号。如果只刷一些异性伴侣的吐槽贴，很容易产生对某种性别的刻板印象，从而加重对另一种性别的不信任感；实际上，如果刷多了，我们会发现，一些情侣之间的矛盾冲突，本质上是人本身的问题，而解决问题的途径在于具体的人。</p>
+<p>一些想法，谨记于此。</p>
+<h2 id="2025-1-25"><a href="#2025-1-25" class="headerlink" title="2025-1-25"></a>2025-1-25</h2><p>在高铁上看了《好东西》这部电影，因为之前好像在网上看过这部电影的推荐。</p>
+<p>看完，首先感觉电影很有意思，虽然没有非常明确的主线剧情（小孩姐最后成为乐队鼓手算主线剧情吗），但里面许多情景对话很好玩，两位女主的经历也比较发人深省。</p>
+<p>但是后来我分别在知乎和豆瓣上看了这部电影的影评，发现这部电影的评价很割裂，一边是豆瓣上许多人打好评和中评，认为这部电影讲述了女性的许多困境和应对举措（有中评的原因是，有人觉得电影脱离实际，因为女主王铁梅生活在上海徐汇这样寸土寸金的地方，本身就是属于占比极少数的有钱人群体了，她自然可以做一个热烈的单亲妈妈独自绽放，可是大多数人根本没有那样的经济条件，那么还能过得那么好吗？），另一边却是知乎上的铺天谩骂抹黑和破防（他们指责电影在“输出特定价值观”，在“丑化男性”，顺便羞辱了一波认同并欣赏这部电影男性）。</p>
+<p>这种割裂很讽刺。特别是后面那一类输出情绪的回答（颇有一种站队划分立场的既视感）。又想起来曾经身边一个朋友的观点，大概意思是“专偶制关系本身存在剥削性质，异性恋关系中的剥削更为明显（因此更为讨厌），但同性恋当中这种剥削依然是存在的，而反复强调性缘身份是一种自我限制”【注1】，生活中的一些争议的源头可能并不仅仅是性别问题，而且还可能出自专偶制关系本身。只要一夫一妻制的框架不改变，那么一些矛盾和争论会永远存在的。</p>
+<p>细想一下，可能这位朋友的观点存在合理性。</p>
+<p>可是，这样的观点和我之前的观点（追求“一生一世的爱情”）又有矛盾。思绪有点乱，想不下去了。</p>
+<h2 id="2025-2-14"><a href="#2025-2-14" class="headerlink" title="2025-2-14"></a>2025-2-14</h2><p>回上海快一个星期了。  </p>
+<p>春节假期的最后一个星期，跟着父母看了几集《六姊妹》电视剧，也看了王小波和李银河的书信集《爱你就像爱生命》。《六姊妹》电视剧改编自同名小说，讲述了安徽淮南一户人家六个女儿的人生经历——确实是个很好的故事，而且特别符合父母那一代人的胃口。《爱你就像爱生命》前半部分是王小波和李银河的情书，感觉他俩讨论的真深刻，也挺好嗑；后半部分是王小波和其他友人的通信集，发现王小波居然还鼓捣硬件编程，还和朋友讨论写代码和贩卖盗版软件的事情。看来，人都是立体的呀。</p>
+<p>这大半个星期大抵是忙。周一晚上从师兄那里得知了一个大模型驱动的网页翻译插件Immersive Translate，这几天也用它看了不少论文。DeepSeek春节期间爆火，看到百度千帆大模型平台已经提供了全量版DeepSeek的模型支持，也试着配置了API实现了接入。这学期报名了生物统计学的助教，周五去参加了助教工作碰头会，并在下午的第一节生物统计学课上进行了自我介绍。期间也听到了昔日同学脱单的好消息——真好呀，祝幸福。</p>
+<p>最近，有一起很痛心的新闻被曝光，广西百色祈福中学的一名毕业多年的女生符月华抑郁轻生，家人整理遗物时发现，其高中班主任唐毓文利用教师职权对这位女生进行了长达多年的侵犯（和《房思琪的初恋乐园》一样的剧情）。唐某某已经被采取刑事措施，网上的讨论也在继续。这几天我为了理解案情去看了房思琪那本书，却发现不忍卒读。那些孩子们在最天真烂漫的年龄，本以为遇上了温暖可敬的老师，却发现光鲜的外表下是禽兽不如的内心，读起来气愤且悲伤。希望这样的人间惨剧别再发生，希望上述披着教师外皮的禽兽早日伏法。</p>
+<p>回所一周了。调整期已过，之后的事情很多，要专注工作呀。</p>
+<p>以上。</p>
+<hr>
+<p>【注1】：另外参考微信公众号文章<a href="https://mp.weixin.qq.com/s/KHnTs-akhw0Hx1MEqp0Odg">《成为女同就有救了吗？想得美》</a> 。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>日记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【转载】在网站和hexo博客中接入大模型</title>
+    <url>/2025/02/16/Qwen-AI-chat-bot-deploy-on-blog/</url>
+    <content><![CDATA[<p>如题。周末尝试在博客中接入了大模型（qwen-long），这篇文章是一个很好的教程，遂收藏。</p>
+<p>PS：原本其实想接入的是DeepSeek，但我发现阿里云百炼平台暂时不支持基于DeepSeek创建AI助手应用，只能用qwen系列的模型。</p>
+<p>本文转载自：<a href="https://dingfen.github.io/2024/07/21/2024-7-21-ai_assist/#">《在基于 hexo 框架的博客上部署定制化 AI 聊天应用》</a>  。</p>
+<p>另外参考  <a href="https://help.aliyun.com/zh/model-studio/use-cases/add-an-ai-assistant-to-your-website-in-10-minutes?spm=a2c4g.11186623.0.0.5b796373rqgtsU">《10分钟在网站上增加一个AI助手》</a></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="前置需要"><a href="#前置需要" class="headerlink" title="前置需要"></a>前置需要</h2><ul>
+<li>注册并登录<a href="https://help.aliyun.com/zh/model-studio/">大模型服务百炼平台</a>。注意，在阿里云上部署 AI 助手需要根据 AI 应用的实际 token 输入/输出数量付费（另外参考：通义系列模型收费<a href="https://help.aliyun.com/zh/model-studio/product-overview/tongyi-qianwen-series-models-price-adjustment">价格一览</a>）</li>
+</ul>
+<h2 id="部署方法"><a href="#部署方法" class="headerlink" title="部署方法"></a>部署方法</h2><p>在网站中引入一个 AI 助手，只需 4 步：</p>
+<ol>
+<li><strong>创建大模型问答应用</strong>：我们将先通过百炼创建一个大模型应用，并获取调用大模型应用 API 的相关凭证。</li>
+<li><strong>搭建示例网站</strong>：然后我们将通过函数计算，来快速搭建一个网站，模拟我们的企业官网或者其他站点。</li>
+<li><strong>引入 AI 助手</strong>：接着我们将通过修改几行代码，实现在网站中引入一个 AI 助手。</li>
+<li><strong>增加私有知识</strong>：最后可以通过准备一些私有知识，让 AI 助理能回答原本无法准确回答的问题，帮助我们更好的应对客户咨询。</li>
+</ol>
+<h3 id="1-创建大模型问答应用"><a href="#1-创建大模型问答应用" class="headerlink" title="1. 创建大模型问答应用"></a>1. 创建大模型问答应用</h3><p>首先我们可以通过创建一个百炼应用，来获取大模型的推理 API 服务，用于实现 AI 助手。</p>
+<blockquote>
+<p>百炼提供的新用户免费额度可以完全覆盖本教程所需资源消耗。额度消耗完后按 token 计费，相比自行部署大模型可以显著降低初期投入成本。</p>
+</blockquote>
+<h4 id="1-1-创建应用"><a href="#1-1-创建应用" class="headerlink" title="1.1 创建应用"></a>1.1 创建应用</h4><p>进入百炼控制台，在我的应用中点击创建应用。</p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816048.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816048.png"></a></p>
+<p>在应用设置页面，模型选择通义千问-Plus，其他参数保持默认。（注意，虽然阿里云百炼平台接入了DeepSeek，但是截至今日（2025年2月16日），这里的模型好像选不了DeepSeek，只能用qwen系列的模型。）</p>
+<p>点击右上角发布，在页面右侧可以提问验证模型效果。</p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816047.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816047.png"></a>  </p>
+<h4 id="1-2-获取调用-API-所需的凭证"><a href="#1-2-获取调用-API-所需的凭证" class="headerlink" title="1.2 获取调用 API 所需的凭证"></a>1.2 获取调用 API 所需的凭证</h4><p>为了在后续通过 API 调用大模型应用的能力，我们需要获取一个百炼应用的 API-KEY 和应用 ID：</p>
+<ol>
+<li>在我的应用页面，点击查看我的API-KEY，在弹出窗口中创建一个新 API-KEY。</li>
+</ol>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816049.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816049.png"></a></p>
+<ol start="2">
+<li>在应用列表中可以查看所有百炼应用 ID</li>
+</ol>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816050.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816050.png"></a></p>
+<h3 id="2-搭建示例网站"><a href="#2-搭建示例网站" class="headerlink" title="2. 搭建示例网站"></a>2. 搭建示例网站</h3><p>在让 AI 助手能准确回答问题之前，我们可以先尝试快速将 AI 助手集成到网站中。</p>
+<p>我们可以通过我们提前准备好的应用模板，快速搭建一个空白的示例网站，用于模拟我们的企业官网或者其他站点。详细步骤如下：</p>
+<blockquote>
+<p>函数计算提供的<a href="https://help.aliyun.com/zh/functioncompute/product-overview/trial-quota">免费试用额度</a>可以完全覆盖本教程所需资源消耗。额度消耗完后按量计费，对于本教程所涉及的 web 服务，只在有访问的情况下会产生费用。</p>
+</blockquote>
+<h4 id="2-1-创建应用"><a href="#2-1-创建应用" class="headerlink" title="2.1 创建应用"></a>2.1 创建应用</h4><p>通过我们准备好的<a href="https://fcnext.console.aliyun.com/applications/create?template=web-chatbot">应用模板</a>，参考下图选择<strong>直接部署</strong>、并填写前面获取到的百炼应用 ID 以及 API-KEY。</p>
+<p>然后其他表单项保持默认，点击页面左下角的<strong>创建并部署默认环境</strong>，等待项目部署完成即可（预计耗时 1 分钟）。</p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816052.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816052.png"></a></p>
+<p>红框部分需要分别填写之前我们申请的百炼应用 ID 和 API-KEY，是因为我们预置的应用模板中包含了通过百炼应用调用大模型的代码，以便我们在后续快速完成体验。</p>
+<h4 id="2-2-访问网站"><a href="#2-2-访问网站" class="headerlink" title="2.2 访问网站"></a>2.2 访问网站</h4><p>应用部署完成后，我们可以在应用详情的<strong>环境信息</strong>中找到示例网站的访问域名，点击即可查看，确认示例网站已经部署成功。</p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816053.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816053.png"></a></p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816051.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816051.png"></a></p>
+<h3 id="3-为网站增加-AI-助手"><a href="#3-为网站增加-AI-助手" class="headerlink" title="3. 为网站增加 AI 助手"></a>3. 为网站增加 AI 助手</h3><p>在网站中增加 AI 助手非常简单，我们只需要在网站的 html 文件中插入几行代码。</p>
+<h4 id="3-1-增加-AI-助手相关代码"><a href="#3-1-增加-AI-助手相关代码" class="headerlink" title="3.1 增加 AI 助手相关代码"></a>3.1 增加 AI 助手相关代码</h4><p>示例工程中包含了被注释的引入 AI 助手代码，我们需要找到并解除注释。详细操作步骤如下：</p>
+<ol>
+<li>回到应用详情页，在环境详情的最底部找到函数资源，点击函数名称，进入函数详情页。</li>
+</ol>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816055.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816055.png"></a></p>
+<ol start="2">
+<li>在函数详情页，参考下图打开代码视图，并找到public/index.html文件，然后取消③所在位置的代码注释即可。</li>
+</ol>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816054.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816054.png"></a></p>
+<ol start="3">
+<li>最后点击<strong>部署代码</strong>，等待部署完成即可。</li>
+</ol>
+<h4 id="3-2-验证网站上的-AI-助手"><a href="#3-2-验证网站上的-AI-助手" class="headerlink" title="3.2 验证网站上的 AI 助手"></a>3.2 验证网站上的 AI 助手</h4><p>现在，我们可以刷新示例网站页面以查看最新效果。此时我们会发现网站的右下角出现了 AI 助手图标image.png，点击即可唤起 AI 助手。</p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816057.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816057.png"></a></p>
+<h3 id="4-为-AI-助手增加私有知识"><a href="#4-为-AI-助手增加私有知识" class="headerlink" title="4. 为 AI 助手增加私有知识"></a>4. 为 AI 助手增加私有知识</h3><p>通过前面的步骤，我们已经拥有了一个可以和客户对话的 AI 助手。但是，如果想让 AI 助手像你的博客助手一样，更加精准且专业地回答与博客文章相关的问题，我们还需要为大模型应用配置知识库。</p>
+<p>假设我们的博客文章包括了许多智能手机相关的知识。我们的博客网站上会有很多与智能手机相关的信息，如支持双卡双待、屏幕、电池容量、内存等信息。</p>
+<h4 id="4-1-配置知识库"><a href="#4-1-配置知识库" class="headerlink" title="4.1 配置知识库"></a>4.1 配置知识库</h4><p>接下来，我们可以尝试让大模型在面对客户问题时参考这份文档，以产出一个更准确的回答和建议。</p>
+<p><strong>上传文件</strong>：在百炼控制台的<a href="https://bailian.console.aliyun.com/data-center#/data-center">数据管理</a>中点击<strong>导入数据</strong>，根据引导上传我们虚构的百炼系列手机产品介绍：</p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816058.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816058.png"></a></p>
+<p><strong>建立索引</strong>：在左侧菜单中找到<a href="https://bailian.console.aliyun.com//knowledge-base#/knowledge-base">知识索引</a>，根据引导创建一个新的知识库，选择向量存储类型，并选择刚才上传的文件，其他参数保持默认即可。知识库将为上一步骤中准备的文档建立索引，以便后续大模型回答时检索参考。</p>
+<blockquote>
+<p>选择向量存储类型时，如果我们希望集中存储、灵活管理多个应用的向量数据，可选择ADB-PG。</p>
+</blockquote>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816059.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816059.png"></a></p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8243531271/p822476.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8243531271/p822476.png"></a></p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816061.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816061.png"></a></p>
+<p><strong>引用知识</strong>：完成知识库的创建后，返回应用设置，打开知识检索增强开关、选择知识库，最后点击发布。Prompt 中会被自动添加一段信息，以便大模型在后续回答时参考检索出来的信息。</p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816060.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816060.png"></a></p>
+<h4 id="4-2-检验效果"><a href="#4-2-检验效果" class="headerlink" title="4.2 检验效果"></a>4.2 检验效果</h4><p>有了参考知识，AI 助手就能准确回答关于我们公司的商品的问题了。</p>
+<p><a href="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816109.png"><img src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8936289171/p816109.png"></a></p>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h3><p>通过前面的学习，我们已经能搭建一个大模型 RAG 应用，并且将其以 AI 助手的形式添加到网站中来应对客户咨询，过程仅需 0 元（免费试用额度内） 10 分钟。</p>
+<h2 id="如何部署到基于-hexo-框架的博客上"><a href="#如何部署到基于-hexo-框架的博客上" class="headerlink" title="如何部署到基于 hexo 框架的博客上"></a>如何部署到基于 hexo 框架的博客上</h2><h3 id="1-hexo-注入器"><a href="#1-hexo-注入器" class="headerlink" title="1. hexo 注入器"></a>1. hexo 注入器</h3><p>沿着上面的部署方法，如果顺利的话，可以将 AI 助手部署在示例的网站上。</p>
+<p>但这不是我们需要的，我们最终是要把它放在我们的博客上供读者使用的！</p>
+<p>因此，我们需要用到 hexo 框架内的<a href="https://hexo.fluid-dev.com/docs/advance/#hexo-%E6%B3%A8%E5%85%A5%E4%BB%A3%E7%A0%81">注入器</a>来帮助我们将阿里云提供的前端代码注入到我们的博客网页上。</p>
+<p>Hexo 注入器是 Hexo 5 版本自身加入的一项新功能，所以在所有 Hexo 主题都是支持这个功能的。要使用注入器插入代码，需要在博客的根目录中创建<code>Scripts</code> 文件夹，然后将代码以js文件格式的形式保存在上述文件夹当中，Hexo 就会在初始化时加载它们。</p>
+<p>注入器可以将 HTML 片段注入生成页面的 <code>&lt;head&gt;</code> 和 <code>&lt;body&gt;</code> 节点中。我们可以利用注入器将 AI 助手的前端代码注入到博客的所有 html 中。</p>
+<h3 id="2-编写-js-文件"><a href="#2-编写-js-文件" class="headerlink" title="2. 编写 js 文件"></a>2. 编写 js 文件</h3><p>在实际使用中，建议将 js 代码独立成为 js 文件，存放在博客的 scripts 目录下，hexo 框架会自动识别该文件夹内部的 js 文件，然后编译执行</p>
+<p>例如创建一个 <code>qwen-chat-bot.js</code>  ，并写入：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">hexo.<span class="property">extend</span>.<span class="property">injector</span>.<span class="title function_">register</span>(<span class="string">&#x27;body_end&#x27;</span>,<span class="string">``</span>); <span class="comment">// 在 `` 之间需要填入AI助手的网页代码，这个代码可以去前面3.1步骤中复制下来。</span></span><br></pre></td></tr></table></figure>
+
+
+<p>显然，我们希望 AI 助手能在我们博客的任何文章中出现，因此，我们在每个博客的 body 结尾部分插入 AI 助手的前端代码。</p>
+<p>但不是简单地将前面的 html 示例代码复制下来就完事了！</p>
+<p>注意⚠️ <code>window.CHATBOT_CONFIG</code> 内的 <code>endpoint</code> 需要替换为 <code>https://&#123;your-fc-http-trigger-domain&#125;/chat</code>，否则我们的 AI 助手前端无法完成与阿里云上的后端 API 连接。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739714579544.png" alt="1739714579544.png"></p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>通义千问</tag>
+        <tag>LLM</tag>
       </tags>
   </entry>
 </search>
