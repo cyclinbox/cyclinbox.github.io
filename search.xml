@@ -10045,7 +10045,6 @@
         <category>计算机</category>
       </categories>
       <tags>
-        <tag>计算机技术杂谈</tag>
         <tag>生信分析</tag>
         <tag>基因集富集分析</tag>
         <tag>GSEA</tag>
@@ -16235,7 +16234,7 @@
   </entry>
   <entry>
     <title>碎碎念（2025年1月-2月）</title>
-    <url>/2025/02/16/20250216_updatelog/</url>
+    <url>/2025/02/23/20250216_updatelog/</url>
     <content><![CDATA[<p>最近一段时间的生活记录。</p>
 <span id="more"></span>
 
@@ -16258,6 +16257,15 @@
 <p>另外，这学期报名了生物统计学的助教，周五去参加了助教工作碰头会，并在下午的第一节生物统计学课上进行了自我介绍。期间也听到了昔日同学脱单的好消息——好甜呀，祝幸福。</p>
 <p>最近，有一起很痛心的新闻被曝光，广西百色祈福中学的一名毕业多年的女生符月华抑郁轻生，家人整理遗物时发现，其高中班主任唐毓文利用教师职权对这位女生进行了长达多年的侵犯（和《房思琪的初恋乐园》一样的剧情）。唐某某已经被采取刑事措施，网上的讨论也在继续。这几天我为了理解案情去看了房思琪那本书，却发现不忍卒读。那些孩子们在最天真烂漫的年龄，本以为遇上了温暖可敬的老师，却发现光鲜的外表下是禽兽不如的内心，读起来气愤且悲伤。希望这样的人间惨剧别再发生，希望上述披着教师外皮的禽兽早日伏法。</p>
 <p>回所一周了。调整期已过，之后的事情很多，要专注工作呀。</p>
+<p>以上。</p>
+<h2 id="2025-2-23"><a href="#2025-2-23" class="headerlink" title="2025-2-23"></a>2025-2-23</h2><p>《房思琪的初恋乐园》书评。</p>
+<p>因为<a href="https://mp.weixin.qq.com/s/ZW-cBCgxeNHsHxUGTPODww">百色祈福中学</a>的新闻看了这本书，这个星期看完了。</p>
+<p>看完以后，心情久久不能平静。从《乐园》的表面平静安宁，到《失乐园》的恐怖与压抑，再到《复乐园》的一切终归平静——可是那些失去的，还能回来吗？</p>
+<p>一对聪慧机灵的姐妹，一起上学一起成长，本来可以这样一直幸福下去，突然其中的一个疯了，怎么回事？“故事必须重新讲过”。</p>
+<p>于是我们在房思琪的日记中看到了生活的另一面：禽兽不如的老师（李国华），有家暴倾向的丈夫（钱一维），还有那些在教育中缺失的性和自我保护知识，以至于连身边的亲人都难免成为加害者（房：“听说学校有个同学跟老师在一起。”房妈妈：“谁？”房： “不认识。”房妈妈：“这么小年纪就这么骚。”）。最可恨的依然要属李国华，自负、傲慢、虚伪、油腻、双标（李：“夕阳好看吗？”房：“很漂亮。”李：“漂亮，我不喜欢这个词，太俗气了。”房：“是吗？那老师为什么老说我漂亮呢？”）每次他的出现都令人咬牙切齿。太无耻了，世界上怎么会有这种人存在？</p>
+<p>《失乐园》里的每个人都太苦，于是《复乐园》，事情似乎变得好了起来：房思琪住进了疗养院，李国华的行径被曝光，伊纹从毛毛那里得到了尊重和关爱。可是，事情真的就这么解决了？远没有。李国华力量太大，根本不怕被告倒；钱一维又去找了伊纹，后来的生活怎么样书中没有交代。</p>
+<p>小说最后，还是之前的一群人，围坐大楼里的圆桌吃喝说笑，仿佛一些龌龊的事情并不是他们所为——“她们的大楼还是那样辉煌，丰硕，希腊式圆柱经年了也不曾被人摸出腰身。路人骑摩托车经过，巍峨的大楼就像拔地而出的神庙，路人往往会转过去，掀了安全帽的面盖，对后座的亲人说：要是能住进这里，一辈子也算圆满了”——似乎一切还是从前那样，施暴者在乐园纵情，受害者在地狱挣扎。多么讽刺啊。</p>
+<p>一些事情，依然任重而道远。</p>
 <p>以上。</p>
 <hr>
 <p>【注1】：另外参考微信公众号文章<a href="https://mp.weixin.qq.com/s/KHnTs-akhw0Hx1MEqp0Odg">《成为女同就有救了吗？想得美》</a> 。</p>
@@ -16375,6 +16383,147 @@
         <tag>计算机技术杂谈</tag>
         <tag>通义千问</tag>
         <tag>LLM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VS Code缓存清理</title>
+    <url>/2025/02/21/vscode-cache-diskspace-clean/</url>
+    <content><![CDATA[<p>C盘空间不够用了，查了一下占用C盘体积比较多的软件，发现vscode赫然在列。于是查了一下清理这一部分占用空间的方法。</p>
+<span id="more"></span>
+
+<p>参考</p>
+<blockquote>
+<ul>
+<li><a href="https://blog.csdn.net/qazw9600/article/details/133788814">vscode - 环境准备 - 修改缓存路径</a></li>
+<li><a href="https://blog.csdn.net/weixin_44205779/article/details/132298257">Win11 C盘爆满 修改 数据和缓存的保存路径</a></li>
+<li><a href="https://www.cnblogs.com/vPYer/p/18253594">VSCode修改扩展和用户文件夹目录位置(Windows)</a></li>
+</ul>
+</blockquote>
+<h2 id="缓存文件的默认路径"><a href="#缓存文件的默认路径" class="headerlink" title="缓存文件的默认路径"></a>缓存文件的默认路径</h2><h3 id="代码智能感知系统缓存"><a href="#代码智能感知系统缓存" class="headerlink" title="代码智能感知系统缓存"></a>代码智能感知系统缓存</h3><p>Windows上的默认缓存路径为</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%LocalAppData%/Microsoft/vscode-cpptools</span><br></pre></td></tr></table></figure>
+
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">C:\Users\[用户名]\AppData\Local\Microsoft\vscode-cpptools</span><br></pre></td></tr></table></figure>
+
+<p>Linux 上为</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$XDG_CACHE_HOME/vscode-cpptools/</span><br></pre></td></tr></table></figure>
+
+<p>(若未定义 <code>XDG_CACHE_HOME</code> ，则为 <code>$HOME/.cache/vscode-cpptools/</code>)，</p>
+<p>Mac 上为</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$HOME/Library/Caches/vscode-cpptools/`</span><br></pre></td></tr></table></figure>
+
+
+<p>如果未指定路径或指定的路径无效，则使用默认路径。</p>
+<h3 id="插件和用户数据缓存"><a href="#插件和用户数据缓存" class="headerlink" title="插件和用户数据缓存"></a>插件和用户数据缓存</h3><ul>
+<li>插件缓存：<code>C:\Users\[用户名]\.vscode\extensions</code></li>
+<li>用户缓存：<code>C:\Users\[用户名]\AppData\Roaming\Code</code></li>
+</ul>
+<h2 id="通过创建软链接的方法清理磁盘空间"><a href="#通过创建软链接的方法清理磁盘空间" class="headerlink" title="通过创建软链接的方法清理磁盘空间"></a>通过创建软链接的方法清理磁盘空间</h2><p>这个方法的原理很简单，就是把原本在C盘目录下的文件夹移动到另一个磁盘当中，这样C盘的空间就空出来的。但是vscode下一次启动时还是会去相同的目录下寻找这些文件，怎么办呢？所以我们再在原来的位置创建一个软链接，并让这个软链接指向新的位置，这样vscode就以为那些文件还在原来的地方。</p>
+<p>在讲述具体方法之前，先来辨析一下概念：  <strong>软链接/符号链接（Linux &amp; Windows）</strong>  vs  <strong>快捷方式（Windows）</strong> ：</p>
+<h3 id="什么是软链接-符号链接"><a href="#什么是软链接-符号链接" class="headerlink" title="什么是软链接/符号链接"></a>什么是软链接/符号链接</h3><h4 id="软链接-符号链接（Linux-amp-Windows）"><a href="#软链接-符号链接（Linux-amp-Windows）" class="headerlink" title="软链接/符号链接（Linux &amp; Windows）"></a>软链接/符号链接（Linux &amp; Windows）</h4><ul>
+<li><strong>定义</strong>：软链接或符号链接是一种特殊的文件类型，它包含一个指向另一个文件或目录的路径。这个路径可以是相对的也可以是绝对的。</li>
+<li><strong>特点</strong>：是一个文件系统级别的指针，<strong>操作系统在访问时会自动解析并跳转到目标位置</strong>。它可以在命令行工具和文件系统操作中透明地工作。</li>
+<li>创建方式： <ul>
+<li>Linux上为 <code>ln -s &lt;target&gt; &lt;link&gt;</code> ，其中<code>&lt;target&gt;</code> 是目标位置，<code>&lt;link&gt;</code>是要创建软链接文件的位置。</li>
+<li>Windows上为 <code>mklink /D &lt;link&gt; &lt;target&gt;</code> ，其中<code>&lt;target&gt;</code> 是目标位置，<code>&lt;link&gt;</code>是要创建软链接文件的位置。注意<code>mklink</code>和<code>ln -s</code> 的两个输入参数的先后顺序是相反的，使用时应当注意辨别。另外，这个指令需要管理员权限，可以通过按下win+X按钮→“命令提示符（管理员）”进入管理员模式下的命令行窗口</li>
+</ul>
+</li>
+</ul>
+<h4 id="快捷方式（Windows）"><a href="#快捷方式（Windows）" class="headerlink" title="快捷方式（Windows）"></a>快捷方式（Windows）</h4><ul>
+<li><strong>定义</strong>：快捷方式是Windows操作系统特有的机制，用于创建指向程序、文件或文件夹的链接。它本质上是一个包含目标对象位置信息的特殊文件。</li>
+<li><strong>特点</strong>：快捷方式图标通常有一个小箭头标志，表明它是一个链接。和软链接一样，如果目标被删除或移动，快捷方式将失效。需要注意的是，快捷方式是一个特殊的文件（<code>.lnk</code>），包含指向目标文件或目录的信息，<strong>但它不会被文件系统直接解析为实际路径</strong>。应用程序和命令行工具需要显式支持才能正确处理快捷方式。</li>
+<li>创建方式：鼠标右键→创建快捷方式。</li>
+</ul>
+<h3 id="具体做法"><a href="#具体做法" class="headerlink" title="具体做法"></a>具体做法</h3><p>大致思路为：①把C盘目录下的几个缓存文件夹移动到另一个剩余空间比较大的磁盘中（例如H盘）；②使用<code>mklink</code>指令在原先的位置创建符号链接。</p>
+<p>下面是一个指令示范（仅作为参考，实际使用时需要将下面的路径改为读者电脑上的实际路径）</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> C:\Users\ab124\ <span class="comment"># 切换到用户主文件夹</span></span><br><span class="line">copy .vscode H:\.vscode <span class="comment"># 移动缓存目录到新磁盘</span></span><br><span class="line">move .vscode .vscode-old <span class="comment">#保留一份备份，为了防止复制时出错</span></span><br><span class="line">mklink /d .vscode H:\.vscode <span class="comment"># 创建符号链接</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> C:\Users\ab124\AppData\Roaming <span class="comment"># 切换到用户缓存文件夹</span></span><br><span class="line">copy Code H:\ab124\AppData\Roaming\Code  <span class="comment"># 移动缓存目录到新磁盘</span></span><br><span class="line">move Code Code-old <span class="comment">#保留一份备份，为了防止复制时出错</span></span><br><span class="line">mklink /d Code H:\ab124\AppData\Roaming\Code <span class="comment"># 创建符号链接</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 下面启动vscode，测试上述的更改是否正常生效。</span></span><br><span class="line"><span class="comment">## 如果vscode正常打开无报错，说明上述更改成功</span></span><br><span class="line"><span class="comment">## 此时，关闭vscode，清理一下上面的备份</span></span><br><span class="line"><span class="built_in">cd</span> C:\Users\ab124\</span><br><span class="line">del .vscode-old </span><br><span class="line"><span class="built_in">cd</span> C:\Users\ab124\AppData\Roaming </span><br><span class="line">del Code-old</span><br></pre></td></tr></table></figure>
+
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>vscode</tag>
+        <tag>缓存清理</tag>
+        <tag>符号链接</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于crux的蛋白质谱定量</title>
+    <url>/2025/02/20/crux-spectral-counts/</url>
+    <content><![CDATA[<p>在近期工作当作，我需要处理一个蛋白质组学的数据集，于是在数据处理和查询资料的过程中，学习了相关的知识，以及crux的用法。</p>
+<span id="more"></span>
+
+<h2 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h2><h3 id="1-1-蛋白质组学的测序原理和数据来源"><a href="#1-1-蛋白质组学的测序原理和数据来源" class="headerlink" title="1.1 蛋白质组学的测序原理和数据来源"></a>1.1 蛋白质组学的测序原理和数据来源</h3><p>蛋白质组学研究的测序主要采取质谱方法。质谱方法的测序原理略（下面是一个AI总结）。</p>
+<blockquote>
+<p>质谱法的基本原理是将样品分子电离，并按照其质荷比（m/z）进行分离和检测。蛋白质组学中，蛋白质首先被酶切（如胰蛋白酶）分解成小肽 段，然后通过液相色谱（LC）将这些肽段分开，再通过质谱仪进行分析 。</p>
+<p>质谱仪主要有两种类型：串联质谱（MS/MS）和飞行时间质谱（TOF）。 在串联质谱中，首先使用一级质谱（MS1）对肽段进行初步的质量分析，然后选择特定质量的肽段进行碰撞诱导解离（CID），产生二级碎片离子，最后通过二级质谱（MS2）对这些碎片离子进行质量分析。通过对这些碎片离子的质量进行比较，可以推断出原始肽段的序列信息。而在飞行 时间质谱中，样品分子在电场作用下加速，根据它们的质荷比不同，以 不同的速度穿过真空管道，从而实现分离和检测。</p>
+<p>通过比较实验获得的质谱数据与理论数据库中的肽段信息，可以确定蛋 白质的身份和修饰状态，进而揭示整个蛋白质组的组成和变化。</p>
+</blockquote>
+<p>事情是这样的，在近期工作当作，我需要处理一个蛋白质组学的数据集。这个数据集包含了若干raw文件（质谱平台的原始下机数据）、若干mgf文件（质谱峰列表文件）和一个mzid文件（质谱鉴定结果）。我需要将它们整理为表达矩阵的格式。但是mgf文件和mzid文件都不是我熟悉的文件类型，于是进行了一番探索（特别是后者）。</p>
+<h3 id="1-2-MZID格式介绍"><a href="#1-2-MZID格式介绍" class="headerlink" title="1.2 MZID格式介绍"></a>1.2 MZID格式介绍</h3><p>参考：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/40783833">质谱数据文件解析（一）—mzML格式 - 馒头的文章 - 知乎</a></p>
+<p>这是Institute for Systems Biology (<em>ISB</em>) 提出的一种质谱数据存储格式，旨在统一之前充斥于市面上的mzData和mzXML两种不同的数据格式。其本质上是一个XML文件，通过各种标签存储谱图信息。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218173554.png" alt="image.png"></p>
+<h2 id="2、MZID的处理工具"><a href="#2、MZID的处理工具" class="headerlink" title="2、MZID的处理工具"></a>2、MZID的处理工具</h2><h3 id="2-1-PEAKS-Studio"><a href="#2-1-PEAKS-Studio" class="headerlink" title="2.1 PEAKS Studio"></a>2.1 PEAKS Studio</h3><p>参考：</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/512106882">如何用PEAKS Studio查看质谱搜库结果 - 如期生物的文章 - 知乎</a></li>
+<li><a href="https://www.bioinfor.com/peaks-studio-trial/">PEAKS Studio 12.5 Free Trial</a></li>
+</ul>
+<p>但是这个工具是商业软件，且测试版国内下载很不方便（网站上说 “It appears that you are from Mainland China. <strong><a href="https://baizhenbio.cn/">Baizhen Biotechnologies</a></strong> is our distributor in this region. Please send email to <code>sales-china@bioinfor.com</code> or phone <code>+86-21-60919891</code> to request your demo.”。给提到的国内代理商发邮件，并没有得到回信）。遂放弃探索。</p>
+<h3 id="2-2-crux"><a href="#2-2-crux" class="headerlink" title="2.2 crux"></a>2.2 crux</h3><p>后来，检索到了一篇论文：</p>
+<blockquote>
+<p>Jones, Andrew R et al. “The mzIdentML data standard for mass spectrometry-based proteomics results.” <a href="doi:10.1074/mcp.M111.014381"><em>Molecular &amp; cellular proteomics : MCP</em> vol. 11,7 (2012): M111.014381</a>.</p>
+</blockquote>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218164559.png" alt="image.png"></p>
+<p>这篇论文中提到了<a href="https://crux.ms/">crux</a>这个开源工具，可以读取mzid格式的蛋白质谱，并进行定量分析。这是我们需要的。</p>
+<h2 id="3、基于crux的蛋白质谱定量"><a href="#3、基于crux的蛋白质谱定量" class="headerlink" title="3、基于crux的蛋白质谱定量"></a>3、基于crux的蛋白质谱定量</h2><h3 id="3-1-安装"><a href="#3-1-安装" class="headerlink" title="3.1 安装"></a>3.1 安装</h3><p>在<a href="https://crux.ms/download.html">crux官网下载页面</a>上下载对应的系统版本的包即可。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739868793806.png" alt="1739868793806.png"></p>
+<p>下面我们以Linux为例说一说使用方法。</p>
+<p>假设我们下载的文件名称是  <code>crux-4.2.Linux.x86_64.zip</code> ，现在我们用下面的指令进行解压，然后进入软件目录，就可以看到文件结构</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">unzip crux-4.2.Linux.x86_64.zip  -d crux</span><br><span class="line"><span class="built_in">cd</span> crux/crux-4.2.Linux.x86_64/</span><br><span class="line"><span class="built_in">ls</span></span><br></pre></td></tr></table></figure>
+
+<p>整个目录的结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">└── doc</span><br><span class="line">    ├── comet-options</span><br><span class="line">    ├── commands</span><br><span class="line">    ├── example-files</span><br><span class="line">    ├── file-formats</span><br><span class="line">    ├── images</span><br><span class="line">    └── tutorials</span><br></pre></td></tr></table></figure>
+
+<p>其中，在 <code>bin</code> 目录下有一个单一的可执行文件 <code>crux</code> ，这个就是主程序。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218165843.png" alt="image.png"></p>
+<p>我们也可以把crux所在的目录加入系统环境变量，以便于后面我们用 <code>crux</code> 指令进行访问。</p>
+<h3 id="3-2-crux的使用方法（转码和定量）"><a href="#3-2-crux的使用方法（转码和定量）" class="headerlink" title="3.2 crux的使用方法（转码和定量）"></a>3.2 crux的使用方法（转码和定量）</h3><p>参考crux官方文档：</p>
+<blockquote>
+<p><a href="https://crux.ms/index.html">crux主命令</a><br><a href="https://crux.ms/commands/spectral-counts.html">crux-谱定量</a><br><a href="https://crux.ms/commands/psm-convert.html">crux-PSM文件转码</a></p>
+</blockquote>
+<p>PSM文件代表肽段-谱图匹配（Peptide-Spectrum Match）文件，通常包含每个质谱谱图对应的肽段信息、得分、q值等。PSM文件可以是不同的格式，包括mzid格式、SQLite格式、tsv格式、pepXML等</p>
+<p>我们的谱文件是mzid格式的。问了一下DeepSeek，其建议我先转换为tsv格式，以进行下一步的处理。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 我们的输入文件名是peptides_1_1_0.mzid.gz</span></span><br><span class="line">crux psm-convert --input-format mzidentml </span><br><span class="line">	--overwrite T peptides_1_1_0.mzid.gz tsv 2&gt;/dev/null</span><br></pre></td></tr></table></figure>
+
+<p>上述步骤将会在当前目录创建文件夹 <code>crux-output</code> ，然后在这个文件夹中生成三个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">psm-convert.log.txt</span><br><span class="line">psm-convert.params.txt</span><br><span class="line">psm-convert.txt</span><br></pre></td></tr></table></figure>
+
+<p>其中的 <code>psm-convert.txt</code> 是转码结果。</p>
+<p>随后的定量过程需要 <code>crux spectral-counts</code> 指令。定量过程还需要准备fasta格式的数据库文件，见下一步。</p>
+<h3 id="3-3-在uniprot上下载对应的fasta文件的方法"><a href="#3-3-在uniprot上下载对应的fasta文件的方法" class="headerlink" title="3.3 在uniprot上下载对应的fasta文件的方法"></a>3.3 在uniprot上下载对应的fasta文件的方法</h3><p>假设我们测序的物种是人（HUMAN）。我们按照下图中的步骤，完成这一文件的下载。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869868600.png" alt="1739869868600.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869924809.png" alt="1739869924809.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869985484.png" alt="1739869985484.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739870053487.png" alt="1739870053487.png"></p>
+<h3 id="3-4-定量"><a href="#3-4-定量" class="headerlink" title="3.4 定量"></a>3.4 定量</h3><p>假设上一步下载好的文件为 <code>uniprotkb_HUMAN.fasta.gz</code> 。我们将其和待处理的psm文件放在一起（见本文4.2小节。文件路径为 <code>crux-output/psm-convert.txt</code> ），然后先解压，再运行crux：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 解压缩。crux似乎不支持读取经过压缩的fasta文件</span></span><br><span class="line">gnzip uniprotkb_HUMAN.fasta.gz</span><br><span class="line"><span class="comment"># 使用crux进行谱定量</span></span><br><span class="line">crux spectral-counts \</span><br><span class="line">	--threshold-type none \</span><br><span class="line">	--overwrite T \</span><br><span class="line">	crux-output/psm-convert.txt \</span><br><span class="line">	--protein-database uniprotkb_HUMAN.fasta</span><br></pre></td></tr></table></figure>
+
+<p>这将会在 <code>crux-output</code> 目录下生成三个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">spectral-counts.log.txt</span><br><span class="line">spectral-counts.params.txt</span><br><span class="line">spectral-counts.target.txt</span><br></pre></td></tr></table></figure>
+
+<p>其中的  <code>spectral-counts.target.txt</code> 就是我们所需的质谱定量文件。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>生信分析</tag>
+        <tag>蛋白质谱定量</tag>
+        <tag>crux</tag>
       </tags>
   </entry>
 </search>

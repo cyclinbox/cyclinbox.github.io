@@ -21,29 +21,39 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="最近一段时间的生活记录。">
+    <meta name="description" content="在近期工作当作，我需要处理一个蛋白质组学的数据集，于是在数据处理和查询资料的过程中，学习了相关的知识，以及crux的用法。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="碎碎念（2025年1月-2月）">
-<meta property="og:url" content="https://wz.anoms.top/2025/02/16/20250216_updatelog/index.html">
+<meta property="og:title" content="基于crux的蛋白质谱定量">
+<meta property="og:url" content="https://wz.anoms.top/2025/02/20/crux-spectral-counts/index.html">
 <meta property="og:site_name" content="Warren&#39;s Blog">
-<meta property="og:description" content="最近一段时间的生活记录。">
+<meta property="og:description" content="在近期工作当作，我需要处理一个蛋白质组学的数据集，于是在数据处理和查询资料的过程中，学习了相关的知识，以及crux的用法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-02-16T14:30:00.000Z">
-<meta property="article:modified_time" content="2025-02-17T09:21:01.201Z">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218173554.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218164559.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739868793806.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218165843.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869868600.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869924809.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869985484.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739870053487.png">
+<meta property="article:published_time" content="2025-02-20T12:00:00.000Z">
+<meta property="article:modified_time" content="2025-02-23T13:46:22.616Z">
 <meta property="article:author" content="Warren Z">
-<meta property="article:tag" content="碎碎念">
-<meta property="article:tag" content="日记">
+<meta property="article:tag" content="生信分析">
+<meta property="article:tag" content="蛋白质谱定量">
+<meta property="article:tag" content="crux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218173554.png">
 
 
-<link rel="canonical" href="https://wz.anoms.top/2025/02/16/20250216_updatelog/">
+<link rel="canonical" href="https://wz.anoms.top/2025/02/20/crux-spectral-counts/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/02/16/20250216_updatelog/","path":"2025/02/16/20250216_updatelog/","title":"碎碎念（2025年1月-2月）"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/02/20/crux-spectral-counts/","path":"2025/02/20/crux-spectral-counts/","title":"基于crux的蛋白质谱定量"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>碎碎念（2025年1月-2月） | Warren's Blog</title>
+<title>基于crux的蛋白质谱定量 | Warren's Blog</title>
   
 
   <script src="/js/third-party/analytics/baidu-analytics.js"></script>
@@ -148,7 +158,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2025-1-23"><span class="nav-number">1.</span> <span class="nav-text">2025-1-23</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2025-1-25"><span class="nav-number">2.</span> <span class="nav-text">2025-1-25</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2025-2-14"><span class="nav-number">3.</span> <span class="nav-text">2025-2-14</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">1、背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E8%9B%8B%E7%99%BD%E8%B4%A8%E7%BB%84%E5%AD%A6%E7%9A%84%E6%B5%8B%E5%BA%8F%E5%8E%9F%E7%90%86%E5%92%8C%E6%95%B0%E6%8D%AE%E6%9D%A5%E6%BA%90"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 蛋白质组学的测序原理和数据来源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-MZID%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 MZID格式介绍</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81MZID%E7%9A%84%E5%A4%84%E7%90%86%E5%B7%A5%E5%85%B7"><span class="nav-number">2.</span> <span class="nav-text">2、MZID的处理工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-PEAKS-Studio"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 PEAKS Studio</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-crux"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 crux</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E5%9F%BA%E4%BA%8Ecrux%E7%9A%84%E8%9B%8B%E7%99%BD%E8%B4%A8%E8%B0%B1%E5%AE%9A%E9%87%8F"><span class="nav-number">3.</span> <span class="nav-text">3、基于crux的蛋白质谱定量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%AE%89%E8%A3%85"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-crux%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%EF%BC%88%E8%BD%AC%E7%A0%81%E5%92%8C%E5%AE%9A%E9%87%8F%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 crux的使用方法（转码和定量）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%9C%A8uniprot%E4%B8%8A%E4%B8%8B%E8%BD%BD%E5%AF%B9%E5%BA%94%E7%9A%84fasta%E6%96%87%E4%BB%B6%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 在uniprot上下载对应的fasta文件的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%AE%9A%E9%87%8F"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 定量</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -163,7 +173,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-count">173</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -174,7 +184,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">282</span>
+        <span class="site-state-item-count">286</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -230,7 +240,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/02/16/20250216_updatelog/">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/02/20/crux-spectral-counts/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/cyclinbox.png">
@@ -243,12 +253,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="碎碎念（2025年1月-2月） | Warren's Blog">
+      <meta itemprop="name" content="基于crux的蛋白质谱定量 | Warren's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          碎碎念（2025年1月-2月）
+          基于crux的蛋白质谱定量
         </h1>
 
         <div class="post-meta-container">
@@ -259,14 +269,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2025-02-16 22:30:00" itemprop="dateCreated datePublished" datetime="2025-02-16T22:30:00+08:00">2025-02-16</time>
+      <time title="创建时间：2025-02-20 20:00:00" itemprop="dateCreated datePublished" datetime="2025-02-20T20:00:00+08:00">2025-02-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-17 17:21:01" itemprop="dateModified" datetime="2025-02-17T17:21:01+08:00">2025-02-17</time>
+      <time title="修改时间：2025-02-23 21:46:22" itemprop="dateModified" datetime="2025-02-23T21:46:22+08:00">2025-02-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -274,7 +284,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%9D%82%E6%80%9D/" itemprop="url" rel="index"><span itemprop="name">杂思</span></a>
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
         </span>
     </span>
 
@@ -288,31 +298,69 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>最近一段时间的生活记录。</p>
+        <p>在近期工作当作，我需要处理一个蛋白质组学的数据集，于是在数据处理和查询资料的过程中，学习了相关的知识，以及crux的用法。</p>
 <span id="more"></span>
 
-<h2 id="2025-1-23"><a href="#2025-1-23" class="headerlink" title="2025-1-23"></a>2025-1-23</h2><p>放假前夕的工作日。 </p>
-<p>实验室的成员陆陆续续已经回家了。往日热闹的实验室突然变得空旷了起来，感觉有点不适应，更平添了几分孤独。  </p>
-<p>前天半夜1点多，因为服务器启动失败的问题发了会儿疯，随后一气之下把手机扔在实验室直接回去睡觉了。幸运的是，昨天在Y师姐的帮助下最终定位到了问题的根源，并逐步<a href="https://wz.anoms.top/2025/01/22/Linux-kernal-and-grub/#more">解决了问题</a>。师姐的帮助功不可没（感谢Y师姐！）。</p>
-<p>昨天组里的同学们一起去食堂吃了饭，又去了天钥桥路购买年货；晚上回来，和师弟师妹打了羽毛球，回来还被科普了扑克的玩法。一天走了很多路，很累，但也很热闹。可是昨天的热闹反衬出今天的孤独。百无聊赖开始刷手机，在朋友圈里看到了一个学妹脱单的动态，打开知乎，又被喂了许多关于找对象或者社交冲突的帖子。突然感觉好悲伤：2025年了，我怎么依然还没脱单？（虽然，也许现阶段我可能还不太适合恋爱）  </p>
-<p>午休期间，半梦半醒的状态下又有一些胡思乱想。有些人觉得我追求“一生一世的爱情”，好古板好守旧，但其实我还挺开放和新潮来着——就像我对LGBT持开放态度，也真诚的祝福每一对相爱的情侣，不论是同性还是异性。我所不能容忍的，是对爱情的儿戏和践踏，而那些无法长久的短期恋爱关系在我看来正在此列。 </p>
-<p>一些情感问题，不论是异性伴侣还是同性伴侣之间其实都会遇到——例如争吵与吃醋，已读不回的消息和拉黑删除的感叹号。如果只刷一些异性伴侣的吐槽贴，很容易产生对某种性别的刻板印象，从而加重对另一种性别的不信任感；实际上，如果刷多了，我们会发现，一些情侣之间的矛盾冲突，本质上是人本身的问题，而解决问题的途径在于具体的人。</p>
-<p>一些想法，谨记于此。</p>
-<h2 id="2025-1-25"><a href="#2025-1-25" class="headerlink" title="2025-1-25"></a>2025-1-25</h2><p>在高铁上看了《好东西》这部电影，因为之前好像在网上看过这部电影的推荐。</p>
-<p>看完，首先感觉电影很有意思，虽然没有非常明确的主线剧情（小孩姐最后成为乐队鼓手算主线剧情吗），但里面许多情景对话很好玩，两位女主的经历也比较发人深省。</p>
-<p>但是后来我分别在知乎和豆瓣上看了这部电影的影评，发现这部电影的评价很割裂，一边是豆瓣上许多人打好评和中评，认为这部电影讲述了女性的许多困境和应对举措（有中评的原因是，有人觉得电影脱离实际，因为女主王铁梅生活在上海徐汇这样寸土寸金的地方，本身就是属于占比极少数的有钱人群体了，她自然可以做一个热烈的单亲妈妈独自绽放，可是大多数人根本没有那样的经济条件，那么还能过得那么好吗？），另一边却是知乎上的铺天谩骂抹黑和破防（他们指责电影在“输出特定价值观”，在“丑化男性”，顺便羞辱了一波认同并欣赏这部电影男性）。</p>
-<p>这种割裂很讽刺。特别是后面那一类输出情绪的回答（颇有一种站队划分立场的既视感）。又想起来曾经身边一个朋友的观点，大概意思是“专偶制关系本身存在剥削性质，异性恋关系中的剥削更为明显（因此更为讨厌），但同性恋当中这种剥削依然是存在的，而反复强调性缘身份是一种自我限制”【注1】，生活中的一些争议的源头可能并不仅仅是性别问题，而且还可能出自专偶制关系本身。只要一夫一妻制的框架不改变，那么一些矛盾和争论会永远存在的。</p>
-<p>细想一下，可能这位朋友的观点存在合理性。</p>
-<p>可是，这样的观点和我之前的观点（追求“一生一世的爱情”）又有矛盾。思绪有点乱，想不下去了。</p>
-<h2 id="2025-2-14"><a href="#2025-2-14" class="headerlink" title="2025-2-14"></a>2025-2-14</h2><p>回上海快一个星期了。  </p>
-<p>春节假期的最后一个星期，跟着父母看了几集《六姊妹》电视剧，也看了王小波和李银河的书信集《爱你就像爱生命》。《六姊妹》电视剧改编自同名小说，讲述了安徽淮南一户人家六个女儿的人生经历——确实是个很好的故事，而且特别符合父母那一代人的胃口。《爱你就像爱生命》前半部分是王小波和李银河的情书，感觉他俩讨论的真深刻，也挺好嗑；后半部分是王小波和其他友人的通信集，发现王小波居然还鼓捣硬件编程，还和朋友讨论写代码和贩卖盗版软件的事情。看来，人都是立体的呀。</p>
-<p>这大半个星期大抵是忙。周一晚上从师兄那里得知了一个大模型驱动的网页翻译插件Immersive Translate，这几天也用它看了不少论文。DeepSeek春节期间爆火，看到百度千帆大模型平台已经提供了全量版DeepSeek的模型支持，也试着<a target="_blank" rel="noopener" href="https://github.com/cyclinbox/chatUni/tree/main">配置了API实现了接入</a>（说起来，DeepSeek官网也太不稳定了，总是崩。这也是我去折腾这个AI工具的原初动力。好在，不少第三方平台也都陆续接入了DeepSeek，例如知乎（“知乎直答”）和微信（“微信搜索”）。真好）。</p>
-<p>另外，这学期报名了生物统计学的助教，周五去参加了助教工作碰头会，并在下午的第一节生物统计学课上进行了自我介绍。期间也听到了昔日同学脱单的好消息——好甜呀，祝幸福。</p>
-<p>最近，有一起很痛心的新闻被曝光，广西百色祈福中学的一名毕业多年的女生符月华抑郁轻生，家人整理遗物时发现，其高中班主任唐毓文利用教师职权对这位女生进行了长达多年的侵犯（和《房思琪的初恋乐园》一样的剧情）。唐某某已经被采取刑事措施，网上的讨论也在继续。这几天我为了理解案情去看了房思琪那本书，却发现不忍卒读。那些孩子们在最天真烂漫的年龄，本以为遇上了温暖可敬的老师，却发现光鲜的外表下是禽兽不如的内心，读起来气愤且悲伤。希望这样的人间惨剧别再发生，希望上述披着教师外皮的禽兽早日伏法。</p>
-<p>回所一周了。调整期已过，之后的事情很多，要专注工作呀。</p>
-<p>以上。</p>
-<hr>
-<p>【注1】：另外参考微信公众号文章<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KHnTs-akhw0Hx1MEqp0Odg">《成为女同就有救了吗？想得美》</a> 。</p>
+<h2 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h2><h3 id="1-1-蛋白质组学的测序原理和数据来源"><a href="#1-1-蛋白质组学的测序原理和数据来源" class="headerlink" title="1.1 蛋白质组学的测序原理和数据来源"></a>1.1 蛋白质组学的测序原理和数据来源</h3><p>蛋白质组学研究的测序主要采取质谱方法。质谱方法的测序原理略（下面是一个AI总结）。</p>
+<blockquote>
+<p>质谱法的基本原理是将样品分子电离，并按照其质荷比（m/z）进行分离和检测。蛋白质组学中，蛋白质首先被酶切（如胰蛋白酶）分解成小肽 段，然后通过液相色谱（LC）将这些肽段分开，再通过质谱仪进行分析 。</p>
+<p>质谱仪主要有两种类型：串联质谱（MS/MS）和飞行时间质谱（TOF）。 在串联质谱中，首先使用一级质谱（MS1）对肽段进行初步的质量分析，然后选择特定质量的肽段进行碰撞诱导解离（CID），产生二级碎片离子，最后通过二级质谱（MS2）对这些碎片离子进行质量分析。通过对这些碎片离子的质量进行比较，可以推断出原始肽段的序列信息。而在飞行 时间质谱中，样品分子在电场作用下加速，根据它们的质荷比不同，以 不同的速度穿过真空管道，从而实现分离和检测。</p>
+<p>通过比较实验获得的质谱数据与理论数据库中的肽段信息，可以确定蛋 白质的身份和修饰状态，进而揭示整个蛋白质组的组成和变化。</p>
+</blockquote>
+<p>事情是这样的，在近期工作当作，我需要处理一个蛋白质组学的数据集。这个数据集包含了若干raw文件（质谱平台的原始下机数据）、若干mgf文件（质谱峰列表文件）和一个mzid文件（质谱鉴定结果）。我需要将它们整理为表达矩阵的格式。但是mgf文件和mzid文件都不是我熟悉的文件类型，于是进行了一番探索（特别是后者）。</p>
+<h3 id="1-2-MZID格式介绍"><a href="#1-2-MZID格式介绍" class="headerlink" title="1.2 MZID格式介绍"></a>1.2 MZID格式介绍</h3><p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/40783833">质谱数据文件解析（一）—mzML格式 - 馒头的文章 - 知乎</a></p>
+<p>这是Institute for Systems Biology (<em>ISB</em>) 提出的一种质谱数据存储格式，旨在统一之前充斥于市面上的mzData和mzXML两种不同的数据格式。其本质上是一个XML文件，通过各种标签存储谱图信息。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218173554.png" alt="image.png"></p>
+<h2 id="2、MZID的处理工具"><a href="#2、MZID的处理工具" class="headerlink" title="2、MZID的处理工具"></a>2、MZID的处理工具</h2><h3 id="2-1-PEAKS-Studio"><a href="#2-1-PEAKS-Studio" class="headerlink" title="2.1 PEAKS Studio"></a>2.1 PEAKS Studio</h3><p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/512106882">如何用PEAKS Studio查看质谱搜库结果 - 如期生物的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bioinfor.com/peaks-studio-trial/">PEAKS Studio 12.5 Free Trial</a></li>
+</ul>
+<p>但是这个工具是商业软件，且测试版国内下载很不方便（网站上说 “It appears that you are from Mainland China. <strong><a target="_blank" rel="noopener" href="https://baizhenbio.cn/">Baizhen Biotechnologies</a></strong> is our distributor in this region. Please send email to <code>sales-china@bioinfor.com</code> or phone <code>+86-21-60919891</code> to request your demo.”。给提到的国内代理商发邮件，并没有得到回信）。遂放弃探索。</p>
+<h3 id="2-2-crux"><a href="#2-2-crux" class="headerlink" title="2.2 crux"></a>2.2 crux</h3><p>后来，检索到了一篇论文：</p>
+<blockquote>
+<p>Jones, Andrew R et al. “The mzIdentML data standard for mass spectrometry-based proteomics results.” <a href="doi:10.1074/mcp.M111.014381"><em>Molecular &amp; cellular proteomics : MCP</em> vol. 11,7 (2012): M111.014381</a>.</p>
+</blockquote>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218164559.png" alt="image.png"></p>
+<p>这篇论文中提到了<a target="_blank" rel="noopener" href="https://crux.ms/">crux</a>这个开源工具，可以读取mzid格式的蛋白质谱，并进行定量分析。这是我们需要的。</p>
+<h2 id="3、基于crux的蛋白质谱定量"><a href="#3、基于crux的蛋白质谱定量" class="headerlink" title="3、基于crux的蛋白质谱定量"></a>3、基于crux的蛋白质谱定量</h2><h3 id="3-1-安装"><a href="#3-1-安装" class="headerlink" title="3.1 安装"></a>3.1 安装</h3><p>在<a target="_blank" rel="noopener" href="https://crux.ms/download.html">crux官网下载页面</a>上下载对应的系统版本的包即可。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739868793806.png" alt="1739868793806.png"></p>
+<p>下面我们以Linux为例说一说使用方法。</p>
+<p>假设我们下载的文件名称是  <code>crux-4.2.Linux.x86_64.zip</code> ，现在我们用下面的指令进行解压，然后进入软件目录，就可以看到文件结构</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">unzip crux-4.2.Linux.x86_64.zip  -d crux</span><br><span class="line"><span class="built_in">cd</span> crux/crux-4.2.Linux.x86_64/</span><br><span class="line"><span class="built_in">ls</span></span><br></pre></td></tr></table></figure>
+
+<p>整个目录的结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">└── doc</span><br><span class="line">    ├── comet-options</span><br><span class="line">    ├── commands</span><br><span class="line">    ├── example-files</span><br><span class="line">    ├── file-formats</span><br><span class="line">    ├── images</span><br><span class="line">    └── tutorials</span><br></pre></td></tr></table></figure>
+
+<p>其中，在 <code>bin</code> 目录下有一个单一的可执行文件 <code>crux</code> ，这个就是主程序。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250218165843.png" alt="image.png"></p>
+<p>我们也可以把crux所在的目录加入系统环境变量，以便于后面我们用 <code>crux</code> 指令进行访问。</p>
+<h3 id="3-2-crux的使用方法（转码和定量）"><a href="#3-2-crux的使用方法（转码和定量）" class="headerlink" title="3.2 crux的使用方法（转码和定量）"></a>3.2 crux的使用方法（转码和定量）</h3><p>参考crux官方文档：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://crux.ms/index.html">crux主命令</a><br><a target="_blank" rel="noopener" href="https://crux.ms/commands/spectral-counts.html">crux-谱定量</a><br><a target="_blank" rel="noopener" href="https://crux.ms/commands/psm-convert.html">crux-PSM文件转码</a></p>
+</blockquote>
+<p>PSM文件代表肽段-谱图匹配（Peptide-Spectrum Match）文件，通常包含每个质谱谱图对应的肽段信息、得分、q值等。PSM文件可以是不同的格式，包括mzid格式、SQLite格式、tsv格式、pepXML等</p>
+<p>我们的谱文件是mzid格式的。问了一下DeepSeek，其建议我先转换为tsv格式，以进行下一步的处理。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 我们的输入文件名是peptides_1_1_0.mzid.gz</span></span><br><span class="line">crux psm-convert --input-format mzidentml </span><br><span class="line">	--overwrite T peptides_1_1_0.mzid.gz tsv 2&gt;/dev/null</span><br></pre></td></tr></table></figure>
+
+<p>上述步骤将会在当前目录创建文件夹 <code>crux-output</code> ，然后在这个文件夹中生成三个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">psm-convert.log.txt</span><br><span class="line">psm-convert.params.txt</span><br><span class="line">psm-convert.txt</span><br></pre></td></tr></table></figure>
+
+<p>其中的 <code>psm-convert.txt</code> 是转码结果。</p>
+<p>随后的定量过程需要 <code>crux spectral-counts</code> 指令。定量过程还需要准备fasta格式的数据库文件，见下一步。</p>
+<h3 id="3-3-在uniprot上下载对应的fasta文件的方法"><a href="#3-3-在uniprot上下载对应的fasta文件的方法" class="headerlink" title="3.3 在uniprot上下载对应的fasta文件的方法"></a>3.3 在uniprot上下载对应的fasta文件的方法</h3><p>假设我们测序的物种是人（HUMAN）。我们按照下图中的步骤，完成这一文件的下载。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869868600.png" alt="1739869868600.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869924809.png" alt="1739869924809.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739869985484.png" alt="1739869985484.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1739870053487.png" alt="1739870053487.png"></p>
+<h3 id="3-4-定量"><a href="#3-4-定量" class="headerlink" title="3.4 定量"></a>3.4 定量</h3><p>假设上一步下载好的文件为 <code>uniprotkb_HUMAN.fasta.gz</code> 。我们将其和待处理的psm文件放在一起（见本文4.2小节。文件路径为 <code>crux-output/psm-convert.txt</code> ），然后先解压，再运行crux：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 解压缩。crux似乎不支持读取经过压缩的fasta文件</span></span><br><span class="line">gnzip uniprotkb_HUMAN.fasta.gz</span><br><span class="line"><span class="comment"># 使用crux进行谱定量</span></span><br><span class="line">crux spectral-counts \</span><br><span class="line">	--threshold-type none \</span><br><span class="line">	--overwrite T \</span><br><span class="line">	crux-output/psm-convert.txt \</span><br><span class="line">	--protein-database uniprotkb_HUMAN.fasta</span><br></pre></td></tr></table></figure>
+
+<p>这将会在 <code>crux-output</code> 目录下生成三个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">spectral-counts.log.txt</span><br><span class="line">spectral-counts.params.txt</span><br><span class="line">spectral-counts.target.txt</span><br></pre></td></tr></table></figure>
+
+<p>其中的  <code>spectral-counts.target.txt</code> 就是我们所需的质谱定量文件。</p>
 
     </div>
 
@@ -332,7 +380,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://wz.anoms.top/2025/02/16/20250216_updatelog/" title="碎碎念（2025年1月-2月）">https://wz.anoms.top/2025/02/16/20250216_updatelog/</a>
+      <a href="https://wz.anoms.top/2025/02/20/crux-spectral-counts/" title="基于crux的蛋白质谱定量">https://wz.anoms.top/2025/02/20/crux-spectral-counts/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -341,8 +389,9 @@
 </div>
 
           <div class="post-tags">
-              <a href="/tags/%E7%A2%8E%E7%A2%8E%E5%BF%B5/" rel="tag"><i class="fa fa-tag"></i> 碎碎念</a>
-              <a href="/tags/%E6%97%A5%E8%AE%B0/" rel="tag"><i class="fa fa-tag"></i> 日记</a>
+              <a href="/tags/%E7%94%9F%E4%BF%A1%E5%88%86%E6%9E%90/" rel="tag"><i class="fa fa-tag"></i> 生信分析</a>
+              <a href="/tags/%E8%9B%8B%E7%99%BD%E8%B4%A8%E8%B0%B1%E5%AE%9A%E9%87%8F/" rel="tag"><i class="fa fa-tag"></i> 蛋白质谱定量</a>
+              <a href="/tags/crux/" rel="tag"><i class="fa fa-tag"></i> crux</a>
           </div>
 
         
@@ -354,6 +403,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2025/02/21/vscode-cache-diskspace-clean/" rel="next" title="VS Code缓存清理">
+                  VS Code缓存清理 <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -453,7 +505,7 @@ document.addEventListener('page:loaded', () => {
       window.CHATBOT_CONFIG = {
         //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
         endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
-        displayByDefault: true, // 默认不显示 AI 助手对话框
+        displayByDefault: false, // 默认不显示 AI 助手对话框
         title: 'Warren的桌宠', // 自定义 AI 助手标题
         draggable: true, // 是否开启拖拽
         aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
