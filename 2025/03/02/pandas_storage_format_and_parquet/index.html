@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前几天刚刚知道了一种新的文件格式类型，叫做parquet，这是一种很高效的数据存储格式，适合dataframe形式的数据。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pandas的存储格式parquet介绍">
+<meta property="og:url" content="https://wz.anoms.top/2025/03/02/pandas_storage_format_and_parquet/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="前几天刚刚知道了一种新的文件格式类型，叫做parquet，这是一种很高效的数据存储格式，适合dataframe形式的数据。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740482381536.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740474942079.png">
+<meta property="article:published_time" content="2025-03-02T14:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-02T14:15:21.997Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="dataframe">
+<meta property="article:tag" content="pandas">
+<meta property="article:tag" content="parquet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740482381536.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/03/02/pandas_storage_format_and_parquet/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/03/02/pandas_storage_format_and_parquet/","path":"2025/03/02/pandas_storage_format_and_parquet/","title":"pandas的存储格式parquet介绍"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>pandas的存储格式parquet介绍 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#DeepSeek-R1%E7%9A%84%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">DeepSeek-R1的介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#User"><span class="nav-number">1.1.</span> <span class="nav-text">User:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deepseek-r1"><span class="nav-number">1.2.</span> <span class="nav-text">deepseek-r1:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%A0%BC%E5%BC%8F%E5%AE%9A%E4%B9%89%E4%B8%8E%E5%AD%98%E5%82%A8%E6%95%88%E7%8E%87%E5%AF%B9%E6%AF%94"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 格式定义与存储效率对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E6%9C%80%E5%A4%A7%E5%8C%96%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%9A%84%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 最大化磁盘空间的推荐方案</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E6%9C%80%E4%BD%B3%E6%A0%BC%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">(1) 最佳格式选择</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E5%85%B6%E4%BB%96%E6%A0%BC%E5%BC%8F%E7%9A%84%E4%BC%98%E5%8C%96%E5%BB%BA%E8%AE%AE"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">(2) 其他格式的优化建议</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%8E%8B%E7%BC%A9%E7%AE%97%E6%B3%95%E9%80%89%E6%8B%A9%E5%BB%BA%E8%AE%AE"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 压缩算法选择建议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E5%85%B3%E9%94%AE%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.2.4.</span> <span class="nav-text">4. 关键注意事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.2.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E5%AF%B9%E6%AF%94%EF%BC%9Apickle-vs-parquet"><span class="nav-number">2.</span> <span class="nav-text">实际对比：pickle vs parquet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">175</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">288</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/03/02/pandas_storage_format_and_parquet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="pandas的存储格式parquet介绍 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          pandas的存储格式parquet介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-03-02 22:00:00 / 修改时间：22:15:21" itemprop="dateCreated datePublished" datetime="2025-03-02T22:00:00+08:00">2025-03-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>前几天刚刚知道了一种新的文件格式类型，叫做<a target="_blank" rel="noopener" href="https://parquet.apache.org/">parquet</a>，这是一种很高效的数据存储格式，适合dataframe形式的数据。</p>
+<span id="more"></span>
+
+<p>之前我在进行dataframe数据存储时，最常用的选择是<code>csv</code>格式（因为导出以后是一个文本文件，可以直接在终端查看），后来<a href="https://wz.anoms.top/2024/01/27/python-pickle-usage-demo/">了解到pickle格式</a>以后，这种格式也成为了我的一个选择。其读写速度更快，且配合<code>pandas</code>的<code>compression</code>参数，可以实现很高的压缩比，能够节约许多磁盘空间。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 导出data_df为pickle文件,启用lzma压缩</span></span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> lzma</span><br><span class="line"><span class="keyword">with</span> lzma.<span class="built_in">open</span>(<span class="string">&#x27;data_df.pickle.xz&#x27;</span>, mode=<span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    pickle.dump(data_df,f)</span><br><span class="line"><span class="comment">## 从pickle文件导入gene_data_df,启用lzma压缩</span></span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> lzma</span><br><span class="line"><span class="keyword">with</span> lzma.<span class="built_in">open</span>(<span class="string">&#x27;data_df.pickle.xz&#x27;</span>, mode=<span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    data_df = pickle.load(f)</span><br><span class="line">display(data_df.head(<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+
+<p>但parquet似乎是一种更高效的存储格式。下面是DeepSeek对这种格式的介绍：</p>
+<h2 id="DeepSeek-R1的介绍"><a href="#DeepSeek-R1的介绍" class="headerlink" title="DeepSeek-R1的介绍"></a>DeepSeek-R1的介绍</h2><h3 id="User"><a href="#User" class="headerlink" title="User:"></a>User:</h3><p>在保存python pandas的dataframe对象时，有多种格式可以选择，包括csv, excel, json, sql, pickle, parquet, feather等，请问这些格式的定义分别是什么？它们的存储效率，或者说对磁盘空间的利用率如何？如果我想最大限度利用我的磁盘空间，例如存储尽可能多数据，那么上述哪些格式会比较好，在存储这些数据时，<code>compression</code>参数如何选择？</p>
+<h3 id="deepseek-r1"><a href="#deepseek-r1" class="headerlink" title="deepseek-r1:"></a>deepseek-r1:</h3><blockquote>
+<p>嗯，用户现在在问关于Python pandas保存DataFrame时各种格式的区别，还有存储效率的问题，特别是如何最大化利用磁盘空间。我需要仔细理清楚每一种格式的定义和它们的存储效率，然后给出建议。</p>
+<p>首先，我应该逐个回顾每种格式的定义。比如CSV是纯文本，逗号分隔；Excel是二进制表格格式；JSON是结构化的文本；SQL是存到数据库；Pickle是Python的序列化；Parquet和Feather是列式存储，针对大数据优化的 。然后存储效率方面，文本格式比如CSV、JSON通常占用空间大，而二进 制格式如Parquet、Feather、Pickle会更高效。尤其是列式存储格式，像Parquet和Feather，它们有压缩优势，特别是Parquet支持更好的压缩算 法，适合存储大量数据。</p>
+<p>接下来要考虑用户的需求，他们希望最大限度利用磁盘空间，也就是存储尽可能多的数据，所以应该推荐压缩率高且高效的格式。这时候重点可能是Parquet和Feather，因为列式存储加上压缩通常体积更小。而Pickle虽然可能压缩率高，但兼容性和安全性可能有问题，可能不是最优选。同时，Parquet支持多种压缩算法比如Snappy、Gzip，而Gzip压缩率更高但读 写可能慢一点。用户可能需要根据情况选择压缩参数，比如compression=’gzip’来获得更高的压缩率。</p>
+<p>然后考虑到用户可能在使用这些格式时需要注意的参数，比如在to_parquet的时候，compression参数设置为gzip或者snappy。snappy压缩和解压 速度快，但压缩率可能不如gzip。如果用户更在意空间，gzip更好。而Feather默认可能用lz4或者zstd，同样可以选择不同的压缩方式。另外，CSV或Excel如果必须用的话，可以启用压缩参数，例如gzip压缩的CSV，虽 然可能不如Parquet高效，但比普通文本节省空间。</p>
+<p>可能还需要考虑其他因素，比如数据类型，Parquet对于嵌套数据的处理 更好，而Feather可能更适合临时存储，因为读写快。如果用户的数据量 极大，列式存储更合适。另外，是否需要跨平台兼容性，比如Parquet在Hadoop生态中更通用，而Feather可能更适合Python环境之间的快速交换。</p>
+<p>需要提醒用户的是，不同格式的读写速度可能不同，但如果用户的首要目标是节省空间，那么高压缩率的列式存储格式是首选。同时，要检查pandas的API，确保在使用这些格式时正确设置compression参数，例如在to_parquet时指定compression=’gzip’，或者在to_csv时用compression=’gzip’等。此外，Parquet和Feather的压缩是否默认开启，需要确认，可能有些格式默认不压缩或者使用特定压缩算法。</p>
+<p>总结的话，用户如果需要最大限度利用磁盘空间，应该优先选择Parquet （使用gzip或brotli压缩）或Feather（使用zstd压缩），因为这些格式 设计时就考虑了高效的存储和压缩。同时，调整compression参数到更高 压缩率的算法会更节省空间，尽管可能会稍微增加读写时间。</p>
+</blockquote>
+<p>在保存Python pandas的DataFrame时，选择合适的格式和压缩方式可以显著影响存储效率和磁盘空间利用率。以下是各格式的定义、存储效率分析及优化建议：</p>
+<hr>
+<h4 id="1-格式定义与存储效率对比"><a href="#1-格式定义与存储效率对比" class="headerlink" title="1. 格式定义与存储效率对比"></a><strong>1. 格式定义与存储效率对比</strong></h4><table>
+<thead>
+<tr>
+<th>格式</th>
+<th>定义</th>
+<th>存储效率（空间利用率）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CSV</strong></td>
+<td>纯文本，逗号分隔，人类可读</td>
+<td>低效。文本冗余多，无压缩时体积大，但可 用压缩参数优化。</td>
+</tr>
+<tr>
+<td><strong>Excel</strong></td>
+<td>二进制表格格式（如<code>.xlsx</code>或<code>.xls</code>），支持多表 和样式</td>
+<td>较低效。二进制结构有一定优化，但不如列式存储格式高效。</td>
+</tr>
+<tr>
+<td><strong>JSON</strong></td>
+<td>结构化文本格式，支持嵌套数据</td>
+<td>低效。冗余键重复、文本无压缩，体积较大 。</td>
+</tr>
+<tr>
+<td><strong>SQL</strong></td>
+<td>存储到关系型数据库（如SQLite、MySQL）</td>
+<td>中等。依赖数据库引擎的压缩和索引优化。</td>
+</tr>
+<tr>
+<td><strong>Pickle</strong></td>
+<td>Python序列化二进制格式，保留对象结构</td>
+<td>较高。二进制紧凑，默认无压缩但支持压缩 参数优化。</td>
+</tr>
+<tr>
+<td><strong>Parquet</strong></td>
+<td>列式存储格式（Apache生态），高效压缩，支持复杂数据类型</td>
+<td><strong>极高</strong>。列式存储+压缩算法大幅减少冗 余数据。</td>
+</tr>
+<tr>
+<td><strong>Feather</strong></td>
+<td>列式存储格式（Arrow生态），设计用于快速读写</td>
+<td>高。默认使用LZ4或ZSTD压缩，体积优于CSV但略逊于Parquet。</td>
+</tr>
+</tbody></table>
+<hr>
+<h4 id="2-最大化磁盘空间的推荐方案"><a href="#2-最大化磁盘空间的推荐方案" class="headerlink" title="2. 最大化磁盘空间的推荐方案"></a><strong>2. 最大化磁盘空间的推荐方案</strong></h4><h5 id="1-最佳格式选择"><a href="#1-最佳格式选择" class="headerlink" title="(1) 最佳格式选择"></a><strong>(1) 最佳格式选择</strong></h5><ul>
+<li><p><strong>首推 Parquet</strong><br>列式存储天生适合压缩（尤其重复值和稀疏数据），支持多种压缩算法（如<code>gzip</code>、<code>snappy</code>、<code>brotli</code>）。<br><strong>优势</strong>：高压缩率，兼容大数据工具（Spark、Hive），支持分块存 储和谓词下推。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df.to_parquet(<span class="string">&quot;data.parquet&quot;</span>, compression=<span class="string">&quot;gzip&quot;</span>)  <span class="comment"># 更高压缩 率选brotli</span></span><br></pre></td></tr></table></figure></li>
+<li><p><strong>次选 Feather + ZSTD</strong><br>读写速度极快，ZSTD压缩率接近Parquet，适合短期存储或Python生态 内交换数据。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df.to_feather(<span class="string">&quot;data.feather&quot;</span>, compression=<span class="string">&quot;zstd&quot;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="2-其他格式的优化建议"><a href="#2-其他格式的优化建议" class="headerlink" title="(2) 其他格式的优化建议"></a><strong>(2) 其他格式的优化建议</strong></h5><ul>
+<li><strong>CSV/JSON</strong>：启用压缩参数（如<code>compression=&quot;gzip&quot;</code>），体积可缩小70%-90%。</li>
+<li><strong>Pickle</strong>：使用<code>protocol=5</code> + <code>compression=&quot;gzip&quot;</code>（需Pandas 1.5+）。<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df.to_pickle(<span class="string">&quot;data.pkl&quot;</span>, protocol=<span class="number">5</span>, compression=<span class="string">&quot;gzip&quot;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h4 id="3-压缩算法选择建议"><a href="#3-压缩算法选择建议" class="headerlink" title="3. 压缩算法选择建议"></a><strong>3. 压缩算法选择建议</strong></h4><ul>
+<li><strong>追求极致压缩率</strong>：<br>选择<code>gzip</code>（Parquet、CSV）或<code>brotli</code>（Parquet）。压缩率高，但 解压稍慢。</li>
+<li><strong>平衡速度与压缩率</strong>：<br>选择<code>zstd</code>（Feather、Parquet）或<code>snappy</code>（Parquet）。压缩率较 高，读写速度快。</li>
+<li><strong>避免无压缩</strong>：<br>始终在格式支持范围内启用压缩（如<code>df.to_csv(compression=&quot;gzip&quot;)</code>）。</li>
+</ul>
+<hr>
+<h4 id="4-关键注意事项"><a href="#4-关键注意事项" class="headerlink" title="4. 关键注意事项"></a><strong>4. 关键注意事项</strong></h4><ol>
+<li><strong>数据类型影响</strong>：数值类型（如<code>int32</code> vs <code>int64</code>）和分类数据 （<code>category</code> dtype）可进一步优化存储。</li>
+<li><strong>分块存储</strong>：对超大数据集，使用Parquet分块存储（<code>partition_cols</code>）可提升查询效率。</li>
+<li><strong>兼容性</strong>：<ul>
+<li>Parquet：适合跨平台、长期存储。</li>
+<li>Feather：适合短期Python内部使用。</li>
+<li>Pickle：仅限Python，版本敏感，慎用。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h4><ul>
+<li><strong>最优选择</strong>：Parquet + <code>gzip</code>/<code>brotli</code>（需要空间极致优化）。</li>
+<li><strong>次优选择</strong>：Feather + <code>zstd</code>（需要快速读写且空间友好）。</li>
+<li><strong>避免使用</strong>：未压缩的CSV/JSON/Excel。</li>
+</ul>
+<p>根据数据特征（稀疏性、列重复值）调整压缩算法，并优先选择列式存储格式以最大限度节省磁盘空间。</p>
+<h2 id="实际对比：pickle-vs-parquet"><a href="#实际对比：pickle-vs-parquet" class="headerlink" title="实际对比：pickle vs parquet"></a>实际对比：pickle vs parquet</h2><p>下面是一个存储了许多基因注释信息的pandas dataframe，维度为 <code>(36875, 6)</code> 。</p>
+<p>我们先尝试使用pickle格式存储：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740482381536.png" alt="1740482381536.png"></p>
+<p>结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>是否开启压缩</th>
+<th>写入耗时</th>
+<th>读取耗时</th>
+<th>文件大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开启lzma压缩</td>
+<td>2.46s</td>
+<td>99.8ms</td>
+<td>1.1MB</td>
+</tr>
+<tr>
+<td>不开启压缩</td>
+<td>54.5ms</td>
+<td>28.1ms</td>
+<td>6.2MB</td>
+</tr>
+</tbody></table>
+<p>接下来，尝试用parquet格式存储：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740474942079.png" alt="1740474942079.png"></p>
+<p>结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>是否开启压缩</th>
+<th>写入耗时</th>
+<th>读取耗时</th>
+<th>文件大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开启snappy压缩（默认）</td>
+<td>67.8ms</td>
+<td>41.7ms</td>
+<td>2.9MB</td>
+</tr>
+<tr>
+<td>开启brotli压缩</td>
+<td>390ms</td>
+<td>45.7ms</td>
+<td>1.6MB</td>
+</tr>
+<tr>
+<td>开启zstd压缩</td>
+<td>78.3ms</td>
+<td>50.9ms</td>
+<td>1.9MB</td>
+</tr>
+</tbody></table>
+<p>如果只看压缩比率，那么pickle格式+lzma压缩率最高。<br>如果只看读写速度，那么pickle格式最快。</p>
+<p><strong>但是！</strong></p>
+<p><strong>如果综合考虑压缩比率和读写速度，其实parquet格式是更好一点的</strong> ，其对数据有一些压缩，且速度没有下降的很厉害。最重要的是parquet的兼容性是比较好的，在许多数据分析工具里面都可以用，不像pickle只能在python里面用且不同版本之间存在兼容性问题。</p>
+<p>因此，非常推荐大家尝试一下这个格式 ~ 。(✿◡‿◡)</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/680143641">《一文全面图解Parquet文件格式》 - Tim在路上的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://pandas.pydata.org/docs/user_guide/10min.html#parquet">10 minutes to pandas</a></li>
+<li><a target="_blank" rel="noopener" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_parquet.html">pandas.DataFrame.to_parquet</a></li>
+<li><a target="_blank" rel="noopener" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_pickle.html#pandas.DataFrame.to_pickle">pandas.DataFrame.to_pickle</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/03/02/pandas_storage_format_and_parquet/" title="pandas的存储格式parquet介绍">https://wz.anoms.top/2025/03/02/pandas_storage_format_and_parquet/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/dataframe/" rel="tag"><i class="fa fa-tag"></i> dataframe</a>
+              <a href="/tags/pandas/" rel="tag"><i class="fa fa-tag"></i> pandas</a>
+              <a href="/tags/parquet/" rel="tag"><i class="fa fa-tag"></i> parquet</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/01/ANOMS_now_support_gpt_academic/" rel="prev" title="中科院学术优化（`gpt_acadmic`）服务端部署">
+                  <i class="fa fa-chevron-left"></i> 中科院学术优化（`gpt_acadmic`）服务端部署
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>

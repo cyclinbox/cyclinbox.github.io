@@ -16387,7 +16387,7 @@
   </entry>
   <entry>
     <title>VS Code缓存清理</title>
-    <url>/2025/02/21/vscode-cache-diskspace-clean/</url>
+    <url>/2025/02/23/vscode-cache-diskspace-clean/</url>
     <content><![CDATA[<p>C盘空间不够用了，查了一下占用C盘体积比较多的软件，发现vscode赫然在列。于是查了一下清理这一部分占用空间的方法。</p>
 <span id="more"></span>
 
@@ -16452,7 +16452,7 @@
   </entry>
   <entry>
     <title>基于crux的蛋白质谱定量</title>
-    <url>/2025/02/20/crux-spectral-counts/</url>
+    <url>/2025/02/23/crux-spectral-counts/</url>
     <content><![CDATA[<p>在近期工作当作，我需要处理一个蛋白质组学的数据集，于是在数据处理和查询资料的过程中，学习了相关的知识，以及crux的用法。</p>
 <span id="more"></span>
 
@@ -16524,6 +16524,248 @@
         <tag>生信分析</tag>
         <tag>蛋白质谱定量</tag>
         <tag>crux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>中科院学术优化（`gpt_acadmic`）服务端部署</title>
+    <url>/2025/03/01/ANOMS_now_support_gpt_academic/</url>
+    <content><![CDATA[<p>是这样的，ANOMS现已接入中科院学术优化（<code>gpt_academic</code>）服务！</p>
+<p>访问链接：<a href="http://www.anoms.top:8070/">ANOMS 学术优化</a></p>
+<span id="more"></span>
+
+<hr>
+<p>周五的时候听了个线上的讲座：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250302202325.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250302202719.png" alt="image.png"></p>
+<p>这个网站是中科院内部部署的一个平台，访问链接为 <a href="https://academic.ai4cas.cn/">中国科技云 AI 科研助手</a> 。此处宣传了两个功能，分别是学术优化和Latex公式自动识别，不过我看了下，它们分别对应着两个不同的网页，其中前面那个是“中科院学术优化”大模型平台，后者似乎只是一个OCR工具。</p>
+<p>官方的这两个网页确实挺好，不过也有缺点：其背后的服务器似乎不够强大（他们接入的都是本地模型），且应对不了特别大的带宽（即，访问的人一多就会卡）。所以，当我看到“中科院学术优化”大模型平台是开源的服务端时（Github： <a href="https://github.com/binary-husky/gpt_academic/tree/master">binary-husky/gpt_academic</a> ），就萌生了自己部署的想法。</p>
+<h2 id="0-租用云服务器、配置域名解析"><a href="#0-租用云服务器、配置域名解析" class="headerlink" title="0. 租用云服务器、配置域名解析"></a>0. 租用云服务器、配置域名解析</h2><p>略。（这个工作算是某种运维基础操作了，网上许多教程）</p>
+<h2 id="1-克隆源代码"><a href="#1-克隆源代码" class="headerlink" title="1. 克隆源代码"></a>1. 克隆源代码</h2><p>如题。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/binary-husky/gpt_academic.git</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="2-安装必要的python库"><a href="#2-安装必要的python库" class="headerlink" title="2. 安装必要的python库"></a>2. 安装必要的python库</h2><p>按照这个服务端的说明文档，要跑起来的话还需要安装一些python依赖库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> gpt_academic</span><br><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+
+<p>大概会下载几百MB左右的内容，主要涉及网站后台服务、文本向量化、PDF切分以及大模型调用等模块。</p>
+<h2 id="3-配置后台接入的大模型"><a href="#3-配置后台接入的大模型" class="headerlink" title="3. 配置后台接入的大模型"></a>3. 配置后台接入的大模型</h2><h3 id="3-1-获取API-key"><a href="#3-1-获取API-key" class="headerlink" title="3.1 获取API-key"></a>3.1 获取API-key</h3><p>笔者没有很好的服务器，不具备配置高性能本地大模型（如full-scale的deepseek）的条件。因此退而求其次，使用大模型API进行配置。</p>
+<p>获取API-key的过程可以参考：</p>
+<ul>
+<li><a href="https://help.aliyun.com/zh/model-studio/developer-reference/get-api-key">阿里百炼大模型平台</a></li>
+<li><a href="https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Ilkkrb0i5">百度千帆大模型平台</a></li>
+<li><a href="https://api-docs.deepseek.com/zh-cn/">deepseek大模型API</a></li>
+</ul>
+<h3 id="3-2-配置config文件"><a href="#3-2-配置config文件" class="headerlink" title="3.2 配置config文件"></a>3.2 配置config文件</h3><p>接下来，将服务端根目录下的 <code>config.py</code> 复制一份为 <code>config_private.py</code> ，之后的修改主要在<code>config_private.py</code> 中进行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cp</span> config.py config_private.py</span><br><span class="line">nano config_private.py <span class="comment"># 打开这个文件并进行编辑。也可以使用vim或其他编辑器进行编辑。</span></span><br></pre></td></tr></table></figure>
+
+<p>主要需要修改的地方有下面这些：</p>
+<p>（1） 一些大模型平台的API-key</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740920480437.png" alt="1740920480437.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740920647256.png" alt="1740920647256.png"></p>
+<p>（2）可访问的模型名称。这些模型名称在配置前，需要仔细检查大模型平台文档，确定可调用的模型名称。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740920525793.png" alt="1740920525793.png"></p>
+<p>（3）网页服务运行的端口号。这里默认是<code>-1</code>，即每次随机一个端口。考虑到在云服务器上部署时，随机端口很不方便，因此这里我们人为的分配一个端口。此处我给分配的是8070端口，其他端口当然也是可以的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740921687007.png" alt="1740921687007.png"></p>
+<p>其他的地方可以按需修改。</p>
+<h3 id="3-3-配置-request-llms-bridge-all-py"><a href="#3-3-配置-request-llms-bridge-all-py" class="headerlink" title="3.3 配置 request_llms/bridge_all.py"></a>3.3 配置 <code>request_llms/bridge_all.py</code></h3><p>这里其实算是比较geek的修改内容了。前面在配置 <code>AVAIL_LLM_MODELS</code> 时，我们填写进去了一些比较新的模型，这些模型在原版的gpt academic服务端中并不支持（如qwen-plus,qwen-turbo,以及基于阿里百炼平台的deepseek-v3等等），因此在这里需要添加一个转发路由，保证当前端用户选择了这些模型时后台能够正确处理。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740921523225.png" alt="1740921523225.png"></p>
+<p>如上图，这是走阿里百炼平台API的模型转发路由的修改方法。</p>
+<p>其他大模型平台的转发路由同理。</p>
+<h2 id="4-启动"><a href="#4-启动" class="headerlink" title="4. 启动"></a>4. 启动</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python main.py</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250302212301.png" alt="image.png"></p>
+<p>如果有上面这样的输出，表明服务正常启动。</p>
+<p>让我们打开浏览器看看效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250302221207.png" alt="image.png"></p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>LLM</tag>
+        <tag>中科院学术优化（`gpt_acadmic`）</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pandas的存储格式parquet介绍</title>
+    <url>/2025/03/02/pandas_storage_format_and_parquet/</url>
+    <content><![CDATA[<p>前几天刚刚知道了一种新的文件格式类型，叫做<a href="https://parquet.apache.org/">parquet</a>，这是一种很高效的数据存储格式，适合dataframe形式的数据。</p>
+<span id="more"></span>
+
+<p>之前我在进行dataframe数据存储时，最常用的选择是<code>csv</code>格式（因为导出以后是一个文本文件，可以直接在终端查看），后来<a href="https://wz.anoms.top/2024/01/27/python-pickle-usage-demo/">了解到pickle格式</a>以后，这种格式也成为了我的一个选择。其读写速度更快，且配合<code>pandas</code>的<code>compression</code>参数，可以实现很高的压缩比，能够节约许多磁盘空间。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 导出data_df为pickle文件,启用lzma压缩</span></span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> lzma</span><br><span class="line"><span class="keyword">with</span> lzma.<span class="built_in">open</span>(<span class="string">&#x27;data_df.pickle.xz&#x27;</span>, mode=<span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    pickle.dump(data_df,f)</span><br><span class="line"><span class="comment">## 从pickle文件导入gene_data_df,启用lzma压缩</span></span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> lzma</span><br><span class="line"><span class="keyword">with</span> lzma.<span class="built_in">open</span>(<span class="string">&#x27;data_df.pickle.xz&#x27;</span>, mode=<span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    data_df = pickle.load(f)</span><br><span class="line">display(data_df.head(<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+
+<p>但parquet似乎是一种更高效的存储格式。下面是DeepSeek对这种格式的介绍：</p>
+<h2 id="DeepSeek-R1的介绍"><a href="#DeepSeek-R1的介绍" class="headerlink" title="DeepSeek-R1的介绍"></a>DeepSeek-R1的介绍</h2><h3 id="User"><a href="#User" class="headerlink" title="User:"></a>User:</h3><p>在保存python pandas的dataframe对象时，有多种格式可以选择，包括csv, excel, json, sql, pickle, parquet, feather等，请问这些格式的定义分别是什么？它们的存储效率，或者说对磁盘空间的利用率如何？如果我想最大限度利用我的磁盘空间，例如存储尽可能多数据，那么上述哪些格式会比较好，在存储这些数据时，<code>compression</code>参数如何选择？</p>
+<h3 id="deepseek-r1"><a href="#deepseek-r1" class="headerlink" title="deepseek-r1:"></a>deepseek-r1:</h3><blockquote>
+<p>嗯，用户现在在问关于Python pandas保存DataFrame时各种格式的区别，还有存储效率的问题，特别是如何最大化利用磁盘空间。我需要仔细理清楚每一种格式的定义和它们的存储效率，然后给出建议。</p>
+<p>首先，我应该逐个回顾每种格式的定义。比如CSV是纯文本，逗号分隔；Excel是二进制表格格式；JSON是结构化的文本；SQL是存到数据库；Pickle是Python的序列化；Parquet和Feather是列式存储，针对大数据优化的 。然后存储效率方面，文本格式比如CSV、JSON通常占用空间大，而二进 制格式如Parquet、Feather、Pickle会更高效。尤其是列式存储格式，像Parquet和Feather，它们有压缩优势，特别是Parquet支持更好的压缩算 法，适合存储大量数据。</p>
+<p>接下来要考虑用户的需求，他们希望最大限度利用磁盘空间，也就是存储尽可能多的数据，所以应该推荐压缩率高且高效的格式。这时候重点可能是Parquet和Feather，因为列式存储加上压缩通常体积更小。而Pickle虽然可能压缩率高，但兼容性和安全性可能有问题，可能不是最优选。同时，Parquet支持多种压缩算法比如Snappy、Gzip，而Gzip压缩率更高但读 写可能慢一点。用户可能需要根据情况选择压缩参数，比如compression=’gzip’来获得更高的压缩率。</p>
+<p>然后考虑到用户可能在使用这些格式时需要注意的参数，比如在to_parquet的时候，compression参数设置为gzip或者snappy。snappy压缩和解压 速度快，但压缩率可能不如gzip。如果用户更在意空间，gzip更好。而Feather默认可能用lz4或者zstd，同样可以选择不同的压缩方式。另外，CSV或Excel如果必须用的话，可以启用压缩参数，例如gzip压缩的CSV，虽 然可能不如Parquet高效，但比普通文本节省空间。</p>
+<p>可能还需要考虑其他因素，比如数据类型，Parquet对于嵌套数据的处理 更好，而Feather可能更适合临时存储，因为读写快。如果用户的数据量 极大，列式存储更合适。另外，是否需要跨平台兼容性，比如Parquet在Hadoop生态中更通用，而Feather可能更适合Python环境之间的快速交换。</p>
+<p>需要提醒用户的是，不同格式的读写速度可能不同，但如果用户的首要目标是节省空间，那么高压缩率的列式存储格式是首选。同时，要检查pandas的API，确保在使用这些格式时正确设置compression参数，例如在to_parquet时指定compression=’gzip’，或者在to_csv时用compression=’gzip’等。此外，Parquet和Feather的压缩是否默认开启，需要确认，可能有些格式默认不压缩或者使用特定压缩算法。</p>
+<p>总结的话，用户如果需要最大限度利用磁盘空间，应该优先选择Parquet （使用gzip或brotli压缩）或Feather（使用zstd压缩），因为这些格式 设计时就考虑了高效的存储和压缩。同时，调整compression参数到更高 压缩率的算法会更节省空间，尽管可能会稍微增加读写时间。</p>
+</blockquote>
+<p>在保存Python pandas的DataFrame时，选择合适的格式和压缩方式可以显著影响存储效率和磁盘空间利用率。以下是各格式的定义、存储效率分析及优化建议：</p>
+<hr>
+<h4 id="1-格式定义与存储效率对比"><a href="#1-格式定义与存储效率对比" class="headerlink" title="1. 格式定义与存储效率对比"></a><strong>1. 格式定义与存储效率对比</strong></h4><table>
+<thead>
+<tr>
+<th>格式</th>
+<th>定义</th>
+<th>存储效率（空间利用率）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CSV</strong></td>
+<td>纯文本，逗号分隔，人类可读</td>
+<td>低效。文本冗余多，无压缩时体积大，但可 用压缩参数优化。</td>
+</tr>
+<tr>
+<td><strong>Excel</strong></td>
+<td>二进制表格格式（如<code>.xlsx</code>或<code>.xls</code>），支持多表 和样式</td>
+<td>较低效。二进制结构有一定优化，但不如列式存储格式高效。</td>
+</tr>
+<tr>
+<td><strong>JSON</strong></td>
+<td>结构化文本格式，支持嵌套数据</td>
+<td>低效。冗余键重复、文本无压缩，体积较大 。</td>
+</tr>
+<tr>
+<td><strong>SQL</strong></td>
+<td>存储到关系型数据库（如SQLite、MySQL）</td>
+<td>中等。依赖数据库引擎的压缩和索引优化。</td>
+</tr>
+<tr>
+<td><strong>Pickle</strong></td>
+<td>Python序列化二进制格式，保留对象结构</td>
+<td>较高。二进制紧凑，默认无压缩但支持压缩 参数优化。</td>
+</tr>
+<tr>
+<td><strong>Parquet</strong></td>
+<td>列式存储格式（Apache生态），高效压缩，支持复杂数据类型</td>
+<td><strong>极高</strong>。列式存储+压缩算法大幅减少冗 余数据。</td>
+</tr>
+<tr>
+<td><strong>Feather</strong></td>
+<td>列式存储格式（Arrow生态），设计用于快速读写</td>
+<td>高。默认使用LZ4或ZSTD压缩，体积优于CSV但略逊于Parquet。</td>
+</tr>
+</tbody></table>
+<hr>
+<h4 id="2-最大化磁盘空间的推荐方案"><a href="#2-最大化磁盘空间的推荐方案" class="headerlink" title="2. 最大化磁盘空间的推荐方案"></a><strong>2. 最大化磁盘空间的推荐方案</strong></h4><h5 id="1-最佳格式选择"><a href="#1-最佳格式选择" class="headerlink" title="(1) 最佳格式选择"></a><strong>(1) 最佳格式选择</strong></h5><ul>
+<li><p><strong>首推 Parquet</strong><br>列式存储天生适合压缩（尤其重复值和稀疏数据），支持多种压缩算法（如<code>gzip</code>、<code>snappy</code>、<code>brotli</code>）。<br><strong>优势</strong>：高压缩率，兼容大数据工具（Spark、Hive），支持分块存 储和谓词下推。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">df.to_parquet(<span class="string">&quot;data.parquet&quot;</span>, compression=<span class="string">&quot;gzip&quot;</span>)  <span class="comment"># 更高压缩 率选brotli</span></span><br></pre></td></tr></table></figure></li>
+<li><p><strong>次选 Feather + ZSTD</strong><br>读写速度极快，ZSTD压缩率接近Parquet，适合短期存储或Python生态 内交换数据。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">df.to_feather(<span class="string">&quot;data.feather&quot;</span>, compression=<span class="string">&quot;zstd&quot;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="2-其他格式的优化建议"><a href="#2-其他格式的优化建议" class="headerlink" title="(2) 其他格式的优化建议"></a><strong>(2) 其他格式的优化建议</strong></h5><ul>
+<li><strong>CSV/JSON</strong>：启用压缩参数（如<code>compression=&quot;gzip&quot;</code>），体积可缩小70%-90%。</li>
+<li><strong>Pickle</strong>：使用<code>protocol=5</code> + <code>compression=&quot;gzip&quot;</code>（需Pandas 1.5+）。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">df.to_pickle(<span class="string">&quot;data.pkl&quot;</span>, protocol=<span class="number">5</span>, compression=<span class="string">&quot;gzip&quot;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h4 id="3-压缩算法选择建议"><a href="#3-压缩算法选择建议" class="headerlink" title="3. 压缩算法选择建议"></a><strong>3. 压缩算法选择建议</strong></h4><ul>
+<li><strong>追求极致压缩率</strong>：<br>选择<code>gzip</code>（Parquet、CSV）或<code>brotli</code>（Parquet）。压缩率高，但 解压稍慢。</li>
+<li><strong>平衡速度与压缩率</strong>：<br>选择<code>zstd</code>（Feather、Parquet）或<code>snappy</code>（Parquet）。压缩率较 高，读写速度快。</li>
+<li><strong>避免无压缩</strong>：<br>始终在格式支持范围内启用压缩（如<code>df.to_csv(compression=&quot;gzip&quot;)</code>）。</li>
+</ul>
+<hr>
+<h4 id="4-关键注意事项"><a href="#4-关键注意事项" class="headerlink" title="4. 关键注意事项"></a><strong>4. 关键注意事项</strong></h4><ol>
+<li><strong>数据类型影响</strong>：数值类型（如<code>int32</code> vs <code>int64</code>）和分类数据 （<code>category</code> dtype）可进一步优化存储。</li>
+<li><strong>分块存储</strong>：对超大数据集，使用Parquet分块存储（<code>partition_cols</code>）可提升查询效率。</li>
+<li><strong>兼容性</strong>：<ul>
+<li>Parquet：适合跨平台、长期存储。</li>
+<li>Feather：适合短期Python内部使用。</li>
+<li>Pickle：仅限Python，版本敏感，慎用。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h4><ul>
+<li><strong>最优选择</strong>：Parquet + <code>gzip</code>/<code>brotli</code>（需要空间极致优化）。</li>
+<li><strong>次优选择</strong>：Feather + <code>zstd</code>（需要快速读写且空间友好）。</li>
+<li><strong>避免使用</strong>：未压缩的CSV/JSON/Excel。</li>
+</ul>
+<p>根据数据特征（稀疏性、列重复值）调整压缩算法，并优先选择列式存储格式以最大限度节省磁盘空间。</p>
+<h2 id="实际对比：pickle-vs-parquet"><a href="#实际对比：pickle-vs-parquet" class="headerlink" title="实际对比：pickle vs parquet"></a>实际对比：pickle vs parquet</h2><p>下面是一个存储了许多基因注释信息的pandas dataframe，维度为 <code>(36875, 6)</code> 。</p>
+<p>我们先尝试使用pickle格式存储：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740482381536.png" alt="1740482381536.png"></p>
+<p>结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>是否开启压缩</th>
+<th>写入耗时</th>
+<th>读取耗时</th>
+<th>文件大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开启lzma压缩</td>
+<td>2.46s</td>
+<td>99.8ms</td>
+<td>1.1MB</td>
+</tr>
+<tr>
+<td>不开启压缩</td>
+<td>54.5ms</td>
+<td>28.1ms</td>
+<td>6.2MB</td>
+</tr>
+</tbody></table>
+<p>接下来，尝试用parquet格式存储：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1740474942079.png" alt="1740474942079.png"></p>
+<p>结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>是否开启压缩</th>
+<th>写入耗时</th>
+<th>读取耗时</th>
+<th>文件大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开启snappy压缩（默认）</td>
+<td>67.8ms</td>
+<td>41.7ms</td>
+<td>2.9MB</td>
+</tr>
+<tr>
+<td>开启brotli压缩</td>
+<td>390ms</td>
+<td>45.7ms</td>
+<td>1.6MB</td>
+</tr>
+<tr>
+<td>开启zstd压缩</td>
+<td>78.3ms</td>
+<td>50.9ms</td>
+<td>1.9MB</td>
+</tr>
+</tbody></table>
+<p>如果只看压缩比率，那么pickle格式+lzma压缩率最高。<br>如果只看读写速度，那么pickle格式最快。</p>
+<p><strong>但是！</strong></p>
+<p><strong>如果综合考虑压缩比率和读写速度，其实parquet格式是更好一点的</strong> ，其对数据有一些压缩，且速度没有下降的很厉害。最重要的是parquet的兼容性是比较好的，在许多数据分析工具里面都可以用，不像pickle只能在python里面用且不同版本之间存在兼容性问题。</p>
+<p>因此，非常推荐大家尝试一下这个格式 ~ 。(✿◡‿◡)</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/680143641">《一文全面图解Parquet文件格式》 - Tim在路上的文章 - 知乎</a></li>
+<li><a href="https://pandas.pydata.org/docs/user_guide/10min.html#parquet">10 minutes to pandas</a></li>
+<li><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_parquet.html">pandas.DataFrame.to_parquet</a></li>
+<li><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_pickle.html#pandas.DataFrame.to_pickle">pandas.DataFrame.to_pickle</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>dataframe</tag>
+        <tag>pandas</tag>
+        <tag>parquet</tag>
       </tags>
   </entry>
 </search>
