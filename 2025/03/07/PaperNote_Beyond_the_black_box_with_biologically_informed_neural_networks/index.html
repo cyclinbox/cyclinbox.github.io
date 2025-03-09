@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Selby, D.A., Sprang, M., Ewald, J. et al. Beyond the black box with biologically informed neural networks. Nat Rev Genet (2025). https:&#x2F;&#x2F;doi.org&#x2F;10.1038&#x2F;s41576-025-00826-1  Beyond the black box with">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文献阅读笔记：基于生物学信息的神经网络">
+<meta property="og:url" content="https://wz.anoms.top/2025/03/07/PaperNote_Beyond_the_black_box_with_biologically_informed_neural_networks/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="Selby, D.A., Sprang, M., Ewald, J. et al. Beyond the black box with biologically informed neural networks. Nat Rev Genet (2025). https:&#x2F;&#x2F;doi.org&#x2F;10.1038&#x2F;s41576-025-00826-1  Beyond the black box with">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250309203141.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250309202801.png">
+<meta property="article:published_time" content="2025-03-07T12:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-09T13:18:42.570Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="机器学习可解释性">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="biologically informed neural networks">
+<meta property="article:tag" content="BINN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250309203141.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/03/07/PaperNote_Beyond_the_black_box_with_biologically_informed_neural_networks/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/03/07/PaperNote_Beyond_the_black_box_with_biologically_informed_neural_networks/","path":"2025/03/07/PaperNote_Beyond_the_black_box_with_biologically_informed_neural_networks/","title":"文献阅读笔记：基于生物学信息的神经网络"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>文献阅读笔记：基于生物学信息的神经网络 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#From-black-boxes-to-visible-neural-networks"><span class="nav-number">1.</span> <span class="nav-text">From black boxes to visible neural networks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Applications-and-success-stories-of-BINNs"><span class="nav-number">2.</span> <span class="nav-text">Applications and success stories of BINNs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-BINNs-excel-in-multi-omics-integration"><span class="nav-number">3.</span> <span class="nav-text">Why BINNs excel in multi-omics integration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Advancing-BINNs-for-biomedical-discovery"><span class="nav-number">4.</span> <span class="nav-text">Advancing BINNs for biomedical discovery</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References-%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">5.</span> <span class="nav-text">References  参考文献</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">177</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">290</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/03/07/PaperNote_Beyond_the_black_box_with_biologically_informed_neural_networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="文献阅读笔记：基于生物学信息的神经网络 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          文献阅读笔记：基于生物学信息的神经网络
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-07 20:00:00" itemprop="dateCreated datePublished" datetime="2025-03-07T20:00:00+08:00">2025-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-09 21:18:42" itemprop="dateModified" datetime="2025-03-09T21:18:42+08:00">2025-03-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%89%A9/" itemprop="url" rel="index"><span itemprop="name">生物</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>Selby, D.A., Sprang, M., Ewald, J. <em>et al.</em> <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41576-025-00826-1#citeas">Beyond the black box with biologically informed neural networks. <em>Nat Rev Genet</em> (2025)</a>. <a target="_blank" rel="noopener" href="https://doi.org/10.1038/s41576-025-00826-1">https://doi.org/10.1038/s41576-025-00826-1</a></p>
+</blockquote>
+<p>Beyond the black box with biologically informed neural networks<br>（打破黑箱：基于生物学信息的神经网络）</p>
+<p>【按：从去年到现在，断断续续看到了许多篇关于神经网络在生物信息学中应用的论文。在这方面，常常面临一个问题：”模型预测的精确性”与”模型可解释性”的权衡。一种解决思路是先训练模型，然后用<a href="https://wz.anoms.top/2024/04/22/XAI-learn-model">机器学习可解释方法</a>去对黑箱模型进行解读；另一种解决思路就是引入生物学信息，构建所谓的Biologically informed deep neural network（如下图，来自<a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-021-03922-4#Abs1">P-Net模型</a>的论文）。本文发表于本月初的nature reviews genetics期刊上，在文章中作者总结归纳了后一类模型，并在参考文献部分列出了几篇有代表性的论文。】</p>
+<span id="more"></span>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250309203141.png" alt="image.png"></p>
+<hr>
+<p>Machine learning models for multi-omics data often trade off predictive accuracy against biological interpretability. An emerging class of deep learning architectures structurally encode biological knowledge to improve both prediction and explainability. Opportunities and challenges remain for broader adoption.</p>
+<p>多组学数据的机器学习模型通常在预测准确性和生物可解释性之间进行权衡。一类新兴的深度学习架构通过结构化地编码生物学知识来提高预测和可解释性。但要更广泛地采用，仍存在机会和挑战。</p>
+<p>Machine learning applied to data from high-throughput technologies has transformed biological research, facilitating integration of diverse omics datasets into multi-layered models of cellular systems. However, the predictive power of traditional ‘black box’ machine learning algorithms — and their ability to model complex nonlinear relationships — often comes at the expense of biological interpretability. Biologically informed neural networks (BINNs) offer a promising solution, combining predictive accuracy with explainability by incorporating decades of accumulated prior biological knowledge. This emerging paradigm is particularly well-suited for understanding model predictions based on complex, high-dimensional multimodal datasets found in multi-omics integration.</p>
+<p>应用于高通量技术数据的机器学习已经改变了生物学研究，促进了将各种组学数据集整合到多层次的细胞系统模型中。然而，传统“黑箱”机器学习算法的预测能力——及其建模复杂非线性关系的能力——通常以生物可解释性为代价。结合了数十年积累的先前生物知识的生物信息神经网络（BINNs）提供了一个有前景的解决方案，通过这种方法可以在保证预测准确性的同时实现可解释性。这一新兴范式特别适用于理解基于在多组学整合中发现的复杂、高维多模态数据集的模型预测。</p>
+<h2 id="From-black-boxes-to-visible-neural-networks"><a href="#From-black-boxes-to-visible-neural-networks" class="headerlink" title="From black boxes to visible neural networks"></a>From black boxes to visible neural networks</h2><p><strong>（从黑盒子到可见的神经网络）</strong></p>
+<p>BINNs are artificial neural networks whose architecture is explicitly constrained by biological pathway ontologies (Fig. 1). Unlike conventional fully connected deep learning models, which rely on arbitrarily chosen numbers of hidden nodes and layers, BINNs are designed using known pathway hierarchies from databases such as Reactome, Gene Ontology or KEGG1. Each node in the network represents a real-world biological entity — such as a gene, pathway or biological process — and edges reflect known relationships between these entities. For instance, an input node representing gene expression levels is only connected to a hidden pathway node if the gene is a known member of that pathway. This structure, which contrasts with the opacity of traditional black box models, has led to the term visible neural networks2,3, or transparent neural networks4.</p>
+<p>BINNs 是人工神经网络，其架构明确受到生物路径本体论的约束（图 1）。与依赖于任意选择的隐藏节点和层数的传统全连接深度学习模型不同，BINNs 使用来自数据库（如 Reactome、Gene Ontology 或 KEGG）中已知的路径层次结构进行设计 1 。网络中的每个节点代表一个现实世界中的生物实体——例如基因、路径或生物过程——边反映了这些实体之间的已知关系。例如，表示基因表达水平的输入节点仅在基因是该路径已知成员的情况下才连接到隐藏路径节点。这种结构与传统黑盒模型的不透明性形成对比，导致了可见神经网络 2,3 或透明神经网络 4 的术语。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250309202801.png" alt="image.png"></p>
+<blockquote>
+<p>Figure1: Multiple omics are used as input and their respective features are linked to genes via known mappings. The genes are, in turn, connected to a hierarchy of biological ontology from a database (for example, genes, pathways and higher-order processes). To accommodate uneven hierarchies, skip connections (dotted line) or dummy nodes can be used. Fully connected residual nodes may capture interactions not included in the structural ontology used to build the architecture, which otherwise embeds a strong inductive bias in the predictions. Clinical measurements, or other data which cannot be linked directly to the pathway ontology, can be included via late fusion into the neural network or via dummy pathways.</p>
+<p>图1: 多种组学被用作输入，它们各自的特征通过已知的映射链接到基因。这些基因又与来自数据库的生物本体论层次结构中的项相关联（例如，基因、通路和更高级别的过程）。为了适应不均匀的层次结构，可以使用跳过连接（虚线）或虚拟节点。完全连接的残差节点可能捕捉到未包含在用于构建架构的结构本体论中的交互作用，否则这些预测会嵌入强烈的归纳偏差。临床测量或其他无法直接链接到通路本体论的数据可以通过晚期融合纳入神经网络，或者通过虚拟通路实现。</p>
+</blockquote>
+<p>The biologically informed architecture of BINNs tackles several challenges simultaneously. First, the incorporation of well-curated biological knowledge reduces the number of model parameters, thereby decreasing the amount of training data required. Second, the structure of the model is intuitive for biomedical researchers, even those with limited machine learning expertise. Third, the reduced dependence on training data and inductive bias mitigates overfitting and increases generalizability. Finally, by emulating cellular and genetic regulation, BINNs bridge the gap between data-driven models and mechanistic biological understanding.</p>
+<p>具有生物学信息的 BINNs 架构同时解决了多个挑战。首先，整合经过良好整理的生物学知识减少了模型参数的数量，从而减少了所需的训练数据量。其次，即使对于有限机器学习经验的生物医学研究人员来说，该模型的结构也是直观易懂的。第三，减少对训练数据和归纳偏置的依赖减轻了过拟合现象并提高了泛化能力。最后，通过模拟细胞和基因调控，BINNs 弥合了数据驱动模型与机制性生物学理解之间的差距。</p>
+<h2 id="Applications-and-success-stories-of-BINNs"><a href="#Applications-and-success-stories-of-BINNs" class="headerlink" title="Applications and success stories of BINNs"></a>Applications and success stories of BINNs</h2><p><strong>（BINNs 的应用和成功案例）</strong></p>
+<p>Since their introduction around 2018, BINNs have been widely applied in biomedicine, with notable successes in oncology, drug response prediction and survival analysis1,4. For example, models such as P-Net5 have demonstrated efficacy in aligning molecular features with therapeutic outcomes. Other extensions have integrated genomic data with chemical structure data to predict therapeutic efficacy3 or combined multi-omics and clinical data to predict patient survival in precision medicine6. BINNs are not limited to supervised learning tasks; biologically informed variational autoencoders — a form of unsupervised learning model — have also been used to analyse cellular processes and aid drug development7.</p>
+<p>自 2018 年左右引入以来，BINNs 已在生物医学领域得到广泛应用，在肿瘤学、药物反应预测和生存分析方面取得了显著成功 1,4 。例如，P-Net 5 等模型已证明在将分子特征与治疗结果对齐方面具有有效性。其他扩展已将基因组数据与化学结构数据相结合以预测治疗效果 3 ，或将多组学和临床数据结合起来以预测精准医疗中的患者生存率 6 。BINNs 不仅限于监督学习任务；生物信息变分自动编码器——一种无监督学习模型——也被用于分析细胞过程并辅助药物开发 7 。</p>
+<p>Recent applications have extended BINNs to single-cell sequencing, uncovering cellular heterogeneity and regulatory networks. Although early works already used multi-omics data, the integration of multiple modalities has increased with time. These models have also been used to uncover novel pathway interactions, demonstrating their potential as discovery agents8.</p>
+<p>近期的应用已经将 BINNs 扩展到了单细胞测序，揭示了细胞异质性和调控网络。尽管早期的工作已经使用了多组学数据，但随着时间的推移，多种模态的整合越来越多。这些模型还被用于揭示新的通路相互作用，展示了它们作为发现工具的潜力 8 。</p>
+<h2 id="Why-BINNs-excel-in-multi-omics-integration"><a href="#Why-BINNs-excel-in-multi-omics-integration" class="headerlink" title="Why BINNs excel in multi-omics integration"></a>Why BINNs excel in multi-omics integration</h2><p><strong>（为什么生物信息神经网络（BINNs）在多组学整合方面表现出色）</strong></p>
+<p>Multi-omics datasets are inherently high-dimensional, heterogeneous and often limited in sample size relative to the number of features. BINNs leverage biological priors to reduce model complexity by constraining the hypothesis space early in the analysis pipeline, which — ideally — improves generalizability and predictive performance and makes them particularly effective in these scenarios.</p>
+<p>多组学数据集本质上是高维的、异构的，并且相对于特征数量而言样本量通常较小。BINNs 利用生物学先验知识，在分析流程的早期阶段限制假设空间以降低模型复杂性，这在理想情况下可以提高泛化能力和预测性能，并使它们在这类场景中特别有效。</p>
+<p>Comparative studies reveal that BINNs perform comparably to, or better than, fully connected neural networks on various predictive tasks. For example, BINNs seem to excel in scenarios with small, high-dimensional datasets, which are suboptimal for dense neural networks but typical of omics studies. They also outperform traditional machine learning models in capturing non-linear, hierarchical relationships inherent to biological systems (Fig. 1), enabling meaningful insights beyond prediction, such as discovery of novel biomarkers5,8. Multiple omics fit in this hierarchy, because nodes in BINNs can represent any biological entity, for example, genes, metabolites or protein complexes. In genomic assays, such as mutation or copy number variation measurements, the features are mapped to the gene that contains the aberration. In transcriptomics and proteomics, multiple transcripts or proteins can be mapped to one gene. In metabolomics, a metabolite may be mapped to genes encoding enzymes that use or produce the respective molecule. To accommodate multiple inputs, a common entity is chosen (that is, genes) or specialized input layers can be crafted. As BINNs are special cases of multimodal deep learning, different data fusion strategies can be explored9.</p>
+<p>比较研究显示，BINNs 在各种预测任务中表现与全连接神经网络相当或更优。例如，BINNs 在小而高维的数据集上似乎表现出色，这些数据集对密集型神经网络来说效果不佳，但却是基因组学研究中的典型情况。它们在捕捉生物系统固有的非线性、层次关系方面也优于传统机器学习模型（图 1），从而能够在预测之外获得有意义的见解，例如发现新的生物标志物 5,8 。多个组学数据可以纳入这一层次结构，因为 BINNs 中的节点可以代表任何生物实体，例如基因、代谢物或蛋白质复合物。在基因组测定中，如突变或拷贝数变异测量，特征被映射到包含异常的基因。在转录组学和蛋白质组学中，多个转录本或蛋白质可以映射到一个基因。在代谢组学中，代谢物可以映射到编码使用或产生相应分子的酶的基因。为了容纳多个输入，可以选择一个共同的实体（即基因）或设计专门的输入层。 由于生物信息神经网络（BINNs）是多模态深度学习的特例，可以探索不同的数据融合策略 9 。</p>
+<p>Moreover, BINNs integrate predictive and explanatory tasks seamlessly. Traditional machine learning models, including dense neural networks, often fail to provide biologically meaningful insights owing to the inexplicability of their internal nodes. Post-hoc, model-agnostic interpretability methods offer input-level explanations but are prone to instability and can fail to reflect highly non-linear relationships10, such as between genes and processes. By contrast, BINNs enforce interpretability as an intrinsic property, allowing predictions to be directly linked to specific genes or pathways. This ante-hoc approach enhances robustness by incorporating known biological constraints, making BINNs ideal for tasks that require both prediction and inference, such as biomarker discovery and drug target validation.</p>
+<p>此外，BINNs（生物信息神经网络）能够无缝集成预测和解释任务。传统的机器学习模型，包括密集型神经网络，由于内部节点的不可解释性，往往无法提供具有生物学意义的见解。后验的、与模型无关的解释方法虽然可以提供输入级别的解释，但容易不稳定，并且可能无法反映高度非线性的关系，比如基因与过程之间的关系。相比之下，BINNs 将可解释性作为其内在属性，使得预测可以直接关联到特定的基因或通路。这种方法通过整合已知的生物约束，在先验阶段增强了鲁棒性，使 BINNs 成为需要同时进行预测和推断的任务的理想选择，例如生物标志物发现和药物靶点验证。</p>
+<h2 id="Advancing-BINNs-for-biomedical-discovery"><a href="#Advancing-BINNs-for-biomedical-discovery" class="headerlink" title="Advancing BINNs for biomedical discovery"></a>Advancing BINNs for biomedical discovery</h2><p><strong>（推进 BINNs 在生物医学发现中的应用）</strong></p>
+<p>Despite their promise, BINNs face several challenges. Most studies evaluate BINNs within narrow datasets and tasks, limiting insights into their generalizability across domains and conditions. The reasons for their apparently superior performance — whether due to biological inductive bias, multi-omics data fusion strategies or the introduced sparsity — remain unclear. Additionally, the lack of standardized benchmarks and tools hampers accessibility and reproducibility.</p>
+<p>尽管前景广阔，BINNs 仍面临若干挑战。大多数研究在狭窄的数据集和任务中评估 BINNs，限制了对其跨领域和条件普适性的见解。它们表现优异的原因——无论是由于生物学归纳偏置、多组学数据融合策略还是引入的稀疏性——仍然不清楚。此外，缺乏标准化基准和工具阻碍了可访问性和可重复性。</p>
+<p>To fully realize their potential, future research should focus on developing robust frameworks for BINN construction and evaluation. Expanding the use of flexible architectures capable of handling various kinds of biological knowledge, incorporating advanced multimodal fusion strategies and systematically exploring the impact of different ontologies will be essential. Furthermore, leveraging BINNs for hypothesis generation, such as predicting novel pathway relationships, represents an exciting research opportunity.</p>
+<p>为了充分发挥其潜力，未来的研究应侧重于开发稳健的 BINN 构建和评估框架。扩展使用能够处理各种生物知识的灵活架构，结合先进的多模态融合策略，并系统地探索不同本体论的影响将是至关重要的。此外，利用 BINN 进行假设生成，例如预测新的通路关系，代表了一个令人兴奋的研究机会。</p>
+<p>BINNs may represent a transformative approach in computational biology, uniting predictive accuracy with biological interpretability. By embedding domain knowledge gathered over decades of genetic research, these architectures provide more transparent, data-driven biomedical models that reduce computational costs and enable built-in interpretability. However, to fully harness their potential, the field must address key challenges:</p>
+<p>BINNs 可能代表了一种在计算生物学中的变革性方法，它将预测准确性与生物学可解释性相结合。通过嵌入数十年遗传研究积累的领域知识，这些架构提供了更透明的数据驱动生物医学模型，降低了计算成本，并实现了内置可解释性。然而，为了充分发挥它们的潜力，该领域必须应对关键挑战：</p>
+<ul>
+<li>Standardization: develop common benchmarks and tools to improve accessibility, reproducibility and study comparability.（标准化：制定共同的基准和工具以提高可访问性、重现性和研究的可比性。）</li>
+<li>Rigorous evaluation: conduct more comprehensive evaluations and ablation studies to understand the mechanisms behind the performance of BINNs and their generalizability relative to alternative approaches, such as graph neural networks and classic machine learning.（严格评估：进行更全面的评估和消融研究，以理解 BINNs 性能背后的工作机制及其相对于替代方法（如图神经网络和经典机器学习）的泛化能力。）</li>
+<li>Flexible architectures: explore architectures that can incorporate diverse biological knowledge and advanced data fusion strategies.（灵活的架构：探索能够整合各种生物学知识和先进数据融合策略的架构。）</li>
+<li>Hypothesis generation: combining modern neural architecture search methods with BINNs could unlock discovery of novel pathway interactions and regulatory mechanisms.（假设生成：结合现代神经结构搜索方法与 BINNs 可能解锁对新型路径交互和调控机制的发现。）</li>
+<li>Focus on the core: systematically investigate the choice of knowledge databases and the hierarchy level to build BINNs in close relation to their application.（关注核心：系统地研究知识数据库的选择和层次级别，以构建与应用密切相关的生物信息神经网络(BINNs)。）</li>
+</ul>
+<p>Overcoming these hurdles may unlock the full potential of multi-omics and BINNs, paving the way for more explainable, data-driven discoveries in genomics, drug development and precision medicine.</p>
+<p>克服这些障碍可能会充分发挥多组学和生物信息神经网络的全部潜力，从而为基因组学、药物开发和精准医学中的更多可解释的数据驱动发现铺平道路。</p>
+<h2 id="References-参考文献"><a href="#References-参考文献" class="headerlink" title="References  参考文献"></a>References  参考文献</h2><ol>
+<li>Wysocka, M., Wysocki, O., Zufferey, M., Landers, D. &amp; Freitas, A. A systematic review of biologically-informed deep learning models for cancer: fundamental trends for encoding and interpreting oncology data. <em>BMC Bioinformatics</em> <strong>24</strong>, 198 (2023).</li>
+<li>van Hilten, A. et al. Phenotype prediction using biologically interpretable neural networks on multi-cohort multi-omics data. <em>npj Syst. Biol. Appl.</em> <strong>10</strong>, 81 (2024).</li>
+<li>Kuenzi, B. M. et al. Predicting drug response and synergy using a deep learning model of human cancer cells. <em>Cancer Cell</em> <strong>38</strong>, 672–684 (2020).</li>
+<li>Novakovsky, G., Dexter, N., Libbrecht, M. W., Wasserman, W. W. &amp; Mostafavi, S. Obtaining genetics insights from deep learning via explainable artificial intelligence. <em>Nat. Rev. Genet.</em> <strong>24</strong>, 125–137 (2023).</li>
+<li>Elmarakeby, H. A. et al. Biologically informed deep neural network for prostate cancer discovery. <em>Nature</em> <strong>598</strong>, 348–352 (2021).</li>
+<li>Hao, J., Kim, Y., Mallavarapu, T., Oh, J. H. &amp; Kang, M. Interpretable deep neural network for cancer survival analysis by integrating genomic and clinical data. <em>BMC Med. Genomics</em> <strong>12</strong> (Suppl. 10), 189 (2019).</li>
+<li>Seninge, L., Anastropoulos, I., Ding, H. &amp; Stuart, J. VEGA is an interpretable generative model for inferring biological network activity in single-cell transcriptomics. <em>Nat. Commun.</em> <strong>12</strong>, 5684 (2021).</li>
+<li>Hou, Z., Leng, J., Yu, J., Xia, Z. &amp; Wu, L. Y. PathExpSurv: pathway expansion for explainable survival analysis and disease gene discovery. <em>BMC Bioinformatics</em> <strong>24</strong>, 434 (2023).</li>
+<li>Nguyen, T. et al. Optimal fusion of genotype and drug embeddings in predicting cancer drug response. <em>Brief. Bioinform.</em> <strong>25</strong>, bbae227 (2024).</li>
+<li>Molnar, C. et al. in <em>xxAI – Beyond Explainable AI</em> (eds Holzinger, A. et al.) 39–68 (Springer, 2022).</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/03/07/PaperNote_Beyond_the_black_box_with_biologically_informed_neural_networks/" title="文献阅读笔记：基于生物学信息的神经网络">https://wz.anoms.top/2025/03/07/PaperNote_Beyond_the_black_box_with_biologically_informed_neural_networks/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7/" rel="tag"><i class="fa fa-tag"></i> 机器学习可解释性</a>
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 深度学习</a>
+              <a href="/tags/biologically-informed-neural-networks/" rel="tag"><i class="fa fa-tag"></i> biologically informed neural networks</a>
+              <a href="/tags/BINN/" rel="tag"><i class="fa fa-tag"></i> BINN</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/02/pandas_storage_format_and_parquet/" rel="prev" title="pandas的存储格式parquet介绍">
+                  <i class="fa fa-chevron-left"></i> pandas的存储格式parquet介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/03/09/20250309_updatelog/" rel="next" title="碎碎念：在一些重要决策上依赖他人是一种对自己的不负责任">
+                  碎碎念：在一些重要决策上依赖他人是一种对自己的不负责任 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
