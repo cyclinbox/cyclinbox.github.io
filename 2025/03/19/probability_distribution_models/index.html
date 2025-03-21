@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文为生统助教课备课过程的一些记录，主要涉及概率分布模型的定义、几种离散概率模型之间的关系，以及R和python当中这些概率模型的接口。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="概率分布模型相关知识点整理">
+<meta property="og:url" content="https://wz.anoms.top/2025/03/19/probability_distribution_models/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="本文为生统助教课备课过程的一些记录，主要涉及概率分布模型的定义、几种离散概率模型之间的关系，以及R和python当中这些概率模型的接口。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321163812.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164002.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164032.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164051.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164112.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164203.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164655.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321165112.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321165638.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321170115.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321170641.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321172348.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321172753.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321173708.png">
+<meta property="article:published_time" content="2025-03-19T15:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-21T14:04:24.170Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="R">
+<meta property="article:tag" content="生物信息学">
+<meta property="article:tag" content="随机变量">
+<meta property="article:tag" content="概率分布模型">
+<meta property="article:tag" content="连续概率分布">
+<meta property="article:tag" content="离散概率分布">
+<meta property="article:tag" content="统计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321163812.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/03/19/probability_distribution_models/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/03/19/probability_distribution_models/","path":"2025/03/19/probability_distribution_models/","title":"概率分布模型相关知识点整理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>概率分布模型相关知识点整理 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%80%E4%BA%9B%E5%85%88%E5%AF%BC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">一、一些先导概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%EF%BC%9A"><span class="nav-number">1.0.1.</span> <span class="nav-text">随机变量：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E4%B8%8E%E7%B4%AF%E7%A7%AF%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">概率分布与累积分布函数：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%87%A0%E7%A7%8D%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">二、几种概率分布模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E7%A6%BB%E6%95%A3%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83"><span class="nav-number">2.1.</span> <span class="nav-text">（一）离散概率分布</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E4%BA%8C%E9%A1%B9%E5%88%86%E5%B8%83"><span class="nav-number">2.1.1.</span> <span class="nav-text">1. 二项分布</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%B4%9F%E4%BA%8C%E9%A1%B9%E5%88%86%E5%B8%83"><span class="nav-number">2.1.2.</span> <span class="nav-text">2. 负二项分布</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E8%B6%85%E5%87%A0%E4%BD%95%E5%88%86%E5%B8%83"><span class="nav-number">2.1.3.</span> <span class="nav-text">3. 超几何分布</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E6%B3%8A%E6%9D%BE%E5%88%86%E5%B8%83"><span class="nav-number">2.1.4.</span> <span class="nav-text">4. 泊松分布</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E8%BF%9E%E7%BB%AD%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83"><span class="nav-number">2.2.</span> <span class="nav-text">（二）连续概率分布</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. 正态分布</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%AD%E5%BF%83%E6%9E%81%E9%99%90%E5%AE%9A%E7%90%86"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">中心极限定理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E5%88%86%E5%B8%83"><span class="nav-number">2.2.2.</span> <span class="nav-text">指数分布</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%8D%E5%90%8C%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E6%A8%A1%E5%9E%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.</span> <span class="nav-text">三、不同概率分布模型之间的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E5%87%A0%E7%A7%8D%E7%A6%BB%E6%95%A3%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E6%A8%A1%E5%9E%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.1.</span> <span class="nav-text">（一）几种离散概率分布模型之间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%90%84%E4%B8%AA%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E6%A8%A1%E5%9E%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.2.</span> <span class="nav-text">（二）各个概率分布模型之间的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%94%9F%E7%89%A9%E5%AD%A6%E7%A0%94%E7%A9%B6"><span class="nav-number">4.</span> <span class="nav-text">四、概率分布模型与生物学研究</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E4%B8%89%E7%A7%8D%E7%A6%BB%E6%95%A3%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">4.1.</span> <span class="nav-text">（一）三种离散概率分布的应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%9F%BA%E5%9B%A0%E8%A1%A8%E8%BE%BE%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C%EF%BC%89%E4%B8%8E%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.2.</span> <span class="nav-text">（二）基因表达差异分析（显著性检验）与概率分布模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%9C%A8R%E8%AF%AD%E8%A8%80%E5%92%8CPython%E8%AF%AD%E8%A8%80%E4%B8%AD%E8%AE%A1%E7%AE%97%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83"><span class="nav-number">5.</span> <span class="nav-text">五、在R语言和Python语言中计算概率分布</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89R%E8%AF%AD%E8%A8%80"><span class="nav-number">5.1.</span> <span class="nav-text">（一）R语言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89Python%EF%BC%88Scipy%E5%8C%85%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">（二）Python（Scipy包）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0%E6%97%B6%E7%9A%84%E4%B8%80%E4%BA%9B%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">5.3.</span> <span class="nav-text">调用函数时的一些注意事项</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">298</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/03/19/probability_distribution_models/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="概率分布模型相关知识点整理 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          概率分布模型相关知识点整理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-19 23:00:00" itemprop="dateCreated datePublished" datetime="2025-03-19T23:00:00+08:00">2025-03-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-21 22:04:24" itemprop="dateModified" datetime="2025-03-21T22:04:24+08:00">2025-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文为生统助教课备课过程的一些记录，主要涉及概率分布模型的定义、几种离散概率模型之间的关系，以及R和python当中这些概率模型的接口。</p>
+<span id="more"></span>
+
+<h2 id="一、一些先导概念"><a href="#一、一些先导概念" class="headerlink" title="一、一些先导概念"></a>一、一些先导概念</h2><h4 id="随机变量："><a href="#随机变量：" class="headerlink" title="随机变量："></a>随机变量：</h4><p>描述随机事件的数值特征，是一个定义在样本空间上的实值函数，它将每个样本点映射到一个实数</p>
+<p>根据变量的取值可以分为：</p>
+<ul>
+<li>离散型随机变量(Discrete random variable)：取值为可数的实数，通常与可以计算或列举的事件有关，比如患者在一定时间内发生的癫痫发作次数/接受治疗的次数；患者的致病突变携带数（0/1/2）。代表的数学分布有：二项分布，泊松分布，负二项分布，超几何分布</li>
+<li>连续型随机变量(Continuous random variable)：取值为给定范围区间内的任意实数，通常与涉及测量或数量的事件相关，比如患者的身高、体重、血液药物浓度、某基因表达量。代表的数学分布有：正态分布，gamma分布</li>
+</ul>
+<h3 id="概率分布与累积分布函数："><a href="#概率分布与累积分布函数：" class="headerlink" title="概率分布与累积分布函数："></a>概率分布与累积分布函数：</h3><p>描述随机变量取值概率的函数。</p>
+<ul>
+<li><strong>概率分布函数</strong> ：描述随机变量取值概率的函数<ul>
+<li>概率质量函数(probability mass function,PMF) → 离散型随机变量</li>
+<li>概率密度函数(Probability Density Function,PDF) → 连续型随机变量</li>
+<li>P(X = x) = p(x), P(a≤x≤b)=P(X≤b)–P(X&lt;a-1)</li>
+</ul>
+</li>
+<li><strong>累积分布函数</strong> ：描述随机变量小于或等于某个特定值的概率的函数<ul>
+<li>cumulative distribution function, CDF</li>
+<li>连续型随机变量的CDF是连续函数，离散型的CDF是阶梯函数</li>
+<li>$F(x)=P(X\leq x)$</li>
+<li>$P(a\leq x\leq b)=\int_a^bf(x)dx$ </li>
+</ul>
+</li>
+<li>概率分布函数的特征：<ul>
+<li> $\sum P(X)=1$</li>
+<li>$0\leq P(X) \leq 1$</li>
+</ul>
+</li>
+<li>概率分布函数的统计量：<ul>
+<li>均值/期望： $E(x)=\mu=\sum xP(x)$</li>
+<li>方差：$Var=\sigma^2=E[(x-\mu)^2]=\sum[(x-\mu)^2P(x)]=\sum x^2P(x)-\mu^2$</li>
+</ul>
+</li>
+</ul>
+<p>如下图是标准正态分布的概率密度函数（PDF）和累积分布函数（CDF）。可以看出，CDF相当于是对PDF的积分。（Adapted from: Bernard Rosner.Fundamentals of Biostatistics(8th).p118-125）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321163812.png" alt="image.png"></p>
+<h2 id="二、几种概率分布模型"><a href="#二、几种概率分布模型" class="headerlink" title="二、几种概率分布模型"></a>二、几种概率分布模型</h2><h3 id="（一）离散概率分布"><a href="#（一）离散概率分布" class="headerlink" title="（一）离散概率分布"></a>（一）离散概率分布</h3><h4 id="1-二项分布"><a href="#1-二项分布" class="headerlink" title="1. 二项分布"></a>1. 二项分布</h4><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164002.png" alt="image.png"></p>
+<h4 id="2-负二项分布"><a href="#2-负二项分布" class="headerlink" title="2. 负二项分布"></a>2. 负二项分布</h4><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164032.png" alt="image.png"></p>
+<h4 id="3-超几何分布"><a href="#3-超几何分布" class="headerlink" title="3. 超几何分布"></a>3. 超几何分布</h4><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164051.png" alt="image.png"></p>
+<h4 id="4-泊松分布"><a href="#4-泊松分布" class="headerlink" title="4. 泊松分布"></a>4. 泊松分布</h4><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164112.png" alt="image.png"></p>
+<h3 id="（二）连续概率分布"><a href="#（二）连续概率分布" class="headerlink" title="（二）连续概率分布"></a>（二）连续概率分布</h3><h4 id="1-正态分布"><a href="#1-正态分布" class="headerlink" title="1. 正态分布"></a>1. 正态分布</h4><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164203.png" alt="image.png"></p>
+<p>说到正态分布，就得提一下中心极限定理——这是两个紧密相关的概念。</p>
+<h5 id="中心极限定理"><a href="#中心极限定理" class="headerlink" title="中心极限定理"></a><strong>中心极限定理</strong></h5><ul>
+<li>如果从总体中随机地抽取大量的样本，并且这些样本之间相互独立，并且总体的分布没有过多的偏态和峰度等特殊的性质，那么这些样本的均值的分布会近似为一个正态分布。<ul>
+<li>更具体地说，随着样本大小的增加，这个近似程度会越来越高；</li>
+</ul>
+</li>
+<li>估计总体均值时，如果总体分布未知，可以利用中心极限定理来使用样本均值的正态近似分布来估计总体均值的置信区间；<ul>
+<li>具体来说，若群体均值为均值为μ，标准差为σ，则样本均值为μ，标准差为σ/√n，n为抽样样本量</li>
+</ul>
+</li>
+<li>中心极限定理并不适用于所有类型的分布。例如，如果总体分布是长尾分布（如幂律分布），那么中心极限定理可能不适用，因为长尾分布的特殊性质会导致样本和的分布无法近似为正态分布。</li>
+</ul>
+<p>例如，假设在某地一个足够大的学生群体当中，测得这些学生的身高的总体均值为170cm，总体标准差为5cm。如果我们从这个大群体里面抽取9个人的样本，那么这样的抽样样本服从什么样的分布？抽样样本均值大于171cm的概率是多少？</p>
+<p>使用中心极限定理，我们可以求得这个sample size为9的样本服从均值为170cm、标准差为 $5\text{cm}/\sqrt{9}=5/3\text{cm}$ 的正态分布。在此基础上，我们可以求出抽样样本均值大于171cm的概率： $P(\bar{x}\geq 171|x<del>N(170,(5/3)^2))=P(Z\geq 0.6|Z</del>N(0,1))=27.423%$  （更具体的过程，以及相应的R代码如下图所示）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321164655.png" alt="image.png"></p>
+<h4 id="指数分布"><a href="#指数分布" class="headerlink" title="指数分布"></a>指数分布</h4><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321165112.png" alt="image.png"></p>
+<p>指数分布有一个很重要的特性是无记忆性。一个例子如下：</p>
+<p>在一项生物医学研究中，某种疾病的患者在接受治疗后首次复发的时间服从指数分布（以年为单位），平均复发时间为5年。假设患者在2年内没有复发，计算未来3年内复发的概率。</p>
+<p>首先我们计算参数：均值μ=5，因此指数分布的参数λ=1/5=0.2。随后我们利用指数分布的无记忆性，患者未来3年内复发的概率与前两年的情况无关，因此有 $P(x\leq 2+3|x&gt;2)=P(x\leq 3)=1-e^{-3λ}\approx 0.4512=45.12%$</p>
+<h2 id="三、不同概率分布模型之间的关系"><a href="#三、不同概率分布模型之间的关系" class="headerlink" title="三、不同概率分布模型之间的关系"></a>三、不同概率分布模型之间的关系</h2><h3 id="（一）几种离散概率分布模型之间的关系"><a href="#（一）几种离散概率分布模型之间的关系" class="headerlink" title="（一）几种离散概率分布模型之间的关系"></a>（一）几种离散概率分布模型之间的关系</h3><p>如下图所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321165638.png" alt="image.png"></p>
+<p>简单来说，二项分布、超几何分布、泊松分布都是在描述抽样实验的概率，但各有不同：</p>
+<ul>
+<li>二项分布和泊松分布都是放回抽样，超几何分布是无放回抽样（当总体大小N足够大时，无放回抽样对总体的影响足够小，此时可以用二项分布去近似替代超几何分布）</li>
+<li>二项分布的抽样次数有限，但是泊松分布的抽样次数无限（当实验次数n足够大时，可以用泊松分布去近似替代二项分布）</li>
+</ul>
+<p>另外，下面是一个公式推导，用来说明二项分布与泊松分布的关系：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321170115.png" alt="image.png"></p>
+<h3 id="（二）各个概率分布模型之间的关系"><a href="#（二）各个概率分布模型之间的关系" class="headerlink" title="（二）各个概率分布模型之间的关系"></a>（二）各个概率分布模型之间的关系</h3><p>如下图所示。具体解释略。</p>
+<p>这张图片也可以在下面这两个网站上访问：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.math.wm.edu/~leemis/chart/UDR/UDR.html">William &amp; Mary Univeristy - Univariate Distribution Relationships</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.statslab.cam.ac.uk/~rrw1/prob/chart-coloured1.pdf">University of Cambridge - Univariate Distribution Relationships</a></li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321170641.png" alt="image.png"></p>
+<h2 id="四、概率分布模型与生物学研究"><a href="#四、概率分布模型与生物学研究" class="headerlink" title="四、概率分布模型与生物学研究"></a>四、概率分布模型与生物学研究</h2><h3 id="（一）三种离散概率分布的应用"><a href="#（一）三种离散概率分布的应用" class="headerlink" title="（一）三种离散概率分布的应用"></a>（一）三种离散概率分布的应用</h3><p><strong>二项分布：</strong></p>
+<ul>
+<li>母体基因型为Aa的自交或异交子代中，表现为aa基因型的个体数量</li>
+<li>两种不同药物治疗一个病人时，其中一种药物获得治愈的数量</li>
+</ul>
+<p><strong>超几何分布：</strong></p>
+<ul>
+<li>从一个含有不同基因型的总体中随机抽取n个个体，其中含有特定基因型的个体数量</li>
+<li>在一个人群中，检测到特定疾病的个体数量</li>
+</ul>
+<p><strong>泊松分布：</strong></p>
+<ul>
+<li>细胞分裂时，某个基因突变发生的次数</li>
+<li>一个时间单位内，某种疾病的发病次数</li>
+</ul>
+<h3 id="（二）基因表达差异分析（显著性检验）与概率分布模型"><a href="#（二）基因表达差异分析（显著性检验）与概率分布模型" class="headerlink" title="（二）基因表达差异分析（显著性检验）与概率分布模型"></a>（二）基因表达差异分析（显著性检验）与概率分布模型</h3><p>在这一类情形中，我们主要关注的问题是，基因在不同样本间的表达水平应该符合什么分布？</p>
+<ul>
+<li>RNA-Seq得到的read counts，一个样本有多少条该基因的转录本 → 离散型随机变量；</li>
+<li>泊松分布：描述独立事件在固定时间或空间内发生的次数。其统计学特征为 μ=σ。</li>
+<li>虽然泊松分布是一种很好的模型，但在生物学实验中，多个重复测量通常会存在一些共性或相关性，例如由于技术误差、样本处理过程中的系统误差等原因（ <strong>泊松分布可能不适用</strong> ）。</li>
+<li>负二项分布是一种更为合适的计数数据模型，它可以很好地描述多个重复测量数据之间的相关性和异质性。在负二项分布中，每个计数数据的方差可以比其均值大得多，因此负二项分布可以很好地描述实验数据中的过度离散现象；<ul>
+<li>在DESeq2的分析中，负二项分布被转化为对数空间中的正态分布来进行统计分析</li>
+</ul>
+</li>
+</ul>
+<h2 id="五、在R语言和Python语言中计算概率分布"><a href="#五、在R语言和Python语言中计算概率分布" class="headerlink" title="五、在R语言和Python语言中计算概率分布"></a>五、在R语言和Python语言中计算概率分布</h2><h3 id="（一）R语言"><a href="#（一）R语言" class="headerlink" title="（一）R语言"></a>（一）R语言</h3><p>关于R语言的安装方法，可以参考下图：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321172348.png" alt="image.png"></p>
+<p>R语言的默认环境中已经预先加载了一系列概率分布模型的包和函数。这些函数有独特的命名规律，如下所述：</p>
+<table>
+<thead>
+<tr>
+<th>前缀命名</th>
+<th>含义</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>d</td>
+<td>密度函数</td>
+<td>PMF或PDF</td>
+</tr>
+<tr>
+<td>p</td>
+<td>分布函数</td>
+<td>CDF</td>
+</tr>
+<tr>
+<td>q</td>
+<td>分位数函数</td>
+<td>CDF的反函数</td>
+</tr>
+<tr>
+<td>r</td>
+<td>随机数生成函数</td>
+<td>生成一组服从特定分布的随机数</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>后缀命名</th>
+<th>概率分布模型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>norm</td>
+<td>正态分布</td>
+</tr>
+<tr>
+<td>exp</td>
+<td>指数分布</td>
+</tr>
+<tr>
+<td>t</td>
+<td>t-分布</td>
+</tr>
+<tr>
+<td>f</td>
+<td>f-分布</td>
+</tr>
+<tr>
+<td>binom</td>
+<td>二项分布</td>
+</tr>
+<tr>
+<td>nbinom</td>
+<td>负二项分布</td>
+</tr>
+<tr>
+<td>pois</td>
+<td>泊松分布</td>
+</tr>
+<tr>
+<td>hyper</td>
+<td>超几何分布</td>
+</tr>
+<tr>
+<td>……</td>
+<td>……</td>
+</tr>
+</tbody></table>
+<p>例如：泊松分布的相关函数如下：</p>
+<ul>
+<li>概率质量函数： <code>dpois(x, lambda)</code><ul>
+<li>x: 事件发生次数</li>
+<li>lambda: 单位时间/空间内的平均事件数</li>
+</ul>
+</li>
+<li>分布函数：<code>ppois(q, lambda)</code><ul>
+<li>q: 分位点</li>
+</ul>
+</li>
+<li>分位数函数：<code>qpois(p, lambda)</code><ul>
+<li>p: 概率值</li>
+</ul>
+</li>
+<li>随机数生成：<code>rpois(n, lambda)</code><ul>
+<li>n: 生成的随机数个数</li>
+</ul>
+</li>
+</ul>
+<p>其他概率分布模型以此类推。</p>
+<h3 id="（二）Python（Scipy包）"><a href="#（二）Python（Scipy包）" class="headerlink" title="（二）Python（Scipy包）"></a>（二）Python（Scipy包）</h3><p>Python标准库中提供了一些概率分布模型的代码支持，但不多。因此更多的时候，我们会使用scipy。</p>
+<p>如果电脑上没有安装Python，可以使用下面的方法进行安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 两个安装指令任选其一</span></span><br><span class="line">python -m pip install scipy</span><br><span class="line">conda install scipy</span><br></pre></td></tr></table></figure>
+
+<p>Scipy中，涉及概率分布的接口在 <code>scipy.stats</code> 模块下，相关内容可以参考 <a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/reference/stats.html#statsrefmanual">官方文档</a> 。</p>
+<p>下表列出了一些常用的离散分布模型的接口：</p>
+<table>
+<thead>
+<tr>
+<th>离散分布模型</th>
+<th>函数接口</th>
+<th>文档链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>二项分布</td>
+<td>scipy.stats.binom</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_binom.html">https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_binom.html</a></td>
+</tr>
+<tr>
+<td>负二项分布</td>
+<td>scipy.stats.nbinom</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_nbinom.html">https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_nbinom.html</a></td>
+</tr>
+<tr>
+<td>超几何分布</td>
+<td>scipy.stats.hypergeom</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_hypergeom.html">https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_hypergeom.html</a></td>
+</tr>
+<tr>
+<td>泊松分布</td>
+<td>scipy.stats.poisson</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_poisson.html">https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_poisson.html</a></td>
+</tr>
+<tr>
+<td>……</td>
+<td>……</td>
+<td>……</td>
+</tr>
+</tbody></table>
+<p>Scipy中的离散分布模型，其相关函数如下：</p>
+<ul>
+<li>概率密度函数 pmf</li>
+<li>累积分布函数 cdf</li>
+<li>分位数函数 ppf</li>
+<li>随机数生成 rvs</li>
+</ul>
+<p>下面是一个二项分布的示例。注意，由于二项分布是一种离散概率分布模型，此处使用柱状图和阶梯图表示了PMF和CDF的曲线。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 二项分布</span></span><br><span class="line"><span class="comment"># https://docs.scipy.org/doc/scipy/tutorial/stats/discrete_binom.html</span></span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">x = np.arange(<span class="number">0</span>,<span class="number">30</span>)</span><br><span class="line">dist = binom.pmf(x,n=<span class="number">30</span>,p=<span class="number">0.5</span>) <span class="comment"># 获取概率密度</span></span><br><span class="line">cdf  = binom.cdf(x,n=<span class="number">30</span>,p=<span class="number">0.5</span>) <span class="comment"># 获取累积概率分布</span></span><br><span class="line">plt.bar(x,dist,label=<span class="string">&quot;PMF&quot;</span>,color=<span class="string">&quot;#ff8989&quot;</span>,width=<span class="number">0.2</span>)</span><br><span class="line">plt.step(x,cdf,label=<span class="string">&quot;CDF&quot;</span>,color=<span class="string">&quot;#89b8ff&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.title(<span class="string">&quot;binomial dist(n=30,p=0.5)&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321172753.png" alt="image.png"></p>
+<p>下表列出了一些常用的连续分布模型的接口：</p>
+<table>
+<thead>
+<tr>
+<th>连续分布模型</th>
+<th>函数接口</th>
+<th>文档链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正态分布</td>
+<td>scipy.stats.norm</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_norm.html">https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_norm.html</a></td>
+</tr>
+<tr>
+<td>指数分布</td>
+<td>scipy.stats.expon</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_expon.html">https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_expon.html</a></td>
+</tr>
+<tr>
+<td>卡方分布</td>
+<td>scipy.stats.chi2</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_chi2.html">https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_chi2.html</a></td>
+</tr>
+<tr>
+<td>t-分布</td>
+<td>scipy.stats.t</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_t.html">https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_t.html</a></td>
+</tr>
+<tr>
+<td>F-分布</td>
+<td>scipy.stats.f</td>
+<td><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_f.html">https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_f.html</a></td>
+</tr>
+<tr>
+<td>……</td>
+<td>……</td>
+<td>……</td>
+</tr>
+</tbody></table>
+<p>Scipy中的连续分布模型，其相关函数如下：</p>
+<ul>
+<li>概率密度函数 pdf（注意和离散分布的函数接口不一样）</li>
+<li>累积分布函数 cdf</li>
+<li>分位数函数 ppf</li>
+<li>随机数生成 rvs</li>
+</ul>
+<p>下面是一个正态分布的示例。注意，由于正态分布是一种连续概率分布模型，此处使用折线图（连续曲线）表示了PMF和CDF的曲线。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 正态分布</span></span><br><span class="line"><span class="comment"># https://docs.scipy.org/doc/scipy/tutorial/stats/continuous_norm.html</span></span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">x = np.arange(-<span class="number">3</span>,<span class="number">3</span>,<span class="number">0.01</span>)</span><br><span class="line">dist = norm.pdf(x,loc=<span class="number">0</span>,scale=<span class="number">1</span>) <span class="comment"># 获取概率密度</span></span><br><span class="line">cdf  = norm.cdf(x,loc=<span class="number">0</span>,scale=<span class="number">1</span>) <span class="comment"># 获取累积概率分布</span></span><br><span class="line">plt.plot(x,dist,label=<span class="string">&quot;PDF&quot;</span>,color=<span class="string">&quot;#ff8989&quot;</span>)</span><br><span class="line">plt.plot(x,cdf,label=<span class="string">&quot;CDF&quot;</span>,color=<span class="string">&quot;#89b8ff&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.title(<span class="string">&quot;norm dist(mu=0,var=1)&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250321173708.png" alt="image.png"></p>
+<h3 id="调用函数时的一些注意事项"><a href="#调用函数时的一些注意事项" class="headerlink" title="调用函数时的一些注意事项"></a>调用函数时的一些注意事项</h3><ul>
+<li>Scipy包中的所有概率分布函数都有两个参数，loc和scale，即位置参数和形状参数。<ul>
+<li>在一些分布当中，这两个参数有各自的数学含义（如正态分布中loc为均值，scale为标准差；指数分布中scale代表1/λ）；</li>
+<li>另一些分布当中，则需要用到其他参数（例如二项分布有额外的参数n和p）</li>
+</ul>
+</li>
+<li>一些分布模型，在不同文献和软件（包括scipy和R）中可能采用不同的参数化方式，导致传参时需要注意</li>
+<li>调用函数时的实操建议<ul>
+<li>文档查阅要点</li>
+<li>明确分布的定义</li>
+<li>核对参数名称与数学符号的对应关系</li>
+<li>通过简单案例验证参数传递的正确性</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/03/19/probability_distribution_models/" title="概率分布模型相关知识点整理">https://wz.anoms.top/2025/03/19/probability_distribution_models/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/R/" rel="tag"><i class="fa fa-tag"></i> R</a>
+              <a href="/tags/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag"><i class="fa fa-tag"></i> 生物信息学</a>
+              <a href="/tags/%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F/" rel="tag"><i class="fa fa-tag"></i> 随机变量</a>
+              <a href="/tags/%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E6%A8%A1%E5%9E%8B/" rel="tag"><i class="fa fa-tag"></i> 概率分布模型</a>
+              <a href="/tags/%E8%BF%9E%E7%BB%AD%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83/" rel="tag"><i class="fa fa-tag"></i> 连续概率分布</a>
+              <a href="/tags/%E7%A6%BB%E6%95%A3%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83/" rel="tag"><i class="fa fa-tag"></i> 离散概率分布</a>
+              <a href="/tags/%E7%BB%9F%E8%AE%A1/" rel="tag"><i class="fa fa-tag"></i> 统计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/09/20250309_updatelog/" rel="prev" title="碎碎念：在一些重要决策上依赖他人是一种对自己的不负责任">
+                  <i class="fa fa-chevron-left"></i> 碎碎念：在一些重要决策上依赖他人是一种对自己的不负责任
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/03/20/Spring_Equinox/" rel="next" title="春分">
+                  春分 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
