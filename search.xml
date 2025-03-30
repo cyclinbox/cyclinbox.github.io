@@ -17466,4 +17466,71 @@
         <tag>人生坐标</tag>
       </tags>
   </entry>
+  <entry>
+    <title>flowith和coze两个智能体平台介绍</title>
+    <url>/2025/03/30/flowith_and_coze_two_AI_agent/</url>
+    <content><![CDATA[<p>如题。</p>
+<p>前段时间yxy分享了一个AI智能体大赛（<a href="https://agentga.me/submit">AI agent game 2025</a>，如下图）。</p>
+<span id="more"></span>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330221816.png" alt="image.png"></p>
+<p>鄙人才疏学浅，没有参加这个比赛的实力，但是通过这个比赛顺藤摸瓜，得知了下面几个AI智能体平台。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330222037.png" alt="image.png"></p>
+<p>其中的Manus与OpenManus前段时间经过大量自媒体的报道，相信大家已经很了解了，此处不再介绍。关于另外的两个AI智能体平台，<a href="https://flowith.io/blank">flowith</a>和<a href="https://www.coze.cn/home">扣子Coze</a>，笔者则做了一点浅浅的探索。下面是探索记录。</p>
+<hr>
+<h2 id="一、flowith平台"><a href="#一、flowith平台" class="headerlink" title="一、flowith平台"></a>一、flowith平台</h2><p><a href="https://flowith.io/blank">flowith.io</a>是一个智能体平台，官方的介绍是，flowith 是下一代 AI 生产力工具。</p>
+<blockquote>
+<p>不同于传统聊天式 AI 工具，flowith 基于二维画布的交互让可以你在一个画布中与多个 AI 模型同时交互，并进行内容生成，让你在创造内容时大幅度提升效率、更容易地进入心流状态。</p>
+</blockquote>
+<p>需要注意的是，受合规性限制，flowith 产品不支持在中国大陆网络下直接访问，需要使用 VPN 或切换网络进行正常使用。</p>
+<p>flowith有两大主要产品，分别是flowith Oracle和「Knowledge Garden」 知识花园。</p>
+<ul>
+<li>flowith Oracle是flowith官方自主打造的下一代 AI agent 系统，支持自主规划、拆分和完成任务、无限的工具调用、和自我优化完善，比传统的 AutoGPT 等架构有更成熟和稳定的表现。同时，利用 flowith 画布式的交互，Oracle 可以更好的为你呈现具体步骤和全面信息。</li>
+<li>「Knowledge Garden」 知识花园是一个知识整理、结构化管理和创作协同平台，它能够自动将你的文件、笔记和在线资源转化为 AI 可理解的最小知识单元（Seeds 知识种子）。系统通过 AI 智能分析，自动建立知识间的关联，形成一个动态生长的知识网络。在与 AI 对话时，相关的知识会被自动调用，大幅提高 AI 回复的准确性和针对性。不仅如此，通过 Knowledge Marketplace 功能可以在社区中分享和交易高质量的知识库，让知识价值得到更广泛的流通。</li>
+</ul>
+<p>浅浅注册并体验了一下 flowith Oracle的功能。如下图，我测试了一个使用场景，即撰写思政课结课论文。prompt如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">我现在需要以《如何在百年未遇之大变局中振兴中国经济》为主题，撰写一篇4500字左右的文章。</span><br><span class="line">由于所知有限，请你帮我搜集一些资料。</span><br><span class="line">请你先帮我起草一份文章的纲要，并以&quot;百年未有之大变局&quot;、&quot;中国当代经济发展状况与存在的问题&quot;、</span><br><span class="line">&quot;世界经济发展前景&quot;、&quot;中美贸易战下的中国经济&quot;等为关键词帮我搜集一些资料。</span><br><span class="line">在搜集完成资料以后，请你基于前面起草的文章纲要以及随后收集到的资料完成文章的撰写。</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223104.png" alt="image.png"></p>
+<p>flowith Oracle首先拆解了这个任务为多个子任务，并通过并行化调用AI工具，得到了一些中间结果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223402.png" alt="image.png"></p>
+<p>随后，flowith整合了上面的结果，并调用深度思考（背后的模型也许是DeepSeek-r1？），进一步完善了论文大纲，并再次调用Google scholars工具检索更多论文。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223512.png" alt="image.png"></p>
+<p>随后，flowith继续整合了这些检索的结果，并初步生成了一篇论文底稿（未在文中展示）。之后，flowith再度调用AI工具进行论文润色和格式检查，从而生成了最终的文章（如下图）。至少从结果上看，flowith的这个工作流，生成的结果很像那么回事。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223829.png" alt="image.png"></p>
+<h2 id="二、扣子coze平台"><a href="#二、扣子coze平台" class="headerlink" title="二、扣子coze平台"></a>二、扣子coze平台</h2><p><a href="https://www.coze.cn/home">扣子Coze</a> 是字帖跳动旗下火山引擎推出的一个智能体平台。官方的介绍如下：</p>
+<blockquote>
+<p>扣子是新一代 AI 应用开发平台。无论你是否有编程基础，都可以在扣子上快速搭建基于大模型的各类 AI 应用，并将 AI 应用发布到各个社交平台、通讯软件，也可以通过 API 或 SDK 将 AI 应用集成到你的业务系统中。</p>
+</blockquote>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224104.png" alt="image.png"></p>
+<p>登录 <a href="https://www.coze.cn/home">扣子Coze</a> 需要字节跳动的账号（如抖音账号或飞书账号）。</p>
+<p>支持创建智能体：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224841.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224902.png" alt="image.png"></p>
+<p>创建完成的智能体有许多配置选项，如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224829.png" alt="image.png"></p>
+<p>在项目商店里面也可以体验其他人创建的智能体：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330232310.png" alt="image.png"></p>
+<p>仍然以前面那个论文写作为例，我们测试一个论文写作的智能体。如下图，这个智能体虽然没有如同flowith那样生成一组工作流程，一步一步查询资料、写作初稿、润色文字，但也展现出来了很强的网页检索和写作的能力。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330232459.png" alt="image.png"></p>
+<h2 id="三、秘塔AI搜索（metaso）"><a href="#三、秘塔AI搜索（metaso）" class="headerlink" title="三、秘塔AI搜索（metaso）"></a>三、秘塔AI搜索（metaso）</h2><p>网址是 <a href="https://metaso.cn/">https://metaso.cn/</a> 。严格来说，这个不算是智能体，仅仅是一个搜索工具。</p>
+<p>放在这里，与前面两个平台做个对比，主要是想展示一下在论文写作方面它也有许多优点（仍然以那个结课论文写作任务为例）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330233858.png" alt="image.png"></p>
+<p>最终生成的文章（节选）<br><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330233923.png" alt="image.png"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>相比之下，上面提到的几个平台都有各自的优点，例如flowith有交互式的工作流程，过程简单易懂的；扣子coze平台有许多其他人自定义的工作流可以体验；而metaso则有着强大的信息检索能力。</p>
+<p>各个工具都有自己的长处，选择适合自己的就好。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>AI agent</tag>
+        <tag>flowith</tag>
+        <tag>coze</tag>
+        <tag>metaso</tag>
+      </tags>
+  </entry>
 </search>

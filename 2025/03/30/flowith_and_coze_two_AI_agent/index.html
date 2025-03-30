@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如题。 前段时间yxy分享了一个AI智能体大赛（AI agent game 2025，如下图）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flowith和coze两个智能体平台介绍">
+<meta property="og:url" content="https://wz.anoms.top/2025/03/30/flowith_and_coze_two_AI_agent/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="如题。 前段时间yxy分享了一个AI智能体大赛（AI agent game 2025，如下图）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330221816.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330222037.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223104.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223402.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223512.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223829.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224104.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224841.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224902.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224829.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330232310.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330232459.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330233858.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330233923.png">
+<meta property="article:published_time" content="2025-03-30T15:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-30T15:47:11.083Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="AI agent">
+<meta property="article:tag" content="flowith">
+<meta property="article:tag" content="coze">
+<meta property="article:tag" content="metaso">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330221816.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/03/30/flowith_and_coze_two_AI_agent/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/03/30/flowith_and_coze_two_AI_agent/","path":"2025/03/30/flowith_and_coze_two_AI_agent/","title":"flowith和coze两个智能体平台介绍"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>flowith和coze两个智能体平台介绍 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81flowith%E5%B9%B3%E5%8F%B0"><span class="nav-number">1.</span> <span class="nav-text">一、flowith平台</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%89%A3%E5%AD%90coze%E5%B9%B3%E5%8F%B0"><span class="nav-number">2.</span> <span class="nav-text">二、扣子coze平台</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%A7%98%E5%A1%94AI%E6%90%9C%E7%B4%A2%EF%BC%88metaso%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、秘塔AI搜索（metaso）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">183</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">309</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/03/30/flowith_and_coze_two_AI_agent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="flowith和coze两个智能体平台介绍 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          flowith和coze两个智能体平台介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-03-30 23:00:00 / 修改时间：23:47:11" itemprop="dateCreated datePublished" datetime="2025-03-30T23:00:00+08:00">2025-03-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如题。</p>
+<p>前段时间yxy分享了一个AI智能体大赛（<a target="_blank" rel="noopener" href="https://agentga.me/submit">AI agent game 2025</a>，如下图）。</p>
+<span id="more"></span>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330221816.png" alt="image.png"></p>
+<p>鄙人才疏学浅，没有参加这个比赛的实力，但是通过这个比赛顺藤摸瓜，得知了下面几个AI智能体平台。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330222037.png" alt="image.png"></p>
+<p>其中的Manus与OpenManus前段时间经过大量自媒体的报道，相信大家已经很了解了，此处不再介绍。关于另外的两个AI智能体平台，<a target="_blank" rel="noopener" href="https://flowith.io/blank">flowith</a>和<a target="_blank" rel="noopener" href="https://www.coze.cn/home">扣子Coze</a>，笔者则做了一点浅浅的探索。下面是探索记录。</p>
+<hr>
+<h2 id="一、flowith平台"><a href="#一、flowith平台" class="headerlink" title="一、flowith平台"></a>一、flowith平台</h2><p><a target="_blank" rel="noopener" href="https://flowith.io/blank">flowith.io</a>是一个智能体平台，官方的介绍是，flowith 是下一代 AI 生产力工具。</p>
+<blockquote>
+<p>不同于传统聊天式 AI 工具，flowith 基于二维画布的交互让可以你在一个画布中与多个 AI 模型同时交互，并进行内容生成，让你在创造内容时大幅度提升效率、更容易地进入心流状态。</p>
+</blockquote>
+<p>需要注意的是，受合规性限制，flowith 产品不支持在中国大陆网络下直接访问，需要使用 VPN 或切换网络进行正常使用。</p>
+<p>flowith有两大主要产品，分别是flowith Oracle和「Knowledge Garden」 知识花园。</p>
+<ul>
+<li>flowith Oracle是flowith官方自主打造的下一代 AI agent 系统，支持自主规划、拆分和完成任务、无限的工具调用、和自我优化完善，比传统的 AutoGPT 等架构有更成熟和稳定的表现。同时，利用 flowith 画布式的交互，Oracle 可以更好的为你呈现具体步骤和全面信息。</li>
+<li>「Knowledge Garden」 知识花园是一个知识整理、结构化管理和创作协同平台，它能够自动将你的文件、笔记和在线资源转化为 AI 可理解的最小知识单元（Seeds 知识种子）。系统通过 AI 智能分析，自动建立知识间的关联，形成一个动态生长的知识网络。在与 AI 对话时，相关的知识会被自动调用，大幅提高 AI 回复的准确性和针对性。不仅如此，通过 Knowledge Marketplace 功能可以在社区中分享和交易高质量的知识库，让知识价值得到更广泛的流通。</li>
+</ul>
+<p>浅浅注册并体验了一下 flowith Oracle的功能。如下图，我测试了一个使用场景，即撰写思政课结课论文。prompt如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">我现在需要以《如何在百年未遇之大变局中振兴中国经济》为主题，撰写一篇4500字左右的文章。</span><br><span class="line">由于所知有限，请你帮我搜集一些资料。</span><br><span class="line">请你先帮我起草一份文章的纲要，并以&quot;百年未有之大变局&quot;、&quot;中国当代经济发展状况与存在的问题&quot;、</span><br><span class="line">&quot;世界经济发展前景&quot;、&quot;中美贸易战下的中国经济&quot;等为关键词帮我搜集一些资料。</span><br><span class="line">在搜集完成资料以后，请你基于前面起草的文章纲要以及随后收集到的资料完成文章的撰写。</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223104.png" alt="image.png"></p>
+<p>flowith Oracle首先拆解了这个任务为多个子任务，并通过并行化调用AI工具，得到了一些中间结果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223402.png" alt="image.png"></p>
+<p>随后，flowith整合了上面的结果，并调用深度思考（背后的模型也许是DeepSeek-r1？），进一步完善了论文大纲，并再次调用Google scholars工具检索更多论文。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223512.png" alt="image.png"></p>
+<p>随后，flowith继续整合了这些检索的结果，并初步生成了一篇论文底稿（未在文中展示）。之后，flowith再度调用AI工具进行论文润色和格式检查，从而生成了最终的文章（如下图）。至少从结果上看，flowith的这个工作流，生成的结果很像那么回事。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330223829.png" alt="image.png"></p>
+<h2 id="二、扣子coze平台"><a href="#二、扣子coze平台" class="headerlink" title="二、扣子coze平台"></a>二、扣子coze平台</h2><p><a target="_blank" rel="noopener" href="https://www.coze.cn/home">扣子Coze</a> 是字帖跳动旗下火山引擎推出的一个智能体平台。官方的介绍如下：</p>
+<blockquote>
+<p>扣子是新一代 AI 应用开发平台。无论你是否有编程基础，都可以在扣子上快速搭建基于大模型的各类 AI 应用，并将 AI 应用发布到各个社交平台、通讯软件，也可以通过 API 或 SDK 将 AI 应用集成到你的业务系统中。</p>
+</blockquote>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224104.png" alt="image.png"></p>
+<p>登录 <a target="_blank" rel="noopener" href="https://www.coze.cn/home">扣子Coze</a> 需要字节跳动的账号（如抖音账号或飞书账号）。</p>
+<p>支持创建智能体：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224841.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224902.png" alt="image.png"></p>
+<p>创建完成的智能体有许多配置选项，如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330224829.png" alt="image.png"></p>
+<p>在项目商店里面也可以体验其他人创建的智能体：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330232310.png" alt="image.png"></p>
+<p>仍然以前面那个论文写作为例，我们测试一个论文写作的智能体。如下图，这个智能体虽然没有如同flowith那样生成一组工作流程，一步一步查询资料、写作初稿、润色文字，但也展现出来了很强的网页检索和写作的能力。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330232459.png" alt="image.png"></p>
+<h2 id="三、秘塔AI搜索（metaso）"><a href="#三、秘塔AI搜索（metaso）" class="headerlink" title="三、秘塔AI搜索（metaso）"></a>三、秘塔AI搜索（metaso）</h2><p>网址是 <a target="_blank" rel="noopener" href="https://metaso.cn/">https://metaso.cn/</a> 。严格来说，这个不算是智能体，仅仅是一个搜索工具。</p>
+<p>放在这里，与前面两个平台做个对比，主要是想展示一下在论文写作方面它也有许多优点（仍然以那个结课论文写作任务为例）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330233858.png" alt="image.png"></p>
+<p>最终生成的文章（节选）<br><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250330233923.png" alt="image.png"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>相比之下，上面提到的几个平台都有各自的优点，例如flowith有交互式的工作流程，过程简单易懂的；扣子coze平台有许多其他人自定义的工作流可以体验；而metaso则有着强大的信息检索能力。</p>
+<p>各个工具都有自己的长处，选择适合自己的就好。</p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/03/30/flowith_and_coze_two_AI_agent/" title="flowith和coze两个智能体平台介绍">https://wz.anoms.top/2025/03/30/flowith_and_coze_two_AI_agent/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/AI-agent/" rel="tag"><i class="fa fa-tag"></i> AI agent</a>
+              <a href="/tags/flowith/" rel="tag"><i class="fa fa-tag"></i> flowith</a>
+              <a href="/tags/coze/" rel="tag"><i class="fa fa-tag"></i> coze</a>
+              <a href="/tags/metaso/" rel="tag"><i class="fa fa-tag"></i> metaso</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/23/Handling_a_WSL1_crash/" rel="prev" title="处理一个WSL1崩溃的问题">
+                  <i class="fa fa-chevron-left"></i> 处理一个WSL1崩溃的问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
