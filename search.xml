@@ -17533,4 +17533,307 @@
         <tag>metaso</tag>
       </tags>
   </entry>
+  <entry>
+    <title>KL散度和JS散度</title>
+    <url>/2025/04/11/KL_Divergence_and_JS_Divergence/</url>
+    <content><![CDATA[<p>【按：组会上师姐用来比较数据的概率分布模型时，用到了这两个指标。会后，用DeepSeek查询了一下这两个指标的定义和计算方法，浅浅记录一下，以备未来回顾。】</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>KL散度（Kullback-Leibler Divergence）和JS散度（Jensen-Shannon Divergence）是衡量两个概率分布差异的常用工具，广泛应用于机器学习、信息论和统计学等领域。以下是它们的详细说明：</p>
+<hr>
+<h3 id="1-KL散度（Kullback-Leibler-Divergence）"><a href="#1-KL散度（Kullback-Leibler-Divergence）" class="headerlink" title="1. KL散度（Kullback-Leibler Divergence）"></a><strong>1. KL散度（Kullback-Leibler Divergence）</strong></h3><h4 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a><strong>定义</strong></h4><p>KL散度衡量分布 $P$ 相对于分布 $Q$ 的<strong>相对熵</strong>（信息损失），表示用 $Q$ 近似 $P$ 时丢失的信息量。</p>
+<ul>
+<li><strong>非对称性</strong>：$D_{KL}(P | Q) \neq D_{KL}(Q | P)$。</li>
+<li><strong>非负性</strong>：$D_{KL}(P | Q) \geq 0$，当且仅当 $P = Q$ 时为零。</li>
+</ul>
+<h4 id="计算公式"><a href="#计算公式" class="headerlink" title="计算公式"></a><strong>计算公式</strong></h4><ul>
+<li><strong>离散分布</strong>：<br>$$<br>D_{KL}(P | Q) = \sum_{x} P(x) \log \frac{P(x)}{Q(x)}<br>$$</li>
+<li><strong>连续分布</strong>：<br>$$<br>D_{KL}(P | Q) = \int_{-\infty}^{\infty} p(x) \log \frac{p(x)}{q(x)} dx<br>$$</li>
+</ul>
+<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a><strong>应用场景</strong></h4><ul>
+<li><strong>模型训练</strong>：在变分自编码器（VAE）中，用于约束隐变量分布接近先验分布。</li>
+<li><strong>信息编码</strong>：优化编码方案时最小化信息损失。</li>
+<li><strong>强化学习</strong>：策略梯度方法中限制策略更新的幅度。</li>
+</ul>
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h4><ul>
+<li>当 $Q(x)=0$ 且 $P(x)&gt;0$ 时，KL散度无定义（需平滑处理）。</li>
+<li>不对称性可能导致不同结果（如 $P$ 是真实分布时更常用 $D_{KL}(P | Q)$）。</li>
+</ul>
+<hr>
+<h3 id="2-JS散度（Jensen-Shannon-Divergence）"><a href="#2-JS散度（Jensen-Shannon-Divergence）" class="headerlink" title="2. JS散度（Jensen-Shannon Divergence）"></a><strong>2. JS散度（Jensen-Shannon Divergence）</strong></h3><h4 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a><strong>定义</strong></h4><p>JS散度是KL散度的对称化版本，基于 $P$ 和 $Q$ 的平均分布 $M = \frac{P + Q}{2}$ 计算。</p>
+<ul>
+<li><strong>对称性</strong>：$D_{JS}(P | Q) = D_{JS}(Q | P)$。</li>
+<li><strong>有界性</strong>：$0 \leq D_{JS} \leq \log 2$，便于比较不同分布间的差异。</li>
+</ul>
+<h4 id="计算公式-1"><a href="#计算公式-1" class="headerlink" title="计算公式"></a><strong>计算公式</strong></h4><p>$$<br>D_{JS}(P | Q) = \frac{1}{2} D_{KL}(P | M) + \frac{1}{2} D_{KL}(Q | M), \quad M = \frac{P + Q}{2}<br>$$</p>
+<h4 id="应用场景-1"><a href="#应用场景-1" class="headerlink" title="应用场景"></a><strong>应用场景</strong></h4><ul>
+<li><strong>生成对抗网络（GAN）</strong>：早期用于衡量生成分布与真实分布的差异（后因梯度问题被Wasserstein距离取代）。</li>
+<li><strong>聚类分析</strong>：评估聚类结果与真实标签的相似性。</li>
+<li><strong>生物学</strong>：比较基因表达分布的差异。</li>
+</ul>
+<h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a><strong>优点</strong></h4><ul>
+<li>对称性使其更适合需要双向比较的场景。</li>
+<li>避免KL散度的无定义问题（因 $M$ 融合了 $P$ 和 $Q$）。</li>
+</ul>
+<hr>
+<h3 id="3-核心区别"><a href="#3-核心区别" class="headerlink" title="3. 核心区别"></a><strong>3. 核心区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>KL散度</th>
+<th>JS散度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>对称性</strong></td>
+<td>非对称</td>
+<td>对称</td>
+</tr>
+<tr>
+<td><strong>取值范围</strong></td>
+<td>$[0, +\infty)$</td>
+<td>$[0, \log 2]$</td>
+</tr>
+<tr>
+<td><strong>鲁棒性</strong></td>
+<td>对 $Q$ 的零值敏感</td>
+<td>对零值鲁棒</td>
+</tr>
+<tr>
+<td><strong>计算复杂度</strong></td>
+<td>直接计算</td>
+<td>需计算平均分布 $M$</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="4-实例说明"><a href="#4-实例说明" class="headerlink" title="4. 实例说明"></a><strong>4. 实例说明</strong></h3><p>假设两个离散分布：</p>
+<ul>
+<li>$P = [0.2, 0.5, 0.3]$</li>
+<li>$Q = [0.1, 0.6, 0.3]$</li>
+</ul>
+<p><strong>KL散度计算</strong>：<br>$$<br>D_{KL}(P | Q) = 0.2 \log \frac{0.2}{0.1} + 0.5 \log \frac{0.5}{0.6} + 0.3 \log \frac{0.3}{0.3} \approx 0.036<br>$$</p>
+<p><strong>JS散度计算</strong>：</p>
+<ol>
+<li>计算平均分布 $M = \frac{P+Q}{2} = [0.15, 0.55, 0.3]$</li>
+<li>计算两项KL散度后取平均：<br>$$<br>D_{JS}(P | Q) \approx \frac{1}{2} (0.025 + 0.047) \approx 0.036<br>$$</li>
+</ol>
+<hr>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a><strong>5. 总结</strong></h3><ul>
+<li><strong>KL散度</strong>：适用于需要单向衡量信息损失的场景（如模型优化）。</li>
+<li><strong>JS散度</strong>：适合对称性比较，但可能因梯度消失问题在GAN中受限。</li>
+<li><strong>选择建议</strong>：优先考虑对称性和鲁棒性时选JS；需要明确方向性时选KL。</li>
+</ul>
+<h1 id="在python和R中计算KL散度和JS散度"><a href="#在python和R中计算KL散度和JS散度" class="headerlink" title="在python和R中计算KL散度和JS散度"></a>在python和R中计算KL散度和JS散度</h1><p>在Python和R中计算KL散度（Kullback-Leibler Divergence）和JS散度（Jensen-Shannon Divergence）可以通过内置函数或第三方库实现。以下是具体方法和代码示例：</p>
+<hr>
+<h3 id="1-Python实现"><a href="#1-Python实现" class="headerlink" title="1. Python实现"></a><strong>1. Python实现</strong></h3><h4 id="KL散度"><a href="#KL散度" class="headerlink" title="KL散度"></a><strong>KL散度</strong></h4><h5 id="方法1：使用scipy-stats-entropy"><a href="#方法1：使用scipy-stats-entropy" class="headerlink" title="方法1：使用scipy.stats.entropy"></a>方法1：使用<code>scipy.stats.entropy</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> entropy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义两个离散概率分布P和Q（需归一化）</span></span><br><span class="line">P = np.array([<span class="number">0.5</span>, <span class="number">0.3</span>, <span class="number">0.2</span>])</span><br><span class="line">Q = np.array([<span class="number">0.4</span>, <span class="number">0.4</span>, <span class="number">0.2</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算KL散度（注意顺序：P对Q的KL散度）</span></span><br><span class="line">kl_divergence = entropy(P, Q, base=<span class="number">2</span>)  <span class="comment"># base=2表示以2为底（结果单位为比特）</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;KL Divergence (P || Q):&quot;</span>, kl_divergence)</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：</p>
+<ul>
+<li>输入必须是概率分布（和为1），否则需手动归一化。</li>
+<li>若Q中存在0而P中对应位置非0，结果会为<code>inf</code>（需平滑处理）。</li>
+</ul>
+<h5 id="方法2：手动计算"><a href="#方法2：手动计算" class="headerlink" title="方法2：手动计算"></a>方法2：手动计算</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">kl_divergence</span>(<span class="params">P, Q</span>):</span><br><span class="line">    <span class="comment"># 避免log(0)的情况（添加微小值平滑）</span></span><br><span class="line">    epsilon = <span class="number">1e-10</span></span><br><span class="line">    P = P + epsilon</span><br><span class="line">    Q = Q + epsilon</span><br><span class="line">    <span class="keyword">return</span> np.<span class="built_in">sum</span>(P * np.log2(P / Q))</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;KL Divergence (Manual):&quot;</span>, kl_divergence(P, Q))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="JS散度"><a href="#JS散度" class="headerlink" title="JS散度"></a><strong>JS散度</strong></h4><h5 id="方法1：基于KL散度计算"><a href="#方法1：基于KL散度计算" class="headerlink" title="方法1：基于KL散度计算"></a>方法1：基于KL散度计算</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">js_divergence</span>(<span class="params">P, Q</span>):</span><br><span class="line">    <span class="comment"># 计算平均分布M</span></span><br><span class="line">    M = <span class="number">0.5</span> * (P + Q)</span><br><span class="line">    <span class="comment"># 计算JS散度</span></span><br><span class="line">    js = <span class="number">0.5</span> * entropy(P, M, base=<span class="number">2</span>) + <span class="number">0.5</span> * entropy(Q, M, base=<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">return</span> js</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;JS Divergence:&quot;</span>, js_divergence(P, Q))</span><br></pre></td></tr></table></figure>
+
+<h5 id="方法2：使用scipy-spatial-distance-jensenshannon"><a href="#方法2：使用scipy-spatial-distance-jensenshannon" class="headerlink" title="方法2：使用scipy.spatial.distance.jensenshannon"></a>方法2：使用<code>scipy.spatial.distance.jensenshannon</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> jensenshannon</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直接计算JS散度（返回值为距离，需平方后才是散度）</span></span><br><span class="line">js_distance = jensenshannon(P, Q, base=<span class="number">2</span>)</span><br><span class="line">js_divergence = js_distance ** <span class="number">2</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;JS Divergence (scipy):&quot;</span>, js_divergence)</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：</p>
+<ul>
+<li><code>jensenshannon</code>返回的是JS距离（即JS散度的平方根），需平方得到散度值。</li>
+</ul>
+<hr>
+<h3 id="2-R实现"><a href="#2-R实现" class="headerlink" title="2. R实现"></a><strong>2. R实现</strong></h3><h4 id="KL散度-1"><a href="#KL散度-1" class="headerlink" title="KL散度"></a><strong>KL散度</strong></h4><h5 id="方法1：使用philentropy包"><a href="#方法1：使用philentropy包" class="headerlink" title="方法1：使用philentropy包"></a>方法1：使用<code>philentropy</code>包</h5><figure class="highlight r"><table><tr><td class="code"><pre><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;philentropy&quot;</span><span class="punctuation">)</span>  <span class="comment"># 首次使用需安装</span></span><br><span class="line">library<span class="punctuation">(</span>philentropy<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line">P <span class="operator">&lt;-</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="number">0.5</span><span class="punctuation">,</span> <span class="number">0.3</span><span class="punctuation">,</span> <span class="number">0.2</span><span class="punctuation">)</span></span><br><span class="line">Q <span class="operator">&lt;-</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="number">0.4</span><span class="punctuation">,</span> <span class="number">0.4</span><span class="punctuation">,</span> <span class="number">0.2</span><span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算KL散度（注意参数unit=&quot;log2&quot;表示以2为底）</span></span><br><span class="line">kl_divergence <span class="operator">&lt;-</span> KL<span class="punctuation">(</span>rbind<span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span><span class="punctuation">,</span> unit <span class="operator">=</span> <span class="string">&quot;log2&quot;</span><span class="punctuation">)</span></span><br><span class="line">print<span class="punctuation">(</span>paste<span class="punctuation">(</span><span class="string">&quot;KL Divergence (P || Q):&quot;</span><span class="punctuation">,</span> kl_divergence<span class="punctuation">)</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="方法2：手动计算-1"><a href="#方法2：手动计算-1" class="headerlink" title="方法2：手动计算"></a>方法2：手动计算</h5><figure class="highlight r"><table><tr><td class="code"><pre><span class="line">kl_divergence <span class="operator">&lt;-</span> <span class="keyword">function</span><span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">  epsilon <span class="operator">&lt;-</span> 1e<span class="operator">-</span><span class="number">10</span></span><br><span class="line">  P <span class="operator">&lt;-</span> P <span class="operator">+</span> epsilon</span><br><span class="line">  Q <span class="operator">&lt;-</span> Q <span class="operator">+</span> epsilon</span><br><span class="line">  <span class="built_in">sum</span><span class="punctuation">(</span>P <span class="operator">*</span> log2<span class="punctuation">(</span>P <span class="operator">/</span> Q<span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br><span class="line">print<span class="punctuation">(</span>paste<span class="punctuation">(</span><span class="string">&quot;KL Divergence (Manual):&quot;</span><span class="punctuation">,</span> kl_divergence<span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="JS散度-1"><a href="#JS散度-1" class="headerlink" title="JS散度"></a><strong>JS散度</strong></h4><h5 id="方法1：基于KL散度计算-1"><a href="#方法1：基于KL散度计算-1" class="headerlink" title="方法1：基于KL散度计算"></a>方法1：基于KL散度计算</h5><figure class="highlight r"><table><tr><td class="code"><pre><span class="line">js_divergence <span class="operator">&lt;-</span> <span class="keyword">function</span><span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">  M <span class="operator">&lt;-</span> 0.5 <span class="operator">*</span> <span class="punctuation">(</span>P <span class="operator">+</span> Q<span class="punctuation">)</span></span><br><span class="line">  <span class="number">0.5</span> <span class="operator">*</span> KL<span class="punctuation">(</span>rbind<span class="punctuation">(</span>P<span class="punctuation">,</span> M<span class="punctuation">)</span><span class="punctuation">,</span> unit <span class="operator">=</span> <span class="string">&quot;log2&quot;</span><span class="punctuation">)</span> <span class="operator">+</span> <span class="number">0.5</span> <span class="operator">*</span> KL<span class="punctuation">(</span>rbind<span class="punctuation">(</span>Q<span class="punctuation">,</span> M<span class="punctuation">)</span><span class="punctuation">,</span> unit <span class="operator">=</span> <span class="string">&quot;log2&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br><span class="line">print<span class="punctuation">(</span>paste<span class="punctuation">(</span><span class="string">&quot;JS Divergence:&quot;</span><span class="punctuation">,</span> js_divergence<span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="方法2：使用philentropy包的JSD"><a href="#方法2：使用philentropy包的JSD" class="headerlink" title="方法2：使用philentropy包的JSD"></a>方法2：使用<code>philentropy</code>包的<code>JSD</code></h5><figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># JSD函数默认以e为底，需调整</span></span><br><span class="line">js_divergence <span class="operator">&lt;-</span> JSD<span class="punctuation">(</span>rbind<span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span><span class="punctuation">,</span> unit <span class="operator">=</span> <span class="string">&quot;log2&quot;</span><span class="punctuation">)</span></span><br><span class="line">print<span class="punctuation">(</span>paste<span class="punctuation">(</span><span class="string">&quot;JS Divergence (philentropy):&quot;</span><span class="punctuation">,</span> js_divergence<span class="punctuation">)</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-注意事项"><a href="#3-注意事项" class="headerlink" title="3. 注意事项"></a><strong>3. 注意事项</strong></h3><ol>
+<li><strong>输入归一化</strong>：确保输入的概率分布和为1（可通过<code>P = P / np.sum(P)</code>或<code>P &lt;- P / sum(P)</code>处理）。</li>
+<li><strong>零值处理</strong>：添加微小值（如<code>1e-10</code>）避免除零或对数零错误。</li>
+<li><strong>对称性</strong>：JS散度对称，KL散度不对称（注意顺序）。</li>
+<li><strong>连续分布</strong>：若需处理连续分布，需通过数值积分（如<code>scipy.integrate.quad</code>或R的<code>integrate</code>）。</li>
+</ol>
+<hr>
+<h3 id="4-完整示例（Python）"><a href="#4-完整示例（Python）" class="headerlink" title="4. 完整示例（Python）"></a><strong>4. 完整示例（Python）</strong></h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> entropy</span><br><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> jensenshannon</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义分布</span></span><br><span class="line">P = np.array([<span class="number">0.5</span>, <span class="number">0.3</span>, <span class="number">0.2</span>])</span><br><span class="line">Q = np.array([<span class="number">0.4</span>, <span class="number">0.4</span>, <span class="number">0.2</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># KL散度</span></span><br><span class="line">kl_scipy = entropy(P, Q, base=<span class="number">2</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;KL (Scipy):&quot;</span>, kl_scipy)</span><br><span class="line"></span><br><span class="line"><span class="comment"># JS散度</span></span><br><span class="line">js_scipy = jensenshannon(P, Q, base=<span class="number">2</span>) ** <span class="number">2</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;JS (Scipy):&quot;</span>, js_scipy)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 手动验证</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">kl_div</span>(<span class="params">P, Q</span>):</span><br><span class="line">    eps = <span class="number">1e-10</span></span><br><span class="line">    P, Q = P + eps, Q + eps</span><br><span class="line">    <span class="keyword">return</span> np.<span class="built_in">sum</span>(P * np.log2(P / Q))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">js_div</span>(<span class="params">P, Q</span>):</span><br><span class="line">    M = <span class="number">0.5</span> * (P + Q)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0.5</span> * kl_div(P, M) + <span class="number">0.5</span> * kl_div(Q, M)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;KL (Manual):&quot;</span>, kl_div(P, Q))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;JS (Manual):&quot;</span>, js_div(P, Q))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-常见问题"><a href="#5-常见问题" class="headerlink" title="5. 常见问题"></a><strong>5. 常见问题</strong></h3><ul>
+<li><strong>结果不一致</strong>：不同库可能对底数（自然对数<code>ln</code>或<code>log2</code>）或零值处理方式不同，需统一标准。</li>
+<li><strong>高维数据</strong>：对于高维分布（如图像生成），建议使用Wasserstein距离或MMD（如<code>torchmetrics</code>库中的实现）。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>机器学习</tag>
+        <tag>R</tag>
+        <tag>生物信息学</tag>
+        <tag>概率分布模型</tag>
+        <tag>统计</tag>
+        <tag>Kullback-Leibler Divergence</tag>
+        <tag>Jensen-Shannon Divergence</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>参数估计与统计推断相关知识点</title>
+    <url>/2025/04/11/parameter_estimation_and_statistical_inference/</url>
+    <content><![CDATA[<p>本文为生统助教课备课过程的一些记录，主要涉及参数估计与统计推断（假设检验）的基本概念、参数检验与非参数检验的流程与相关概率分布模型（本文重点），以及R和python当中的相关函数接口。</p>
+<span id="more"></span>
+
+<p>一张图展示本文知识大纲：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411192717.png" alt="image.png"></p>
+<h2 id="一、基础概念"><a href="#一、基础概念" class="headerlink" title="一、基础概念"></a>一、基础概念</h2><h3 id="（一）参数估计与统计推断的关系"><a href="#（一）参数估计与统计推断的关系" class="headerlink" title="（一）参数估计与统计推断的关系"></a>（一）参数估计与统计推断的关系</h3><ul>
+<li><p>参数估计：</p>
+<ul>
+<li>从样本数据中推断出总体参数的值，并附带估计误差；</li>
+<li>回答“什么是”或“什么样”的问题，例如某个投资的回报率是多少，某种药物的平均疗效是多少；</li>
+</ul>
+</li>
+<li><p>统计推断：</p>
+<ul>
+<li>测试某个假设是否合理，评估样本数据与基于某个假设下的总体分布之间的差异；</li>
+<li>回答“是”或“否”的问题，例如一种药物的效果是否比另一种更有效，一个批次中的产品是否达到了规定的标准；</li>
+</ul>
+</li>
+<li><p>估计通常需要基于一个假设来成立，例如正态分布假设。而前提假设的检验可以导致更准确的估计值，因为它使我们更清楚地理解参数的分布；</p>
+</li>
+<li><p>估计的结果也可以用作假设检验的基础，例如为了测试一个均值是否等于某个特定值，我们需要用样本均值来估计整个总体的均值。</p>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411194135.png" alt="image.png"></p>
+<h3 id="（二）假设检验的基本流程"><a href="#（二）假设检验的基本流程" class="headerlink" title="（二）假设检验的基本流程"></a>（二）假设检验的基本流程</h3><p>1.提出假设：</p>
+<ul>
+<li>H0: 原假设，基准或默认情况，假设总体参数没有变化或无差异</li>
+<li>Ha/H1: 备择假设</li>
+</ul>
+<p>2.选择统计检验方法：</p>
+<ul>
+<li>根据数据特征、问题类型及假设陈述等因素来选择适当的统计方法</li>
+<li>如t检验、方差分析、卡方检验等;</li>
+</ul>
+<p>3.选择显著性水平：</p>
+<ul>
+<li>确定最小显著性水平（α），即拒绝零假设的概率阈值，通常设为0.05或0.01。</li>
+</ul>
+<p>4.收集数据并计算检验统计量：</p>
+<ul>
+<li>使用已选定的统计方法，并根据所测试的假设与收集的数据，计算出检验统计量的值，得到显著性水平。</li>
+</ul>
+<p>5.判定结论：</p>
+<ul>
+<li>当观察数据的结果与H0不一致时，有两种可能：<ul>
+<li>一是拒绝H0，接受Ha，即认为存在显著的差异或效应；</li>
+<li>二是未能拒绝H0，即没有足够的证据表明Ha成立，无法判断是否存在显著的差异或效应。</li>
+</ul>
+</li>
+<li>需要根据检验统计量和显著性水平来做出判断，确定是上述可能中的哪一种</li>
+</ul>
+<p>根据样本的不同，还可以将这一流程细化为单样本检验和双样本检验。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411194432.png" alt="image.png"><br>单样本检验如果需要使用参数检验（如z-test、t-test等），需要先检验数据是否服从正态分布。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411194605.png" alt="image.png"></p>
+<p>双样本检验则需要更进一步，除了要检验数据是否服从正态分布以外，还需要进行方差齐性检验。</p>
+<p>另外，这里还涉及到单侧和双侧检验的事情。单侧检验，一般回答的问题是“xx样本是否小于/大于yy样本或yy总体”；双侧检验，一般回答的问题是“xx样本的均值是否 <strong>不等于</strong> yy样本或yy总体”。如何选择单侧或双侧检验，需要根据具体的问题类型来做决策。如果选择双侧检验，那么在查表寻找临界值时，需要使用一半的显著性水平（即α/2）去查表。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411201621.png" alt="image.png"></p>
+<h3 id="（三）假设检验所涉及到的一些统计分布模型"><a href="#（三）假设检验所涉及到的一些统计分布模型" class="headerlink" title="（三）假设检验所涉及到的一些统计分布模型"></a>（三）假设检验所涉及到的一些统计分布模型</h3><p>首先是正态分布。这是最常见的统计分布模型假设。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411194930.png" alt="image.png"></p>
+<p>然后是student’s t分布。当总体方差未知时，样本均值的标准化形式服从这一分布，其形状与正态分布类似，但是尾部更重；参数df（“自由度”，等于n-1，其中n为样本量）越大，t分布越趋近于正态分布。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411194939.png" alt="image.png"></p>
+<p>最后是F分布。其在方差齐性检验中有用。F分布描述的是两个独立卡方分布的比值，很巧的是正态总体的样本方差的标准化形式 $(n-1)s^2/σ^2$ 服从参数df等于n-1的卡方分布（n为样本量），因此可以用来检验方差是否齐次（检验的原理见下文）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411194956.png" alt="image.png"></p>
+<h2 id="二、参数检验"><a href="#二、参数检验" class="headerlink" title="二、参数检验"></a>二、参数检验</h2><p>所谓参数检验，需要预设一个样本所服从的统计模型，如正态分布、t分布等。</p>
+<h3 id="（一）单样本检验"><a href="#（一）单样本检验" class="headerlink" title="（一）单样本检验"></a>（一）单样本检验</h3><p>单样本检验，主要想回答的问题是：某个样本，是否来自于某个概率分布总体。</p>
+<p>常用的两种检验方式是Z-test与T-test。</p>
+<p>Z-Test 适用于以下情况：</p>
+<ul>
+<li>总体标准差 $\sigma$ 已知。</li>
+<li>样本量 $n$ 较大（通常 $n \geq 30$）。</li>
+</ul>
+<p>T-Test 适用于以下情况：</p>
+<ul>
+<li>总体标准差 $\sigma$ 未知，需要用样本标准差 $s$ 来估计。</li>
+<li>样本量 $n$ 较小（通常 $n &lt; 30$）。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>检验类型</th>
+<th>公式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Z-Test</td>
+<td>$Z = \frac{\bar{X} - \mu_0}{\sigma / \sqrt{n}}$</td>
+</tr>
+<tr>
+<td>T-Test</td>
+<td>$T = \frac{\bar{X} - \mu_0}{s / \sqrt{n}}$</td>
+</tr>
+</tbody></table>
+<p>两者的主要区别在于分母部分：Z-Test 使用总体标准差 $\sigma$，而 T-Test 使用样本标准差 $s$。</p>
+<p>Python当中的函数接口（单样本t-test）：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> ttest_1samp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例数据</span></span><br><span class="line">data = [<span class="number">102</span>, <span class="number">104</span>, <span class="number">98</span>, <span class="number">100</span>, <span class="number">106</span>]</span><br><span class="line">population_mean = <span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 单样本 T-Test</span></span><br><span class="line">t_stat, p_value = ttest_1samp(data, population_mean)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;T-statistic: <span class="subst">&#123;t_stat&#125;</span>, p-value: <span class="subst">&#123;p_value&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>R当中的函数接口：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Z-test,需要知道总体标准差sigma.x</span></span><br><span class="line">z.test<span class="punctuation">(</span>x<span class="punctuation">,</span> mu <span class="operator">=</span> mu<span class="punctuation">,</span> sigma.x <span class="operator">=</span> sigma.x<span class="punctuation">)</span></span><br><span class="line"><span class="comment"># T-test，只需要传入样本x和总体均值mu即可</span></span><br><span class="line">t.test<span class="punctuation">(</span>x<span class="punctuation">,</span> mu <span class="operator">=</span> mu<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>另外还有两个比较关键的概念：检验的效能（power），以及效应量（effect size）。相关知识点见下面的PPT页面截图。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411201913.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411202032.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411202042.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411202053.png" alt="image.png"></p>
+<h3 id="（二）配对样本t检验"><a href="#（二）配对样本t检验" class="headerlink" title="（二）配对样本t检验"></a>（二）配对样本t检验</h3><p>某种意义上，配对样本t-test，可以看作一种特殊的单样本检验。因此，原理不在细讲。下面是python和R中调用配对样本t-test的方法：</p>
+<p>Python：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">scipy.stats.ttest_rel(a, b, alternative=<span class="string">&#x27;two-sided&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>R：（依然是<code>t.test</code>这个函数，但是需要指定参数<code>paired = TRUE</code>）</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">t.test<span class="punctuation">(</span>x<span class="punctuation">,</span> y <span class="operator">=</span> <span class="literal">NULL</span><span class="punctuation">,</span> alternative <span class="operator">=</span> <span class="string">&quot;two.sided&quot;</span><span class="punctuation">,</span> mu <span class="operator">=</span> <span class="number">0</span><span class="punctuation">,</span> paired <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="（三）双样本独立t检验"><a href="#（三）双样本独立t检验" class="headerlink" title="（三）双样本独立t检验"></a>（三）双样本独立t检验</h3><p>双样本独立t检验，其检验统计量的计算方法如下（注意分母部分的处理）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411202840.png" alt="image.png"></p>
+<p>如本文前面所述，双样本检验除了要检验数据是否服从正态分布以外，还需要进行方差齐性检验。下图为方差齐次检验的原理。</p>
+<ul>
+<li>F分布描述的是两个独立卡方分布的比值，很巧的是正态总体的样本方差的标准化形式 $(n-1)s^2/σ^2$ 服从参数df等于n-1的卡方分布（n为样本量）</li>
+<li>我们把两个样本的样本方差的标准化形式相除，得到的统计量 $(s^2_1σ^2_2)/(s^2_2σ^2_1)$ 服从分布 $F(n-1,m-1)$ ，其中m,n分别是两个样本的样本量</li>
+<li>如果这两个样本来自相同方差的总体，那么 $σ_1=σ_2$ ，在分式中这两项可以约分，最终得到的形式 $s^2_1/s^2_2$  依然服从分布 $F(n-1,m-1)$ </li>
+<li>因此，我们只需要检验 $s^2_1/s^2_2$  是否服从分布 $F(n-1,m-1)$  ，即可得知两个样本各自的总体方差是否相等。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411202851.png" alt="image.png"></p>
+<h2 id="三、非参数检验"><a href="#三、非参数检验" class="headerlink" title="三、非参数检验"></a>三、非参数检验</h2><p>如题。非参数检验不依赖总体的分布，因此也有很广泛的应用。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411203612.png" alt="image.png"></p>
+<p>1、符号检验：只需要统计样本中超过某一标准值M0的样本的数量，基于二项分布的概率模型进行检验。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411203622.png" alt="image.png"></p>
+<p>2、Wilcox符号秩检验：在符号检验的基础上考虑秩次信息。适合配对样本检验</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411203634.png" alt="image.png"></p>
+<p>3、Wilcox秩和检验：两组样本混合在一起，然后编秩次（即，从大到小对样本编号），随后计算样本量较小的一组的秩次之和，查表进行检验。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411203646.png" alt="image.png"></p>
+<h2 id="四、多重矫正"><a href="#四、多重矫正" class="headerlink" title="四、多重矫正"></a>四、多重矫正</h2><p>当假设检验的过程重复多次时，总体错误概率（“家族错误率”，Family-wise error rate，FEWR）会不断增长。多重矫正就是要解决这个问题。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411203709.png" alt="image.png"></p>
+<p>常用的方法包括bonferroni矫正、Holm方法、BH矫正等。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250411203718.png" alt="image.png"></p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>R</tag>
+        <tag>生物信息学</tag>
+        <tag>概率分布模型</tag>
+        <tag>连续概率分布</tag>
+        <tag>离散概率分布</tag>
+        <tag>统计</tag>
+        <tag>参数估计</tag>
+        <tag>统计推断</tag>
+      </tags>
+  </entry>
 </search>

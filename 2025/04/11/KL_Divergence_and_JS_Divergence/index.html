@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="【按：组会上师姐用来比较数据的概率分布模型时，用到了这两个指标。会后，用DeepSeek查询了一下这两个指标的定义和计算方法，浅浅记录一下，以备未来回顾。】">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KL散度和JS散度">
+<meta property="og:url" content="https://wz.anoms.top/2025/04/11/KL_Divergence_and_JS_Divergence/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="【按：组会上师姐用来比较数据的概率分布模型时，用到了这两个指标。会后，用DeepSeek查询了一下这两个指标的定义和计算方法，浅浅记录一下，以备未来回顾。】">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-04-11T13:00:00.000Z">
+<meta property="article:modified_time" content="2025-04-11T13:18:07.854Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="R">
+<meta property="article:tag" content="生物信息学">
+<meta property="article:tag" content="概率分布模型">
+<meta property="article:tag" content="统计">
+<meta property="article:tag" content="Kullback-Leibler Divergence">
+<meta property="article:tag" content="Jensen-Shannon Divergence">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/04/11/KL_Divergence_and_JS_Divergence/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/04/11/KL_Divergence_and_JS_Divergence/","path":"2025/04/11/KL_Divergence_and_JS_Divergence/","title":"KL散度和JS散度"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>KL散度和JS散度 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-KL%E6%95%A3%E5%BA%A6%EF%BC%88Kullback-Leibler-Divergence%EF%BC%89"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. KL散度（Kullback-Leibler Divergence）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="nav-number">1.0.1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F"><span class="nav-number">1.0.1.2.</span> <span class="nav-text">计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.0.1.3.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.0.1.4.</span> <span class="nav-text">注意事项</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-JS%E6%95%A3%E5%BA%A6%EF%BC%88Jensen-Shannon-Divergence%EF%BC%89"><span class="nav-number">1.0.2.</span> <span class="nav-text">2. JS散度（Jensen-Shannon Divergence）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-2"><span class="nav-number">1.0.2.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F-1"><span class="nav-number">1.0.2.2.</span> <span class="nav-text">计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF-1"><span class="nav-number">1.0.2.3.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">1.0.2.4.</span> <span class="nav-text">优点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%A0%B8%E5%BF%83%E5%8C%BA%E5%88%AB"><span class="nav-number">1.0.3.</span> <span class="nav-text">3. 核心区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E4%BE%8B%E8%AF%B4%E6%98%8E"><span class="nav-number">1.0.4.</span> <span class="nav-text">4. 实例说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%80%BB%E7%BB%93"><span class="nav-number">1.0.5.</span> <span class="nav-text">5. 总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%A8python%E5%92%8CR%E4%B8%AD%E8%AE%A1%E7%AE%97KL%E6%95%A3%E5%BA%A6%E5%92%8CJS%E6%95%A3%E5%BA%A6"><span class="nav-number">2.</span> <span class="nav-text">在python和R中计算KL散度和JS散度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Python%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.0.1.</span> <span class="nav-text">1. Python实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#KL%E6%95%A3%E5%BA%A6"><span class="nav-number">2.0.1.1.</span> <span class="nav-text">KL散度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9A%E4%BD%BF%E7%94%A8scipy-stats-entropy"><span class="nav-number">2.0.1.1.1.</span> <span class="nav-text">方法1：使用scipy.stats.entropy</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%952%EF%BC%9A%E6%89%8B%E5%8A%A8%E8%AE%A1%E7%AE%97"><span class="nav-number">2.0.1.1.2.</span> <span class="nav-text">方法2：手动计算</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JS%E6%95%A3%E5%BA%A6"><span class="nav-number">2.0.1.2.</span> <span class="nav-text">JS散度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9A%E5%9F%BA%E4%BA%8EKL%E6%95%A3%E5%BA%A6%E8%AE%A1%E7%AE%97"><span class="nav-number">2.0.1.2.1.</span> <span class="nav-text">方法1：基于KL散度计算</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%952%EF%BC%9A%E4%BD%BF%E7%94%A8scipy-spatial-distance-jensenshannon"><span class="nav-number">2.0.1.2.2.</span> <span class="nav-text">方法2：使用scipy.spatial.distance.jensenshannon</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-R%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.0.2.</span> <span class="nav-text">2. R实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#KL%E6%95%A3%E5%BA%A6-1"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">KL散度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9A%E4%BD%BF%E7%94%A8philentropy%E5%8C%85"><span class="nav-number">2.0.2.1.1.</span> <span class="nav-text">方法1：使用philentropy包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%952%EF%BC%9A%E6%89%8B%E5%8A%A8%E8%AE%A1%E7%AE%97-1"><span class="nav-number">2.0.2.1.2.</span> <span class="nav-text">方法2：手动计算</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JS%E6%95%A3%E5%BA%A6-1"><span class="nav-number">2.0.2.2.</span> <span class="nav-text">JS散度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9A%E5%9F%BA%E4%BA%8EKL%E6%95%A3%E5%BA%A6%E8%AE%A1%E7%AE%97-1"><span class="nav-number">2.0.2.2.1.</span> <span class="nav-text">方法1：基于KL散度计算</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%952%EF%BC%9A%E4%BD%BF%E7%94%A8philentropy%E5%8C%85%E7%9A%84JSD"><span class="nav-number">2.0.2.2.2.</span> <span class="nav-text">方法2：使用philentropy包的JSD</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">2.0.3.</span> <span class="nav-text">3. 注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B%EF%BC%88Python%EF%BC%89"><span class="nav-number">2.0.4.</span> <span class="nav-text">4. 完整示例（Python）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">2.0.5.</span> <span class="nav-text">5. 常见问题</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">185</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">313</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/04/11/KL_Divergence_and_JS_Divergence/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="KL散度和JS散度 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          KL散度和JS散度
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-04-11 21:00:00 / 修改时间：21:18:07" itemprop="dateCreated datePublished" datetime="2025-04-11T21:00:00+08:00">2025-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>【按：组会上师姐用来比较数据的概率分布模型时，用到了这两个指标。会后，用DeepSeek查询了一下这两个指标的定义和计算方法，浅浅记录一下，以备未来回顾。】</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>KL散度（Kullback-Leibler Divergence）和JS散度（Jensen-Shannon Divergence）是衡量两个概率分布差异的常用工具，广泛应用于机器学习、信息论和统计学等领域。以下是它们的详细说明：</p>
+<hr>
+<h3 id="1-KL散度（Kullback-Leibler-Divergence）"><a href="#1-KL散度（Kullback-Leibler-Divergence）" class="headerlink" title="1. KL散度（Kullback-Leibler Divergence）"></a><strong>1. KL散度（Kullback-Leibler Divergence）</strong></h3><h4 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a><strong>定义</strong></h4><p>KL散度衡量分布 $P$ 相对于分布 $Q$ 的<strong>相对熵</strong>（信息损失），表示用 $Q$ 近似 $P$ 时丢失的信息量。</p>
+<ul>
+<li><strong>非对称性</strong>：$D_{KL}(P | Q) \neq D_{KL}(Q | P)$。</li>
+<li><strong>非负性</strong>：$D_{KL}(P | Q) \geq 0$，当且仅当 $P = Q$ 时为零。</li>
+</ul>
+<h4 id="计算公式"><a href="#计算公式" class="headerlink" title="计算公式"></a><strong>计算公式</strong></h4><ul>
+<li><strong>离散分布</strong>：<br>$$<br>D_{KL}(P | Q) = \sum_{x} P(x) \log \frac{P(x)}{Q(x)}<br>$$</li>
+<li><strong>连续分布</strong>：<br>$$<br>D_{KL}(P | Q) = \int_{-\infty}^{\infty} p(x) \log \frac{p(x)}{q(x)} dx<br>$$</li>
+</ul>
+<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a><strong>应用场景</strong></h4><ul>
+<li><strong>模型训练</strong>：在变分自编码器（VAE）中，用于约束隐变量分布接近先验分布。</li>
+<li><strong>信息编码</strong>：优化编码方案时最小化信息损失。</li>
+<li><strong>强化学习</strong>：策略梯度方法中限制策略更新的幅度。</li>
+</ul>
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h4><ul>
+<li>当 $Q(x)=0$ 且 $P(x)&gt;0$ 时，KL散度无定义（需平滑处理）。</li>
+<li>不对称性可能导致不同结果（如 $P$ 是真实分布时更常用 $D_{KL}(P | Q)$）。</li>
+</ul>
+<hr>
+<h3 id="2-JS散度（Jensen-Shannon-Divergence）"><a href="#2-JS散度（Jensen-Shannon-Divergence）" class="headerlink" title="2. JS散度（Jensen-Shannon Divergence）"></a><strong>2. JS散度（Jensen-Shannon Divergence）</strong></h3><h4 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a><strong>定义</strong></h4><p>JS散度是KL散度的对称化版本，基于 $P$ 和 $Q$ 的平均分布 $M = \frac{P + Q}{2}$ 计算。</p>
+<ul>
+<li><strong>对称性</strong>：$D_{JS}(P | Q) = D_{JS}(Q | P)$。</li>
+<li><strong>有界性</strong>：$0 \leq D_{JS} \leq \log 2$，便于比较不同分布间的差异。</li>
+</ul>
+<h4 id="计算公式-1"><a href="#计算公式-1" class="headerlink" title="计算公式"></a><strong>计算公式</strong></h4><p>$$<br>D_{JS}(P | Q) = \frac{1}{2} D_{KL}(P | M) + \frac{1}{2} D_{KL}(Q | M), \quad M = \frac{P + Q}{2}<br>$$</p>
+<h4 id="应用场景-1"><a href="#应用场景-1" class="headerlink" title="应用场景"></a><strong>应用场景</strong></h4><ul>
+<li><strong>生成对抗网络（GAN）</strong>：早期用于衡量生成分布与真实分布的差异（后因梯度问题被Wasserstein距离取代）。</li>
+<li><strong>聚类分析</strong>：评估聚类结果与真实标签的相似性。</li>
+<li><strong>生物学</strong>：比较基因表达分布的差异。</li>
+</ul>
+<h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a><strong>优点</strong></h4><ul>
+<li>对称性使其更适合需要双向比较的场景。</li>
+<li>避免KL散度的无定义问题（因 $M$ 融合了 $P$ 和 $Q$）。</li>
+</ul>
+<hr>
+<h3 id="3-核心区别"><a href="#3-核心区别" class="headerlink" title="3. 核心区别"></a><strong>3. 核心区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>KL散度</th>
+<th>JS散度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>对称性</strong></td>
+<td>非对称</td>
+<td>对称</td>
+</tr>
+<tr>
+<td><strong>取值范围</strong></td>
+<td>$[0, +\infty)$</td>
+<td>$[0, \log 2]$</td>
+</tr>
+<tr>
+<td><strong>鲁棒性</strong></td>
+<td>对 $Q$ 的零值敏感</td>
+<td>对零值鲁棒</td>
+</tr>
+<tr>
+<td><strong>计算复杂度</strong></td>
+<td>直接计算</td>
+<td>需计算平均分布 $M$</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="4-实例说明"><a href="#4-实例说明" class="headerlink" title="4. 实例说明"></a><strong>4. 实例说明</strong></h3><p>假设两个离散分布：</p>
+<ul>
+<li>$P = [0.2, 0.5, 0.3]$</li>
+<li>$Q = [0.1, 0.6, 0.3]$</li>
+</ul>
+<p><strong>KL散度计算</strong>：<br>$$<br>D_{KL}(P | Q) = 0.2 \log \frac{0.2}{0.1} + 0.5 \log \frac{0.5}{0.6} + 0.3 \log \frac{0.3}{0.3} \approx 0.036<br>$$</p>
+<p><strong>JS散度计算</strong>：</p>
+<ol>
+<li>计算平均分布 $M = \frac{P+Q}{2} = [0.15, 0.55, 0.3]$</li>
+<li>计算两项KL散度后取平均：<br>$$<br>D_{JS}(P | Q) \approx \frac{1}{2} (0.025 + 0.047) \approx 0.036<br>$$</li>
+</ol>
+<hr>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a><strong>5. 总结</strong></h3><ul>
+<li><strong>KL散度</strong>：适用于需要单向衡量信息损失的场景（如模型优化）。</li>
+<li><strong>JS散度</strong>：适合对称性比较，但可能因梯度消失问题在GAN中受限。</li>
+<li><strong>选择建议</strong>：优先考虑对称性和鲁棒性时选JS；需要明确方向性时选KL。</li>
+</ul>
+<h1 id="在python和R中计算KL散度和JS散度"><a href="#在python和R中计算KL散度和JS散度" class="headerlink" title="在python和R中计算KL散度和JS散度"></a>在python和R中计算KL散度和JS散度</h1><p>在Python和R中计算KL散度（Kullback-Leibler Divergence）和JS散度（Jensen-Shannon Divergence）可以通过内置函数或第三方库实现。以下是具体方法和代码示例：</p>
+<hr>
+<h3 id="1-Python实现"><a href="#1-Python实现" class="headerlink" title="1. Python实现"></a><strong>1. Python实现</strong></h3><h4 id="KL散度"><a href="#KL散度" class="headerlink" title="KL散度"></a><strong>KL散度</strong></h4><h5 id="方法1：使用scipy-stats-entropy"><a href="#方法1：使用scipy-stats-entropy" class="headerlink" title="方法1：使用scipy.stats.entropy"></a>方法1：使用<code>scipy.stats.entropy</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> entropy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义两个离散概率分布P和Q（需归一化）</span></span><br><span class="line">P = np.array([<span class="number">0.5</span>, <span class="number">0.3</span>, <span class="number">0.2</span>])</span><br><span class="line">Q = np.array([<span class="number">0.4</span>, <span class="number">0.4</span>, <span class="number">0.2</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算KL散度（注意顺序：P对Q的KL散度）</span></span><br><span class="line">kl_divergence = entropy(P, Q, base=<span class="number">2</span>)  <span class="comment"># base=2表示以2为底（结果单位为比特）</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;KL Divergence (P || Q):&quot;</span>, kl_divergence)</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：</p>
+<ul>
+<li>输入必须是概率分布（和为1），否则需手动归一化。</li>
+<li>若Q中存在0而P中对应位置非0，结果会为<code>inf</code>（需平滑处理）。</li>
+</ul>
+<h5 id="方法2：手动计算"><a href="#方法2：手动计算" class="headerlink" title="方法2：手动计算"></a>方法2：手动计算</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">kl_divergence</span>(<span class="params">P, Q</span>):</span><br><span class="line">    <span class="comment"># 避免log(0)的情况（添加微小值平滑）</span></span><br><span class="line">    epsilon = <span class="number">1e-10</span></span><br><span class="line">    P = P + epsilon</span><br><span class="line">    Q = Q + epsilon</span><br><span class="line">    <span class="keyword">return</span> np.<span class="built_in">sum</span>(P * np.log2(P / Q))</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;KL Divergence (Manual):&quot;</span>, kl_divergence(P, Q))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="JS散度"><a href="#JS散度" class="headerlink" title="JS散度"></a><strong>JS散度</strong></h4><h5 id="方法1：基于KL散度计算"><a href="#方法1：基于KL散度计算" class="headerlink" title="方法1：基于KL散度计算"></a>方法1：基于KL散度计算</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">js_divergence</span>(<span class="params">P, Q</span>):</span><br><span class="line">    <span class="comment"># 计算平均分布M</span></span><br><span class="line">    M = <span class="number">0.5</span> * (P + Q)</span><br><span class="line">    <span class="comment"># 计算JS散度</span></span><br><span class="line">    js = <span class="number">0.5</span> * entropy(P, M, base=<span class="number">2</span>) + <span class="number">0.5</span> * entropy(Q, M, base=<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">return</span> js</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;JS Divergence:&quot;</span>, js_divergence(P, Q))</span><br></pre></td></tr></table></figure>
+
+<h5 id="方法2：使用scipy-spatial-distance-jensenshannon"><a href="#方法2：使用scipy-spatial-distance-jensenshannon" class="headerlink" title="方法2：使用scipy.spatial.distance.jensenshannon"></a>方法2：使用<code>scipy.spatial.distance.jensenshannon</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> jensenshannon</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直接计算JS散度（返回值为距离，需平方后才是散度）</span></span><br><span class="line">js_distance = jensenshannon(P, Q, base=<span class="number">2</span>)</span><br><span class="line">js_divergence = js_distance ** <span class="number">2</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;JS Divergence (scipy):&quot;</span>, js_divergence)</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：</p>
+<ul>
+<li><code>jensenshannon</code>返回的是JS距离（即JS散度的平方根），需平方得到散度值。</li>
+</ul>
+<hr>
+<h3 id="2-R实现"><a href="#2-R实现" class="headerlink" title="2. R实现"></a><strong>2. R实现</strong></h3><h4 id="KL散度-1"><a href="#KL散度-1" class="headerlink" title="KL散度"></a><strong>KL散度</strong></h4><h5 id="方法1：使用philentropy包"><a href="#方法1：使用philentropy包" class="headerlink" title="方法1：使用philentropy包"></a>方法1：使用<code>philentropy</code>包</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">install.packages<span class="punctuation">(</span><span class="string">&quot;philentropy&quot;</span><span class="punctuation">)</span>  <span class="comment"># 首次使用需安装</span></span><br><span class="line">library<span class="punctuation">(</span>philentropy<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line">P <span class="operator">&lt;-</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="number">0.5</span><span class="punctuation">,</span> <span class="number">0.3</span><span class="punctuation">,</span> <span class="number">0.2</span><span class="punctuation">)</span></span><br><span class="line">Q <span class="operator">&lt;-</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="number">0.4</span><span class="punctuation">,</span> <span class="number">0.4</span><span class="punctuation">,</span> <span class="number">0.2</span><span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算KL散度（注意参数unit=&quot;log2&quot;表示以2为底）</span></span><br><span class="line">kl_divergence <span class="operator">&lt;-</span> KL<span class="punctuation">(</span>rbind<span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span><span class="punctuation">,</span> unit <span class="operator">=</span> <span class="string">&quot;log2&quot;</span><span class="punctuation">)</span></span><br><span class="line">print<span class="punctuation">(</span>paste<span class="punctuation">(</span><span class="string">&quot;KL Divergence (P || Q):&quot;</span><span class="punctuation">,</span> kl_divergence<span class="punctuation">)</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="方法2：手动计算-1"><a href="#方法2：手动计算-1" class="headerlink" title="方法2：手动计算"></a>方法2：手动计算</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">kl_divergence <span class="operator">&lt;-</span> <span class="keyword">function</span><span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">  epsilon <span class="operator">&lt;-</span> 1e<span class="operator">-</span><span class="number">10</span></span><br><span class="line">  P <span class="operator">&lt;-</span> P <span class="operator">+</span> epsilon</span><br><span class="line">  Q <span class="operator">&lt;-</span> Q <span class="operator">+</span> epsilon</span><br><span class="line">  <span class="built_in">sum</span><span class="punctuation">(</span>P <span class="operator">*</span> log2<span class="punctuation">(</span>P <span class="operator">/</span> Q<span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br><span class="line">print<span class="punctuation">(</span>paste<span class="punctuation">(</span><span class="string">&quot;KL Divergence (Manual):&quot;</span><span class="punctuation">,</span> kl_divergence<span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="JS散度-1"><a href="#JS散度-1" class="headerlink" title="JS散度"></a><strong>JS散度</strong></h4><h5 id="方法1：基于KL散度计算-1"><a href="#方法1：基于KL散度计算-1" class="headerlink" title="方法1：基于KL散度计算"></a>方法1：基于KL散度计算</h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">js_divergence <span class="operator">&lt;-</span> <span class="keyword">function</span><span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">  M <span class="operator">&lt;-</span> 0.5 <span class="operator">*</span> <span class="punctuation">(</span>P <span class="operator">+</span> Q<span class="punctuation">)</span></span><br><span class="line">  <span class="number">0.5</span> <span class="operator">*</span> KL<span class="punctuation">(</span>rbind<span class="punctuation">(</span>P<span class="punctuation">,</span> M<span class="punctuation">)</span><span class="punctuation">,</span> unit <span class="operator">=</span> <span class="string">&quot;log2&quot;</span><span class="punctuation">)</span> <span class="operator">+</span> <span class="number">0.5</span> <span class="operator">*</span> KL<span class="punctuation">(</span>rbind<span class="punctuation">(</span>Q<span class="punctuation">,</span> M<span class="punctuation">)</span><span class="punctuation">,</span> unit <span class="operator">=</span> <span class="string">&quot;log2&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br><span class="line">print<span class="punctuation">(</span>paste<span class="punctuation">(</span><span class="string">&quot;JS Divergence:&quot;</span><span class="punctuation">,</span> js_divergence<span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="方法2：使用philentropy包的JSD"><a href="#方法2：使用philentropy包的JSD" class="headerlink" title="方法2：使用philentropy包的JSD"></a>方法2：使用<code>philentropy</code>包的<code>JSD</code></h5><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># JSD函数默认以e为底，需调整</span></span><br><span class="line">js_divergence <span class="operator">&lt;-</span> JSD<span class="punctuation">(</span>rbind<span class="punctuation">(</span>P<span class="punctuation">,</span> Q<span class="punctuation">)</span><span class="punctuation">,</span> unit <span class="operator">=</span> <span class="string">&quot;log2&quot;</span><span class="punctuation">)</span></span><br><span class="line">print<span class="punctuation">(</span>paste<span class="punctuation">(</span><span class="string">&quot;JS Divergence (philentropy):&quot;</span><span class="punctuation">,</span> js_divergence<span class="punctuation">)</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-注意事项"><a href="#3-注意事项" class="headerlink" title="3. 注意事项"></a><strong>3. 注意事项</strong></h3><ol>
+<li><strong>输入归一化</strong>：确保输入的概率分布和为1（可通过<code>P = P / np.sum(P)</code>或<code>P &lt;- P / sum(P)</code>处理）。</li>
+<li><strong>零值处理</strong>：添加微小值（如<code>1e-10</code>）避免除零或对数零错误。</li>
+<li><strong>对称性</strong>：JS散度对称，KL散度不对称（注意顺序）。</li>
+<li><strong>连续分布</strong>：若需处理连续分布，需通过数值积分（如<code>scipy.integrate.quad</code>或R的<code>integrate</code>）。</li>
+</ol>
+<hr>
+<h3 id="4-完整示例（Python）"><a href="#4-完整示例（Python）" class="headerlink" title="4. 完整示例（Python）"></a><strong>4. 完整示例（Python）</strong></h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> entropy</span><br><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> jensenshannon</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义分布</span></span><br><span class="line">P = np.array([<span class="number">0.5</span>, <span class="number">0.3</span>, <span class="number">0.2</span>])</span><br><span class="line">Q = np.array([<span class="number">0.4</span>, <span class="number">0.4</span>, <span class="number">0.2</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># KL散度</span></span><br><span class="line">kl_scipy = entropy(P, Q, base=<span class="number">2</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;KL (Scipy):&quot;</span>, kl_scipy)</span><br><span class="line"></span><br><span class="line"><span class="comment"># JS散度</span></span><br><span class="line">js_scipy = jensenshannon(P, Q, base=<span class="number">2</span>) ** <span class="number">2</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;JS (Scipy):&quot;</span>, js_scipy)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 手动验证</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">kl_div</span>(<span class="params">P, Q</span>):</span><br><span class="line">    eps = <span class="number">1e-10</span></span><br><span class="line">    P, Q = P + eps, Q + eps</span><br><span class="line">    <span class="keyword">return</span> np.<span class="built_in">sum</span>(P * np.log2(P / Q))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">js_div</span>(<span class="params">P, Q</span>):</span><br><span class="line">    M = <span class="number">0.5</span> * (P + Q)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0.5</span> * kl_div(P, M) + <span class="number">0.5</span> * kl_div(Q, M)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;KL (Manual):&quot;</span>, kl_div(P, Q))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;JS (Manual):&quot;</span>, js_div(P, Q))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-常见问题"><a href="#5-常见问题" class="headerlink" title="5. 常见问题"></a><strong>5. 常见问题</strong></h3><ul>
+<li><strong>结果不一致</strong>：不同库可能对底数（自然对数<code>ln</code>或<code>log2</code>）或零值处理方式不同，需统一标准。</li>
+<li><strong>高维数据</strong>：对于高维分布（如图像生成），建议使用Wasserstein距离或MMD（如<code>torchmetrics</code>库中的实现）。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/04/11/KL_Divergence_and_JS_Divergence/" title="KL散度和JS散度">https://wz.anoms.top/2025/04/11/KL_Divergence_and_JS_Divergence/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 机器学习</a>
+              <a href="/tags/R/" rel="tag"><i class="fa fa-tag"></i> R</a>
+              <a href="/tags/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag"><i class="fa fa-tag"></i> 生物信息学</a>
+              <a href="/tags/%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E6%A8%A1%E5%9E%8B/" rel="tag"><i class="fa fa-tag"></i> 概率分布模型</a>
+              <a href="/tags/%E7%BB%9F%E8%AE%A1/" rel="tag"><i class="fa fa-tag"></i> 统计</a>
+              <a href="/tags/Kullback-Leibler-Divergence/" rel="tag"><i class="fa fa-tag"></i> Kullback-Leibler Divergence</a>
+              <a href="/tags/Jensen-Shannon-Divergence/" rel="tag"><i class="fa fa-tag"></i> Jensen-Shannon Divergence</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/11/parameter_estimation_and_statistical_inference/" rel="prev" title="参数估计与统计推断相关知识点">
+                  <i class="fa fa-chevron-left"></i> 参数估计与统计推断相关知识点
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
