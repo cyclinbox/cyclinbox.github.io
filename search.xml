@@ -17925,4 +17925,139 @@
         <tag>deep talk</tag>
       </tags>
   </entry>
+  <entry>
+    <title>信息论学习笔记（一）</title>
+    <url>/2025/04/20/Information_Theory_Note01/</url>
+    <content><![CDATA[<p>前段时间查文献的时候，偶然看到了一些算法里涉及到了信息论的相关知识。信息论我在几年前通过看书自学过，时间太久有些忘了，正好趁此机会重新复习一下。</p>
+<blockquote>
+<p>参考书籍：机械工业《信息论基础（原书第二版）》（ELEMENTS OF INFORMATION THEORY SECOND EDITION），作者Thomas M. Cover, Joy A. Thomas</p>
+</blockquote>
+<p>（不知道信息论的知识点有没有人感兴趣；如果有人看的话，我打算连续出几期关于信息论的笔记与知识点整理）</p>
+<span id="more"></span>
+
+<h2 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h2><p>信息论解答了通信理论中的两个基本问题：</p>
+<ul>
+<li>临界数据压缩的值（答案：熵H)</li>
+<li>临界通信传输速率的值（答案：信道容量C)。</li>
+</ul>
+<p>如果将所有可能的通信方案看成一个集合，那么今天的信息论描绘了这个集合的两个临界值，如下图所示（书中Fig1-2，此处重绘）。</p>
+<ul>
+<li>数据压缩达到最低程度的方案对应的是该集合的左临界值 $I(X;\hat X)$。所有数据压缩方案所需的描述速率不得低于该临界值。<ul>
+<li>因为信源压缩的本质是用尽可能少的比特数表达随机变量 $X$ 。根据信息论的基本结论，最优压缩方案的码率必须等于 $H(X)$ ，即信源熵。</li>
+<li>如果压缩后的比特数少于这个值，则原信息将不可避免地丢失，因而 $H(X)$ 是数据压缩的下界。</li>
+</ul>
+</li>
+<li>右临界值 $I(X;Y)$ 所对应方案的数据传输速率最大，临界值 $I(X;Y)$ 就是信道容量。<ul>
+<li>在实际传输中，信道的容量 $C$ 是其可以无误传递信息的最大限值，即互信息 $I(X; Y)$ 最大可达到  $C$ 。如果发送的数据率超过 $C$ ，信道将无法完全可靠传输（会导致误码或未压缩的额外开销）。</li>
+</ul>
+</li>
+<li>因此，所有调制方案和数据压缩方案都必须介于这两个临界值之间。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420153752.png" alt="image.png"></p>
+<p>下图展示了信息论与其它学科的关系。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420152046.png" alt="image.png"></p>
+<h2 id="二、一些基本概念：信息熵、互信息、相对熵、通信信道"><a href="#二、一些基本概念：信息熵、互信息、相对熵、通信信道" class="headerlink" title="二、一些基本概念：信息熵、互信息、相对熵、通信信道"></a>二、一些基本概念：信息熵、互信息、相对熵、通信信道</h2><p>信息熵的定义：假设随机变量 $X$  的概率密度函数为 $p(x)$ ，则 $X$ 的熵定义为：</p>
+<p>$$<br>H(X) = -\sum_x p(x) \log_2 p(x) \tag{量纲：比特(bit)}<br>$$<br>$H(X)$ 的数学含义是描述该随机变量 $X$ 所需的比特数。</p>
+<ul>
+<li>例如，对于一个服从均匀分布的随机变量 $X$ ，如果 $X$ 有 32 种可能结果 ，那么用一个 5 比特长的字符串即可描述。（ $H(X) = -\sum_{1}^{32} (1/32) \log_2 (1/32) = \log_2 32 = 5$ ）</li>
+</ul>
+<p>条件熵 $H(X|Y)$ ：在给定随机变量 $Y$  的条件下，随机变量 $X$ 的熵。</p>
+<p>互信息 $I(X;Y)$ : 由于 $Y$  导致的 $X$ 随机变量不确定度的<strong>缩减量</strong>。其定义为：</p>
+<p>$$<br>I(X;Y) = H(X) - H(X|Y) = \sum_{x,y} p(x, y) \log \frac{p(x, y)}{p(x)p(y)}<br>$$</p>
+<ul>
+<li>数学含义：互信息  $I(X; Y)$ 是 $X$ 与 $Y$ 之间信息相关程度的度量（也可以说，是 $X$ 与 $Y$ 之间信息独立程度的度量）。<ul>
+<li> $I(X; Y)$ 关于 $X$ 与 $Y$ 对称，取值范围为 $\geq 0$</li>
+<li> $I(X; Y)&gt;0$ ： $X$ 与 $Y$ 存在统计相关。</li>
+<li> $I(X; Y)=0$ ： $X$ 与 $Y$ 相互独立。</li>
+</ul>
+</li>
+<li>互信息 $I(X; Y)$  是相对熵的特殊形式。</li>
+</ul>
+<p>相对熵 $D(p||q)$ ：衡量两个概率密度函数 $p$ 与 $q$ 之间距离的指标（也就是上周文章中提到的KL散度）。 $D(p||q) \geq 0$  ，仅在 $p=q$ 时等于0 。</p>
+<p>$$<br>D(p||q)=\sum_x p(x)log\frac{p(x)}{q(x)}<br>$$</p>
+<p>通信信道：通信信道是一个系统，系统的输出信号按概率依赖于输入信号。该系统特征由一个转移概率矩阵p(y|x)决定，该矩阵决定在给定输入情况下输出的条件概率分布。</p>
+<ul>
+<li>对于输入信号为X和输出信号为Y的通信信道，定义它的信道容量为 $C=max_{p(x)} I(X;Y)$</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420221901.png" alt="image.png"></p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>信息论</tag>
+        <tag>信息熵</tag>
+        <tag>互信息</tag>
+        <tag>相对熵</tag>
+        <tag>通信信道</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>白嫖Github大模型服务（可用GPT4o和GPT4.1)</title>
+    <url>/2025/04/20/Github_Models_API_usage/</url>
+    <content><![CDATA[<p>前段时间，GPT4.1发布了。在看相关报道的时候，偶然发现除了chatGPT官网以外，Github居然也提供了这些模型的API，并且免费用户可以调用。这下再也不用担心chatGPT偶尔的抽风和莫名其妙的突然降智了。</p>
+<p>本文介绍如何使用这个大模型API服务。文章分为两个部分：获取API key，以及通过AI管理工具（如 <a href="https://cherry-ai.com/">cherry studio</a> ）调用服务。</p>
+<span id="more"></span>
+
+<h2 id="一、获取API-key"><a href="#一、获取API-key" class="headerlink" title="一、获取API key"></a>一、获取API key</h2><p>参考：</p>
+<ul>
+<li><a href="https://docs.github.com/en/github-models">GitHub Models - docs</a></li>
+<li><a href="https://docs.github.com/en/github-models/prototyping-with-ai-models#experimenting-with-ai-models-using-the-api">Experimenting with AI models using the API</a></li>
+<li><a href="https://github.com/settings/tokens">Github - Personal access tokens</a></li>
+<li><a href="https://github.com/marketplace/models">GitHub Models - select a model</a></li>
+</ul>
+<p>使用每个模型的步骤大致相同：</p>
+<ul>
+<li>1、访问网站 <a href="github.com/marketplace/models">github.com/marketplace/models</a> ，点击页面左上角的<code>Model: Select a Model</code> ，此时我们可以在下拉菜单中选择一个模型（下面以GPT-4.1为例进行展示）</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420225453.png" alt="image.png"></p>
+<ul>
+<li>2、在下拉菜单中点击一个模型。这会跳转到一个新的页面（如下图所示）。在这个页面里可以直接进行对话，也可以点击右上角的 <code>Use this model</code> 按钮，进行进一步的操作。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745161205201.png" alt="1745161205201.png"></p>
+<ul>
+<li>3、 点击右上角的 <code>Use this model</code> 按钮，弹出一个操作引导。这个操作引导会一步一步告诉我们如何在一个具体的代码项目中部署Github大模型。我们不需要管这些，只需要在 <code>Create a personal access token</code> 这里点击 <code>Get develop key</code> 即可。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745161229638.png" alt="1745161229638.png"></p>
+<ul>
+<li>4、点击 <code>Get develop key</code> 会进入一个新的页面（如下图。可能中间会有一次身份信息验证的过程），点击页面右上角的 <code>Generate new token</code> 按钮，选择 <code>Generate new token(classic)</code> ，这将会进入API key的申请页面。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/4eddcf8d27250f9ec8fabd5a59ac373.png" alt="4eddcf8d27250f9ec8fabd5a59ac373.png"></p>
+<p>5、在新的页面里（如下图），我们进行一些基本信息的设置。在 <code>Note</code> 这里，给我们的API key起一个好记一点的名字，然后把过期时间 <code>Expiration</code> 设置为 <code>No expiration</code> ，其余选项保持不变即可。随后滚动至页面底部，点击这里的提交（  <code>Generate token</code>  ）按钮。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/3062f6addb747c064a0024c59bbe89d.png" alt="3062f6addb747c064a0024c59bbe89d.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/a3eb49fb0165f85d416077fc65ae34e.png" alt="a3eb49fb0165f85d416077fc65ae34e.png"></p>
+<p>6、到这一步，我们的API key就已经获取好了（如下图）。我们现在要做的，就是在一个安全的地方保存好这个API key，以备后续使用。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/b1c2b5924d5f078ab40e5b4b81b832c.png" alt="b1c2b5924d5f078ab40e5b4b81b832c.png"></p>
+<h2 id="二、Github-API的使用：cherry-studio的安装与配置"><a href="#二、Github-API的使用：cherry-studio的安装与配置" class="headerlink" title="二、Github API的使用：cherry studio的安装与配置"></a>二、Github API的使用：cherry studio的安装与配置</h2><p>如题。</p>
+<p>其实PC端的AI管理工具有许多，除了 <a href="https://cherry-ai.com/">cherry studio</a> 以外还有RAGFlow 和 Dify等等。这些工具的对比在网上有许多，此处不再赘述（ 感兴趣的读者可以参考： 《<a href="https://blog.csdn.net/2401_83450572/article/details/145820619">综合对比分析：AnythingLLM、Cherry Studio、RAGFlow 和 Dify</a>》 ）。</p>
+<p> <a href="https://cherry-ai.com/">cherry studio</a> 是一个跨平台的工具，在其官方网站的<a href="https://cherry-ai.com/download">下载页面</a> 上可以获得对应的安装包（该说不说，这个网页能够自动检测用户的系统，然后推荐最适合系统版本的安装包，这一点做的真不错）。安装过程很简单，此处不做详细描述。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420232127.png" alt="image.png"></p>
+<p>在安装完成以后，我们来配置Github model的API。详细的配置过程如下图所示，我们在模型服务的设置中找到Github model，在这里填入API密钥，然后点击“检查”看一下服务状态。如果配置成功，会有“连接正常”的提示出现。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745162829247.png" alt="1745162829247.png"></p>
+<p>Cherry Studio默认的Github Models能够调用的模型似乎只有GPT4o。要使用最新的GPT-4.1，我们可以在Github Models设置页的底部找到 <code>添加</code> 按钮，在这里进行模型添加的操作。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420234157.png" alt="image.png"></p>
+<p>下面列出了我的设置，为cherry studio新增了三个模型：gpt-4.1, gpt-4.1-mini, gpt-4.1-nano 。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420233045.png" alt="image.png"></p>
+<h2 id="三、正式使用以及一些注意事项"><a href="#三、正式使用以及一些注意事项" class="headerlink" title="三、正式使用以及一些注意事项"></a>三、正式使用以及一些注意事项</h2><p>大模型的使用，应该没有什么太多需要注意的了吧——和平时网页版大模型工具的用法一样，在对话框里输入想问的问题就行了。cherry studio还支持比较多个模型的输出结果，很好用。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745164527229.png" alt="1745164527229.png"></p>
+<p>需要注意一下API的使用量限制。如下图，对于使用量限制为Low的模型（如GPT4o-mini，4.1-mini，4.1-nano），免费版用户每天可以进行150次调用。对于使用量限制为High的模型（如GPT4o，GPT-4.1），免费版用户每天可以进50次调用。只要不超出这个范围，API就是能够正常使用的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420234852.png" alt="image.png"></p>
+<hr>
+<p>最后是一条彩蛋：GPT-4.1的成长建议（感觉4.1比GPT4o在情商方面提升了不少，用来做心理咨询非常合适）</p>
+<blockquote>
+<p><em>成长不意味着你要彻底放弃对爱和温暖的渴望，相反，成长或许是学会如何在满足自己独立性的同时，仍然保有和他人建立真实亲密关系的能力。当你能接纳自己的不完美和渴望时，或许你对一点点温暖的感受，会更真切更满足，而不是因为“期待太高”而感到永远不足。这需要慢慢练习，也需要你继续保有一颗柔软的心。</em> ——GPT-4.1</p>
+</blockquote>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745165001191.png" alt="1745165001191.png"></p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Github Models</tag>
+        <tag>GPT-4o</tag>
+        <tag>GPT-4.1</tag>
+      </tags>
+  </entry>
 </search>
