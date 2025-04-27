@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="最近在分析单细胞数据，因此和Seurat包打交道了不少。由于seurat的对象设计太复杂了，遂花了一些时间去学习其数据结构以及属性访问方法，整理为笔记特放置于此，谨供需要的朋友们参考。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单细胞处理中Seurat Object数据结构浅析">
+<meta property="og:url" content="https://wz.anoms.top/2025/04/26/Seurat_Object_structure_in_scRNA_analysis/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="最近在分析单细胞数据，因此和Seurat包打交道了不少。由于seurat的对象设计太复杂了，遂花了一些时间去学习其数据结构以及属性访问方法，整理为笔记特放置于此，谨供需要的朋友们参考。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-04-26T07:00:00.000Z">
+<meta property="article:modified_time" content="2025-04-27T14:23:10.632Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="R">
+<meta property="article:tag" content="单细胞测序">
+<meta property="article:tag" content="Seurat">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/04/26/Seurat_Object_structure_in_scRNA_analysis/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/04/26/Seurat_Object_structure_in_scRNA_analysis/","path":"2025/04/26/Seurat_Object_structure_in_scRNA_analysis/","title":"单细胞处理中Seurat Object数据结构浅析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>单细胞处理中Seurat Object数据结构浅析 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86%EF%BC%9AR%E8%AF%AD%E8%A8%80%E7%9A%84S3-R4-RC-R6%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">一、背景知识：R语言的S3,R4,RC,R6对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Seurat-Object%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">二、Seurat Object的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Seurat%E5%AF%B9%E8%B1%A1%E5%86%85%E9%83%A8%E5%B1%9E%E6%80%A7%E7%9A%84%E8%AE%BF%E9%97%AE%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">三、Seurat对象内部属性的访问方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E4%BD%BF%E7%94%A8R4%E6%95%B0%E6%8D%AE%E6%A7%BD%E6%93%8D%E4%BD%9C%E7%AC%A6-%E8%BF%9B%E8%A1%8C%E8%AE%BF%E9%97%AE"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 使用R4数据槽操作符 @ 进行访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E4%BD%BF%E7%94%A8GetAssayData-%E6%88%96LayerData-%E6%9B%B4%E5%AE%89%E5%85%A8%E7%9A%84%E8%AE%BF%E9%97%AE%E6%95%B0%E6%8D%AE"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 使用GetAssayData()或LayerData()更安全的访问数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E4%BD%BF%E7%94%A8-%E8%AE%BF%E9%97%AE%E5%B5%8C%E5%A5%97%E5%88%97%E8%A1%A8%E4%B8%AD%E7%9A%84%E5%85%83%E7%B4%A0"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 使用 [[ 访问嵌套列表中的元素</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%80%E7%82%B9%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E%EF%BC%9ASeurat%E5%AF%B9%E8%B1%A1%E4%B8%AD%E7%9A%84%E5%9B%9B%E4%B8%AA%E8%A1%A8%E8%BE%BE%E9%87%8F%E7%9F%A9%E9%98%B5"><span class="nav-number">4.</span> <span class="nav-text">四、一点补充说明：Seurat对象中的四个表达量矩阵</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">331</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/04/26/Seurat_Object_structure_in_scRNA_analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="单细胞处理中Seurat Object数据结构浅析 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          单细胞处理中Seurat Object数据结构浅析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-26 15:00:00" itemprop="dateCreated datePublished" datetime="2025-04-26T15:00:00+08:00">2025-04-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-27 22:23:10" itemprop="dateModified" datetime="2025-04-27T22:23:10+08:00">2025-04-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>最近在分析单细胞数据，因此和Seurat包打交道了不少。由于seurat的对象设计太复杂了，遂花了一些时间去学习其数据结构以及属性访问方法，整理为笔记特放置于此，谨供需要的朋友们参考。</p>
+<span id="more"></span>
+
+<h2 id="一、背景知识：R语言的S3-R4-RC-R6对象"><a href="#一、背景知识：R语言的S3-R4-RC-R6对象" class="headerlink" title="一、背景知识：R语言的S3,R4,RC,R6对象"></a>一、背景知识：R语言的S3,R4,RC,R6对象</h2><blockquote>
+<p>另外参考博客往期文章： <a href="https://wz.anoms.top/2023/12/29/R_object_system/">《R语言的对象系统（S3-R6）》</a></p>
+</blockquote>
+<p>R语言脱胎于S语言，因此在设计上继承了许多S语言的特性。近年来，随着编程技术的发展，R语言又吸收了许多新的设计思想，因此在原先的特性的基础上产生了许多扩展。这就是R语言对象系统的复杂性，其按照出现的先后顺序分为S3,R4,RC,R6。 <strong>在本文中我们将要详细介绍的seurat就属于R4对象系统。</strong> </p>
+<ul>
+<li>S3 对象系统：R语言最原始的对象系统，基于一种特殊的泛型函数实现。使用 <code>attr(obj,&quot;class&quot;)</code>  进行对象创建和数据设置，使用 <code>UseMethod()</code> 创建泛型函数。Seurat当中几乎不涉及S3对象系统。</li>
+<li>R4对象系统：这是标准的 R 语言面向对象实现方式，比 S3 的定义更加严格，S4 对象有专门的函数用于定义类（<code>setClass</code>）、泛型函数（<code>setGeneric</code>）、方法（<code>setMethod</code>）以及实例化对象（<code>new</code>），提供了参数检查，多重继承功能。另外， <code>S4</code> 有一个重要的组件 <code>slot</code>，它是对象的属性组件，可以使用专门的运算符 <code>@</code>来访问（对于Seurat对象，我们还会经常碰到这个运算符）。</li>
+<li>RC对象系统：全名是Reference Classes，是在 R 2.12 版本开始引入的新一代的面向对象系统，通过类似 <code>C++</code> 语言的风格进行类定义和方法封装。使用 <code>$</code> 符号来调用方法，获取和修改对象的属性，调用方法或设置属性的值会修改对象，这种方式不同于常用的函数式编程模型。</li>
+<li>R6对象系统：这是一个第三方的 R 面向对象编程的实现，比内置的 RC 类更简单，更快，更轻量级。</li>
+</ul>
+<h2 id="二、Seurat-Object的结构"><a href="#二、Seurat-Object的结构" class="headerlink" title="二、Seurat Object的结构"></a>二、Seurat Object的结构</h2><p>使用 <code>str()</code> 函数可以查看一个对象的结构。下面我们以Seurat官方文档的示例数据为例，展示一下其内部结构：</p>
+<p>读取数据：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">library<span class="punctuation">(</span>Seurat<span class="punctuation">)</span></span><br><span class="line">data_dir <span class="operator">=</span> <span class="string">&quot;D:/linux/R/Seurat-demo/filtered_gene_bc_matrices/hg19&quot;</span></span><br><span class="line"><span class="comment"># 导入示例数据</span></span><br><span class="line">pbmc.data <span class="operator">&lt;-</span> Read10X<span class="punctuation">(</span>data.dir <span class="operator">=</span> data_dir<span class="punctuation">)</span><span class="comment">#自行填写数据所在文件夹</span></span><br><span class="line"><span class="comment"># 创建Seurat对象</span></span><br><span class="line">pbmc <span class="operator">&lt;-</span> CreateSeuratObject<span class="punctuation">(</span>counts <span class="operator">=</span> pbmc.data<span class="punctuation">,</span> project <span class="operator">=</span> <span class="string">&quot;pbmc3k&quot;</span><span class="punctuation">,</span> min.cells <span class="operator">=</span> <span class="number">3</span><span class="punctuation">,</span> min.features <span class="operator">=</span> <span class="number">200</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 查看对象结构</span></span><br><span class="line">str<span class="punctuation">(</span>pbmc<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>下面是使用 <code>str()</code> 展示的数据结构。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">&gt; str(pbmc)</span><br><span class="line">Formal class &#x27;Seurat&#x27; [package &quot;SeuratObject&quot;] with 13 slots</span><br><span class="line">  ..@ assays      :List of 1</span><br><span class="line">  .. ..$ RNA:Formal class &#x27;Assay5&#x27; [package &quot;SeuratObject&quot;] with 8 slots</span><br><span class="line">  .. .. .. ..@ layers    :List of 1</span><br><span class="line">  .. .. .. .. ..$ counts:Formal class &#x27;dgCMatrix&#x27; [package &quot;Matrix&quot;] with 6 slots</span><br><span class="line">  .. .. .. .. .. .. ..@ i       : int [1:2282976] 29 73 80 148 163 184 186 227 229 230 ...</span><br><span class="line">  .. .. .. .. .. .. ..@ p       : int [1:2701] 0 779 2131 3260 4220 4741 5522 6304 7094 7626 ...</span><br><span class="line">  .. .. .. .. .. .. ..@ Dim     : int [1:2] 13714 2700</span><br><span class="line">  .. .. .. .. .. .. ..@ Dimnames:List of 2</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : NULL</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : NULL</span><br><span class="line">  .. .. .. .. .. .. ..@ x       : num [1:2282976] 1 1 2 1 1 1 1 41 1 1 ...</span><br><span class="line">  .. .. .. .. .. .. ..@ factors : list()</span><br><span class="line">  .. .. .. ..@ cells     :Formal class &#x27;LogMap&#x27; [package &quot;SeuratObject&quot;] with 1 slot</span><br><span class="line">  .. .. .. .. .. ..@ .Data: logi [1:2700, 1] TRUE TRUE TRUE TRUE TRUE TRUE ...</span><br><span class="line">  .. .. .. .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : chr [1:2700] &quot;AAACATACAACCAC-1&quot; &quot;AAACATTGAGCTAC-1&quot; &quot;AAACATTGATCAGC-1&quot; &quot;AAACCGTGCTTCCG-1&quot; ...</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : chr &quot;counts&quot;</span><br><span class="line">  .. .. .. .. .. ..$ dim     : int [1:2] 2700 1</span><br><span class="line">  .. .. .. .. .. ..$ dimnames:List of 2</span><br><span class="line">  .. .. .. .. .. .. ..$ : chr [1:2700] &quot;AAACATACAACCAC-1&quot; &quot;AAACATTGAGCTAC-1&quot; &quot;AAACATTGATCAGC-1&quot; &quot;AAACCGTGCTTCCG-1&quot; ...</span><br><span class="line">  .. .. .. .. .. .. ..$ : chr &quot;counts&quot;</span><br><span class="line">  .. .. .. ..@ features  :Formal class &#x27;LogMap&#x27; [package &quot;SeuratObject&quot;] with 1 slot</span><br><span class="line">  .. .. .. .. .. ..@ .Data: logi [1:13714, 1] TRUE TRUE TRUE TRUE TRUE TRUE ...</span><br><span class="line">  .. .. .. .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : chr [1:13714] &quot;AL627309.1&quot; &quot;AP006222.2&quot; &quot;RP11-206L10.2&quot; &quot;RP11-206L10.9&quot; ...</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : chr &quot;counts&quot;</span><br><span class="line">  .. .. .. .. .. ..$ dim     : int [1:2] 13714 1</span><br><span class="line">  .. .. .. .. .. ..$ dimnames:List of 2</span><br><span class="line">  .. .. .. .. .. .. ..$ : chr [1:13714] &quot;AL627309.1&quot; &quot;AP006222.2&quot; &quot;RP11-206L10.2&quot; &quot;RP11-206L10.9&quot; ...</span><br><span class="line">  .. .. .. .. .. .. ..$ : chr &quot;counts&quot;</span><br><span class="line">  .. .. .. ..@ default   : int 1</span><br><span class="line">  .. .. .. ..@ assay.orig: chr(0) </span><br><span class="line">  .. .. .. ..@ meta.data :&#x27;data.frame&#x27;:	13714 obs. of  0 variables</span><br><span class="line">  .. .. .. ..@ misc      :List of 1</span><br><span class="line">  .. .. .. .. ..$ calcN: logi TRUE</span><br><span class="line">  .. .. .. ..@ key       : chr &quot;rna_&quot;</span><br><span class="line">  ..@ meta.data   :&#x27;data.frame&#x27;:	2700 obs. of  3 variables:</span><br><span class="line">  .. ..$ orig.ident  : Factor w/ 1 level &quot;pbmc3k&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span><br><span class="line">  .. ..$ nCount_RNA  : num [1:2700] 2419 4903 3147 2639 980 ...</span><br><span class="line">  .. ..$ nFeature_RNA: int [1:2700] 779 1352 1129 960 521 781 782 790 532 550 ...</span><br><span class="line">  ..@ active.assay: chr &quot;RNA&quot;</span><br><span class="line">  ..@ active.ident: Factor w/ 1 level &quot;pbmc3k&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span><br><span class="line">  .. ..- attr(*, &quot;names&quot;)= chr [1:2700] &quot;AAACATACAACCAC-1&quot; &quot;AAACATTGAGCTAC-1&quot; &quot;AAACATTGATCAGC-1&quot; &quot;AAACCGTGCTTCCG-1&quot; ...</span><br><span class="line">  ..@ graphs      : list()</span><br><span class="line">  ..@ neighbors   : list()</span><br><span class="line">  ..@ reductions  : list()</span><br><span class="line">  ..@ images      : list()</span><br><span class="line">  ..@ project.name: chr &quot;pbmc3k&quot;</span><br><span class="line">  ..@ misc        : list()</span><br><span class="line">  ..@ version     :Classes &#x27;package_version&#x27;, &#x27;numeric_version&#x27;  hidden list of 1</span><br><span class="line">  .. ..$ : int [1:3] 5 0 2</span><br><span class="line">  ..@ commands    : list()</span><br><span class="line">  ..@ tools       : list()</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，在pbmc对象的第一层，是几个数据槽，包括<code>@assays</code> , <code>@meta.data</code> 等。 其中 <code>@assays</code> 槽是最为关键的数据槽，其中存储了表达矩阵的信息（即 <code>$RNA</code> ）。</p>
+<p>另外，毋庸置疑的，当我们继续运行seurat的分析流程，对pbmc对象进行更深层次的分析（如归一化、降维聚类、细胞分群与注释）以后， <code>str(pbmc)</code> 给出的列表还会继续增长：因为Seurat的R4对象会将一切数据都存储在对象结构内部。</p>
+<p>那么，如何访问呢？这是下一小节的内容。</p>
+<h2 id="三、Seurat对象内部属性的访问方法"><a href="#三、Seurat对象内部属性的访问方法" class="headerlink" title="三、Seurat对象内部属性的访问方法"></a>三、Seurat对象内部属性的访问方法</h2><h3 id="3-1-使用R4数据槽操作符-进行访问"><a href="#3-1-使用R4数据槽操作符-进行访问" class="headerlink" title="3.1 使用R4数据槽操作符 @ 进行访问"></a>3.1 使用R4数据槽操作符 <code>@</code> 进行访问</h3><p>这是一种很直观但并 <strong>不</strong> 被官方推荐的方法，原因在于Seurat在不断更新，也许某一个数据槽在新版本Seurat中就会改叫其他的名字；另外，这种方式过于底层，容易破坏对象的完整性和一致性。如果直接修改槽内容，可能导致不可预期的行为。</p>
+<p>不过，我们还是在这里介绍一下访问方法。如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取数据集的元数据</span></span><br><span class="line">metadata <span class="operator">=</span> pbmc<span class="operator">@</span>meta.data</span><br><span class="line"><span class="built_in">class</span><span class="punctuation">(</span>metadata<span class="punctuation">)</span></span><br><span class="line">metadata<span class="punctuation">[</span><span class="number">1</span><span class="operator">:</span><span class="number">10</span><span class="punctuation">,</span><span class="number">1</span><span class="operator">:</span><span class="number">3</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; metadata = pbmc@meta.data</span><br><span class="line">&gt; class(metadata)</span><br><span class="line">[1] &quot;data.frame&quot;</span><br><span class="line">&gt; metadata[1:10,1:3]</span><br><span class="line">                 orig.ident nCount_RNA nFeature_RNA</span><br><span class="line">AAACATACAACCAC-1     pbmc3k       2419          779</span><br><span class="line">AAACATTGAGCTAC-1     pbmc3k       4903         1352</span><br><span class="line">AAACATTGATCAGC-1     pbmc3k       3147         1129</span><br><span class="line">AAACCGTGCTTCCG-1     pbmc3k       2639          960</span><br><span class="line">AAACCGTGTATGCG-1     pbmc3k        980          521</span><br><span class="line">AAACGCACTGGTAC-1     pbmc3k       2163          781</span><br><span class="line">AAACGCTGACCAGT-1     pbmc3k       2175          782</span><br><span class="line">AAACGCTGGTTCTT-1     pbmc3k       2260          790</span><br><span class="line">AAACGCTGTAGCCA-1     pbmc3k       1275          532</span><br><span class="line">AAACGCTGTTTCTG-1     pbmc3k       1103          550</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+<p>如果我们想要看表达矩阵的信息，则可以像下面这样（虽然比较麻烦）</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过assays槽访问RNA对象，这是一个R4对象，里面存储了许多东西，包括表达矩阵</span></span><br><span class="line">RNA <span class="operator">=</span> pbmc<span class="operator">@</span>assays<span class="operator">$</span>RNA</span><br><span class="line"><span class="comment"># 通过layers槽访问counts对象，后者是dataframe格式的原始表达矩阵</span></span><br><span class="line">counts <span class="operator">=</span> RNA<span class="operator">@</span>layers<span class="operator">$</span>counts</span><br><span class="line">counts <span class="punctuation">[</span><span class="number">1</span><span class="operator">:</span><span class="number">15</span><span class="punctuation">,</span><span class="number">1</span><span class="operator">:</span><span class="number">15</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt; counts [1:15,1:15]</span><br><span class="line">15 x 15 sparse Matrix of class &quot;dgCMatrix&quot;</span><br><span class="line">                                   </span><br><span class="line"> [1,] . . . . . . . . . . . . . . .</span><br><span class="line"> [2,] . . . . . . . . . . . . . . .</span><br><span class="line"> [3,] . . . . . . . . . . . . . . .</span><br><span class="line"> [4,] . . . . . . . . . . . . . . .</span><br><span class="line"> [5,] . . . . . . . . . . . . . . .</span><br><span class="line"> [6,] . . . . . . . . . . . 1 . . .</span><br><span class="line"> [7,] . . . . . . . . . . . . . . .</span><br><span class="line"> [8,] . . . . . . . . . . . . . . .</span><br><span class="line"> [9,] . . . . . . . . . . . . . . .</span><br><span class="line">[10,] . . . . . . . . . . . . . . .</span><br><span class="line">[11,] . . . . . . . . . . . . . . .</span><br><span class="line">[12,] . . 1 9 . 1 . . . 3 . . 1 5 .</span><br><span class="line">[13,] . . . . . . . . . . . . . . .</span><br><span class="line">[14,] . . . . . . . . . . . . . . .</span><br><span class="line">[15,] . 2 . . . . . . . . . . . . .</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-使用GetAssayData-或LayerData-更安全的访问数据"><a href="#3-2-使用GetAssayData-或LayerData-更安全的访问数据" class="headerlink" title="3.2 使用GetAssayData()或LayerData()更安全的访问数据"></a>3.2 使用<code>GetAssayData()</code>或<code>LayerData()</code>更安全的访问数据</h3><p><code>GetAssayData()</code> 和 <code>LayerData()</code> 是Seurat对数据访问接口的封装。官方也更推荐用这个进行访问。</p>
+<p>二者其实是同一个函数，只不过一个是在Seurat V4当中的名称（<code>GetAssayData</code>），一个是在Seurat V5当中的名称（ <code>LayerData</code> ），使用前需要检查Seurat的版本，然后根据版本使用正确的函数名。</p>
+<p>笔者电脑上的Seurat 版本为V5，因此下面的演示以<code>LayerData()</code>为例。下面的代码块展示了如何从一个 <code>seurat_obj</code> 中获得原始表达矩阵和归一化的表达矩阵。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">counts <span class="operator">&lt;-</span> LayerData<span class="punctuation">(</span>seurat_obj<span class="punctuation">,</span> assay <span class="operator">=</span> <span class="string">&quot;RNA&quot;</span><span class="punctuation">,</span> layer <span class="operator">=</span> <span class="string">&quot;counts&quot;</span><span class="punctuation">)</span></span><br><span class="line">normalized_data <span class="operator">&lt;-</span> LayerData<span class="punctuation">(</span>seurat_obj<span class="punctuation">,</span> assay <span class="operator">=</span> <span class="string">&quot;SCT&quot;</span><span class="punctuation">,</span> layer <span class="operator">=</span> <span class="string">&quot;data&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>例如，上述pbmc的数据：（注意，SCTransformer矫正前，已经根据基因表达量过滤了一部分细胞，因此原始表达矩阵counts和归一化以后的表达矩阵normalized_data的行和列并非完全一一对应。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&gt; counts [1:15,1:15]</span><br><span class="line">15 x 15 sparse Matrix of class &quot;dgCMatrix&quot;</span><br><span class="line">  [[ suppressing 15 column names ‘AAACATACAACCAC-1’, ‘AAACATTGAGCTAC-1’, ‘AAACATTGATCAGC-1’ ... ]]</span><br><span class="line">                                           </span><br><span class="line">AL627309.1    . . . . . . . . . . . . . . .</span><br><span class="line">AP006222.2    . . . . . . . . . . . . . . .</span><br><span class="line">RP11-206L10.2 . . . . . . . . . . . . . . .</span><br><span class="line">RP11-206L10.9 . . . . . . . . . . . . . . .</span><br><span class="line">LINC00115     . . . . . . . . . . . . . . .</span><br><span class="line">NOC2L         . . . . . . . . . . . 1 . . .</span><br><span class="line">KLHL17        . . . . . . . . . . . . . . .</span><br><span class="line">PLEKHN1       . . . . . . . . . . . . . . .</span><br><span class="line">RP11-54O7.17  . . . . . . . . . . . . . . .</span><br><span class="line">HES4          . . . . . . . . . . . . . . .</span><br><span class="line">RP11-54O7.11  . . . . . . . . . . . . . . .</span><br><span class="line">ISG15         . . 1 9 . 1 . . . 3 . . 1 5 .</span><br><span class="line">AGRN          . . . . . . . . . . . . . . .</span><br><span class="line">C1orf159      . . . . . . . . . . . . . . .</span><br><span class="line">TNFRSF18      . 2 . . . . . . . . . . . . .</span><br><span class="line">&gt; normalized_data [1:15,1:5]</span><br><span class="line">15 x 5 sparse Matrix of class &quot;dgCMatrix&quot;</span><br><span class="line">              AAACATACAACCAC-1 AAACATTGAGCTAC-1 AAACATTGATCAGC-1 AAACCGTGCTTCCG-1 AAACCGTGTATGCG-1</span><br><span class="line">AL627309.1                   .        .                .                 .                       .</span><br><span class="line">RP11-206L10.2                .        .                .                 .                       .</span><br><span class="line">LINC00115                    .        .                .                 .                       .</span><br><span class="line">NOC2L                        .        .                .                 .                       .</span><br><span class="line">KLHL17                       .        .                .                 .                       .</span><br><span class="line">PLEKHN1                      .        .                .                 .                       .</span><br><span class="line">HES4                         .        .                .                 .                       .</span><br><span class="line">ISG15                        .        .                0.6931472         2.197225                .</span><br><span class="line">AGRN                         .        .                .                 .                       .</span><br><span class="line">C1orf159                     .        .                .                 .                       .</span><br><span class="line">TNFRSF18                     .        0.6931472        .                 .                       .</span><br><span class="line">TNFRSF4                      .        .                .                 .                       .</span><br><span class="line">SDF4                         .        .                0.6931472         .                       .</span><br><span class="line">B3GALT6                      .        .                .                 .                       .</span><br><span class="line">UBE2J2                       .        .                .                 .                       .</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+
+<h3 id="3-3-使用-访问嵌套列表中的元素"><a href="#3-3-使用-访问嵌套列表中的元素" class="headerlink" title="3.3 使用 [[ 访问嵌套列表中的元素"></a>3.3 使用 <code>[[</code> 访问嵌套列表中的元素</h3><ul>
+<li><strong>作用</strong>：用于访问 Reductions、Graphs 等嵌套列表中的具体对象。</li>
+</ul>
+<ul>
+<li><strong>例子</strong>：</li>
+</ul>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">seurat_obj<span class="punctuation">[[</span><span class="string">&quot;reductions&quot;</span><span class="punctuation">]</span><span class="punctuation">]</span><span class="punctuation">[[</span><span class="string">&quot;pca&quot;</span><span class="punctuation">]</span><span class="punctuation">]</span>  <span class="comment"># 获取 PCA 降维结果</span></span><br><span class="line">seurat_obj<span class="punctuation">[[</span><span class="string">&quot;graphs&quot;</span><span class="punctuation">]</span><span class="punctuation">]</span><span class="punctuation">[[</span><span class="string">&quot;SNN&quot;</span><span class="punctuation">]</span><span class="punctuation">]</span>      <span class="comment"># 获取 SNN 图</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>适用场景</strong>：当需要直接操作嵌套列表时使用（但推荐用封装函数如 <code>Embeddings()</code>）。</li>
+<li><strong>注意</strong>：这种方式较为灵活，但也容易出错，建议结合封装函数使用。</li>
+</ul>
+<h2 id="四、一点补充说明：Seurat对象中的四个表达量矩阵"><a href="#四、一点补充说明：Seurat对象中的四个表达量矩阵" class="headerlink" title="四、一点补充说明：Seurat对象中的四个表达量矩阵"></a>四、一点补充说明：Seurat对象中的四个表达量矩阵</h2><p>这一部分是我在工作中的发现。</p>
+<p>跟着Seurat官方教程跑完了整个pipeline（包括归一化、聚类、分群），检查数据时发现数据当中存在多个表达矩阵（如下表第一列）。</p>
+<p>查询各种资料以及文档以后，了解到了他们的区别如下：</p>
+<table>
+<thead>
+<tr>
+<th>访问方法</th>
+<th>数据说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GetAssayData(pbmc, assay = &quot;RNA&quot;, slot = &quot;counts&quot;)</code></td>
+<td>counts（原始UMI）</td>
+</tr>
+<tr>
+<td><code>GetAssayData(pbmc, assay = &quot;SCT&quot;, slot = &quot;counts&quot;)</code></td>
+<td>counts（过滤后）</td>
+</tr>
+<tr>
+<td><code>GetAssayData(pbmc, assay = &quot;SCT&quot;, slot = &quot;data&quot;)</code></td>
+<td>SCTransform归一化数据data</td>
+</tr>
+<tr>
+<td><code>GetAssayData(pbmc, assay = &quot;SCT&quot;, slot = &quot;scale.data&quot;)</code></td>
+<td>经过z-score标准化之后的SCTransform归一化数据data</td>
+</tr>
+</tbody></table>
+<p>如果要访问原始矩阵，推荐使用 <code>GetAssayData(pbmc, assay = &quot;RNA&quot;, slot = &quot;counts&quot;)</code> 。如果要查询SCTransform归一化并经过z-score标准化以后的数据，则需要使用 <code>GetAssayData(pbmc, assay = &quot;SCT&quot;, slot = &quot;scale.data&quot;)</code> 。</p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/04/26/Seurat_Object_structure_in_scRNA_analysis/" title="单细胞处理中Seurat Object数据结构浅析">https://wz.anoms.top/2025/04/26/Seurat_Object_structure_in_scRNA_analysis/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/R/" rel="tag"><i class="fa fa-tag"></i> R</a>
+              <a href="/tags/%E5%8D%95%E7%BB%86%E8%83%9E%E6%B5%8B%E5%BA%8F/" rel="tag"><i class="fa fa-tag"></i> 单细胞测序</a>
+              <a href="/tags/Seurat/" rel="tag"><i class="fa fa-tag"></i> Seurat</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/20/Github_Models_API_usage/" rel="prev" title="白嫖Github大模型服务（可用GPT4o和GPT4.1)">
+                  <i class="fa fa-chevron-left"></i> 白嫖Github大模型服务（可用GPT4o和GPT4.1)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/04/27/Information_Theory_Note02/" rel="next" title="信息论学习笔记（二）">
+                  信息论学习笔记（二） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>

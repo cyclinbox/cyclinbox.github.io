@@ -18060,4 +18060,413 @@
         <tag>GPT-4.1</tag>
       </tags>
   </entry>
+  <entry>
+    <title>单细胞处理中Seurat Object数据结构浅析</title>
+    <url>/2025/04/26/Seurat_Object_structure_in_scRNA_analysis/</url>
+    <content><![CDATA[<p>最近在分析单细胞数据，因此和Seurat包打交道了不少。由于seurat的对象设计太复杂了，遂花了一些时间去学习其数据结构以及属性访问方法，整理为笔记特放置于此，谨供需要的朋友们参考。</p>
+<span id="more"></span>
+
+<h2 id="一、背景知识：R语言的S3-R4-RC-R6对象"><a href="#一、背景知识：R语言的S3-R4-RC-R6对象" class="headerlink" title="一、背景知识：R语言的S3,R4,RC,R6对象"></a>一、背景知识：R语言的S3,R4,RC,R6对象</h2><blockquote>
+<p>另外参考博客往期文章： <a href="https://wz.anoms.top/2023/12/29/R_object_system/">《R语言的对象系统（S3-R6）》</a></p>
+</blockquote>
+<p>R语言脱胎于S语言，因此在设计上继承了许多S语言的特性。近年来，随着编程技术的发展，R语言又吸收了许多新的设计思想，因此在原先的特性的基础上产生了许多扩展。这就是R语言对象系统的复杂性，其按照出现的先后顺序分为S3,R4,RC,R6。 <strong>在本文中我们将要详细介绍的seurat就属于R4对象系统。</strong> </p>
+<ul>
+<li>S3 对象系统：R语言最原始的对象系统，基于一种特殊的泛型函数实现。使用 <code>attr(obj,&quot;class&quot;)</code>  进行对象创建和数据设置，使用 <code>UseMethod()</code> 创建泛型函数。Seurat当中几乎不涉及S3对象系统。</li>
+<li>R4对象系统：这是标准的 R 语言面向对象实现方式，比 S3 的定义更加严格，S4 对象有专门的函数用于定义类（<code>setClass</code>）、泛型函数（<code>setGeneric</code>）、方法（<code>setMethod</code>）以及实例化对象（<code>new</code>），提供了参数检查，多重继承功能。另外， <code>S4</code> 有一个重要的组件 <code>slot</code>，它是对象的属性组件，可以使用专门的运算符 <code>@</code>来访问（对于Seurat对象，我们还会经常碰到这个运算符）。</li>
+<li>RC对象系统：全名是Reference Classes，是在 R 2.12 版本开始引入的新一代的面向对象系统，通过类似 <code>C++</code> 语言的风格进行类定义和方法封装。使用 <code>$</code> 符号来调用方法，获取和修改对象的属性，调用方法或设置属性的值会修改对象，这种方式不同于常用的函数式编程模型。</li>
+<li>R6对象系统：这是一个第三方的 R 面向对象编程的实现，比内置的 RC 类更简单，更快，更轻量级。</li>
+</ul>
+<h2 id="二、Seurat-Object的结构"><a href="#二、Seurat-Object的结构" class="headerlink" title="二、Seurat Object的结构"></a>二、Seurat Object的结构</h2><p>使用 <code>str()</code> 函数可以查看一个对象的结构。下面我们以Seurat官方文档的示例数据为例，展示一下其内部结构：</p>
+<p>读取数据：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">library<span class="punctuation">(</span>Seurat<span class="punctuation">)</span></span><br><span class="line">data_dir <span class="operator">=</span> <span class="string">&quot;D:/linux/R/Seurat-demo/filtered_gene_bc_matrices/hg19&quot;</span></span><br><span class="line"><span class="comment"># 导入示例数据</span></span><br><span class="line">pbmc.data <span class="operator">&lt;-</span> Read10X<span class="punctuation">(</span>data.dir <span class="operator">=</span> data_dir<span class="punctuation">)</span><span class="comment">#自行填写数据所在文件夹</span></span><br><span class="line"><span class="comment"># 创建Seurat对象</span></span><br><span class="line">pbmc <span class="operator">&lt;-</span> CreateSeuratObject<span class="punctuation">(</span>counts <span class="operator">=</span> pbmc.data<span class="punctuation">,</span> project <span class="operator">=</span> <span class="string">&quot;pbmc3k&quot;</span><span class="punctuation">,</span> min.cells <span class="operator">=</span> <span class="number">3</span><span class="punctuation">,</span> min.features <span class="operator">=</span> <span class="number">200</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 查看对象结构</span></span><br><span class="line">str<span class="punctuation">(</span>pbmc<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>下面是使用 <code>str()</code> 展示的数据结构。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; str(pbmc)</span><br><span class="line">Formal class &#x27;Seurat&#x27; [package &quot;SeuratObject&quot;] with 13 slots</span><br><span class="line">  ..@ assays      :List of 1</span><br><span class="line">  .. ..$ RNA:Formal class &#x27;Assay5&#x27; [package &quot;SeuratObject&quot;] with 8 slots</span><br><span class="line">  .. .. .. ..@ layers    :List of 1</span><br><span class="line">  .. .. .. .. ..$ counts:Formal class &#x27;dgCMatrix&#x27; [package &quot;Matrix&quot;] with 6 slots</span><br><span class="line">  .. .. .. .. .. .. ..@ i       : int [1:2282976] 29 73 80 148 163 184 186 227 229 230 ...</span><br><span class="line">  .. .. .. .. .. .. ..@ p       : int [1:2701] 0 779 2131 3260 4220 4741 5522 6304 7094 7626 ...</span><br><span class="line">  .. .. .. .. .. .. ..@ Dim     : int [1:2] 13714 2700</span><br><span class="line">  .. .. .. .. .. .. ..@ Dimnames:List of 2</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : NULL</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : NULL</span><br><span class="line">  .. .. .. .. .. .. ..@ x       : num [1:2282976] 1 1 2 1 1 1 1 41 1 1 ...</span><br><span class="line">  .. .. .. .. .. .. ..@ factors : list()</span><br><span class="line">  .. .. .. ..@ cells     :Formal class &#x27;LogMap&#x27; [package &quot;SeuratObject&quot;] with 1 slot</span><br><span class="line">  .. .. .. .. .. ..@ .Data: logi [1:2700, 1] TRUE TRUE TRUE TRUE TRUE TRUE ...</span><br><span class="line">  .. .. .. .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : chr [1:2700] &quot;AAACATACAACCAC-1&quot; &quot;AAACATTGAGCTAC-1&quot; &quot;AAACATTGATCAGC-1&quot; &quot;AAACCGTGCTTCCG-1&quot; ...</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : chr &quot;counts&quot;</span><br><span class="line">  .. .. .. .. .. ..$ dim     : int [1:2] 2700 1</span><br><span class="line">  .. .. .. .. .. ..$ dimnames:List of 2</span><br><span class="line">  .. .. .. .. .. .. ..$ : chr [1:2700] &quot;AAACATACAACCAC-1&quot; &quot;AAACATTGAGCTAC-1&quot; &quot;AAACATTGATCAGC-1&quot; &quot;AAACCGTGCTTCCG-1&quot; ...</span><br><span class="line">  .. .. .. .. .. .. ..$ : chr &quot;counts&quot;</span><br><span class="line">  .. .. .. ..@ features  :Formal class &#x27;LogMap&#x27; [package &quot;SeuratObject&quot;] with 1 slot</span><br><span class="line">  .. .. .. .. .. ..@ .Data: logi [1:13714, 1] TRUE TRUE TRUE TRUE TRUE TRUE ...</span><br><span class="line">  .. .. .. .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : chr [1:13714] &quot;AL627309.1&quot; &quot;AP006222.2&quot; &quot;RP11-206L10.2&quot; &quot;RP11-206L10.9&quot; ...</span><br><span class="line">  .. .. .. .. .. .. .. ..$ : chr &quot;counts&quot;</span><br><span class="line">  .. .. .. .. .. ..$ dim     : int [1:2] 13714 1</span><br><span class="line">  .. .. .. .. .. ..$ dimnames:List of 2</span><br><span class="line">  .. .. .. .. .. .. ..$ : chr [1:13714] &quot;AL627309.1&quot; &quot;AP006222.2&quot; &quot;RP11-206L10.2&quot; &quot;RP11-206L10.9&quot; ...</span><br><span class="line">  .. .. .. .. .. .. ..$ : chr &quot;counts&quot;</span><br><span class="line">  .. .. .. ..@ default   : int 1</span><br><span class="line">  .. .. .. ..@ assay.orig: chr(0) </span><br><span class="line">  .. .. .. ..@ meta.data :&#x27;data.frame&#x27;:	13714 obs. of  0 variables</span><br><span class="line">  .. .. .. ..@ misc      :List of 1</span><br><span class="line">  .. .. .. .. ..$ calcN: logi TRUE</span><br><span class="line">  .. .. .. ..@ key       : chr &quot;rna_&quot;</span><br><span class="line">  ..@ meta.data   :&#x27;data.frame&#x27;:	2700 obs. of  3 variables:</span><br><span class="line">  .. ..$ orig.ident  : Factor w/ 1 level &quot;pbmc3k&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span><br><span class="line">  .. ..$ nCount_RNA  : num [1:2700] 2419 4903 3147 2639 980 ...</span><br><span class="line">  .. ..$ nFeature_RNA: int [1:2700] 779 1352 1129 960 521 781 782 790 532 550 ...</span><br><span class="line">  ..@ active.assay: chr &quot;RNA&quot;</span><br><span class="line">  ..@ active.ident: Factor w/ 1 level &quot;pbmc3k&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span><br><span class="line">  .. ..- attr(*, &quot;names&quot;)= chr [1:2700] &quot;AAACATACAACCAC-1&quot; &quot;AAACATTGAGCTAC-1&quot; &quot;AAACATTGATCAGC-1&quot; &quot;AAACCGTGCTTCCG-1&quot; ...</span><br><span class="line">  ..@ graphs      : list()</span><br><span class="line">  ..@ neighbors   : list()</span><br><span class="line">  ..@ reductions  : list()</span><br><span class="line">  ..@ images      : list()</span><br><span class="line">  ..@ project.name: chr &quot;pbmc3k&quot;</span><br><span class="line">  ..@ misc        : list()</span><br><span class="line">  ..@ version     :Classes &#x27;package_version&#x27;, &#x27;numeric_version&#x27;  hidden list of 1</span><br><span class="line">  .. ..$ : int [1:3] 5 0 2</span><br><span class="line">  ..@ commands    : list()</span><br><span class="line">  ..@ tools       : list()</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，在pbmc对象的第一层，是几个数据槽，包括<code>@assays</code> , <code>@meta.data</code> 等。 其中 <code>@assays</code> 槽是最为关键的数据槽，其中存储了表达矩阵的信息（即 <code>$RNA</code> ）。</p>
+<p>另外，毋庸置疑的，当我们继续运行seurat的分析流程，对pbmc对象进行更深层次的分析（如归一化、降维聚类、细胞分群与注释）以后， <code>str(pbmc)</code> 给出的列表还会继续增长：因为Seurat的R4对象会将一切数据都存储在对象结构内部。</p>
+<p>那么，如何访问呢？这是下一小节的内容。</p>
+<h2 id="三、Seurat对象内部属性的访问方法"><a href="#三、Seurat对象内部属性的访问方法" class="headerlink" title="三、Seurat对象内部属性的访问方法"></a>三、Seurat对象内部属性的访问方法</h2><h3 id="3-1-使用R4数据槽操作符-进行访问"><a href="#3-1-使用R4数据槽操作符-进行访问" class="headerlink" title="3.1 使用R4数据槽操作符 @ 进行访问"></a>3.1 使用R4数据槽操作符 <code>@</code> 进行访问</h3><p>这是一种很直观但并 <strong>不</strong> 被官方推荐的方法，原因在于Seurat在不断更新，也许某一个数据槽在新版本Seurat中就会改叫其他的名字；另外，这种方式过于底层，容易破坏对象的完整性和一致性。如果直接修改槽内容，可能导致不可预期的行为。</p>
+<p>不过，我们还是在这里介绍一下访问方法。如下：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 读取数据集的元数据</span></span><br><span class="line">metadata <span class="operator">=</span> pbmc<span class="operator">@</span>meta.data</span><br><span class="line"><span class="built_in">class</span><span class="punctuation">(</span>metadata<span class="punctuation">)</span></span><br><span class="line">metadata<span class="punctuation">[</span><span class="number">1</span><span class="operator">:</span><span class="number">10</span><span class="punctuation">,</span><span class="number">1</span><span class="operator">:</span><span class="number">3</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; metadata = pbmc@meta.data</span><br><span class="line">&gt; class(metadata)</span><br><span class="line">[1] &quot;data.frame&quot;</span><br><span class="line">&gt; metadata[1:10,1:3]</span><br><span class="line">                 orig.ident nCount_RNA nFeature_RNA</span><br><span class="line">AAACATACAACCAC-1     pbmc3k       2419          779</span><br><span class="line">AAACATTGAGCTAC-1     pbmc3k       4903         1352</span><br><span class="line">AAACATTGATCAGC-1     pbmc3k       3147         1129</span><br><span class="line">AAACCGTGCTTCCG-1     pbmc3k       2639          960</span><br><span class="line">AAACCGTGTATGCG-1     pbmc3k        980          521</span><br><span class="line">AAACGCACTGGTAC-1     pbmc3k       2163          781</span><br><span class="line">AAACGCTGACCAGT-1     pbmc3k       2175          782</span><br><span class="line">AAACGCTGGTTCTT-1     pbmc3k       2260          790</span><br><span class="line">AAACGCTGTAGCCA-1     pbmc3k       1275          532</span><br><span class="line">AAACGCTGTTTCTG-1     pbmc3k       1103          550</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+<p>如果我们想要看表达矩阵的信息，则可以像下面这样（虽然比较麻烦）</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 通过assays槽访问RNA对象，这是一个R4对象，里面存储了许多东西，包括表达矩阵</span></span><br><span class="line">RNA <span class="operator">=</span> pbmc<span class="operator">@</span>assays<span class="operator">$</span>RNA</span><br><span class="line"><span class="comment"># 通过layers槽访问counts对象，后者是dataframe格式的原始表达矩阵</span></span><br><span class="line">counts <span class="operator">=</span> RNA<span class="operator">@</span>layers<span class="operator">$</span>counts</span><br><span class="line">counts <span class="punctuation">[</span><span class="number">1</span><span class="operator">:</span><span class="number">15</span><span class="punctuation">,</span><span class="number">1</span><span class="operator">:</span><span class="number">15</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; counts [1:15,1:15]</span><br><span class="line">15 x 15 sparse Matrix of class &quot;dgCMatrix&quot;</span><br><span class="line">                                   </span><br><span class="line"> [1,] . . . . . . . . . . . . . . .</span><br><span class="line"> [2,] . . . . . . . . . . . . . . .</span><br><span class="line"> [3,] . . . . . . . . . . . . . . .</span><br><span class="line"> [4,] . . . . . . . . . . . . . . .</span><br><span class="line"> [5,] . . . . . . . . . . . . . . .</span><br><span class="line"> [6,] . . . . . . . . . . . 1 . . .</span><br><span class="line"> [7,] . . . . . . . . . . . . . . .</span><br><span class="line"> [8,] . . . . . . . . . . . . . . .</span><br><span class="line"> [9,] . . . . . . . . . . . . . . .</span><br><span class="line">[10,] . . . . . . . . . . . . . . .</span><br><span class="line">[11,] . . . . . . . . . . . . . . .</span><br><span class="line">[12,] . . 1 9 . 1 . . . 3 . . 1 5 .</span><br><span class="line">[13,] . . . . . . . . . . . . . . .</span><br><span class="line">[14,] . . . . . . . . . . . . . . .</span><br><span class="line">[15,] . 2 . . . . . . . . . . . . .</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-使用GetAssayData-或LayerData-更安全的访问数据"><a href="#3-2-使用GetAssayData-或LayerData-更安全的访问数据" class="headerlink" title="3.2 使用GetAssayData()或LayerData()更安全的访问数据"></a>3.2 使用<code>GetAssayData()</code>或<code>LayerData()</code>更安全的访问数据</h3><p><code>GetAssayData()</code> 和 <code>LayerData()</code> 是Seurat对数据访问接口的封装。官方也更推荐用这个进行访问。</p>
+<p>二者其实是同一个函数，只不过一个是在Seurat V4当中的名称（<code>GetAssayData</code>），一个是在Seurat V5当中的名称（ <code>LayerData</code> ），使用前需要检查Seurat的版本，然后根据版本使用正确的函数名。</p>
+<p>笔者电脑上的Seurat 版本为V5，因此下面的演示以<code>LayerData()</code>为例。下面的代码块展示了如何从一个 <code>seurat_obj</code> 中获得原始表达矩阵和归一化的表达矩阵。</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">counts <span class="operator">&lt;-</span> LayerData<span class="punctuation">(</span>seurat_obj<span class="punctuation">,</span> assay <span class="operator">=</span> <span class="string">&quot;RNA&quot;</span><span class="punctuation">,</span> layer <span class="operator">=</span> <span class="string">&quot;counts&quot;</span><span class="punctuation">)</span></span><br><span class="line">normalized_data <span class="operator">&lt;-</span> LayerData<span class="punctuation">(</span>seurat_obj<span class="punctuation">,</span> assay <span class="operator">=</span> <span class="string">&quot;SCT&quot;</span><span class="punctuation">,</span> layer <span class="operator">=</span> <span class="string">&quot;data&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>例如，上述pbmc的数据：（注意，SCTransformer矫正前，已经根据基因表达量过滤了一部分细胞，因此原始表达矩阵counts和归一化以后的表达矩阵normalized_data的行和列并非完全一一对应。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; counts [1:15,1:15]</span><br><span class="line">15 x 15 sparse Matrix of class &quot;dgCMatrix&quot;</span><br><span class="line">  [[ suppressing 15 column names ‘AAACATACAACCAC-1’, ‘AAACATTGAGCTAC-1’, ‘AAACATTGATCAGC-1’ ... ]]</span><br><span class="line">                                           </span><br><span class="line">AL627309.1    . . . . . . . . . . . . . . .</span><br><span class="line">AP006222.2    . . . . . . . . . . . . . . .</span><br><span class="line">RP11-206L10.2 . . . . . . . . . . . . . . .</span><br><span class="line">RP11-206L10.9 . . . . . . . . . . . . . . .</span><br><span class="line">LINC00115     . . . . . . . . . . . . . . .</span><br><span class="line">NOC2L         . . . . . . . . . . . 1 . . .</span><br><span class="line">KLHL17        . . . . . . . . . . . . . . .</span><br><span class="line">PLEKHN1       . . . . . . . . . . . . . . .</span><br><span class="line">RP11-54O7.17  . . . . . . . . . . . . . . .</span><br><span class="line">HES4          . . . . . . . . . . . . . . .</span><br><span class="line">RP11-54O7.11  . . . . . . . . . . . . . . .</span><br><span class="line">ISG15         . . 1 9 . 1 . . . 3 . . 1 5 .</span><br><span class="line">AGRN          . . . . . . . . . . . . . . .</span><br><span class="line">C1orf159      . . . . . . . . . . . . . . .</span><br><span class="line">TNFRSF18      . 2 . . . . . . . . . . . . .</span><br><span class="line">&gt; normalized_data [1:15,1:5]</span><br><span class="line">15 x 5 sparse Matrix of class &quot;dgCMatrix&quot;</span><br><span class="line">              AAACATACAACCAC-1 AAACATTGAGCTAC-1 AAACATTGATCAGC-1 AAACCGTGCTTCCG-1 AAACCGTGTATGCG-1</span><br><span class="line">AL627309.1                   .        .                .                 .                       .</span><br><span class="line">RP11-206L10.2                .        .                .                 .                       .</span><br><span class="line">LINC00115                    .        .                .                 .                       .</span><br><span class="line">NOC2L                        .        .                .                 .                       .</span><br><span class="line">KLHL17                       .        .                .                 .                       .</span><br><span class="line">PLEKHN1                      .        .                .                 .                       .</span><br><span class="line">HES4                         .        .                .                 .                       .</span><br><span class="line">ISG15                        .        .                0.6931472         2.197225                .</span><br><span class="line">AGRN                         .        .                .                 .                       .</span><br><span class="line">C1orf159                     .        .                .                 .                       .</span><br><span class="line">TNFRSF18                     .        0.6931472        .                 .                       .</span><br><span class="line">TNFRSF4                      .        .                .                 .                       .</span><br><span class="line">SDF4                         .        .                0.6931472         .                       .</span><br><span class="line">B3GALT6                      .        .                .                 .                       .</span><br><span class="line">UBE2J2                       .        .                .                 .                       .</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+
+<h3 id="3-3-使用-访问嵌套列表中的元素"><a href="#3-3-使用-访问嵌套列表中的元素" class="headerlink" title="3.3 使用 [[ 访问嵌套列表中的元素"></a>3.3 使用 <code>[[</code> 访问嵌套列表中的元素</h3><ul>
+<li><strong>作用</strong>：用于访问 Reductions、Graphs 等嵌套列表中的具体对象。</li>
+</ul>
+<ul>
+<li><strong>例子</strong>：</li>
+</ul>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">seurat_obj<span class="punctuation">[[</span><span class="string">&quot;reductions&quot;</span><span class="punctuation">]</span><span class="punctuation">]</span><span class="punctuation">[[</span><span class="string">&quot;pca&quot;</span><span class="punctuation">]</span><span class="punctuation">]</span>  <span class="comment"># 获取 PCA 降维结果</span></span><br><span class="line">seurat_obj<span class="punctuation">[[</span><span class="string">&quot;graphs&quot;</span><span class="punctuation">]</span><span class="punctuation">]</span><span class="punctuation">[[</span><span class="string">&quot;SNN&quot;</span><span class="punctuation">]</span><span class="punctuation">]</span>      <span class="comment"># 获取 SNN 图</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>适用场景</strong>：当需要直接操作嵌套列表时使用（但推荐用封装函数如 <code>Embeddings()</code>）。</li>
+<li><strong>注意</strong>：这种方式较为灵活，但也容易出错，建议结合封装函数使用。</li>
+</ul>
+<h2 id="四、一点补充说明：Seurat对象中的四个表达量矩阵"><a href="#四、一点补充说明：Seurat对象中的四个表达量矩阵" class="headerlink" title="四、一点补充说明：Seurat对象中的四个表达量矩阵"></a>四、一点补充说明：Seurat对象中的四个表达量矩阵</h2><p>这一部分是我在工作中的发现。</p>
+<p>跟着Seurat官方教程跑完了整个pipeline（包括归一化、聚类、分群），检查数据时发现数据当中存在多个表达矩阵（如下表第一列）。</p>
+<p>查询各种资料以及文档以后，了解到了他们的区别如下：</p>
+<table>
+<thead>
+<tr>
+<th>访问方法</th>
+<th>数据说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GetAssayData(pbmc, assay = &quot;RNA&quot;, slot = &quot;counts&quot;)</code></td>
+<td>counts（原始UMI）</td>
+</tr>
+<tr>
+<td><code>GetAssayData(pbmc, assay = &quot;SCT&quot;, slot = &quot;counts&quot;)</code></td>
+<td>counts（过滤后）</td>
+</tr>
+<tr>
+<td><code>GetAssayData(pbmc, assay = &quot;SCT&quot;, slot = &quot;data&quot;)</code></td>
+<td>SCTransform归一化数据data</td>
+</tr>
+<tr>
+<td><code>GetAssayData(pbmc, assay = &quot;SCT&quot;, slot = &quot;scale.data&quot;)</code></td>
+<td>经过z-score标准化之后的SCTransform归一化数据data</td>
+</tr>
+</tbody></table>
+<p>如果要访问原始矩阵，推荐使用 <code>GetAssayData(pbmc, assay = &quot;RNA&quot;, slot = &quot;counts&quot;)</code> 。如果要查询SCTransform归一化并经过z-score标准化以后的数据，则需要使用 <code>GetAssayData(pbmc, assay = &quot;SCT&quot;, slot = &quot;scale.data&quot;)</code> 。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>R</tag>
+        <tag>单细胞测序</tag>
+        <tag>Seurat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【转载】《人格独立，再谈爱情》</title>
+    <url>/2025/04/27/%E4%BA%BA%E6%A0%BC%E7%8B%AC%E7%AB%8B%EF%BC%8C%E5%86%8D%E8%B0%88%E7%88%B1%E6%83%85/</url>
+    <content><![CDATA[<blockquote>
+<p>按： 最近这一周，持续性的情绪很低落，感觉到孤独和疲惫。</p>
+<p>说不上来情绪低落的原因，但应该不仅仅是因为课题和助教课工作带来的压力。天气闷热而阴沉，亦给人一种感官上的压抑情绪。单曲循环《富士山下》一下午，一些过去的事情又浮上心头，更觉得现在的自己形单影只，空虚而寂寞。</p>
+</blockquote>
+<span id="more"></span>
+<blockquote>
+<p>这两天又有一个新闻，今年结婚率继续创新低（连续两年降）。互联网上相关话题的讨论中，选择不结婚不生孩子的人挺多的。结合最近在看的几本书（《永恒少年：从荣格观点看待拒绝成长》以及《红与黑》），突然有一个猜想：千禧年这一代人，会不会因为应试教育、独生子女家庭培养模式等因素的影响（摧残？），导致这一代人心智普遍不成熟，因此拒绝恋爱和结婚生子？——毕竟许多人反对结婚的观点是，认为结婚是一件吃亏的事情（感情被骗、金钱被骗、身体被骗，或者两个人性格根本不match导致各种摩擦和冲突）。因此，不如不结婚，保持高质量的单身。</p>
+<p>昨天听师妹讲述了她同学在医院某科室看到的婚恋情况：35岁以上的女大夫，结婚的只有三分之一，剩下的一大半人里面，许多人都是单身状态，甚至还有不少拉拉。对于这样的情况我倒是有心理预期，只不过，确实啊，结婚形势挺不容乐观的。</p>
+<p>可是，这些与我何干呢？短时间内我又不结婚；甚至恋爱对象在哪，我都不知道。依然觉得孤单且寂寞，希望有人来爱我。</p>
+<p>怀着这些复杂情绪，我带着知识库（过去的所有日记）去问了AI（DeepSeek+GPT4.1+QwenMax）。关于千禧年一代人结婚意愿不高的问题，AI表示不能简单归因于”大家心智不成熟”，而是环境压力、社会支持系统和亲密关系风险共同作用的结果。而对于我的负面情绪，AI给了我不少批评，指出我的情感模式和动力来源过于依赖”重要他人”，在有人支持时充满动力，但独处时就”缺乏上进心”。成熟的心理状态应该具备”人格独立”的能力，不要丧失自己的主体性。</p>
+<p>在对话中，AI也提到了一篇文章《人格独立，再谈爱情》。这篇文章是我好几年前收藏的了，不过如今读来，依然很有教育意义。特贴于此，谨供自我反省。</p>
+</blockquote>
+<hr>
+<p>以下是全文：</p>
+<h1 id="人格独立，再谈爱情。"><a href="#人格独立，再谈爱情。" class="headerlink" title="人格独立，再谈爱情。"></a>人格独立，再谈爱情。</h1><blockquote>
+<p>Remond的文章 - <a href="https://zhuanlan.zhihu.com/p/77753804">知乎</a></p>
+</blockquote>
+<p>不知道大家有没有过这样的体验：焦虑型依恋、缺爱、恋爱脑、过度依赖、缺乏安全感、黏人、自我很弱、为情所困、在感情里非常投入甚至丧失自我，有些人觉得这是性格，有人埋怨童年自暴自弃。我专业学习心理学，阅读了很多文献书籍，思考了很多也尝试过很多方法。其实你缺的不是爱和安全感，是自我，是独立的人格，是自爱的能力。</p>
+<h2 id="一、人格不独立的问题"><a href="#一、人格不独立的问题" class="headerlink" title="一、人格不独立的问题"></a>一、人格不独立的问题</h2><p>人格不独立的人通常缺爱，他们生活的中心往往是获得别人的爱和认可，在感情里常常的表现是依赖和控制，渴望亲密和关心，焦虑，没有安全感。他们的爱情观也很有问题，因为没有自我，他们常常会把爱情看作全部，用情至坚，期待会有一个真爱，很容易认定一个人就全身心投入进去，但客观来说，这份深情是因为依赖，特别是关系破裂后，他们对自己那一段时间的认知，往往是两个人的回忆或是那个人的经历，可以说他们几乎把别人的生活当成了自我的生活。</p>
+<p>人格不独立的人没有自我，或者自我意识很低；对外界和他人的情绪很敏感，很容易受他人态度情绪的影响。和别人熟悉信任后又很容易过度依赖而丧失分寸感和理智；他们的幸福感和自我价值感主要来自外界，做事和生活的主要出发点和追求是别人对自己的态度和看法。这种情况下，他们生活会很拧巴。也没有什么坚定的爱好，有人甚至会利用这种缺爱来作为学习或工作或感情上的动力，努力取得成绩和认可，在短期内常常是有效的，然而又会很容易懈怠颓废。</p>
+<p>人格不独立的人往往看起来懂事，其实心里还是渴望关爱的孩子。他们似乎还处在小时候我要好好表现，好让别人更喜欢我的状态里，这里说的独立，并非单单指生活独立，独立思考，更多是指精神独立，情感独立。他们可能已经富有社会经验，生活也已经可以自己照顾自己，但是心理和精神上还是努力追求被爱。自爱与独立，是相辅相成的，人不可能脱离自爱而独立。小时候是因为父母无条件的保护而敢于开始独立探索世界，长大后因为自爱而敢于独立面对世界。人也不可能脱离独立而学会自爱，因为你总寄望于别人，就永远停留在原地，不会学着长大和自爱。</p>
+<p>我曾感同身受过这种感觉，可能他们之前的人生里，所有的生活和努力都是为了得到他人的爱和认可，他们的人格也是基于此的，这种努力为了获得爱的人格虽然不够自我，但依然还有一部分自我，但等到他们真的开始恋爱的时候，沉浸在爱和感情里，就会彻底丧失自我。因为他们的人格的绝大部分动力和目标都是努力表现得优秀从而获得爱，一旦得到，自我就会开始崩溃，彻底沦陷进去，把别人和感情当做全部。</p>
+<h2 id="二、人格不独立的原因"><a href="#二、人格不独立的原因" class="headerlink" title="二、人格不独立的原因"></a>二、人格不独立的原因</h2><p>人格不独立的原因很多，而且没有明确的科学证明。很多人觉得是童年的不幸，但是更多可能是父母的溺爱或者情感忽视所导致。</p>
+<p>你从小一直生活在被充分照顾管教的环境下，从没有真正承担什么，什么事情父母师长都安排照顾好，没有独自面对过生活，也不用真正操心自己的事，你只需要表现得好继续获得他们的关照和爱护就可以了，在这样的成长环境中就会缺乏独立人格，很容易对别人付出感情，逐渐非常依恋他人。在相处过程中你潜意识里还是孩子一样想通过做一些事努力得到他人的认可和爱。因为这是你熟悉的模式。如果一个人从小就一个人独立生活，没有人管他照顾他，指望不了别人，没有自我他就生存不下去，他必须思考安排自己的生活，必须有特别理性强大的自我，那么这样的人以后相对就会更加自我更加冷淡些，自然就不怎么会在意他人和感情。</p>
+<p>也有可能你在情感上没有得到无条件的爱，缺乏安全感，你需要表现得更好去获得爱，就不敢也没有意识要去做真正的自己，学会自爱。所以往往长大以后，你在情感里的表现还停留在孩童时期，在恋爱中，你会像孩子一样越来越依恋，陷得越来越深。</p>
+<h2 id="三、人格独立和自爱是一种能力"><a href="#三、人格独立和自爱是一种能力" class="headerlink" title="三、人格独立和自爱是一种能力"></a>三、人格独立和自爱是一种能力</h2><p>看到这里你可能会很气馁，埋怨，为什么别人自然就有的能力，你却如此痛苦也做不到。可能你会委屈，不解，为什么爱情在别人那里就只是随时可以放下的关系，而你却总是投入了全部的感情。</p>
+<p>每天在知乎都能看到有人提问，怎么才能让男/女朋友更爱我，总是害怕失去对方失去感情，这其实本来就是个悖论，有人说情深不寿，感情就像沙，越害怕失去攥的越紧就越会失去，这话是对的，但是道理在哪呢，其实很简单，世界上的所有人都是喜欢能给他/她爱的人，女人希望有一个可以依靠的英雄，男人希望有一个能体谅他的伴侣，注意这里说的是能给予对方爱和力量，而不是投入感情和依恋，所以你越需要和看重爱越害怕失去，对方就越想逃离你，当你越是充满爱和力量不那么依赖和痴迷别人的时候，对方就越想和你在一起，所以这些问题，自古以来就注定是不会得到真正解决的，唯有自己填补缺失的内心，可以和别人平等的分享爱和力量，才会有真正的爱情。</p>
+<p>我想明确一下，第一，缺爱不是不可治愈的创伤，而只是你缺少了自爱和独立的能力而形成的一种心理习惯和状态。它只是你成长中的一个阶段，你还没有从努力得到和依赖别人爱的孩子状态里走出来，还没有独自面对生活的习惯和能力。第二，你永远无法从伴侣那里得到长久完全的弥补，并且，你最好不要有这种要求。如果你觉得对方不能给你充分的安全感和爱，那为什么要谈恋爱呢，这就更说明你的爱情观大错特错了，因为这并不是爱情要去满足的，非要这么做无异于飞蛾扑火。因为，人格独立，是你自己的事。</p>
+<p>你要深切的明白，在这方面，你是无所依赖的，补全你的心，做回你自己，完完全全是你自己的责任，而且你是可以做到的。因为在这个年龄，大家都已经不再依靠父母无条件的爱了，以后也不会有人会像父母那样包容照顾你爱你，也就是说，你无法从别人那里得到你想要的那种爱了，你不能因为你自己的缺失，就一直停在原地寄希望于等到一个人把它填满，忽视了你已经有自己创造的力量。</p>
+<p>很多人说自己缺爱，其实缺的是自爱，缺的是独立自我，他们没有自己真正想做的事，真正让自己投入的爱好，所以他们无比需要别人无比沉浸爱情，所以在你学会自爱，找到自我之前，不要再盲目追求爱情了。请好好关注自己，你想成为一个什么样的人，除了让别人认可你喜欢你，你活在这个世界上的价值是什么，喜欢什么，想做什么。那些所谓你视若珍宝的感情，其实只是你对别人能一直偏爱你的期待，是能让你全身心投入的的依赖，是你对那一刻虚幻幸福的礼赞，而这些恰恰也是让你痛苦的毒药。一段爱情，最本质的终归是相互欣赏，相互需要和满足的一段关系，而不是你眼里那一段多么投入多么刻骨铭心的感情。太多人把感情当作爱情了，要知道，感情不是爱情，特别是在成人的世界里，感情什么都不是，它没有那么高尚全能，甚至连维系住一段关系都做不到。你可以对父母有感情，是因为父母会永远像对孩子一样爱你，但是在爱情里，你是对方的伴侣，是要能相互支持相互满足一起生活的成年人。成年人之间，重要的是你们自己都要有能力和勇气去面对生活，能对自己负责，能相互满足，而不是一头沉浸在感情里，像孩子一样把幸福寄托在美好爱情，要求别人永远爱你。当你有这样自爱的能力的时候，人人都可以是真爱，当你没有这样的能力，一心期望别人的时候，根本就没有真爱。因为爱情是一段关系，而不是一段保证你幸福的感情。</p>
+<p>我想告诉你，你的努力，你的自我提升，仅仅是为了你自己的幸福，而不是为吸引别人爱你，因为别人无法填满你的心，爱情不是救世主，它不是一劳永逸的幸福。只有你自己接过父母的接力棒，承担起给自己幸福和安全感的责任，才能真真正正的获得幸福。你的幸福永远在你的自我手里，你和谁在一起，只是你选择了他，而绝不是因为你不能没有爱情和他，因为爱情是相互欣赏，而不是拯救，没有人会愿意背负其他人的一生。</p>
+<h2 id="四、如何独立和自爱"><a href="#四、如何独立和自爱" class="headerlink" title="四、如何独立和自爱"></a>四、如何独立和自爱</h2><p>说了这么多，我们该如何培养自己自爱的能力呢？很多软文和答案说了很多，如充实自己让自己更优秀等，甚至有咨询师建议降低期望，转移注意力缓解焦虑，这些其实都并不能实现自爱，甚至不是自爱，因为做这些的出发点还是为了让别人爱你，这才是问题的症结，你做的这些只不过让你更有被爱的价值。你现在是要用这段时间走完别人可能用了二十年走完的心理独立的路，建立起自我边界。你要认识到只有你自己才能对你付完全的责任，你现在和以后过得好不好，跟你认识的所有人无关，你的幸福只取决于你。</p>
+<p>首先，你要真正明白你生活的幸福绝不是从别人的爱里得到的，而是你自己充分的悦纳照顾自己。这些幸福，不在父母，不在朋友，不在伴侣，也不在某一段关系如友谊、爱情，而只在于你。只有你明白你已经无法从别人那里获得的时候，你的自我才会真正站起来，才会真正关注自己的需要并且学会自己去满足它而不是讨好和依赖别人。这里我打个比方，每个人都有一颗心，你的心里充满的是和别人各种各样的感情、关系和依赖，而现在你要做的是用小刀把这些一块一块割掉，重新用自己的爱好、兴趣、追求去填满它，我把它称之为情感断奶。这注定是个痛苦的过程，因为它要你割掉你幼时没有割断而又在以后的岁月里不断被强化的情感依赖习惯，重新塑造自我，真正建立一个独立的人格，而不是依附关系和感情的孩子。这个心理疗愈或者独立的过程实际是建立自我的过程。当你习惯把这种获得幸福的期望从别人转移到自己的时候，当你的眼睛里不再只有感情和伴侣，还有你的自我和生活的时候，你就开始独立和自爱了。</p>
+<p>可能你心里还有疑惑，自己创造的爱和别人给的爱是一样的么？答案是一样的。什么是爱？我们接触的最初的爱，你想要的是父母无条件的爱，这种爱本质是你会被保护，充分照顾，安排，养育，你会获得幸福和安全感。长大以后，恋爱又多了相互欣赏和肯定，但本质上，爱和安全感就是对你自己生活幸福的保证，而这些，你都可以自己努力得到，这就是自爱。你会看到，那些不缺爱的人，他们生活是高度自律的，他们把自己安排的井井有条，会专心的学习，也会钟情于自己喜欢的东西，本质就是因为他们能爱自己，能独立安排好自己的精神世界。</p>
+<p>其次，你要重新建构你生活动力和意义。可能你以前生活的动力都只是为了获得别人的爱、夸赞等，例如以前你学习只是为了获得好成绩去吸引别人，而现在你要重新建立起你是为了自己的价值感和未来幸福而努力，你做的每一件事都是为了你自己能独立幸福的生活，你是为自己活着。你要充分尊重自己的爱好和兴趣，哪怕它只是看剧刷综艺，你要有真正能给你愉悦，让自己真正投入的东西，去感受这种体验，你就会明白，这种美好的体验并非是别人的爱和认可才能带来，你也可以通过爱自己来获得，你就不会那么缺爱。总而言之，你要通过自己，去创造你一直想从别人那里获得的满足和幸福，建构完全属于自己的生活，这就是你想要的爱。在这个基础上，才能做真正的自己，捍卫自己的快乐和边界，绝不会为了别人的爱而委屈和失去自己，才能真正享受一段健康坦然的爱情。</p>
+<p>试想，一个是勇敢独立的活出自我活出快乐的人，一个是整天要依恋别人患得患失的人，你喜欢哪样的自己？更何况其他人呢？永远不要抱怨他人生性凉薄，是你还像小孩子的心理一样依恋他人，所以才会这么容易动感情，才会沉浸在一段关系里而失去自己。请记住，没有任何人，你一样可以活得更加精彩，这是能力，也是成人的必须。一个人只有独立到能战胜不被爱的恐惧，才会有真正的爱。你才能确定，你和一个人在一起，不是因为你需要爱情，而仅仅是因为你爱她欣赏她；你才能确定，你对他不仅仅是感情和依赖，还有爱。</p>
+<p>可能你会问，要到什么样子，我才是人格独立了呢。当你不再心里眼里全都是某个人的时候，当你开始全心关注和经营自己的生活的时候，当你不再期待他人不再留恋往昔的时候，当你不再会为别人而把某件事某个地方某段时光赋予特殊意义的时候，当你能够坦然把爱情和他人放到和学习、看剧、游戏同等地位的时候，就是真正可以人格独立的生活，勇敢的爱和被爱的时候。小的时候，往往心里的爱情是海誓山盟透心彻骨高于一切的感情。长大了，你就会慢慢明白它只是陪伴你生活的一段关系，它不是生活的目标和全部，更不是带来幸福的救世主。</p>
+<p>朋友，你的生命绝不是为了得到别人的爱和认可，永远陪伴你的是你的自我和生活，伴侣可以陪你一起去欣赏生活，却不能成为你的生活。你的心里满满装着的应该是自由和自我，你的独立和努力是为了能给自己沉稳丰富的生活，为了有勇气去实现自己心中真正想要的幸福，而不是去期待用一份感情去代替去拯救你自己的生活。我们终归要成人，终归要学会独立的爱和照顾自己，终归要独立的面对生活和未知。最重要的是我是谁，而不是我和谁在一起。真正的爱情绝不是依赖而离不开的感情，它是基于相互欣赏和支持的令人愉悦的关系。把幸福的期望抓在自己手上吧，只有越独立的人格，才越能真正享受爱情，才会有真正长久的幸福。</p>
+]]></content>
+      <categories>
+        <category>摘抄</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>心理学</tag>
+        <tag>自我成长</tag>
+        <tag>人格独立与主体性</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>方差分析（ANOVA）与缺失值处理</title>
+    <url>/2025/04/27/ANOVA_and_missing_data_process/</url>
+    <content><![CDATA[<p>第四次生物统计学助教课的备课笔记。</p>
+<p>本文为生统助教课备课过程的一些记录，主要涉及单因素方差分析（one-way ANOVA）、双因素方差分析（two-way ANOVA）的基本概念与计算方法，以及缺失值处理的相关知识点。</p>
+<span id="more"></span>
+
+<p>一张图展示本文知识大纲：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250426232524.png" alt="image.png"></p>
+<h2 id="一、单因素方差分析"><a href="#一、单因素方差分析" class="headerlink" title="一、单因素方差分析"></a>一、单因素方差分析</h2><ul>
+<li>ANOVA回答的问题：对多个组的平均值进行检验，判断所有组的平均值是否相同，或者至少其中一个平均值与其他组不同。<ul>
+<li>检验对象：多组样本所对应的群体均值是否相等，观察到的各组样本平均值之间的差异是否归因于随机抽样误差。</li>
+</ul>
+</li>
+<li>ANOVA分析基本假设：样本是从正态分布群体中随机抽取的，并且相互独立，方差相等。</li>
+<li>ANOVA的原始假设与备择假设：<ul>
+<li>H0: 多个样本之间的population mean相同。（观测数据中的差异是由抽样误差造成，如下图左图）</li>
+<li>H1: 多个样本之间的population mean中，至少有一个与其他的不同。（观测数据中的差异就是实际差异，如下图右图）</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250426233803.png" alt="image.png"></p>
+<p>虽然我们比较的是各组之间的平均值，但是很显然组内方差和组间方差更适合我们去做这样的判断。因此，ANOVA的检验思路就是将所有样本的总方差分解为组内方差和组间方差，并进行比较（如下图）。若组间差异远小于组内差异，则认为组间均值无显著差异（接受H0）；否则，拒绝H0，认为至少一组样本的均值与其他的不同（接受H1）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250426233848.png" alt="image.png"></p>
+<p>因此，ANOVA检验就是对两个不同的方差进行检验，这里涉及F检验的相关知识。如下图是F分布的相关知识点，放在这里帮助我们复习一下F检验的数学原理。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250426234155.png" alt="image.png"></p>
+<p>对于ANOVA来说，其检验统计量的计算方法为 $F=between MS/within MS$ , 即组间方差比上组内方差。零假设下，组间均方除以组内均方应该服从F分布。</p>
+<ul>
+<li>若H0为真（没有组间差异），则组间方差估计量（Between MS）和组内方差估计量（Within MS）其实是同一个总体方差σ²的两种估计，各自都（在零假设下）分别服从自由度不同的卡方分布：<ul>
+<li>组间均方（MSBetween） $= SS_{Between}/(k-1) \sim χ^2(k-1)$ </li>
+<li>组内均方（MSWithin） $= SS_{Within}/(n-k) ~ χ^2(n-k)$</li>
+<li>其中 $n$ 为总样本量 ， $k$ 为组数。</li>
+<li>二者的比值就是两自由度独立卡方分布单元归一后的比值，这正是F分布的定义。</li>
+</ul>
+</li>
+<li>因此，ANOVA的检验统计量可以使用这一公式进行计算： $F=MS_{Between}/MS_{Within} \sim F(k-1,n-k)$<ul>
+<li>其中 $n$ 为总样本量 ， $k$ 为组数。</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250426234326.png" alt="image.png"></p>
+<h3 id="one-way-ANOVA的检验方法（step-by-step）"><a href="#one-way-ANOVA的检验方法（step-by-step）" class="headerlink" title="one-way ANOVA的检验方法（step-by-step）"></a>one-way ANOVA的检验方法（step-by-step）</h3><p>如下图。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250426234744.png" alt="image.png"></p>
+<p>下面我们以一个具体的问题为例，展示一下如何进行ANOVA分析。如下表所示，科学家测试了四种抗生素对某种细菌的抑菌效果，每一种抗生素进行了6组平行实验，请问根据表格中的数据，是否至少有一组抗生素的抑菌效果与其他各组显著不同？</p>
+<table>
+<thead>
+<tr>
+<th>antibiotic</th>
+<th>data</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Penicillin</td>
+<td>29.6 , 24.3 , 28.5 , 32 , 26.1 , 31</td>
+</tr>
+<tr>
+<td>Tetracycline</td>
+<td>27.3 , 32.6 , 30.8 , 34.8 , 29.4 , 33.1</td>
+</tr>
+<tr>
+<td>Erythromycin</td>
+<td>21.6 , 17.4 , 18.3 , 19 , 19.5 , 18</td>
+</tr>
+<tr>
+<td>Chloramphenicol</td>
+<td>29.2 , 32.8 , 25 , 24.2 , 26.6 , 28.9</td>
+</tr>
+</tbody></table>
+<p>首先是空假设和备择假设： H0：所有组别的抑菌效果都一样；H1：至少有一组抗生素的抑菌效果与其他各组显著不同。</p>
+<p>首先，我们对这四组数据进行正态性检验，发现这几组数据都符合正态性的假设（过程略）。接下来，我们可以分布计算出下面的这些统计量：</p>
+<table>
+<thead>
+<tr>
+<th>group</th>
+<th>n</th>
+<th>average</th>
+<th>variance</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Penicillin</td>
+<td>6</td>
+<td>28.58333</td>
+<td>8.613667</td>
+</tr>
+<tr>
+<td>Tetracycline</td>
+<td>6</td>
+<td>31.33333</td>
+<td>7.406667</td>
+</tr>
+<tr>
+<td>Erythromycin</td>
+<td>6</td>
+<td>18.96667</td>
+<td>2.210667</td>
+</tr>
+<tr>
+<td>Chloramphenicol</td>
+<td>6</td>
+<td>27.78333</td>
+<td>10.08167</td>
+</tr>
+<tr>
+<td>total</td>
+<td>24</td>
+<td>26.66667</td>
+<td>28.58667</td>
+</tr>
+</tbody></table>
+<p>我们进一步可以求出：</p>
+<p>$$<br>\begin{aligned}<br>   SS_{total}   &amp;= \sum\sum(x_{ij}-\bar{\bar x})^2 &amp;= 657.4933 \\<br>   SS_{between} &amp;= \sum\sum(x_j-\bar{\bar x})^2    &amp;= 515.9300 \\<br>   SS_{within}  &amp;= \sum\sum(x_{ij}-\bar{x_j})^2    &amp;= 141.5633<br>\end{aligned}<br>$$</p>
+<p>其中，有关系式 $SS_{total}=SS_{between}+SS_{within}$ ，我们可以基于这个关系式检验我们的计算结果。</p>
+<p>我们的数据总共有4组，因此k=4。每一组有6个平行重复，因此n=24，因此我们可以进一步求得：</p>
+<p>$$<br>\begin{aligned}<br>  df_1 &amp;= k-1 \\<br>       &amp;= 3 \\<br>  df_2 &amp;= n-k \\<br>       &amp;= 20 \\<br>  F    &amp;= \frac{SS_{between}/df_1}{SS_{within}/df_2} \\<br>       &amp;= \frac{515.9300/3}{141.5633/20} \\<br>       &amp;\approx 24.29679 \\<br>\end{aligned}<br>$$</p>
+<p>查表得，在显著性水平 $\alpha=0.05$, 自由度 df1=3 且 df2=20 的情况下，F统计量的边界值为 $3.098 &lt; 24.29679$ ，因此我们拒接H0，接受H1，认为至少一组抗生素的抑菌效果与其他各组显著不同（经过事后检验，我们可以发现是红霉素Erythromycin的抗菌效果显著低于另外三种抗生素）。</p>
+<h3 id="事后检验（Post-hoc-test）"><a href="#事后检验（Post-hoc-test）" class="headerlink" title="事后检验（Post-hoc test）"></a>事后检验（Post-hoc test）</h3><p>在R语言中，有两种事后检验方法的函数接口，分别是 <code>Pairwise.t.test()</code> 和 <code>TukeyHSD()</code> ，前者传入原始数据的dataframe，后者则传入 <code>aov()</code> 函数的返回值。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427013647.png" alt="image.png"></p>
+<h3 id="非参数检验"><a href="#非参数检验" class="headerlink" title="非参数检验"></a>非参数检验</h3><p>上面列举的one-way ANOVA检验方法，是建立在数据符合正态性假设的前提下的，如果数据不符合正态性，则需要使用非参数方法，其中R语言里提供的函数接口是 <code>kruskal.test()</code> ，这是一种从wilcox秩和检验发展而来的检验方法，通过检验不同分组之间的中位数是否相同而获得结果。</p>
+<p>下图是一张总结，展示了对于多组数据的检验中，如何选择合适的检验方法，以及进行事后检验。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427014000.png" alt="image.png"></p>
+<h2 id="二、双因素方差分析"><a href="#二、双因素方差分析" class="headerlink" title="二、双因素方差分析"></a>二、双因素方差分析</h2><h3 id="带有重复的双因素方差分析"><a href="#带有重复的双因素方差分析" class="headerlink" title="带有重复的双因素方差分析"></a>带有重复的双因素方差分析</h3><p>two-way ANOVA分为带有重复的(Two-way ANOVA with replications)和不带重复的(Two-way ANOVA without replications)。二者的区别在于，带有重复的ANOVA需要考虑双因子之间的互作，而不带重复的则不需要考虑互作。</p>
+<p>下图是one-way ANOVA与Two-way ANOVA with replications的比较。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427014231.png" alt="image.png"></p>
+<p>Two-way ANOVA的数学原理也涉及对方差的分解与检验，注意这里需要计算三个检验统计量 $F_{A}$, $F_{B}$, $F_{AB}$,  分别用于检验因子A、B各自的效应，以及A与B互作的效应。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427014437.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427014446.png" alt="image.png"></p>
+<p>在R语言中，Two-way ANOVA的函数接口依然是 <code>aov()</code> ，需要注意如果要求带互作的ANOVA，则传入参数中两个因子之间的连接符需要使用星号 <code>*</code> ，如果不考虑互作，则使用 <code>+</code></p>
+<ul>
+<li>考虑因子A与因子B的互作：  <code>aov(Y~A*B,data)</code> ， 等价于 <code>aov(Y~A+B+A:B,data)</code> ，其中 <code>A:B</code> 表示因子A与因子B的互作效应。</li>
+<li>不考虑互作：<code>aov(Y~A+B,data)</code></li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427014647.png" alt="image.png"></p>
+<h4 id="交互作用的可视化"><a href="#交互作用的可视化" class="headerlink" title="交互作用的可视化"></a>交互作用的可视化</h4><p>这一块并非上课重点，因此仅通过PPT列出相关函数接口以及使用效果，供参考。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427015013.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427014941.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427015000.png" alt="image.png"></p>
+<h3 id="不带重复的双因素方差分析"><a href="#不带重复的双因素方差分析" class="headerlink" title="不带重复的双因素方差分析"></a>不带重复的双因素方差分析</h3><p>如下图。Two-way ANOVA without replications不考虑互作，因此检验统计量只有两个， $F_{A}$ 和 $F_{B}$ ，分别检验因子A和因子B各自的效果，不检验二者的互作效果。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427015101.png" alt="image.png"></p>
+<h2 id="三、缺失值处理"><a href="#三、缺失值处理" class="headerlink" title="三、缺失值处理"></a>三、缺失值处理</h2><p>这一块也不算课题重点，因此仅以一张PPT作为总结：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427015228.png" alt="image.png"></p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>R</tag>
+        <tag>生物信息学</tag>
+        <tag>统计</tag>
+        <tag>one-way ANOVA</tag>
+        <tag>two-way ANOVA</tag>
+        <tag>互作效应</tag>
+        <tag>缺失值插补</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>信息论学习笔记（二）</title>
+    <url>/2025/04/27/Information_Theory_Note02/</url>
+    <content><![CDATA[<p>前段时间查文献的时候，偶然看到了一些算法里涉及到了信息论的相关知识。信息论我在几年前通过看书自学过，时间太久有些忘了，正好趁此机会重新复习一下。</p>
+<blockquote>
+<p>参考书籍：机械工业《信息论基础（原书第二版）》（ELEMENTS OF INFORMATION THEORY SECOND EDITION），作者Thomas M. Cover, Joy A. Thomas</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="离散型随机变量的熵"><a href="#离散型随机变量的熵" class="headerlink" title="离散型随机变量的熵"></a>离散型随机变量的熵</h3><p>设 $X$ 是一个离散型随机变量，其字母表（取值空间）为 $\mathcal{X}$，概率质量函数为 $p(x) = \Pr(X = x), x \in \mathcal{X}$。</p>
+<h4 id="熵的定义"><a href="#熵的定义" class="headerlink" title="熵的定义"></a>熵的定义</h4><p>熵 $H(X)$ 表示随机变量 $X$ 的不确定性程度，定义为：</p>
+<p>$$<br>H(X) = -\sum_{x \in \mathcal{X}} p(x) \log_2 p(x)<br>$$</p>
+<ul>
+<li>$H(X)$ 可以解释为 $\text{log}\frac{1}{p(x)}$ 的期望，因此 $H(X)=E_p\text{log}\frac{1}{p(x)}$ 。</li>
+<li><strong>单位</strong>: 比特（bit）</li>
+<li><strong>约定</strong>: $0 \log 0 = 0$</li>
+<li><strong>记法</strong>: 有时简记为 $H(p)$</li>
+<li>当对数底数为自然常数 $e$ 时，熵的单位为 <strong>奈特（nat）</strong>。</li>
+<li>熵的非负性：$H(X) \geq 0$。</li>
+</ul>
+<ul>
+<li>换底公式： $H_b(X)=(\text{log}<em>ba)H_a(X)$ , $H_b(X)=-\sum</em>{x\in \mathcal{X}}p(x)\text{log}_bp(x)$</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong>: 熵仅依赖于 $X$ 的概率分布，与具体取值无关。</p>
+</blockquote>
+<hr>
+<h3 id="联合熵与条件熵"><a href="#联合熵与条件熵" class="headerlink" title="联合熵与条件熵"></a>联合熵与条件熵</h3><h4 id="联合熵"><a href="#联合熵" class="headerlink" title="联合熵"></a>联合熵</h4><p>对于一对离散随机变量 $(X, Y)$，其联合熵定义为：</p>
+<p>$$<br>H(X, Y) = -\sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x, y) \log p(x, y)<br>$$</p>
+<p>等价形式：</p>
+<p>$$<br>H(X, Y) = -E[\log p(X, Y)]<br>$$</p>
+<h4 id="条件熵"><a href="#条件熵" class="headerlink" title="条件熵"></a>条件熵</h4><p>条件熵 $H(Y|X)$ 表示已知 $X$ 后 $Y$ 的剩余不确定性：</p>
+<p>$$<br>\begin{aligned}<br>H(Y|X) &amp;= \sum_{x \in \mathcal{X}} p(x) H(Y|X = x) \\<br>&amp;= -\sum_{x \in \mathcal{X}} p(x) \sum_{y \in \mathcal{Y}} p(y|x) \log p(y|x) \\<br>&amp;= -\sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x, y) \log p(y|x) \\<br>&amp;= -E[\log p(Y|X)]<br>\end{aligned}<br>$$</p>
+<hr>
+<h3 id="链式法则"><a href="#链式法则" class="headerlink" title="链式法则"></a>链式法则</h3><p>联合熵与条件熵满足链式关系：<br>$$<br>H(X, Y) = H(X) + H(Y|X)<br>$$<br>推广到多个变量时：<br>$$<br>H(X, Y|Z) = H(X|Z) + H(Y|X, Z)<br>$$<br>此外，虽然条件熵的交换律 $H(Y|X)=H(X|Y)$  <strong>不成立</strong> ，但是下面的交换律是 <strong>成立</strong> 的：</p>
+<p>$$<br>H(X)-H(X|Y)=H(Y)-H(Y|X)<br>$$</p>
+<h2 id="相对熵（KL散度）"><a href="#相对熵（KL散度）" class="headerlink" title="相对熵（KL散度）"></a>相对熵（KL散度）</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>相对熵（Kullback-Leibler divergence）衡量两个概率分布 $p$ 和 $q$ 的差异程度：<br>$$<br>D(p \parallel q) = \sum_{x \in \mathcal{X}} p(x) \log \frac{p(x)}{q(x)} = E_p \left[ \log \frac{p(X)}{q(X)} \right]<br>$$</p>
+<ul>
+<li><strong>约定</strong>：$0 \log \frac{0}{0} = 0$，$0 \log \frac{0}{q} = 0$，$p \log \frac{p}{0} = \infty$</li>
+<li><strong>性质</strong>：<ul>
+<li>$D(p \parallel q) \geq 0$，当且仅当 $p = q$ 时取等号。</li>
+<li>非对称性：$D(p \parallel q) \neq D(q \parallel p)$。</li>
+<li>不满足三角不等式，因此不是严格意义上的距离。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="互信息"><a href="#互信息" class="headerlink" title="互信息"></a>互信息</h2><h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p>互信息 $I(X; Y)$ 表示随机变量 $X$ 和 $Y$ 之间的相关性：</p>
+<p>$$<br>\begin{aligned}<br>I(X; Y) &amp;= \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} p(x, y) \log \frac{p(x, y)}{p(x)p(y)} \\<br>&amp;= D(p(x, y) \parallel p(x)p(y)) \\<br>&amp;= E_{p(x,y)} \left[ \log \frac{p(X,Y)}{p(X)p(Y)} \right]<br>\end{aligned}<br>$$</p>
+<ul>
+<li><strong>几何意义</strong>：一个随机变量包含另一个随机变量的信息量。</li>
+<li><strong>等价形式</strong>：<br>$$<br>I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = H(X)+H(Y)-H(X,Y)<br>$$<br>$$<br>I(X; X) = H(X) \quad (\text{自信息})<br>$$</li>
+</ul>
+<hr>
+<h3 id="韦恩图示意"><a href="#韦恩图示意" class="headerlink" title="韦恩图示意"></a>韦恩图示意</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250426211030.png" alt="image.png"></p>
+<h2 id="熵的链式法则"><a href="#熵的链式法则" class="headerlink" title="熵的链式法则"></a>熵的链式法则</h2><p>对于多个随机变量 $X_1, X_2, \ldots, X_n$：<br>$$<br>H(X_1, X_2, \ldots, X_n) = \sum_{i=1}^n H(X_i | X_{i-1}, \ldots, X_1)<br>$$</p>
+<hr>
+<h2 id="条件互信息"><a href="#条件互信息" class="headerlink" title="条件互信息"></a>条件互信息</h2><h3 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a>定义</h3><p>给定第三个随机变量 $Z$ 。在 $Z$ 条件下， $X$ 与 $Y$ 的互信息即为条件互信息，其定义为：</p>
+<p>$$<br>\begin{aligned}<br>I(X; Y | Z) &amp;= H(X | Z) - H(X | Y, Z) \<br>&amp;= E_{p(x,y,z)} \left[ \log \frac{p(x,y|z)}{p(x|z)p(y|z)} \right]<br>\end{aligned}<br>$$</p>
+<ul>
+<li><strong>链式法则</strong>：<br>$$<br>I(X_1, X_2, \ldots, X_n; Y) = \sum_{i=1}^n I(X_i; Y | X_{i-1}, \ldots, X_1)<br>$$</li>
+</ul>
+<hr>
+<hr>
+<h2 id="熵与相对熵的凸性"><a href="#熵与相对熵的凸性" class="headerlink" title="熵与相对熵的凸性"></a>熵与相对熵的凸性</h2><h4 id="Jensen不等式"><a href="#Jensen不等式" class="headerlink" title="Jensen不等式"></a>Jensen不等式</h4><ul>
+<li>给定一个函数 $f$ 和随机变量 $X$ ，若 $f$ 是凸函数，则：$E[f(X)] \geq f(E[X])$</li>
+<li>反之，若 $f$ 是凹函数，则：$E[f(X)] \leq f(E[X])$</li>
+</ul>
+<ul>
+<li><strong>相对熵的凸性</strong>：<br>$$<br>D(\lambda p_1 + (1-\lambda) p_2 \parallel \lambda q_1 + (1-\lambda) q_2) \leq \lambda D(p_1 \parallel q_1) + (1-\lambda) D(p_2 \parallel q_2)<br>$$</li>
+<li><strong>熵的凹性</strong>：$H(p)$ 是关于 $p$ 的凹函数。</li>
+</ul>
+<ul>
+<li>均匀分布的元素熵最大： $H(X) \leq \text{log} |\mathcal{X}|$  ，当且仅当 $X$ 服从 $\mathcal{X}$ 上的均匀分布时等号成立。</li>
+<li>信息不会有副作用： $H(X|Y) \leq H(X)$  ，如果已经有 $Y$ 提供了一些信息，那么此时再有 $X$ 提供信息，那么 $X$ 所能提供的信息量（条件熵）要小于 $X$ 自身单独能够提供的所有信息。当且仅当 $X$ 与 $Y$ 互相独立时等号成立。</li>
+</ul>
+<hr>
+<h2 id="数据处理不等式"><a href="#数据处理不等式" class="headerlink" title="数据处理不等式"></a>数据处理不等式</h2><p>若存在马尔可夫链 $X \rightarrow Y \rightarrow Z$，则：<br>$$<br>I(X; Y) \geq I(X; Z)<br>$$</p>
+<ul>
+<li><strong>推论</strong>：若 $\theta \rightarrow X \rightarrow T(X)$，则 $I(\theta; X) \geq I(\theta; T(X))$。</li>
+<li><strong>充分统计量</strong>：若 $T(X)$ 是关于分布族 ${p_\theta(x)}$ 的充分统计量，则其保留了样本中关于 $\theta$ 的全部信息。</li>
+</ul>
+<hr>
+<h2 id="费诺不等式"><a href="#费诺不等式" class="headerlink" title="费诺不等式"></a>费诺不等式</h2><p>设 $\hat{X}$ 是基于观测 $Y$ 对 $X$ 的估计量，错误概率 $P_e = \Pr{X \neq \hat{X}}$，则：</p>
+<p>$$<br>\begin{aligned}<br>H(P_e) + P_e \log |\mathcal{X}| &amp;\geq H(X | \hat{X}) \\<br>&amp;\geq H(X | Y) \\<br>\Rightarrow \quad P_e &amp;\geq \frac{H(X | Y) - 1}{\log |\mathcal{X}|}<br>\end{aligned}<br>$$</p>
+<ul>
+<li><strong>推论</strong>：若 $P_e = \Pr{X \neq \hat{X}}$，且 $\hat{X}$ 由 $Y$ 生成，则：<br>$$<br>H(P_e) + P_e \log (|\mathcal{X}| - 1) \geq H(X | Y)<br>$$</li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>信息论</tag>
+        <tag>信息熵</tag>
+        <tag>互信息</tag>
+        <tag>相对熵</tag>
+        <tag>熵的链式法则</tag>
+        <tag>数据处理不等式</tag>
+      </tags>
+  </entry>
 </search>
