@@ -18469,4 +18469,154 @@
         <tag>数据处理不等式</tag>
       </tags>
   </entry>
+  <entry>
+    <title>信息论学习笔记（三）</title>
+    <url>/2025/05/04/Information_Theory_Note03/</url>
+    <content><![CDATA[<p>前段时间查文献的时候，偶然看到了一些算法里涉及到了信息论的相关知识。信息论我在几年前通过看书自学过，时间太久有些忘了，正好趁此机会重新复习一下。</p>
+<blockquote>
+<p>参考书籍：机械工业《信息论基础（原书第二版）》（ELEMENTS OF INFORMATION THEORY SECOND EDITION），作者Thomas M. Cover, Joy A. Thomas</p>
+</blockquote>
+<span id="more"></span>
+
+
+<h3 id="渐近均分性"><a href="#渐近均分性" class="headerlink" title="渐近均分性"></a>渐近均分性</h3><p>渐近均分性的概念与大数定理类似。对符合独立同分布(i.i.d.)的一组随机变量 $x_1, x_2, … x_n$ ，记 $p(x_1, x_2, … x_n)$ 为观察序列 $x_1, x_2, … x_n$ 出现的概率，则：</p>
+<p>$\frac{1}{n}log \frac{1}{p(x_1, x_2, … x_n)} \approx H$ </p>
+<p>当 n 很大时，一个观察序列出现的概率 $p(x_1, x_2, … x_n)$ ~ $2^{-nH}$</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504212706.png" alt="image.png"></p>
+<p>如上图，全体序列的集合可以分成两个子集： 典型集和非典型集</p>
+<ul>
+<li>典型集: 样本熵近似于真实熵。我们主要关注这个，因为任何基于典型序列的性质都以高概率成立，并决定大样本的平均行为</li>
+<li>非典型集： 包含其他的序列</li>
+</ul>
+<h4 id="随机变量的收敛"><a href="#随机变量的收敛" class="headerlink" title="随机变量的收敛"></a>随机变量的收敛</h4><p>给定一个随机变量序列 $x_1, x_2, … x_n$ ，该序列收敛于随机变量 X 有三种情况：</p>
+<ul>
+<li>概率收敛：对 $\forall \epsilon &gt; 0, Pr{|X_n - X| &gt; \epsilon} \rightarrow 0$</li>
+<li>均方收敛： $E[(X_n - X)^2] \rightarrow 0$</li>
+<li>以概率1收敛(几乎处处收敛): $Pr{lim_{n \rightarrow \infty} x_n = x } = 1$</li>
+</ul>
+<h3 id="渐近均分性定理（AEP）及其证明"><a href="#渐近均分性定理（AEP）及其证明" class="headerlink" title="渐近均分性定理（AEP）及其证明"></a>渐近均分性定理（AEP）及其证明</h3><p>“渐近均分”→  “几乎一切事件都会人同等的意外”</p>
+<p>定理1： 若 $x_1, x_2, … x_n$ 为 i.i.d ~ $p(x)$, 则 $-\frac{1}{n}log p(x_1, x_2, … x_n) \rightarrow H$ （依概率） ，其中 $H = -\sum_i p(x) log p(x)$</p>
+<p>定义：关于 p(x) 的典型集 $A_{\epsilon}^{(n)}$ (typical set) 是序列 ($x_1, x_2, … x_n$) $\in X^n$ 的集合, 且满足：<br>$2^{-n(H(x) + \epsilon)} \leq p(x_1, x_2, … x_n) \leq 2^{-n(H(x) - \epsilon)}$</p>
+<p>$A_{\epsilon}^{(n)}$ 具如下性质：</p>
+<p>定理2（关于典型集的一些性质）：典型集的概率近似为1，典型集中所有元素几乎是等可能的，典型集元素个数近似等于 $2^{nH}$ 。更详细的数学说明如下：</p>
+<ol>
+<li>如果 ($x_1, x_2, … x_n$) $\in A_{\epsilon}^{(n)}$, 则 $H(X) - \epsilon \leq -\frac{1}{n} log p(x_1, x_2, … x_n) \leq H(x) + \epsilon$   </li>
+<li>当 n 充分大， $Pr{A_{\epsilon}^{(n)}} \geq 1 - \epsilon$ </li>
+<li>$|A_{\epsilon}^{(n)}| \leq 2^{n(H(x) + \epsilon)}$ (|A|为A中元素个数)    </li>
+<li>当 n 充分大, $|A_{\epsilon}^{(n)}| \geq (1 - \epsilon)2^{n(H(x) - \epsilon)}$     </li>
+</ol>
+<p>基于典型集的上述性质，我们可以提出一种数据编码方式（如下图）：</p>
+<ul>
+<li>非典型集 → 编码 $\leq n log |x| + 1 bit$  → 并在序列编码的前面加1 → 用 $n log |x| + 2 bit$ 编码</li>
+<li>典型集（$A_{\epsilon}^{(n)}: 2^{n(H + \epsilon)}$ 个元素） → 描述 $n(H + \epsilon) + 1 bit$ → 并在序列编码的前面加0 → 用 $n(H + \epsilon) + 2 bit$ 编码</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504214124.png" alt="image.png"></p>
+<h3 id="AEP-的推论：数据压缩"><a href="#AEP-的推论：数据压缩" class="headerlink" title="AEP 的推论：数据压缩"></a>AEP 的推论：数据压缩</h3><p>对于序列 $x_1, x_2, … x_n$ ~ $p(x)$, i.i.d ，以 $x^n$ 表示这一序列。 记 $l(x^n)$为 $x^n$ 的码字长度。</p>
+<p>若 n 充分大， 使得 $Pr{A_{\epsilon}^{(n)}} \geq 1 - \epsilon$</p>
+<p>则码字长度的数学期望为：</p>
+<p>$$<br>\begin{aligned}<br>E(l(x^n)) &amp;= \sum_{x^n} p(x^n) l(x^n) \\<br>&amp;= \sum_{x^n \in A_\varepsilon^{(n)}} p(x^n) l(x^n) + \sum_{x^n \notin A_\varepsilon^{(n)}} p(x^n) l(x^n) \\<br>&amp;\leq \sum_{x^n \in A_\varepsilon^{(n)}} p(x^n) [n(H + \varepsilon) + 2] + \sum_{x^n \notin A_\varepsilon^{(n)}} p(x^n) [n(\log |X| + \varepsilon) + 2] \\<br>&amp;= Pr\left\{A_\varepsilon^{(n)}\right\} [n(H + \varepsilon) + 2] + Pr\left\{A_\varepsilon^{(n)^c}\right\} [n(\log |X| + \varepsilon) + 2] \\<br>&amp;\leq n(H + \varepsilon) + \varepsilon n(\log |X| ) + 2 \\<br>&amp;= n(H + \varepsilon’)\\<br>\end{aligned}<br>$$</p>
+<p>其中 $\varepsilon’=\varepsilon+\varepsilon \text{log}|X|+\frac{2}{n}$ ，适当取 $\varepsilon$ 和 $n$ ，可以使 $\varepsilon’$ 任意小。</p>
+<p>定理：设 $X^n$ 为服从 $p(x)$ 的 i.i.d 序列, $\epsilon &gt; 0$,  ヨ一个编码将长度为 n 的序列 $x^n$ 映射为比特串, 映射是1-1的(可逆)，对于充分大的 n, 有 $E[\frac{1}{n}l(x^n)] \leq H(X) + \epsilon$ 。从平均意义上，用 nH(X) bit 可表示序列 $X^n$ 。</p>
+<p>最小概率集：设 $x_1, x_2, … x_n$ ~ $p(x)$, i.i.d, 对 $0 &lt; \delta &lt; \frac{1}{2}$, 设 $B_{\delta}^{(n)}\subset X^n$ 为使 $Pr{B_{\delta}^{(n)}} \geq 1 - \delta$ 成立的最小集合，则 $|B_{\delta}^{(n)}| \dot{=} 2^{nH}$ ，其中 $\dot{=}$ 代表 $|B_{\delta}^{(n)}|$ 和 $2^{nH}$ 在一阶指数意义下相等。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>信息论</tag>
+        <tag>渐近均分性</tag>
+        <tag>随机变量的收敛</tag>
+        <tag>数据压缩</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pubmed爬虫+LLM消化的一些探索</title>
+    <url>/2025/05/04/PubMed-spider-and-LLM-process/</url>
+    <content><![CDATA[<p>如题。先前在朋友的博客中看到了一个利用大模型进行文献调研的研究（参见 <a href="https://fanyiming.life/?p=8650">《文献pdf改名&amp;AI消化》</a> ）。正好这一阵子有文献调研的需求，于是在此基础上进行了一些更深入的探索。</p>
+<p>本文主要分为三个部分：①利用网络爬虫获取PubMed的论文全文内容；②通过prompt工程调用大模型，以json文档的形式返回消化结果；③pandas批量处理保存为Excel表格。下面是探索结果</p>
+<span id="more"></span>
+
+<h2 id="一、利用网络爬虫获取PubMed的论文全文内容"><a href="#一、利用网络爬虫获取PubMed的论文全文内容" class="headerlink" title="一、利用网络爬虫获取PubMed的论文全文内容"></a>一、利用网络爬虫获取PubMed的论文全文内容</h2><p>此处参考前段时间我发布在GitHub上的一个项目： <a href="https://github.com/cyclinbox/pubmed_spider">pubmed_spider: A spider program for downloading text from pubmed</a></p>
+<p>众所周知，Pubmed是一个很全面的医学研究论文的数据库，并且每一篇论文都有唯一确定的PMID标识符来表示，因此我们可以通过PMID获得论文的信息页面。</p>
+<p>除此之外，Pubmed还附带了一个PMC的数据库，其中存储着论文的全文，以PMCID标识符来表示。一些受受 NIH 资助的研究成果，以及开放获取的研究论文，会被PMC数据库收录，因此当我们知道一篇文章的PMCID时，我们就可以获得论文的全文。</p>
+<p>PMCID与PMID之间存在一对一的映射关系。当我们知道一篇论文的PMID，我们就可以通过解析PubMed的页面，获得PMCID，进而获得全文。而Pubmed的搜索支持根据论文标题进行模糊匹配，因此当我们知道论文标题，我们也可以通过解析PubMed页面获得论文PMID。这就是 <a href="https://github.com/cyclinbox/pubmed_spider">pubmed_spider</a> 这个项目的原理。</p>
+<p>（插一句话，<a href="https://github.com/cyclinbox/pubmed_spider">pubmed_spider</a> 是用户提供一系列论文标题，通过爬虫获得txt格式的论文全文内容，其最终目的服务于大模型的知识库RAG服务）</p>
+<p>下面是具体代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line">headers = &#123;<span class="string">&#x27;User-Agent&#x27;</span>:<span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义函数，传入网址URL，返回页面上的全部文本内容。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_page_content</span>(<span class="params">url</span>): </span><br><span class="line">    req = requests.get(url,headers=headers)</span><br><span class="line">    req.encoding = <span class="string">&quot;utf-8&quot;</span></span><br><span class="line">    txt = req.text</span><br><span class="line">    bs4obj = BeautifulSoup(txt,<span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line">    page_content = bs4obj.get_text().strip()</span><br><span class="line">    <span class="keyword">return</span> page_content</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 传入PMCID，获取论文全文</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">query_from_pmc</span>(<span class="params">pmcid</span>):</span><br><span class="line">    url = <span class="string">f&quot;https://pmc.ncbi.nlm.nih.gov/articles/<span class="subst">&#123;pmcid&#125;</span>/&quot;</span></span><br><span class="line">    text = libgeturl.extract_page_content(url)</span><br><span class="line">    <span class="keyword">if</span>(text <span class="keyword">is</span> <span class="literal">None</span>): text = <span class="string">&quot;&quot;</span></span><br><span class="line">    text = text.replace(<span class="string">&quot;\n&quot;</span>,<span class="string">&quot;&quot;</span>)</span><br><span class="line">    text = text.replace(<span class="string">&quot;```&quot;</span>,<span class="string">&quot;&quot;</span>)</span><br><span class="line">    text = text.replace(<span class="string">&#x27;&quot;&quot;&quot;&#x27;</span>,<span class="string">&quot;&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 传入PMID，获取论文摘要</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">query_from_pm</span>(<span class="params">pmid</span>):</span><br><span class="line">    url = <span class="string">f&quot;https://pubmed.ncbi.nlm.nih.gov/<span class="subst">&#123;pmid&#125;</span>/&quot;</span></span><br><span class="line">    text = libgeturl.extract_page_content(url)</span><br><span class="line">    <span class="keyword">if</span>(text <span class="keyword">is</span> <span class="literal">None</span>): text = <span class="string">&quot;&quot;</span></span><br><span class="line">    text = text.replace(<span class="string">&quot;\n&quot;</span>,<span class="string">&quot;&quot;</span>)</span><br><span class="line">    text = text.replace(<span class="string">&quot;```&quot;</span>,<span class="string">&quot;&quot;</span>)</span><br><span class="line">    text = text.replace(<span class="string">&#x27;&quot;&quot;&quot;&#x27;</span>,<span class="string">&quot;&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> text </span><br></pre></td></tr></table></figure>
+
+<p>通过PMID获取PMCID的代码逻辑稍微有些复杂，因为需要利用BeautifulSoup（bs4）库解析页面上的DOM元素。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_pmcid_by_pmid</span>(<span class="params">pmid</span>):</span><br><span class="line">    url = <span class="string">f&quot;https://pubmed.ncbi.nlm.nih.gov/<span class="subst">&#123;pmid&#125;</span>/&quot;</span></span><br><span class="line">    req = requests.get(url,headers=headers)</span><br><span class="line">    req.encoding = <span class="string">&quot;utf-8&quot;</span></span><br><span class="line">    txt = req.text</span><br><span class="line">    bs4obj = BeautifulSoup(txt,<span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line">    <span class="comment"># process bs4obj and extract pmcid</span></span><br><span class="line">    pmcid_list = []</span><br><span class="line">    <span class="comment"># 这里的代码逻辑是，使用bs4寻找页面上所有样式表为identifiers的元素</span></span><br><span class="line">    all_ul_list=bs4obj.find_all(<span class="string">&quot;ul&quot;</span>, class_=[<span class="string">&#x27;identifiers&#x27;</span>])</span><br><span class="line">    <span class="comment"># 在获取这些元素以后，遍历各个元素，寻找是否存在属性data-ga-action为PMCID的元素</span></span><br><span class="line">    <span class="keyword">for</span> li <span class="keyword">in</span> all_ul_list:</span><br><span class="line">        all_link_list = li.find_all(<span class="string">&quot;a&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">len</span>(all_link_list)&gt;<span class="number">0</span>):</span><br><span class="line">            <span class="keyword">for</span> link <span class="keyword">in</span> all_link_list:</span><br><span class="line">                attrs = link.attrs</span><br><span class="line">                <span class="keyword">if</span>(<span class="string">&quot;data-ga-action&quot;</span> <span class="keyword">in</span> attrs):</span><br><span class="line">                    <span class="keyword">if</span>(<span class="string">&quot;PMCID&quot;</span> <span class="keyword">in</span> attrs[<span class="string">&quot;data-ga-action&quot;</span>]):</span><br><span class="line">                        <span class="comment">#print(link.get_text())</span></span><br><span class="line">                        pmcid = link.get_text().strip()</span><br><span class="line">                        <span class="keyword">if</span>(pmcid <span class="keyword">not</span> <span class="keyword">in</span> pmcid_list):</span><br><span class="line">                            pmcid_list.append(pmcid)</span><br><span class="line">                        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> pmcid_list</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、通过prompt工程调用大模型"><a href="#二、通过prompt工程调用大模型" class="headerlink" title="二、通过prompt工程调用大模型"></a>二、通过prompt工程调用大模型</h2><p>因为文献调研任务涉及到论文中的一些关键信息的提取，我改进了朋友博客文章中的那个prompt，要求以json文档的格式返回生成结果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504222641.png" alt="image.png"></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">你是一位生物医学领域的文献总结大师，按照用户提出的格式总结上传的学术论文，用json输出内容。</span><br><span class="line">除了json文档本身，请不要输出其他任何无关信息，包括对这篇论文或这份json文档的解释。</span><br><span class="line"></span><br><span class="line">格式要求如下：</span><br><span class="line"></span><br><span class="line">&#123;&quot;Title&quot;: &quot;[请填写文章标题]&quot;,</span><br><span class="line">&quot;Population&quot;: &quot;[列出文章中使用的人群队列名称或群体来源]&quot;,</span><br><span class="line">&quot;Species&quot;: &quot;[列出文章中使用的实验动物物种，如`mus musculus` , 物种名尽可能使用拉丁名，如果没有合适的拉丁名就使用文献中使用的物种名原名]&quot;,</span><br><span class="line">&quot;Type&quot;: &quot;[归纳一下文章的研究属于哪一种类型，如 `review`, `new algorithm`,`new technology`,`biological research`,`data source`等]&quot;,</span><br><span class="line">&quot;Method&quot;: &quot;[列出论文中使用的群体遗传学方法或正选择压力检测方法。如果没有则以字符串None填充这个条目]&quot;,</span><br><span class="line">&quot;Tissues&quot;: &quot;[列出论文中的研究涉及了哪些组织或细胞系，如`Liver`,`Brain`等]&quot;,</span><br><span class="line">&quot;Data&quot;: &quot;[列出论文的数据可访问性部分给出的数据访问链接，或GEO等数据库的访问号。如果没有则以字符串None填充这个条目]&quot;,</span><br><span class="line">&quot;Code&quot;: &quot;[列出论文的数据可访问性部分给出的代码链接，如Github存储库地址。如果没有则以字符串None填充这个条目]&quot;,</span><br><span class="line">&quot;Contribute&quot;: &quot;[用简洁的语言总结论文的主要贡献]&quot;,</span><br><span class="line">&quot;Significance&quot;: &quot;[说明这项研究对学术界或实际应用的意义]&quot;,</span><br><span class="line">&quot;Suggestion&quot;: &quot;[列出作者提出的未来研究方向或建议]&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">下面是论文的标题和摘要页：</span><br><span class="line">(-abstract-)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">下面是论文的正文：</span><br><span class="line">(-content-)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>prompt中的 <code>(-abstract-)</code> 字段和 <code>(-content-)</code> 字段，需要在实际调用大模型API时替换为论文的摘要内容（ <code>query_from_pm</code> ）和论文全文（ <code>query_from_pmc</code> ） 。</p>
+<p>上面的json格式模板仅作为一个示例，用于群体遗传学的调研 （因此， Population, Species, Method, Data, Code这几个字段对我们来说很重要）。在处理其他类型研究时，可以根据需要修改json的字段内容。 </p>
+<h2 id="三、pandas批量处理保存为Excel表格"><a href="#三、pandas批量处理保存为Excel表格" class="headerlink" title="三、pandas批量处理保存为Excel表格"></a>三、pandas批量处理保存为Excel表格</h2><p>假设我们已经下载好了所有论文的PMID信息和标题信息（例如，通过PubMed检索页面导出），并保存为文件 <code>csv-articles-set.csv</code> 。下面的代码展示了如何进行批量处理：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> libqwen</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读入文件</span></span><br><span class="line">article_df = pd.read_csv(<span class="string">&quot;csv-articles-set.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#  首先循环下标，获取文章的pmid和pmcid，</span></span><br><span class="line"><span class="comment">#  然后调用爬虫模块，获取文章的文本内容</span></span><br><span class="line"><span class="comment">#  之后调用LLM模块，获取文章摘要和其他必要信息</span></span><br><span class="line"><span class="comment">#  最后调用json和pd模块，将结果处理和合并为表格</span></span><br><span class="line">res_df = pd.DataFrame()</span><br><span class="line">error_msg_dt = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(article_df.shape[<span class="number">0</span>]):</span><br><span class="line">    <span class="built_in">print</span>(i)</span><br><span class="line">    record = article_df.iloc[i,:]</span><br><span class="line">    pmid  = record[<span class="string">&quot;PMID&quot;</span>]</span><br><span class="line">    pmcid = record[<span class="string">&quot;PMCID&quot;</span>]</span><br><span class="line">    text_ab = query_from_pm(pmid)</span><br><span class="line">    text_ct = query_from_pmc(pmcid)</span><br><span class="line">    message = prompt</span><br><span class="line">    message = message.replace(<span class="string">&quot;(-abstract-)&quot;</span>,text_ab)</span><br><span class="line">    message = message.replace(<span class="string">&quot;(-content-)&quot;</span>,text_ct)</span><br><span class="line">    libqwen.hist_msg = [] <span class="comment"># must empty it mannually.</span></span><br><span class="line">    res = libqwen.chat(message)</span><br><span class="line">    <span class="comment">#print(res)</span></span><br><span class="line">    res1 = res.replace(<span class="string">&quot;```json&quot;</span>,<span class="string">&quot;&quot;</span>).replace(<span class="string">&quot;```&quot;</span>,<span class="string">&quot;&quot;</span>).strip()</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        dt1 = json.loads(res1)</span><br><span class="line">        df1 = pd.DataFrame(dt1,index=[<span class="number">0</span>])</span><br><span class="line">        res_df = pd.concat([res_df,df1],axis=<span class="number">0</span>)</span><br><span class="line">        res_df = res_df.reset_index(drop=<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># 每处理完成一篇，以parquet中间格式临时存储结果，防止程序中途发生意外停止运行。</span></span><br><span class="line">        res_df.to_parquet(<span class="string">&quot;LLM-process-result.parquet&quot;</span>, compression=<span class="string">&quot;brotli&quot;</span>)  <span class="comment"># 更高压缩 率选brotli</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        error_msg_dt[i] = e</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 读取最终的文件，并转换为Excel格式</span></span><br><span class="line">df1 = pd.read_parquet(<span class="string">&quot;LLM-process-result.parquet&quot;</span>)</span><br><span class="line">df_merge_and_combined = article_df[[<span class="string">&quot;PMID&quot;</span>,<span class="string">&quot;Title&quot;</span>,<span class="string">&quot;Publication Year&quot;</span>,<span class="string">&quot;Journal/Book&quot;</span>,<span class="string">&quot;DOI&quot;</span>]]</span><br><span class="line">df_merge_and_combined.columns = [<span class="string">&quot;PMID&quot;</span>,<span class="string">&quot;Title-1&quot;</span>,<span class="string">&quot;Publication Year&quot;</span>,<span class="string">&quot;Journal/Book&quot;</span>,<span class="string">&quot;DOI&quot;</span>]</span><br><span class="line">df_merge_and_combined = df_merge_and_combined.join(df1)</span><br><span class="line">df_merge_and_combined.to_excel(<span class="string">&quot;LLM-process-result.xlsx&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<p>其中，<code>libqwen.py</code> 的内容如下（在之前的LLM命令行聊天软件的基础上改的，因此显得很凑合。主要是需要这里的 <code>chat()</code> 函数接口，通过这个接口获得LLM处理的返回值）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests,json,datetime,os,sys,platform</span><br><span class="line"></span><br><span class="line">API_KEY = <span class="string">&quot;sk-82b3bfa35dce4e93877d7a54841d157d&quot;</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Accept&#x27;</span>    : <span class="string">&#x27;application/json&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>:<span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Authorization&#x27;</span>: <span class="string">f&quot;Bearer <span class="subst">&#123;API_KEY&#125;</span>&quot;</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_response_with_stream</span>(<span class="params">messages</span>):</span><br><span class="line">    data_payload_dt = &#123;</span><br><span class="line">        <span class="string">&quot;model&quot;</span>:<span class="string">&#x27;qwen-long&#x27;</span>,</span><br><span class="line">        <span class="string">&quot;stream&quot;</span>:<span class="literal">True</span>,</span><br><span class="line">        <span class="string">&quot;messages&quot;</span>:messages</span><br><span class="line">    &#125;</span><br><span class="line">    payload = json.dumps(data_payload_dt)</span><br><span class="line">    url = <span class="string">&quot;https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions&quot;</span></span><br><span class="line">    response = requests.request(<span class="string">&quot;POST&quot;</span>, url, headers=headers, data=payload, stream=<span class="literal">True</span>)</span><br><span class="line">    full_content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> response.iter_lines():</span><br><span class="line">        txt = line.decode(<span class="string">&quot;UTF-8&quot;</span>)</span><br><span class="line">        txt = txt.strip()</span><br><span class="line">        left_trunc_pos = txt.find(<span class="string">&#x27;&#123;&#x27;</span>)</span><br><span class="line">        left_trunc_pos = left_trunc_pos <span class="keyword">if</span>(left_trunc_pos&gt;<span class="number">0</span>) <span class="keyword">else</span> <span class="number">0</span> <span class="comment"># 防止找不到左大括号返回-1这个数字，导致后续处理出错</span></span><br><span class="line">        txt = txt[left_trunc_pos:] <span class="comment"># 按左大括号位置进行截断。包含左大括号</span></span><br><span class="line">        <span class="keyword">if</span>(txt==<span class="string">&quot;data: [DONE]&quot;</span>): <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            obj = json.loads(txt)</span><br><span class="line">            response_msg = obj[<span class="string">&quot;choices&quot;</span>][<span class="number">0</span>][<span class="string">&quot;delta&quot;</span>][<span class="string">&quot;content&quot;</span>]</span><br><span class="line">            full_content += response_msg</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            full_content += txt</span><br><span class="line">    <span class="keyword">return</span> full_content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 与ChatBot交互的方法</span></span><br><span class="line">hist_msg = [] <span class="comment"># history of messages</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">chat</span>(<span class="params">msg</span>):</span><br><span class="line">    <span class="keyword">global</span> hist_msg</span><br><span class="line">	hist_msg.append(&#123;<span class="string">&quot;role&quot;</span>:<span class="string">&quot;user&quot;</span>,<span class="string">&quot;content&quot;</span>:msg&#125;)</span><br><span class="line">	message = get_response_with_stream(hist_msg)</span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">len</span>(message)==<span class="number">0</span>): message=<span class="string">&quot;I don&#x27;t understand this question.&quot;</span> <span class="comment"># 如果因为各种原因导致对话出错，此时message是空值。为了避免后续对话出现异常，此时人为给对话message赋值。</span></span><br><span class="line">	hist_msg.append(&#123;<span class="string">&quot;role&quot;</span>:<span class="string">&quot;assistant&quot;</span>,<span class="string">&quot;content&quot;</span>:message&#125;)</span><br><span class="line">	<span class="keyword">return</span> message</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、效果展示与注意事项"><a href="#四、效果展示与注意事项" class="headerlink" title="四、效果展示与注意事项"></a>四、效果展示与注意事项</h2><p>我们以一个小文献集为例，这一批文献是从PubMed上以 “Population genetics” 为关键词检索到的，部分内容如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504224441.png" alt="image.png"></p>
+<p>通过上面的大模型消化，我们最终得到的成品如下表所示，其中的 Populations, Species, Data, Code等列是我们所关心的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504224323.png" alt="image.png"></p>
+<p>另外，关于LLM处理的准确性问题，经过实测，qwen-long的准确性还是比较好的。同期我也测试过百度ERNIE的系列模型，发现模型的幻觉问题比较严重，因此不建议使用ERNIE系列的模型。如果需要更准确的处理结果，大家也可以切换其他模型API，例如deepseek、gemini等。另外，这一工具在文献初筛的时候用比较好，筛选完以后最好还是得再自己精读一下比较稳妥。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>LLM</tag>
+        <tag>PubMed</tag>
+        <tag>文献调研</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>metaso study：一个能够根据上传的资料生成教学视频的AI工具</title>
+    <url>/2025/05/04/metaso_study_and_notebookML/</url>
+    <content><![CDATA[<p>前几天在网上看到了这个工具。</p>
+<p>原博主称，<a href="https://metaso.cn/study">metaso study</a>这个工具可以自动生成网课视频，有个AI老师可以边放PPT边讲。</p>
+<span id="more"></span>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427021356.png" alt="image.png"></p>
+<h2 id="一、使用方法"><a href="#一、使用方法" class="headerlink" title="一、使用方法"></a>一、使用方法</h2><p><a href="https://metaso.cn/study">metaso study</a>的主页如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250427021240.png" alt="image.png"></p>
+<p>在主页里搜索想要学习的知识点，或者直接上传文件，就可以开启学习的旅程。支持的文件格式包括txt，epub（电子书），pdf（论文、专业书籍等）。</p>
+<p>下面以《认知行为疗法入门》这本书为例，展示一下生成的课程效果。如下图，上传完成电子书以后，metaso会经过几分钟的处理过程，随后就能够来到下面这个页面。</p>
+<p>点击这里的“讲解”按钮，即可生成讲解PPT和音频。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504231121.png" alt="image.png"></p>
+<p>在第一次生成讲解时，可以调整一些参数，包括知识掌握程度、讲解风格、语言、音色等：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504231813.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504231807.png" alt="image.png"></p>
+<p>随后，metaso开始撰写课件，这里可以看到一些课件生成的过程（如下图）。整个过程大约半分钟。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504230903.png" alt="image.png"></p>
+<p>随后进入全屏播放页面：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504230914.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504230938.png" alt="image.png"></p>
+<h2 id="二、实际体验"><a href="#二、实际体验" class="headerlink" title="二、实际体验"></a>二、实际体验</h2><p>这个播放页面，给人一种在腾讯会议或者雨课堂上网课的感觉，氛围感很足（赞！）。</p>
+<p>至于内容的准确性，很大一部分取决于上传的资料的质量。例如，它对epub文档的处理能力高于对PDF的处理能力（可能因为从PDF文件中读取内容时，一些文字的排版会乱），且长度较短的文件处理效果比长文件要好。</p>
+<p>另外，如果文件内容太多，metaso study会自动分章，每一章生成一个单独的PPT和讲解音频，不过同样的，PDF文件的分章效果很糟糕（如下图，对骆利群神经生物学原理的分章，一些章节识别的并不正确），不如对epub文件的分章效果。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504233019.png" alt="image.png"></p>
+<p>另外一个缺点是，它只能导出讲解视频，无法单独下载PPT和文字稿，因此如果有备课需求的话，metaso study并非一个好选择。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250504232538.png" alt="image.png"></p>
+<p>我也对比了metaso study和谷歌 <a href="https://notebooklm.google.com/">notebook ML </a> 这两个工具，后者可以根据上传的文件生成podcast音频。感觉 <a href="https://notebooklm.google.com/">notebook ML </a> 在长文件处理方面的能力要好一点（一些metaso study处理不了的文件它能处理），但是音频选项很有限，只能导出一男一女对话这种形式的podcast，而且不会自动分章。 总结来说， <a href="https://notebooklm.google.com/">notebook ML </a> 导出的podcast是一个练听力和路上利用零碎时间学习知识的好工具，但论自动化教学（生成PPT和讲解视频）这块，还得是metaso塔子老师啊。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>AI agent</tag>
+        <tag>metaso</tag>
+        <tag>notebookML</tag>
+        <tag>在线学习</tag>
+      </tags>
+  </entry>
 </search>
