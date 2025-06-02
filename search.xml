@@ -19068,4 +19068,184 @@
         <tag>信息编码</tag>
       </tags>
   </entry>
+  <entry>
+    <title>信息论学习笔记（六）</title>
+    <url>/2025/06/02/Information_Theory_Note06/</url>
+    <content><![CDATA[<p>前段时间查文献的时候，偶然看到了一些算法里涉及到了信息论的相关知识。信息论我在几年前通过看书自学过，时间太久有些忘了，正好趁此机会重新复习一下。</p>
+<blockquote>
+<p>参考书籍：机械工业《信息论基础（原书第二版）》（ELEMENTS OF INFORMATION THEORY SECOND EDITION），作者Thomas M. Cover, Joy A. Thomas</p>
+</blockquote>
+<span id="more"></span>
+
+<hr>
+<h2 id="博弈与数据压缩"><a href="#博弈与数据压缩" class="headerlink" title="博弈与数据压缩"></a>博弈与数据压缩</h2><h3 id="赛马问题中的投资增长率与赔率关系"><a href="#赛马问题中的投资增长率与赔率关系" class="headerlink" title="赛马问题中的投资增长率与赔率关系"></a>赛马问题中的投资增长率与赔率关系</h3><p>以赛马问题为例，赛马中的投资增长率与赛马的熵率之间有极强的对偶性（其中，投资增长率与赛马的熵率二者之和为常数）：</p>
+<h4 id="两种马票定义"><a href="#两种马票定义" class="headerlink" title="两种马票定义"></a>两种马票定义</h4><ul>
+<li><code>a-for-1</code>: 赛前用1元买票下注，中奖得a元，不中得0元</li>
+<li><code>b-to-1</code>: 赛前用0元买票下注，中奖得b元，不中得-1元（即缴纳1元本金）</li>
+<li>注意，若 $b = a - 1$，则两种马票收益等价。</li>
+</ul>
+<hr>
+<h3 id="股民的总收益模型"><a href="#股民的总收益模型" class="headerlink" title="股民的总收益模型"></a>股民的总收益模型</h3><p>对于一个股民，其初始资金为买马票，我们记：</p>
+<ul>
+<li>在第 $i$ 匹马上下注的资金占本金的 $b_i$：  </li>
+</ul>
+<ul>
+<li>第 $i$ 匹马赢的概率为 $p_i$；  </li>
+<li>若第 $i$ 匹马赢，收益为 $o_i \cdot b_i$（赔率为 $o_i$ 的一个因子）。  </li>
+</ul>
+<p>若有 $n$ 场比赛，第 $n$ 场比赛结束后总资产 $S_n = \prod_{i=1}^n S(x_i)$，其中 $S(x) = b(x) \cdot o(x)$ 为相对收益，是当 $X$ 匹马获胜时，股民购买该马所获收益的乘积因子。</p>
+<p>定义一场比赛的双倍率（Doubling Rate）为：</p>
+<p>$$<br>W(b, p) = E(\log S(X)) = \sum_{k=1}^m p_k \log (b_k o_k)<br>$$</p>
+<p>其表示在给定的投资策略 $b$ 和比赛结果的概率分布 $p$ 下，资金的长期平均增长率 。具体来说，它衡量的是每次比赛中，股民的资金能够以多快的速度增长。</p>
+<p>假设比赛结果 $X_1, X_2, \ldots, X_n$ 为服从 $p(x)$ 的 iid 序列，则股民在策略 $b$ 下的相对收益将以指数因子 $W(b, p)$ 呈指数增长：  </p>
+<p>$$<br>S_n \dot{=} 2^{n W(b, p)}<br>$$</p>
+<hr>
+<h3 id="最优双倍率策略"><a href="#最优双倍率策略" class="headerlink" title="最优双倍率策略"></a>最优双倍率策略</h3><p><strong>目标</strong>：如何在所有投资组合策略 $b$ 的集合中寻找使 $W(b, p)$ 最大化的策略。  </p>
+<p><strong>最优双倍率</strong>：如果选择 $b$ 使得双倍率 $W(b, p)$ 达到最大值 $W^*(p)$，那么称该值为最优双倍率。  </p>
+<p>$$<br>W^*(p) = \max_{b} W(b, p) = \max_{b_i \geq 0, \sum b_i = 1} \sum_{i=1}^mp_i\text{log}b_io_i<br>$$  </p>
+<p>经证明，$b = p$ 是该优化问题的解。</p>
+<hr>
+<h3 id="定理-6-1-2：最优双倍率的显式计算"><a href="#定理-6-1-2：最优双倍率的显式计算" class="headerlink" title="定理 6.1.2：最优双倍率的显式计算"></a>定理 6.1.2：最优双倍率的显式计算</h3><p>$$<br>\begin{aligned}<br>W(b, p) &amp;= \sum p_i \log (b_i o_i) \\<br>&amp;= \sum p_i \log \left( \frac{b_i}{p_i} \cdot p_i o_i \right) \\<br>&amp;= \sum p_i \log o_i - H(p) - D(p \| b) \leq \sum p_i \log o_i - H(p)<br>\end{aligned}<br>$$  </p>
+<p>其中，$D(p | b)$ 为相对熵。当且仅当 $b = p$ 时取等号。</p>
+<p>因此，最优化的双倍率公式： $W^*=\sum p_i \log o_i - H(p)$ ，并按比例 $b^*=p$  下注可达到该值。</p>
+<p>若仅知道 $\sum \frac{1}{o_i} = 1$，不包含其他信息，则：  </p>
+<p>$$<br>W(b, p) = \sum p_i \log \left( b_i o_i \right) = \sum p_i \log \left( \frac{b_i}{p_i} \cdot p_i o_i \right) = D(p | b) - D(p | \frac{1}{o})<br>$$</p>
+<p>即以以 $o_i$ 估计 $p_i$ ，所谓“马民法”估计（如图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250602221827.png" alt="image.png"></p>
+<p>$\Rightarrow$ 马民法的估计计划是否实施，取决于马民法下该策略到真实分布的距离的差值。  </p>
+<p>$\Rightarrow$ 只有当股民的估计 $b$ 比马民法的估计更好时，股民才能赚钱。</p>
+<hr>
+<h3 id="均匀公平机会下的收益"><a href="#均匀公平机会下的收益" class="headerlink" title="均匀公平机会下的收益"></a>均匀公平机会下的收益</h3><p>若马票为 $m$-for-1，则：  </p>
+<p>$$<br>W^*(p) = D(p | \frac{1}{m}) = \log m - H(p)<br>$$</p>
+<p><strong>守恒定理</strong>：对于均匀的公平机会收益赔率，$W^*(p) + H(p) = \log m$。  双倍率与熵率之和为常数。</p>
+<p>$\Rightarrow$ 熵减小 $1 \text{ bit}$，股民收益翻一番。  </p>
+<p>$\Rightarrow$ 熵越小，获利越丰厚。</p>
+<h3 id="股民的保留本金策略"><a href="#股民的保留本金策略" class="headerlink" title="股民的保留本金策略"></a>股民的保留本金策略</h3><p>若股民有选择的保留本金的比例 $b(0)$ 为保留本金的比例，其余 $b(x)$ 为对不同马匹 $x$ 的下注比例，则： </p>
+<p>$$<br>S(x) = b(0) + b(x) \cdot o(x)<br>$$  </p>
+<ul>
+<li>若 $\sum\frac{1}{o_i} = 1$， $b(0)$ 不影响收益分析，按比例下注最优。  </li>
+<li>若 $\sum\frac{1}{o_i} &lt; 1$，机会收益更高，因此按比例下注最优，且不必保留本金。  也可以选择dutch book（“荷兰赌”）这一策略，令 $b_i=c\frac{1}{o_i}$ 其中 $c=\frac{1}{\sum{c_i}}$ ，相对收益为 $o_ib_i=c$ ， $S(x)=1/\sum{\frac{1}{o_i}}=c&gt;1$ 。</li>
+<li>若 $\sum \frac{1}{o_i} &gt; 1$，机会收益更低，需保留部分本金。</li>
+</ul>
+<hr>
+<h3 id="已知历史信息下的下注策略"><a href="#已知历史信息下的下注策略" class="headerlink" title="已知历史信息下的下注策略"></a>已知历史信息下的下注策略</h3><p>若在赛马比赛中，马民可提前知道一匹马的历史胜率（记作信息 $Y$），则：  </p>
+<ul>
+<li>$b(x|y) \geq 0, \sum_x b(x|y) = 1$ 为已知信息 $Y$ 条件下的下注策略。  </li>
+<li>同样地，$b(x) \geq 0, \sum_x b(x) = 1$ 为无条件下注策略。</li>
+</ul>
+<h4 id="双倍率定义"><a href="#双倍率定义" class="headerlink" title="双倍率定义"></a>双倍率定义</h4><ul>
+<li><strong>无条件双倍率</strong>：<br>$$<br>W^*(X) = \max_{b(x)} \sum_x p(x) \log b(x) o(x)<br>$$  </li>
+<li><strong>条件双倍率</strong>：<br>$$<br>W^*(X|Y) = \max_{b(x|y)} \sum_{x,y} p(x,y) \log b(x|y) o(x)<br>$$  </li>
+</ul>
+<p>$\Delta W = W^*(X|Y) - W^*(X)$  </p>
+<p>由于获得某匹马比赛 $X$ 中的信息 $Y$ 而引起的双倍率增量 $\Delta W$ 满足：  </p>
+<p>$$<br>\Delta W = I(X; Y)<br>$$</p>
+<p>即，双倍率的增量为 $X$ 和 $Y$ 的互信息。</p>
+<hr>
+<h3 id="随机过程下的最优双倍率"><a href="#随机过程下的最优双倍率" class="headerlink" title="随机过程下的最优双倍率"></a>随机过程下的最优双倍率</h3><p>若赛马的过程为一个随机过程，下注策略依赖于此前各次比赛的结果：  </p>
+<p>$$<br>\begin{aligned}<br>W^*(X_k | X_{k-1}, X_{k-2}, \ldots, X_1) &amp;= \max_{b(x_k | x_{k-1}, \ldots, x_1)} E[\log S(X_k) | X_{k-1}, \ldots, X_1] \\<br>&amp;= \log m - H(X_k | X_{k-1}, \ldots, X_1)<br>\end{aligned}<br>$$  </p>
+<p>此时最优双倍率在 $b^*(x_k | x_{k-1}, \ldots, x_1) = p(x_k | x_{k-1}, \ldots, x_1)$ 时达到。  </p>
+<p>第 $n$ 场比赛结束后，股民的相对收益 $S_n = \prod_{i=1}^n S(x_i)$，且增长率的指数（m-for-1）为：  </p>
+<p>$$<br>\begin{aligned}<br>\frac{1}{n} E[\log S_n] &amp;= \frac{1}{n} \sum_{i=1}^n E[\log S(x_i)] \\<br>&amp;= \log m - \frac{1}{n} H(X_1, X_2, \ldots, X_n)<br>\end{aligned}<br>$$  </p>
+<p>$\Rightarrow$ 对于平稳过程 $H(X)$，两边取极限，可得：  </p>
+<p>$$<br>\lim_{n \to \infty} \frac{1}{n} E[\log S_n] + H(X) = \log m<br>$$</p>
+<hr>
+<h2 id="英文的熵与模型复杂度（马尔科夫链语言模型）"><a href="#英文的熵与模型复杂度（马尔科夫链语言模型）" class="headerlink" title="英文的熵与模型复杂度（马尔科夫链语言模型）"></a>英文的熵与模型复杂度（马尔科夫链语言模型）</h2><ul>
+<li><strong>一阶逼近模型</strong>：$p(x_i | x_{i-1})$   ，用上一个字母预测下一个字母出现的概率。</li>
+<li><strong>二阶逼近模型</strong>：$p(x_i | x_{i-1}, x_{i-2})$   ，用前面两个字母预测下一个字母出现的概率。</li>
+<li><strong>三阶逼近模型</strong>：$p(x_i | x_{i-1}, x_{i-2}, x_{i-3})$  ，用前面三个字母预测下一个字母出现的概率。</li>
+</ul>
+<p>$\Rightarrow$ 模型复杂度：一阶 &lt; 二阶 &lt; 三阶 &lt; …  </p>
+<p>$\Rightarrow$ 复杂度越高，越逼近真实文章。  </p>
+<p>在语言识别中的应用：三字母模型（二阶马尔可夫单词模型）。</p>
+<p><strong>2025年补充：</strong></p>
+<ul>
+<li>其实现阶段的大语言模型，不论是GPT还是deepseek，其数学原理就是这样，以前面出现的文本（例如system prompt和用户提示词）去预测后续的文本（即模型给出的回答）。</li>
+<li>但是要实现这样的生成任务，上述N阶马尔科夫链语言模型显然力不从心，且模型计算复杂度会很高，因此出现了LSTM、Attention、Transformer等技术提高计算效率和并行能力</li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>信息论</tag>
+        <tag>数据压缩</tag>
+        <tag>马尔科夫链</tag>
+        <tag>信息编码</tag>
+        <tag>赛马问题</tag>
+        <tag>股民收益模型</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一个统计EPUB电子书总字数和转txt文件的小工具</title>
+    <url>/2025/06/02/epub_file_convert_tool/</url>
+    <content><![CDATA[<p>从Z-library上下载的epub电子书有点多了。有时候想要统计这些电子书都有多少字，另外想要简单做一个全局查询功能，节省导入到阅读器软件里去查询的时间。在AI的帮助下，完成了这个工具。</p>
+<span id="more"></span>
+
+<h2 id="一、背景：epub格式介绍"><a href="#一、背景：epub格式介绍" class="headerlink" title="一、背景：epub格式介绍"></a>一、背景：epub格式介绍</h2><p>下面是百度百科给出的定义：</p>
+<blockquote>
+<p>ePub（Electronic Publication的缩写，意为：电子出版），是一个自由的开放标准，属于一种可以“自动重新编排”的内容；也就是文字内容可以根据阅读设备的特性，以最适于阅读的方式显示。EPub档案内部使用了XHTML或DTBook （一种由DAISY Consortium提出的XML标准）来展现文字、并以zip压缩格式来包裹档案内容</p>
+</blockquote>
+<p>本质上，epub文件是一个zip压缩包，当我们使用zip解压工具进行解包以后，可以看到其内部大致结构是这样（左图是我从Z-library上下载的《悉达多》的电子书预览界面，右图是解包内容），其包含<code>META-INF</code> 和<code>OEBPS</code> 文件夹（有些电子书可能还会有别的文件夹），在这些文件夹下面是一系列xml文件或html文件，记录着书籍的目录信息或者具体的章节内容。</p>
+<p><img src="https://pic1.imgdb.cn/item/683dbe8458cb8da5c825c78c.png"></p>
+<p>在解包得到的目录当中，有一个文件路径 <code>META-INF/container.xml</code> ，这是epub文件最重要的内容清单，其格式大致如下，其中记录了根文件路径、目录文件的文件名（例如此处是<code>OEBPS/content.opf</code>）。</p>
+<p><img src="https://pic1.imgdb.cn/item/683dbf3d58cb8da5c825c7c5.png"></p>
+<p>我们也可以去看一看这个文件：</p>
+<p><img src="https://pic1.imgdb.cn/item/683dc05558cb8da5c825ce9d.png"></p>
+<p>这是书籍的目录，其中引用了一堆html文件的地址，每一个html文件对应着书籍当中的一个章节。</p>
+<p>关于html格式的介绍，网上有许多，此处不再赘述。需要注意的是，epub文件中封装的html并不支持完整的html标准（例如许多动态效果无法实现），只支持一些基础的文本标签（如标题 <code>&lt;h1&gt;</code>,<code>&lt;h2&gt;</code>,等，段落<code>&lt;p&gt;</code>，引文和链接<code>&lt;a&gt;</code>，图片 <code>&lt;img&gt;</code>，等等，以及一些基础的CSS样式表），以允许出版商在书籍中添加多样的富文本效果。</p>
+<h2 id="二、原理与代码"><a href="#二、原理与代码" class="headerlink" title="二、原理与代码"></a>二、原理与代码</h2><p>基于上一段中对epub格式的介绍，我们大致可以知道如何去解析一个epub文件：使用zip文件接口解压缩并获取内容清单文件 <code>META-INF/container.xml</code> ，随后根据这个内容清单文件去寻找根文件目录以及目录文件，最后根据目录文件去解析书籍内容的html文件，即可获得整本epub的文本内容。</p>
+<p>我们的目标有三个：</p>
+<ol>
+<li>统计电子书字数</li>
+<li>全局查询功能</li>
+<li>epub转txt</li>
+</ol>
+<p>这三个目标其实都很好实现，只要能够按照上述思路成功解析epub文件即可。</p>
+<p>在python中，有下面这些工具可以为我们所用：</p>
+<ul>
+<li>zipfile: 读取zip存档的工具，可以帮助我们获取epub文件内部的各个文件</li>
+<li>xml: 读取和解析xml文件的工具，可以帮助我们解析内容清单文件</li>
+<li>BeautifulSoup(bs4): HTML代码解析工具，它比xml更强大，可以对各个章节文本的xhtml文件进行处理</li>
+</ul>
+<p>下面是代码。具体功能的实现见代码注释：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> os,sys,zipfile,re,json</span><br><span class="line"><span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"><span class="comment">## 统计中英文混杂文本的单词数和字符数。</span></span><br><span class="line"><span class="comment"># 中文单词数等于中文字符数。英文单词数等于以空格分隔的连续英文单词。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">count_words_and_chars</span>(<span class="params">text</span>):</span><br><span class="line">    chinese_char_pattern = re.<span class="built_in">compile</span>(<span class="string">r&#x27;[\u4e00-\u9fff]&#x27;</span>)</span><br><span class="line">    english_word_pattern = re.<span class="built_in">compile</span>(<span class="string">r&#x27;\b[a-zA-Z]+\b&#x27;</span>)</span><br><span class="line">    chinese_word_count = <span class="built_in">len</span>(chinese_char_pattern.findall(text)) <span class="comment"># 中文总字数</span></span><br><span class="line">    english_word_count = <span class="built_in">len</span>(english_word_pattern.findall(text)) <span class="comment"># 英文单词数</span></span><br><span class="line">    char_count = <span class="built_in">len</span>(text) <span class="comment"># 总字符数</span></span><br><span class="line">    total_word_count = chinese_word_count + english_word_count <span class="comment"># 总字数</span></span><br><span class="line">    <span class="keyword">return</span> total_word_count, char_count, chinese_word_count, english_word_count</span><br><span class="line"></span><br><span class="line"><span class="comment">## 流式提取 EPUB 文件中的文本内容，统计字数，并写入文件(如果convert_to_txt==True)。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_epub_text</span>(<span class="params">epub_path,convert_to_txt=<span class="literal">False</span>,text_to_find=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        text_find_result_dt = &#123;&#125; <span class="comment"># 用于存储text finding结果的字典</span></span><br><span class="line">        <span class="keyword">if</span>(convert_to_txt):      <span class="comment"># 如果需要写入文件，则在此处创建文件，后续进行流式写入</span></span><br><span class="line">            output_file_path = epub_path+<span class="string">&quot;.txt&quot;</span></span><br><span class="line">            output = <span class="built_in">open</span>(output_file_path,<span class="string">&#x27;w&#x27;</span>,encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">        <span class="keyword">with</span> zipfile.ZipFile(epub_path, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> epub: <span class="comment"># 打开epub文件。后续对这个epub文件对象进行操作。</span></span><br><span class="line">            <span class="comment"># 找到并解析内容清单 (container.xml)</span></span><br><span class="line">            container_file = <span class="string">&quot;META-INF/container.xml&quot;</span></span><br><span class="line">            <span class="keyword">with</span> epub.<span class="built_in">open</span>(container_file) <span class="keyword">as</span> container:</span><br><span class="line">                tree = ET.parse(container)</span><br><span class="line">                root = tree.getroot()</span><br><span class="line">                <span class="comment"># 获取根文件路径</span></span><br><span class="line">                rootfile_path = root.find(<span class="string">&quot;.//&#123;urn:oasis:names:tc:opendocument:xmlns:container&#125;rootfile&quot;</span>).attrib[<span class="string">&#x27;full-path&#x27;</span>]</span><br><span class="line">            <span class="comment"># 打开根文件 (通常是 .opf 文件)</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;rootfile:\t<span class="subst">&#123;rootfile_path&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">with</span> epub.<span class="built_in">open</span>(rootfile_path) <span class="keyword">as</span> rootfile:</span><br><span class="line">                tree = ET.parse(rootfile)</span><br><span class="line">                root = tree.getroot()</span><br><span class="line">                <span class="comment"># 查找所有内容文件的引用</span></span><br><span class="line">                items = root.findall(<span class="string">&quot;.//&#123;http://www.idpf.org/2007/opf&#125;item&quot;</span>)</span><br><span class="line">                text_files = [item.attrib[<span class="string">&#x27;href&#x27;</span>] <span class="keyword">for</span> item <span class="keyword">in</span> items <span class="keyword">if</span> item.attrib[<span class="string">&#x27;media-type&#x27;</span>] == <span class="string">&#x27;application/xhtml+xml&#x27;</span>]</span><br><span class="line">            total_word_count = total_char_count = total_zh_word_count = total_en_word_count = <span class="number">0</span> <span class="comment"># 字数统计的变量，此处创建并赋值为0</span></span><br><span class="line">            <span class="keyword">for</span> text_file <span class="keyword">in</span> text_files: <span class="comment"># 根据所有内容文件的引用，依次读取这些文件，并提取文本内容</span></span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;File:\t<span class="subst">&#123;text_file&#125;</span>&quot;</span>)</span><br><span class="line">                <span class="keyword">try</span>:</span><br><span class="line">                    dirname = os.path.dirname(rootfile_path)</span><br><span class="line">                    <span class="keyword">if</span>(dirname==<span class="string">&quot;&quot;</span>): text_fpath = text_file</span><br><span class="line">                    <span class="keyword">else</span>: <span class="comment"># 如果文件路径中有斜杠，需要分情况做一些处理</span></span><br><span class="line">                        <span class="keyword">if</span>(<span class="string">&quot;\\&quot;</span> <span class="keyword">in</span> text_file): text_fpath = dirname+<span class="string">&quot;\\&quot;</span>+text_file</span><br><span class="line">                        <span class="keyword">else</span>:                  text_fpath = dirname+<span class="string">&quot;/&quot;</span>+text_file</span><br><span class="line">                    <span class="keyword">with</span> epub.<span class="built_in">open</span>(text_fpath) <span class="keyword">as</span> tf: <span class="comment"># 打开对应的文件，并进行解析</span></span><br><span class="line">                        txt1 = tf.read()</span><br><span class="line">                        bs4obj = BeautifulSoup(txt1,<span class="string">&#x27;lxml&#x27;</span>)      <span class="comment"># 使用beautifulsoup解析，这个库比xml更稳定</span></span><br><span class="line">                        text   = bs4obj.get_text().strip() <span class="comment"># 使用beautifulsoup获取页面上的所有文本内容</span></span><br><span class="line">                        <span class="keyword">if</span>(convert_to_txt): <span class="comment"># 如果指定了要导出到text文件，则此处开启写入。</span></span><br><span class="line">                            output.write(text)</span><br><span class="line">                            output.write(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">                        <span class="keyword">if</span>(text_to_find <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>): <span class="comment"># 查询字符串是否在这个章节中</span></span><br><span class="line">                            <span class="keyword">if</span>(text_to_find <span class="keyword">in</span> text):</span><br><span class="line">                                text_find_result_dt[text_file] = text</span><br><span class="line">                        word_count, char_count, chinese_word_count, english_word_count = count_words_and_chars(text)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;\tword_count:\t<span class="subst">&#123;word_count&#125;</span>&quot;</span>)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;\tchar_count:\t<span class="subst">&#123;char_count&#125;</span>&quot;</span>)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;\tchinese_word_count:\t<span class="subst">&#123;chinese_word_count&#125;</span>&quot;</span>)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;\tenglish_word_count:\t<span class="subst">&#123;english_word_count&#125;</span>&quot;</span>)</span><br><span class="line">                        total_word_count += word_count</span><br><span class="line">                        total_char_count += char_count</span><br><span class="line">                        total_zh_word_count += chinese_word_count</span><br><span class="line">                        total_en_word_count += english_word_count</span><br><span class="line">                <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">f&quot;Warning: Failed to parse `<span class="subst">&#123;text_file&#125;</span>` - message:<span class="subst">&#123;e&#125;</span>&quot;</span>, file=sys.stderr)</span><br><span class="line">            <span class="keyword">if</span>(convert_to_txt):</span><br><span class="line">                output.close()</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;Text file is saved as `<span class="subst">&#123;output_file_path&#125;</span>`.&quot;</span>)</span><br><span class="line">            <span class="keyword">if</span>((text_to_find <span class="keyword">is</span> <span class="literal">None</span>)==<span class="literal">False</span>):</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;\n\n===&gt; Text finding result: &lt;===&quot;</span>)</span><br><span class="line">                <span class="built_in">print</span>(text_find_result_dt.keys())</span><br><span class="line">                json_text = json.dumps(text_find_result_dt,ensure_ascii=<span class="literal">False</span>,indent=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line">                <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;text_finding_result.json&quot;</span>,<span class="string">&#x27;w&#x27;</span>,encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> jsonfile:</span><br><span class="line">                    jsonfile.write(json_text)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;See more details in `text_finding_result.json`&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> [total_word_count,total_char_count,total_zh_word_count,total_en_word_count]</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Error: Unable to process EPUB file - <span class="subst">&#123;e&#125;</span>&quot;</span>, file=sys.stderr)</span><br><span class="line">        <span class="keyword">return</span> [<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) &lt; <span class="number">2</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Usage: python epub_convert_tool.py &lt;epub_file&gt; [convert_to_txt] [text_to_find]&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\t&lt;epub_file&gt;        Input file path&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\t[convert_to_txt]   0: not convert, 1: convert to a txt file in the same name&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\t[text_to_find]     Text you want to find&quot;</span>)</span><br><span class="line">        sys.exit(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    epub_file = sys.argv[<span class="number">1</span>]</span><br><span class="line">    convert_to_txt = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">len</span>(sys.argv)&gt;<span class="number">2</span>):</span><br><span class="line">        <span class="keyword">if</span>(sys.argv[<span class="number">2</span>]==<span class="string">&quot;1&quot;</span>):</span><br><span class="line">            convert_to_txt = <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">len</span>(sys.argv)==<span class="number">4</span>):</span><br><span class="line">        text_to_find = sys.argv[<span class="number">3</span>]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        text_to_find = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.isfile(epub_file) <span class="keyword">or</span> <span class="keyword">not</span> epub_file.lower().endswith(<span class="string">&#x27;.epub&#x27;</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Error: Please provide a valid EPUB file.&quot;</span>)</span><br><span class="line">        sys.exit(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    wc,cc,zh_wc,en_wc = extract_epub_text(epub_file,convert_to_txt,text_to_find)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n\n&gt;&gt;&gt; total count of `<span class="subst">&#123;epub_file&#125;</span>` &lt;&lt;&lt;\n&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;word_count:\t<span class="subst">&#123;wc&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;char_count:\t<span class="subst">&#123;cc&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;chinese_word_count:\t<span class="subst">&#123;zh_wc&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;english_word_count:\t<span class="subst">&#123;en_wc&#125;</span>&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="三、运行效果"><a href="#三、运行效果" class="headerlink" title="三、运行效果"></a>三、运行效果</h2><p>这是一个命令行应用，因此直接运行时，会得到下面这样的帮助文档。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Usage: python epub_convert_tool.py &lt;epub_file&gt; [convert_to_txt] [text_to_find]</span><br><span class="line">        &lt;epub_file&gt;        Input file path</span><br><span class="line">        [convert_to_txt]   0: not convert, 1: convert to a txt file in the same name</span><br><span class="line">        [text_to_find]     Text you want to find</span><br></pre></td></tr></table></figure>
+
+<p>其接受三个参数：</p>
+<ul>
+<li><code>epub_file</code> 是传入的epub文件的路径</li>
+<li><code>convert_to_txt</code> 是一个指定是否要转换txt文件的数字，0代表不转换，1代表转换。这个参数是可选参数，默认不转换</li>
+<li><code>text_to_find</code> 是需要搜索的字符串。这个参数是可选参数，默认为空，如果要使用，需要先指定 <code>convert_to_txt</code>参数，再指定<code>text_to_find</code></li>
+</ul>
+<p>下面以统计《李娟阿勒泰系列典藏合集》这本书为例进行展示：</p>
+<p>仅统计字数：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~$ python epub_file_convert_tool.py 李娟阿勒泰系列典藏合集.epub</span><br><span class="line">rootfile:       OEBPS/content.opf</span><br><span class="line">File:   Text/cover_page.xhtml</span><br><span class="line">        word_count:     11</span><br><span class="line">        char_count:     11</span><br><span class="line">        chinese_word_count:     11</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0000.xhtml</span><br><span class="line">        word_count:     25</span><br><span class="line">        char_count:     25</span><br><span class="line">        chinese_word_count:     25</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0001.xhtml</span><br><span class="line">        word_count:     1</span><br><span class="line">        char_count:     5</span><br><span class="line">        chinese_word_count:     0</span><br><span class="line">        english_word_count:     1</span><br><span class="line"></span><br><span class="line">... ...</span><br><span class="line"></span><br><span class="line">File:   Text/part0142.xhtml</span><br><span class="line">        word_count:     2976</span><br><span class="line">        char_count:     3458</span><br><span class="line">        chinese_word_count:     2976</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0143.xhtml</span><br><span class="line">        word_count:     1912</span><br><span class="line">        char_count:     2234</span><br><span class="line">        chinese_word_count:     1912</span><br><span class="line">        english_word_count:     0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; total count of `李娟阿勒泰系列典藏合集.epub` &lt;&lt;&lt;</span><br><span class="line"></span><br><span class="line">word_count:     468396</span><br><span class="line">char_count:     537405</span><br><span class="line">chinese_word_count:     468380</span><br><span class="line">english_word_count:     16</span><br></pre></td></tr></table></figure>
+
+<p>如果要导出txt文件，同时搜索文本（以“下雪了”这个词为例）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~$ python epub_file_convert_tool.py 李娟阿勒泰系列典藏合集.epub  1  下雪了</span><br><span class="line">rootfile:       OEBPS/content.opf</span><br><span class="line">File:   Text/cover_page.xhtml</span><br><span class="line">        word_count:     11</span><br><span class="line">        char_count:     11</span><br><span class="line">        chinese_word_count:     11</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0000.xhtml</span><br><span class="line">        word_count:     25</span><br><span class="line">        char_count:     25</span><br><span class="line">        chinese_word_count:     25</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0001.xhtml</span><br><span class="line">        word_count:     1</span><br><span class="line">        char_count:     5</span><br><span class="line">        chinese_word_count:     0</span><br><span class="line">        english_word_count:     1</span><br><span class="line"></span><br><span class="line">... ...</span><br><span class="line"></span><br><span class="line">File:   Text/part0142.xhtml</span><br><span class="line">        word_count:     2976</span><br><span class="line">        char_count:     3458</span><br><span class="line">        chinese_word_count:     2976</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0143.xhtml</span><br><span class="line">        word_count:     1912</span><br><span class="line">        char_count:     2234</span><br><span class="line">        chinese_word_count:     1912</span><br><span class="line">        english_word_count:     0</span><br><span class="line">Text file is saved as `李娟阿勒泰系列典藏合集.epub.txt`.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">===&gt; Text finding result: &lt;===</span><br><span class="line">dict_keys([&#x27;Text/part0018.xhtml&#x27;, &#x27;Text/part0038.xhtml&#x27;, &#x27;Text/part0059.xhtml&#x27;, &#x27;Text/part0064.xhtml&#x27;, &#x27;Text/part0079.xhtml&#x27;, &#x27;Text/part0096.xhtml&#x27;, &#x27;Text/part0097.xhtml&#x27;, &#x27;Text/part0119.xhtml&#x27;])</span><br><span class="line">See more details in `text_finding_result.json`</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; total count of `李娟阿勒泰系列典藏合集.epub` &lt;&lt;&lt;</span><br><span class="line"></span><br><span class="line">word_count:     468396</span><br><span class="line">char_count:     537405</span><br><span class="line">chinese_word_count:     468380</span><br><span class="line">english_word_count:     16</span><br></pre></td></tr></table></figure>
+
+<p>其导出的txt文件为 <code>李娟阿勒泰系列典藏合集.epub.txt</code> ，打开以后的内容是这样的：</p>
+<p><img src="https://pic1.imgdb.cn/item/683dd15e58cb8da5c825daa8.png"></p>
+<p>另外，我们还找到了包含“下雪了”这个词的多个章节文件，包括<code>part0018.xhtml</code>,<code>part0038.xhtml</code>等。查找结果的详细输出在<code>text_finding_result.json</code>文件当中，我们可以打开看一下这个文件的内容：</p>
+<p><img src="https://pic1.imgdb.cn/item/683dd06058cb8da5c825da6f.png"></p>
+<p>可以看到，这些章节有《住在山野》《九篇雪》《唯一的水》等，我们可以基于此进一步定位想要寻找的文章段落。</p>
+<p>多说一句：这个工具可以配合shell脚本实现批量提取epub文件的文本内容，从而可以用于大模型训练或者大模型的知识库的构建。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>epub</tag>
+        <tag>BeautifulSoup</tag>
+        <tag>电子书字数统计</tag>
+      </tags>
+  </entry>
 </search>

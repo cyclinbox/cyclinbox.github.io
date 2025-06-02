@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="从Z-library上下载的epub电子书有点多了。有时候想要统计这些电子书都有多少字，另外想要简单做一个全局查询功能，节省导入到阅读器软件里去查询的时间。在AI的帮助下，完成了这个工具。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个统计EPUB电子书总字数和转txt文件的小工具">
+<meta property="og:url" content="https://wz.anoms.top/2025/06/02/epub_file_convert_tool/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="从Z-library上下载的epub电子书有点多了。有时候想要统计这些电子书都有多少字，另外想要简单做一个全局查询功能，节省导入到阅读器软件里去查询的时间。在AI的帮助下，完成了这个工具。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.imgdb.cn/item/683dbe8458cb8da5c825c78c.png">
+<meta property="og:image" content="https://pic1.imgdb.cn/item/683dbf3d58cb8da5c825c7c5.png">
+<meta property="og:image" content="https://pic1.imgdb.cn/item/683dc05558cb8da5c825ce9d.png">
+<meta property="og:image" content="https://pic1.imgdb.cn/item/683dd15e58cb8da5c825daa8.png">
+<meta property="og:image" content="https://pic1.imgdb.cn/item/683dd06058cb8da5c825da6f.png">
+<meta property="article:published_time" content="2025-06-02T15:30:00.000Z">
+<meta property="article:modified_time" content="2025-06-02T16:30:42.390Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="epub">
+<meta property="article:tag" content="BeautifulSoup">
+<meta property="article:tag" content="电子书字数统计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.imgdb.cn/item/683dbe8458cb8da5c825c78c.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/06/02/epub_file_convert_tool/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/06/02/epub_file_convert_tool/","path":"2025/06/02/epub_file_convert_tool/","title":"一个统计EPUB电子书总字数和转txt文件的小工具"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>一个统计EPUB电子书总字数和转txt文件的小工具 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF%EF%BC%9Aepub%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">一、背景：epub格式介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%8E%9F%E7%90%86%E4%B8%8E%E4%BB%A3%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">二、原理与代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%BF%90%E8%A1%8C%E6%95%88%E6%9E%9C"><span class="nav-number">3.</span> <span class="nav-text">三、运行效果</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">203</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">359</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/06/02/epub_file_convert_tool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="一个统计EPUB电子书总字数和转txt文件的小工具 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一个统计EPUB电子书总字数和转txt文件的小工具
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-02 23:30:00" itemprop="dateCreated datePublished" datetime="2025-06-02T23:30:00+08:00">2025-06-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-03 00:30:42" itemprop="dateModified" datetime="2025-06-03T00:30:42+08:00">2025-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>从Z-library上下载的epub电子书有点多了。有时候想要统计这些电子书都有多少字，另外想要简单做一个全局查询功能，节省导入到阅读器软件里去查询的时间。在AI的帮助下，完成了这个工具。</p>
+<span id="more"></span>
+
+<h2 id="一、背景：epub格式介绍"><a href="#一、背景：epub格式介绍" class="headerlink" title="一、背景：epub格式介绍"></a>一、背景：epub格式介绍</h2><p>下面是百度百科给出的定义：</p>
+<blockquote>
+<p>ePub（Electronic Publication的缩写，意为：电子出版），是一个自由的开放标准，属于一种可以“自动重新编排”的内容；也就是文字内容可以根据阅读设备的特性，以最适于阅读的方式显示。EPub档案内部使用了XHTML或DTBook （一种由DAISY Consortium提出的XML标准）来展现文字、并以zip压缩格式来包裹档案内容</p>
+</blockquote>
+<p>本质上，epub文件是一个zip压缩包，当我们使用zip解压工具进行解包以后，可以看到其内部大致结构是这样（左图是我从Z-library上下载的《悉达多》的电子书预览界面，右图是解包内容），其包含<code>META-INF</code> 和<code>OEBPS</code> 文件夹（有些电子书可能还会有别的文件夹），在这些文件夹下面是一系列xml文件或html文件，记录着书籍的目录信息或者具体的章节内容。</p>
+<p><img src="https://pic1.imgdb.cn/item/683dbe8458cb8da5c825c78c.png"></p>
+<p>在解包得到的目录当中，有一个文件路径 <code>META-INF/container.xml</code> ，这是epub文件最重要的内容清单，其格式大致如下，其中记录了根文件路径、目录文件的文件名（例如此处是<code>OEBPS/content.opf</code>）。</p>
+<p><img src="https://pic1.imgdb.cn/item/683dbf3d58cb8da5c825c7c5.png"></p>
+<p>我们也可以去看一看这个文件：</p>
+<p><img src="https://pic1.imgdb.cn/item/683dc05558cb8da5c825ce9d.png"></p>
+<p>这是书籍的目录，其中引用了一堆html文件的地址，每一个html文件对应着书籍当中的一个章节。</p>
+<p>关于html格式的介绍，网上有许多，此处不再赘述。需要注意的是，epub文件中封装的html并不支持完整的html标准（例如许多动态效果无法实现），只支持一些基础的文本标签（如标题 <code>&lt;h1&gt;</code>,<code>&lt;h2&gt;</code>,等，段落<code>&lt;p&gt;</code>，引文和链接<code>&lt;a&gt;</code>，图片 <code>&lt;img&gt;</code>，等等，以及一些基础的CSS样式表），以允许出版商在书籍中添加多样的富文本效果。</p>
+<h2 id="二、原理与代码"><a href="#二、原理与代码" class="headerlink" title="二、原理与代码"></a>二、原理与代码</h2><p>基于上一段中对epub格式的介绍，我们大致可以知道如何去解析一个epub文件：使用zip文件接口解压缩并获取内容清单文件 <code>META-INF/container.xml</code> ，随后根据这个内容清单文件去寻找根文件目录以及目录文件，最后根据目录文件去解析书籍内容的html文件，即可获得整本epub的文本内容。</p>
+<p>我们的目标有三个：</p>
+<ol>
+<li>统计电子书字数</li>
+<li>全局查询功能</li>
+<li>epub转txt</li>
+</ol>
+<p>这三个目标其实都很好实现，只要能够按照上述思路成功解析epub文件即可。</p>
+<p>在python中，有下面这些工具可以为我们所用：</p>
+<ul>
+<li>zipfile: 读取zip存档的工具，可以帮助我们获取epub文件内部的各个文件</li>
+<li>xml: 读取和解析xml文件的工具，可以帮助我们解析内容清单文件</li>
+<li>BeautifulSoup(bs4): HTML代码解析工具，它比xml更强大，可以对各个章节文本的xhtml文件进行处理</li>
+</ul>
+<p>下面是代码。具体功能的实现见代码注释：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os,sys,zipfile,re,json</span><br><span class="line"><span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"><span class="comment">## 统计中英文混杂文本的单词数和字符数。</span></span><br><span class="line"><span class="comment"># 中文单词数等于中文字符数。英文单词数等于以空格分隔的连续英文单词。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">count_words_and_chars</span>(<span class="params">text</span>):</span><br><span class="line">    chinese_char_pattern = re.<span class="built_in">compile</span>(<span class="string">r&#x27;[\u4e00-\u9fff]&#x27;</span>)</span><br><span class="line">    english_word_pattern = re.<span class="built_in">compile</span>(<span class="string">r&#x27;\b[a-zA-Z]+\b&#x27;</span>)</span><br><span class="line">    chinese_word_count = <span class="built_in">len</span>(chinese_char_pattern.findall(text)) <span class="comment"># 中文总字数</span></span><br><span class="line">    english_word_count = <span class="built_in">len</span>(english_word_pattern.findall(text)) <span class="comment"># 英文单词数</span></span><br><span class="line">    char_count = <span class="built_in">len</span>(text) <span class="comment"># 总字符数</span></span><br><span class="line">    total_word_count = chinese_word_count + english_word_count <span class="comment"># 总字数</span></span><br><span class="line">    <span class="keyword">return</span> total_word_count, char_count, chinese_word_count, english_word_count</span><br><span class="line"></span><br><span class="line"><span class="comment">## 流式提取 EPUB 文件中的文本内容，统计字数，并写入文件(如果convert_to_txt==True)。</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_epub_text</span>(<span class="params">epub_path,convert_to_txt=<span class="literal">False</span>,text_to_find=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        text_find_result_dt = &#123;&#125; <span class="comment"># 用于存储text finding结果的字典</span></span><br><span class="line">        <span class="keyword">if</span>(convert_to_txt):      <span class="comment"># 如果需要写入文件，则在此处创建文件，后续进行流式写入</span></span><br><span class="line">            output_file_path = epub_path+<span class="string">&quot;.txt&quot;</span></span><br><span class="line">            output = <span class="built_in">open</span>(output_file_path,<span class="string">&#x27;w&#x27;</span>,encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">        <span class="keyword">with</span> zipfile.ZipFile(epub_path, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> epub: <span class="comment"># 打开epub文件。后续对这个epub文件对象进行操作。</span></span><br><span class="line">            <span class="comment"># 找到并解析内容清单 (container.xml)</span></span><br><span class="line">            container_file = <span class="string">&quot;META-INF/container.xml&quot;</span></span><br><span class="line">            <span class="keyword">with</span> epub.<span class="built_in">open</span>(container_file) <span class="keyword">as</span> container:</span><br><span class="line">                tree = ET.parse(container)</span><br><span class="line">                root = tree.getroot()</span><br><span class="line">                <span class="comment"># 获取根文件路径</span></span><br><span class="line">                rootfile_path = root.find(<span class="string">&quot;.//&#123;urn:oasis:names:tc:opendocument:xmlns:container&#125;rootfile&quot;</span>).attrib[<span class="string">&#x27;full-path&#x27;</span>]</span><br><span class="line">            <span class="comment"># 打开根文件 (通常是 .opf 文件)</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;rootfile:\t<span class="subst">&#123;rootfile_path&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">with</span> epub.<span class="built_in">open</span>(rootfile_path) <span class="keyword">as</span> rootfile:</span><br><span class="line">                tree = ET.parse(rootfile)</span><br><span class="line">                root = tree.getroot()</span><br><span class="line">                <span class="comment"># 查找所有内容文件的引用</span></span><br><span class="line">                items = root.findall(<span class="string">&quot;.//&#123;http://www.idpf.org/2007/opf&#125;item&quot;</span>)</span><br><span class="line">                text_files = [item.attrib[<span class="string">&#x27;href&#x27;</span>] <span class="keyword">for</span> item <span class="keyword">in</span> items <span class="keyword">if</span> item.attrib[<span class="string">&#x27;media-type&#x27;</span>] == <span class="string">&#x27;application/xhtml+xml&#x27;</span>]</span><br><span class="line">            total_word_count = total_char_count = total_zh_word_count = total_en_word_count = <span class="number">0</span> <span class="comment"># 字数统计的变量，此处创建并赋值为0</span></span><br><span class="line">            <span class="keyword">for</span> text_file <span class="keyword">in</span> text_files: <span class="comment"># 根据所有内容文件的引用，依次读取这些文件，并提取文本内容</span></span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;File:\t<span class="subst">&#123;text_file&#125;</span>&quot;</span>)</span><br><span class="line">                <span class="keyword">try</span>:</span><br><span class="line">                    dirname = os.path.dirname(rootfile_path)</span><br><span class="line">                    <span class="keyword">if</span>(dirname==<span class="string">&quot;&quot;</span>): text_fpath = text_file</span><br><span class="line">                    <span class="keyword">else</span>: <span class="comment"># 如果文件路径中有斜杠，需要分情况做一些处理</span></span><br><span class="line">                        <span class="keyword">if</span>(<span class="string">&quot;\\&quot;</span> <span class="keyword">in</span> text_file): text_fpath = dirname+<span class="string">&quot;\\&quot;</span>+text_file</span><br><span class="line">                        <span class="keyword">else</span>:                  text_fpath = dirname+<span class="string">&quot;/&quot;</span>+text_file</span><br><span class="line">                    <span class="keyword">with</span> epub.<span class="built_in">open</span>(text_fpath) <span class="keyword">as</span> tf: <span class="comment"># 打开对应的文件，并进行解析</span></span><br><span class="line">                        txt1 = tf.read()</span><br><span class="line">                        bs4obj = BeautifulSoup(txt1,<span class="string">&#x27;lxml&#x27;</span>)      <span class="comment"># 使用beautifulsoup解析，这个库比xml更稳定</span></span><br><span class="line">                        text   = bs4obj.get_text().strip() <span class="comment"># 使用beautifulsoup获取页面上的所有文本内容</span></span><br><span class="line">                        <span class="keyword">if</span>(convert_to_txt): <span class="comment"># 如果指定了要导出到text文件，则此处开启写入。</span></span><br><span class="line">                            output.write(text)</span><br><span class="line">                            output.write(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">                        <span class="keyword">if</span>(text_to_find <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>): <span class="comment"># 查询字符串是否在这个章节中</span></span><br><span class="line">                            <span class="keyword">if</span>(text_to_find <span class="keyword">in</span> text):</span><br><span class="line">                                text_find_result_dt[text_file] = text</span><br><span class="line">                        word_count, char_count, chinese_word_count, english_word_count = count_words_and_chars(text)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;\tword_count:\t<span class="subst">&#123;word_count&#125;</span>&quot;</span>)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;\tchar_count:\t<span class="subst">&#123;char_count&#125;</span>&quot;</span>)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;\tchinese_word_count:\t<span class="subst">&#123;chinese_word_count&#125;</span>&quot;</span>)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;\tenglish_word_count:\t<span class="subst">&#123;english_word_count&#125;</span>&quot;</span>)</span><br><span class="line">                        total_word_count += word_count</span><br><span class="line">                        total_char_count += char_count</span><br><span class="line">                        total_zh_word_count += chinese_word_count</span><br><span class="line">                        total_en_word_count += english_word_count</span><br><span class="line">                <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">f&quot;Warning: Failed to parse `<span class="subst">&#123;text_file&#125;</span>` - message:<span class="subst">&#123;e&#125;</span>&quot;</span>, file=sys.stderr)</span><br><span class="line">            <span class="keyword">if</span>(convert_to_txt):</span><br><span class="line">                output.close()</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;Text file is saved as `<span class="subst">&#123;output_file_path&#125;</span>`.&quot;</span>)</span><br><span class="line">            <span class="keyword">if</span>((text_to_find <span class="keyword">is</span> <span class="literal">None</span>)==<span class="literal">False</span>):</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;\n\n===&gt; Text finding result: &lt;===&quot;</span>)</span><br><span class="line">                <span class="built_in">print</span>(text_find_result_dt.keys())</span><br><span class="line">                json_text = json.dumps(text_find_result_dt,ensure_ascii=<span class="literal">False</span>,indent=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line">                <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;text_finding_result.json&quot;</span>,<span class="string">&#x27;w&#x27;</span>,encoding=<span class="string">&quot;utf-8&quot;</span>) <span class="keyword">as</span> jsonfile:</span><br><span class="line">                    jsonfile.write(json_text)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;See more details in `text_finding_result.json`&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> [total_word_count,total_char_count,total_zh_word_count,total_en_word_count]</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Error: Unable to process EPUB file - <span class="subst">&#123;e&#125;</span>&quot;</span>, file=sys.stderr)</span><br><span class="line">        <span class="keyword">return</span> [<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) &lt; <span class="number">2</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Usage: python epub_convert_tool.py &lt;epub_file&gt; [convert_to_txt] [text_to_find]&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\t&lt;epub_file&gt;        Input file path&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\t[convert_to_txt]   0: not convert, 1: convert to a txt file in the same name&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\t[text_to_find]     Text you want to find&quot;</span>)</span><br><span class="line">        sys.exit(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    epub_file = sys.argv[<span class="number">1</span>]</span><br><span class="line">    convert_to_txt = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">len</span>(sys.argv)&gt;<span class="number">2</span>):</span><br><span class="line">        <span class="keyword">if</span>(sys.argv[<span class="number">2</span>]==<span class="string">&quot;1&quot;</span>):</span><br><span class="line">            convert_to_txt = <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">len</span>(sys.argv)==<span class="number">4</span>):</span><br><span class="line">        text_to_find = sys.argv[<span class="number">3</span>]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        text_to_find = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.isfile(epub_file) <span class="keyword">or</span> <span class="keyword">not</span> epub_file.lower().endswith(<span class="string">&#x27;.epub&#x27;</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Error: Please provide a valid EPUB file.&quot;</span>)</span><br><span class="line">        sys.exit(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    wc,cc,zh_wc,en_wc = extract_epub_text(epub_file,convert_to_txt,text_to_find)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n\n&gt;&gt;&gt; total count of `<span class="subst">&#123;epub_file&#125;</span>` &lt;&lt;&lt;\n&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;word_count:\t<span class="subst">&#123;wc&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;char_count:\t<span class="subst">&#123;cc&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;chinese_word_count:\t<span class="subst">&#123;zh_wc&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;english_word_count:\t<span class="subst">&#123;en_wc&#125;</span>&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="三、运行效果"><a href="#三、运行效果" class="headerlink" title="三、运行效果"></a>三、运行效果</h2><p>这是一个命令行应用，因此直接运行时，会得到下面这样的帮助文档。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Usage: python epub_convert_tool.py &lt;epub_file&gt; [convert_to_txt] [text_to_find]</span><br><span class="line">        &lt;epub_file&gt;        Input file path</span><br><span class="line">        [convert_to_txt]   0: not convert, 1: convert to a txt file in the same name</span><br><span class="line">        [text_to_find]     Text you want to find</span><br></pre></td></tr></table></figure>
+
+<p>其接受三个参数：</p>
+<ul>
+<li><code>epub_file</code> 是传入的epub文件的路径</li>
+<li><code>convert_to_txt</code> 是一个指定是否要转换txt文件的数字，0代表不转换，1代表转换。这个参数是可选参数，默认不转换</li>
+<li><code>text_to_find</code> 是需要搜索的字符串。这个参数是可选参数，默认为空，如果要使用，需要先指定 <code>convert_to_txt</code>参数，再指定<code>text_to_find</code></li>
+</ul>
+<p>下面以统计《李娟阿勒泰系列典藏合集》这本书为例进行展示：</p>
+<p>仅统计字数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">~$ python epub_file_convert_tool.py 李娟阿勒泰系列典藏合集.epub</span><br><span class="line">rootfile:       OEBPS/content.opf</span><br><span class="line">File:   Text/cover_page.xhtml</span><br><span class="line">        word_count:     11</span><br><span class="line">        char_count:     11</span><br><span class="line">        chinese_word_count:     11</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0000.xhtml</span><br><span class="line">        word_count:     25</span><br><span class="line">        char_count:     25</span><br><span class="line">        chinese_word_count:     25</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0001.xhtml</span><br><span class="line">        word_count:     1</span><br><span class="line">        char_count:     5</span><br><span class="line">        chinese_word_count:     0</span><br><span class="line">        english_word_count:     1</span><br><span class="line"></span><br><span class="line">... ...</span><br><span class="line"></span><br><span class="line">File:   Text/part0142.xhtml</span><br><span class="line">        word_count:     2976</span><br><span class="line">        char_count:     3458</span><br><span class="line">        chinese_word_count:     2976</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0143.xhtml</span><br><span class="line">        word_count:     1912</span><br><span class="line">        char_count:     2234</span><br><span class="line">        chinese_word_count:     1912</span><br><span class="line">        english_word_count:     0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; total count of `李娟阿勒泰系列典藏合集.epub` &lt;&lt;&lt;</span><br><span class="line"></span><br><span class="line">word_count:     468396</span><br><span class="line">char_count:     537405</span><br><span class="line">chinese_word_count:     468380</span><br><span class="line">english_word_count:     16</span><br></pre></td></tr></table></figure>
+
+<p>如果要导出txt文件，同时搜索文本（以“下雪了”这个词为例）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">~$ python epub_file_convert_tool.py 李娟阿勒泰系列典藏合集.epub  1  下雪了</span><br><span class="line">rootfile:       OEBPS/content.opf</span><br><span class="line">File:   Text/cover_page.xhtml</span><br><span class="line">        word_count:     11</span><br><span class="line">        char_count:     11</span><br><span class="line">        chinese_word_count:     11</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0000.xhtml</span><br><span class="line">        word_count:     25</span><br><span class="line">        char_count:     25</span><br><span class="line">        chinese_word_count:     25</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0001.xhtml</span><br><span class="line">        word_count:     1</span><br><span class="line">        char_count:     5</span><br><span class="line">        chinese_word_count:     0</span><br><span class="line">        english_word_count:     1</span><br><span class="line"></span><br><span class="line">... ...</span><br><span class="line"></span><br><span class="line">File:   Text/part0142.xhtml</span><br><span class="line">        word_count:     2976</span><br><span class="line">        char_count:     3458</span><br><span class="line">        chinese_word_count:     2976</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0143.xhtml</span><br><span class="line">        word_count:     1912</span><br><span class="line">        char_count:     2234</span><br><span class="line">        chinese_word_count:     1912</span><br><span class="line">        english_word_count:     0</span><br><span class="line">Text file is saved as `李娟阿勒泰系列典藏合集.epub.txt`.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">===&gt; Text finding result: &lt;===</span><br><span class="line">dict_keys([&#x27;Text/part0018.xhtml&#x27;, &#x27;Text/part0038.xhtml&#x27;, &#x27;Text/part0059.xhtml&#x27;, &#x27;Text/part0064.xhtml&#x27;, &#x27;Text/part0079.xhtml&#x27;, &#x27;Text/part0096.xhtml&#x27;, &#x27;Text/part0097.xhtml&#x27;, &#x27;Text/part0119.xhtml&#x27;])</span><br><span class="line">See more details in `text_finding_result.json`</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; total count of `李娟阿勒泰系列典藏合集.epub` &lt;&lt;&lt;</span><br><span class="line"></span><br><span class="line">word_count:     468396</span><br><span class="line">char_count:     537405</span><br><span class="line">chinese_word_count:     468380</span><br><span class="line">english_word_count:     16</span><br></pre></td></tr></table></figure>
+
+<p>其导出的txt文件为 <code>李娟阿勒泰系列典藏合集.epub.txt</code> ，打开以后的内容是这样的：</p>
+<p><img src="https://pic1.imgdb.cn/item/683dd15e58cb8da5c825daa8.png"></p>
+<p>另外，我们还找到了包含“下雪了”这个词的多个章节文件，包括<code>part0018.xhtml</code>,<code>part0038.xhtml</code>等。查找结果的详细输出在<code>text_finding_result.json</code>文件当中，我们可以打开看一下这个文件的内容：</p>
+<p><img src="https://pic1.imgdb.cn/item/683dd06058cb8da5c825da6f.png"></p>
+<p>可以看到，这些章节有《住在山野》《九篇雪》《唯一的水》等，我们可以基于此进一步定位想要寻找的文章段落。</p>
+<p>多说一句：这个工具可以配合shell脚本实现批量提取epub文件的文本内容，从而可以用于大模型训练或者大模型的知识库的构建。</p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/06/02/epub_file_convert_tool/" title="一个统计EPUB电子书总字数和转txt文件的小工具">https://wz.anoms.top/2025/06/02/epub_file_convert_tool/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/epub/" rel="tag"><i class="fa fa-tag"></i> epub</a>
+              <a href="/tags/BeautifulSoup/" rel="tag"><i class="fa fa-tag"></i> BeautifulSoup</a>
+              <a href="/tags/%E7%94%B5%E5%AD%90%E4%B9%A6%E5%AD%97%E6%95%B0%E7%BB%9F%E8%AE%A1/" rel="tag"><i class="fa fa-tag"></i> 电子书字数统计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/02/Information_Theory_Note06/" rel="prev" title="信息论学习笔记（六）">
+                  <i class="fa fa-chevron-left"></i> 信息论学习笔记（六）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
