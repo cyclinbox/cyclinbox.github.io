@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如题。在实验数据处理中，我们经常会碰到归一化和去批次的问题。对于RNA-seq数据的归一化，常用的方法有RPKM矫正，TPM矫正，Quantile Normalization等（参见博客往期文章《RNA-seq的数据归一化》 ），而单细胞测序数据，作为一类更加复杂的组学数据，其归一化和去批次的方法也更多更复杂。以下是结合近期实践的一些经验分享，写得不好，请多见谅。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单细胞数据处理中的归一化和去批次效应">
+<meta property="og:url" content="https://wz.anoms.top/2025/06/22/SingleCell_data_normalization_and_integration/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="如题。在实验数据处理中，我们经常会碰到归一化和去批次的问题。对于RNA-seq数据的归一化，常用的方法有RPKM矫正，TPM矫正，Quantile Normalization等（参见博客往期文章《RNA-seq的数据归一化》 ），而单细胞测序数据，作为一类更加复杂的组学数据，其归一化和去批次的方法也更多更复杂。以下是结合近期实践的一些经验分享，写得不好，请多见谅。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250616132643.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250616141334.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622235357.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622235421.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250615171116.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250615171134.png">
+<meta property="article:published_time" content="2025-06-22T02:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-22T17:02:19.745Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="生物信息学">
+<meta property="article:tag" content="归一化">
+<meta property="article:tag" content="Seurat">
+<meta property="article:tag" content="scRNA-seq">
+<meta property="article:tag" content="去批次效应">
+<meta property="article:tag" content="SCTransform">
+<meta property="article:tag" content="Harmony">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250616132643.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/06/22/SingleCell_data_normalization_and_integration/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/06/22/SingleCell_data_normalization_and_integration/","path":"2025/06/22/SingleCell_data_normalization_and_integration/","title":"单细胞数据处理中的归一化和去批次效应"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>单细胞数据处理中的归一化和去批次效应 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">一、归一化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89-LogNormalize-in-Seurat"><span class="nav-number">1.1.</span> <span class="nav-text">（一） LogNormalize in Seurat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89-SCTransform-in-Seurat"><span class="nav-number">1.2.</span> <span class="nav-text">（二） SCTransform in Seurat</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SCTransform-vs-LogNormalize"><span class="nav-number">1.2.1.</span> <span class="nav-text">SCTransform vs LogNormalize:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%89%B9%E6%AC%A1%E6%95%88%E5%BA%94%E7%A7%BB%E9%99%A4"><span class="nav-number">2.</span> <span class="nav-text">二、批次效应移除</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89-%E5%9F%BA%E4%BA%8E%E9%94%9A%E7%82%B9%E7%9A%84%E5%8E%BB%E6%89%B9%E6%AC%A1%E6%96%B9%E6%B3%95%EF%BC%88Integrate-AnchorSet-by-IntegrateData-in-Seurat%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">（一） 基于锚点的去批次方法（Integrate AnchorSet by IntegrateData  in Seurat）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89-RunHarmony-in-Seurat-and-Harmony"><span class="nav-number">2.2.</span> <span class="nav-text">（二） RunHarmony in Seurat and Harmony</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89-%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.</span> <span class="nav-text">（三） 其他方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%80%E4%BA%9B%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">3.</span> <span class="nav-text">三、一些注意事项</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">209</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">373</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/06/22/SingleCell_data_normalization_and_integration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="单细胞数据处理中的归一化和去批次效应 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          单细胞数据处理中的归一化和去批次效应
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-22 10:00:00" itemprop="dateCreated datePublished" datetime="2025-06-22T10:00:00+08:00">2025-06-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-23 01:02:19" itemprop="dateModified" datetime="2025-06-23T01:02:19+08:00">2025-06-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%89%A9/" itemprop="url" rel="index"><span itemprop="name">生物</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如题。在实验数据处理中，我们经常会碰到归一化和去批次的问题。对于RNA-seq数据的归一化，常用的方法有RPKM矫正，TPM矫正，Quantile Normalization等（参见博客往期文章<a href="https://wz.anoms.top/2024/10/20/RNA-seq-normalization/">《RNA-seq的数据归一化》</a> ），而单细胞测序数据，作为一类更加复杂的组学数据，其归一化和去批次的方法也更多更复杂。以下是结合近期实践的一些经验分享，写得不好，请多见谅。</p>
+<span id="more"></span>
+
+
+<h2 id="一、归一化"><a href="#一、归一化" class="headerlink" title="一、归一化"></a>一、归一化</h2><blockquote>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/21b2f08652ed">《SCTransform：单细胞样本的标准化》</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/M-Y56hGtxTgYc7G8WH-zGA">《单细胞转录组数据特征与标准化（二）：sctransform原理解析与标准化方法的选择》</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mfu3jsTv6Nk85yNnLQS_zw">《单细胞转录组数据特征与标准化（一）：泊松分布和准泊松回归》</a></li>
+</ul>
+</blockquote>
+<p>单细胞转录组的归一化方法大概可以分成两大类。一类是基于“size factors”的方法，例如LogNormalize，即直接除以总数的log标准化；另一类是基于概率分布的方法，根据每个基因的表达量分布拟合特定的参数，然后对每个基因标准化，例如SCTransform。</p>
+<p>这两大类标准化方法侧重的维度不同，size factors 侧重细胞维度；概率分布侧重基因维度。</p>
+<h3 id="（一）-LogNormalize-in-Seurat"><a href="#（一）-LogNormalize-in-Seurat" class="headerlink" title="（一） LogNormalize in Seurat"></a>（一） <code>LogNormalize</code> in Seurat</h3><p>其使用方法如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">library<span class="punctuation">(</span>dplyr<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>Seurat<span class="punctuation">)</span></span><br><span class="line">pbmc <span class="operator">&lt;-</span> NormalizeData<span class="punctuation">(</span>pbmc<span class="punctuation">,</span> normalization.method <span class="operator">=</span> <span class="string">&quot;LogNormalize&quot;</span><span class="punctuation">,</span> scale.factor <span class="operator">=</span> <span class="number">10000</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>归一化之后的表达矩阵数据的存储槽位为 <code>SeuratObject@assays$RNA@layers$data</code> 。</p>
+<p>函数实现见<a target="_blank" rel="noopener" href="https://github.com/satijalab/seurat/blob/HEAD/R/preprocessing5.R#L188">Github存储库</a> ， API说明见<a target="_blank" rel="noopener" href="https://satijalab.org/seurat/reference/lognormalize">Seurat文档</a>。下面是核心逻辑：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># File seurat/R/preprocessing5.R, Line 188-220.</span></span><br><span class="line">LogNormalize.default <span class="operator">&lt;-</span> <span class="keyword">function</span><span class="punctuation">(</span>data<span class="punctuation">,</span>scale.factor <span class="operator">=</span> <span class="number">1e4</span><span class="punctuation">,</span>margin <span class="operator">=</span> <span class="number">2L</span><span class="punctuation">,</span>verbose <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">,</span>...<span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">  ncells <span class="operator">&lt;-</span> <span class="built_in">dim</span><span class="punctuation">(</span>x <span class="operator">=</span> data<span class="punctuation">)</span><span class="punctuation">[</span>margin<span class="punctuation">]</span></span><br><span class="line">  <span class="keyword">for</span> <span class="punctuation">(</span>i <span class="keyword">in</span> <span class="built_in">seq_len</span><span class="punctuation">(</span>length.out <span class="operator">=</span> ncells<span class="punctuation">)</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">    x <span class="operator">&lt;-</span> <span class="keyword">if</span> <span class="punctuation">(</span>margin <span class="operator">==</span> <span class="number">1L</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">      data<span class="punctuation">[</span>i<span class="punctuation">,</span> <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span> <span class="keyword">else</span> <span class="punctuation">&#123;</span></span><br><span class="line">      data<span class="punctuation">[</span><span class="punctuation">,</span> i<span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">    xnorm <span class="operator">&lt;-</span> log1p<span class="punctuation">(</span>x <span class="operator">=</span> x <span class="operator">/</span> <span class="built_in">sum</span><span class="punctuation">(</span>x<span class="punctuation">)</span> <span class="operator">*</span> scale.factor<span class="punctuation">)</span></span><br><span class="line">    <span class="keyword">if</span> <span class="punctuation">(</span>margin <span class="operator">==</span> <span class="number">1L</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">      data<span class="punctuation">[</span>i<span class="punctuation">,</span> <span class="punctuation">]</span> <span class="operator">&lt;-</span> xnorm</span><br><span class="line">    <span class="punctuation">&#125;</span> <span class="keyword">else</span> <span class="punctuation">&#123;</span></span><br><span class="line">      data<span class="punctuation">[</span><span class="punctuation">,</span> i<span class="punctuation">]</span> <span class="operator">&lt;-</span> xnorm</span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="built_in">return</span><span class="punctuation">(</span>data<span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>LogNormalize使用的归一化公式为</p>
+<p>$$<br>\text{xnorm} = \log_1p\left(\frac{x}{\sum x} \times \text{scale.factor}\right)<br>$$</p>
+<ul>
+<li><code>x/sum(x)</code>：将当前单元（如细胞）的每个基因的UMI计数转换为比例。</li>
+<li><code>scale.factor</code>：将总表达量缩放至目标值（如1e4）。</li>
+<li><code>log1p</code>：对结果取自然对数（<code>log1p(x) = log(x + 1)</code>），避免零值问题。</li>
+</ul>
+<p>LogNormalize是Seurat中默认的归一化方法，其做了两件事：①消除测序深度差异（如不同细胞的UMI总量差异）；②压缩数据动态范围，便于后续分析（如聚类、降维）。   </p>
+<p>核心算法原理非常简单，计算速度也是最快的。但缺点是只矫正了测序深度，并没有矫正异常基因。</p>
+<h3 id="（二）-SCTransform-in-Seurat"><a href="#（二）-SCTransform-in-Seurat" class="headerlink" title="（二） SCTransform in Seurat"></a>（二） <code>SCTransform</code> in Seurat</h3><p>一个<a target="_blank" rel="noopener" href="https://satijalab.org/seurat/articles/sctransform_vignette.html">示例</a>如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># store mitochondrial percentage in object meta data</span></span><br><span class="line">pbmc <span class="operator">&lt;-</span> PercentageFeatureSet<span class="punctuation">(</span>pbmc<span class="punctuation">,</span> pattern <span class="operator">=</span> <span class="string">&quot;^MT-&quot;</span><span class="punctuation">,</span> col.name <span class="operator">=</span> <span class="string">&quot;percent.mt&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># run sctransform</span></span><br><span class="line">pbmc <span class="operator">&lt;-</span> SCTransform<span class="punctuation">(</span>pbmc<span class="punctuation">,</span> vars.to.regress <span class="operator">=</span> <span class="string">&quot;percent.mt&quot;</span><span class="punctuation">,</span> verbose <span class="operator">=</span> <span class="literal">FALSE</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>这是一个用方差稳定变换对单细胞UMI count 数据标准化的方法，方差稳定变换是基于负二项回归。这个函数在对数据进行均一化的同时还可以去除线粒体红细胞等混杂因素的影响。</p>
+<p>Sctransform先拟合每个基因在不同细胞的reads数和测序深度的关系，然后矫正拟合结果，计算测序深度相关的reads数期望值和对应的方差，利用期望值和方差计算皮尔森残差，最后返回矫正后的reads数。</p>
+<p>SCTransform的优点：</p>
+<ol>
+<li>不根据size factor，也就是总的UMI数对每个细胞标准化；</li>
+<li>标准化方法建立在单细胞数据已知的关系之上：平均表达量和方差的关系。</li>
+<li>没有用log转化，z-scoring标准化（严格来说，sctransform还是有涉及的。计算皮尔森残差的公式很像z-score）</li>
+<li>综合来说，sctransform的标准化结果可以消除测序深度的影响。</li>
+</ol>
+<p>SCTransform标准化的过程大概分为三步（如下图，另外参考<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/M-Y56hGtxTgYc7G8WH-zGA">文章</a>）：</p>
+<ol>
+<li>负二项分布回归（广义线性模型）拟合每个基因的表达量和测序深度的关系；</li>
+<li>Ksmooth矫正拟合结果；</li>
+<li>计算皮尔森残差，返回矫正reads数。</li>
+</ol>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250616132643.png" alt="image.png"></p>
+<p>另外 ，有人指出SCTransform只需要运行一遍即可，在整合去批次以后的样本上不应该再次运行SCTransform（ <code>&quot;Do not run a second round of SCTransform on the integrated assay&quot;</code>  ,参考 <a target="_blank" rel="noopener" href="https://github.com/satijalab/seurat/issues/1836">issues1836</a> ），这是因为SCT 归一化是针对每个样本单独进行的，因此可能会引入批次效应（ <code>&quot;SCT normalization was done separately for each sample, which is likely to introduce batch effects down the line&quot;</code> , 参考 <a target="_blank" rel="noopener" href="https://github.com/satijalab/seurat/issues/2023#issuecomment-543178730">issues2023</a> ）。</p>
+<p>另外，在这个方法中有一个可选参数 <code>vars.to.regress</code> ，在上述Seurat示例中使用的是 <code>vars.to.regress = &quot;percent.mt&quot;</code> ，它表示在建立负二项分布模型时将线粒体基因占比（<code>percent.mt</code>） 也作为一个协变量添加到模型当中，从而在归一化时移除线粒体基因占比造成的差异。这个参数可以换成其他指标，例如某个管家基因的表达量，或者细胞数量等等。如果不需要考虑这些差异，仅仅需要矫正测序深度的影响，则可以留空。</p>
+<p>另外是AI大模型总结的一张表格，对比了两个方法的优缺点：（powered by DeepSeek）</p>
+<h4 id="SCTransform-vs-LogNormalize"><a href="#SCTransform-vs-LogNormalize" class="headerlink" title="SCTransform vs LogNormalize:"></a>SCTransform vs LogNormalize:</h4><table>
+<thead>
+<tr>
+<th>特征</th>
+<th>LogNormalize</th>
+<th>SCTransform</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>核心原理</td>
+<td>全局缩放和对数变换</td>
+<td>正则化负二项回归模型</td>
+</tr>
+<tr>
+<td>关键假设</td>
+<td>所有细胞的初始RNA总量相近</td>
+<td>基因表达计数遵循负二项分布，且受测序深度影响</td>
+</tr>
+<tr>
+<td>PCA输入</td>
+<td>对数变换后的数据（data槽）</td>
+<td>皮尔逊残差（scale.data槽）</td>
+</tr>
+<tr>
+<td>处理测序深度</td>
+<td>隐式处理（作为分母），假设其为唯一技术因素</td>
+<td>显式处理（作为模型协变量），更精确地分离技术与生物变异</td>
+</tr>
+<tr>
+<td>主要优势</td>
+<td>概念简单，计算速度快</td>
+<td>统计学基础扎实，方差稳定效果好，能更有效去除技术噪音</td>
+</tr>
+<tr>
+<td>潜在不足</td>
+<td>核心假设常被违背，可能扭曲生物学差异</td>
+<td>模型相对复杂，计算成本较高，在特定模拟数据中可能存在偏好</td>
+</tr>
+</tbody></table>
+<p>总之，推荐的归一化方法是SCTransform。如果数据量比较大，需要节省时间，或者数据中没有太多高表达的异常基因，则可以使用 LogNormalize。</p>
+<h2 id="二、批次效应移除"><a href="#二、批次效应移除" class="headerlink" title="二、批次效应移除"></a>二、批次效应移除</h2><p>如果我们有多个样本，需要合并在一起，那么样本之间如何保证可比？不同样本（即使来自相同的测序平台），其样本状态、测序深度、技术误差等等因素叠加在一起，也会导致很强的批次效应。下面介绍几种R语音中常用的批次效应移除工具。</p>
+<h3 id="（一）-基于锚点的去批次方法（Integrate-AnchorSet-by-IntegrateData-in-Seurat）"><a href="#（一）-基于锚点的去批次方法（Integrate-AnchorSet-by-IntegrateData-in-Seurat）" class="headerlink" title="（一） 基于锚点的去批次方法（Integrate AnchorSet by IntegrateData  in Seurat）"></a>（一） 基于锚点的去批次方法（Integrate AnchorSet by <code>IntegrateData</code>  in Seurat）</h3><blockquote>
+<p>参考： Stuart T, Butler A, et al. Comprehensive Integration of Single-Cell Data. <a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0092867419305598?via=ihub">Cell. 2019;177:1888-1902</a> <a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.cell.2019.05.031">doi:10.1016/j.cell.2019.05.031</a></p>
+</blockquote>
+<p>某种意义上说，<code>IntegrateData</code> 这一类方法与前面介绍的那些并不相同，它为多组样本的整合任务而生，主要目的是去除样本之间的批次效应。</p>
+<p>通过识别跨数据集的单细胞之间的成对对应关系（称为“锚点”），我们可以将数据集转换到一个共享的空间，这使得能够在组织或生物体尺度构建协调一致的图谱，并且能够有效地将离散或连续的数据从参考数据集转移到查询数据集上。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250616141334.png" alt="image.png"></p>
+<p>具体来说，基于锚点的去批次方法包含如下几个步骤（如上图）</p>
+<ul>
+<li>首先，我们的输入包括两个数据集（参考数据集和查询数据集），每个数据集都来源于单独的单细胞实验。这两个数据集共享来自相似生物状态的细胞，但查询数据集还另外包含一个独特的细胞群体（图A中以黑色标注的细胞簇）。</li>
+<li>对这些细胞进行经典的相关性分析，随后进行 L2 归一化，将数据集投影到由跨数据集的共享相关结构定义的子空间中（B图）。</li>
+<li>在共享空间中，我们在参考细胞和查询细胞之间识别成对的 MNN（最近邻对），它们代表跨数据集处于相同生物状态的细胞（灰色线），并充当引导数据集集成的锚点。原则上，独特群体中的细胞不应参与锚点，但在实践中，我们观察到频率较低的“错误”锚点（红色线）。（C图）</li>
+<li>对于每对锚点，我们根据各个数据集的邻域结构中锚点的一致性来分配一个分数。我们利用锚点及其分数为每个查询细胞计算“校正”向量，从而转换其表达，使其能够作为集成参考的一部分进行联合分析。（D-E图）</li>
+</ul>
+<p>要使用这套方法进行批次效应移除，我们的步骤如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 0. 合并多个样本</span></span><br><span class="line"><span class="comment">## （假设我们有三个样本，经过Seurat初步处理和归一化以后的对象分别是sample1, sample2, sample3）</span></span><br><span class="line">merged_sct_list <span class="operator">&lt;-</span> <span class="built_in">list</span><span class="punctuation">(</span>sample1<span class="punctuation">,</span> sample2<span class="punctuation">,</span> sample3<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 选择整合特征</span></span><br><span class="line">features <span class="operator">&lt;-</span> SelectIntegrationFeatures<span class="punctuation">(</span>object.list <span class="operator">=</span> merged_sct_list<span class="punctuation">,</span> nfeatures <span class="operator">=</span> <span class="number">3000</span><span class="punctuation">)</span> <span class="comment"># 增加特征数可能有助于保留更多信息</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 过滤 anchor.features，确保它们存在于所有对象的 SCT scale.data 中</span></span><br><span class="line"><span class="comment">## 获取每个对象的 SCT scale.data 中的特征列表</span></span><br><span class="line">sct_scale_features_list <span class="operator">&lt;-</span> lapply<span class="punctuation">(</span>merged_sct_list<span class="punctuation">,</span> <span class="keyword">function</span><span class="punctuation">(</span>obj<span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="built_in">return</span><span class="punctuation">(</span>rownames<span class="punctuation">(</span>GetAssayData<span class="punctuation">(</span>obj<span class="punctuation">,</span> assay <span class="operator">=</span> <span class="string">&quot;SCT&quot;</span><span class="punctuation">,</span> slot <span class="operator">=</span> <span class="string">&quot;scale.data&quot;</span><span class="punctuation">)</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment">## 找到所有对象 SCT scale.data 中的共同特征</span></span><br><span class="line">common_sct_scale_features <span class="operator">&lt;-</span> Reduce<span class="punctuation">(</span>intersect<span class="punctuation">,</span> sct_scale_features_list<span class="punctuation">)</span></span><br><span class="line"><span class="comment">## 过滤 SelectIntegrationFeatures 选择的特征，只保留共同特征</span></span><br><span class="line">features <span class="operator">&lt;-</span> intersect<span class="punctuation">(</span>features<span class="punctuation">,</span> common_sct_scale_features<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. PrepSCTIntegration (为 SCT 整合做准备)</span></span><br><span class="line">merged_sct_list <span class="operator">&lt;-</span> PrepSCTIntegration<span class="punctuation">(</span>object.list <span class="operator">=</span> merged_sct_list<span class="punctuation">,</span> </span><br><span class="line">									  anchor.features <span class="operator">=</span> features<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 寻找锚点 (FindIntegrationAnchors)</span></span><br><span class="line">anchors <span class="operator">&lt;-</span> FindIntegrationAnchors<span class="punctuation">(</span></span><br><span class="line">  object.list <span class="operator">=</span> merged_sct_list<span class="punctuation">,</span></span><br><span class="line">  normalization.method <span class="operator">=</span> <span class="string">&quot;SCT&quot;</span><span class="punctuation">,</span></span><br><span class="line">  anchor.features <span class="operator">=</span> features</span><br><span class="line"><span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 整合数据 (IntegrateData)</span></span><br><span class="line">integrated_obj <span class="operator">&lt;-</span> IntegrateData<span class="punctuation">(</span></span><br><span class="line">  anchorset <span class="operator">=</span> anchors</span><br><span class="line"><span class="punctuation">)</span></span><br><span class="line"><span class="comment">## 最终保存整合后的对象</span></span><br><span class="line">saveRDS<span class="punctuation">(</span>integrated_obj<span class="punctuation">,</span> <span class="string">&quot;final_integrated_batch_merged.rds&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="（二）-RunHarmony-in-Seurat-and-Harmony"><a href="#（二）-RunHarmony-in-Seurat-and-Harmony" class="headerlink" title="（二） RunHarmony in Seurat and Harmony"></a>（二） <code>RunHarmony</code> in Seurat and Harmony</h3><blockquote>
+<p>参考：</p>
+<ul>
+<li>Korsunsky, I., Millard, N., Fan, J. <em>et al.</em> Fast, sensitive and accurate integration of single-cell data with Harmony. <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41592-019-0619-0#"><em>Nat Methods</em> <strong>16</strong>, 1289–1296 (2019)</a>. <a target="_blank" rel="noopener" href="https://doi.org/10.1038/s41592-019-0619-0">https://doi.org/10.1038/s41592-019-0619-0</a></li>
+<li><a target="_blank" rel="noopener" href="https://satijalab.org/seurat/reference/harmonyintegration">Harmony Integration</a></li>
+<li><a target="_blank" rel="noopener" href="https://cran.r-project.org/web/packages/harmony/index.html">https://cran.r-project.org/web/packages/harmony/index.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://cran.r-project.org/web/packages/harmony/harmony.pdf">https://cran.r-project.org/web/packages/harmony/harmony.pdf</a></li>
+<li><a target="_blank" rel="noopener" href="https://cran.r-project.org/web/packages/harmony/vignettes/Seurat.html">https://cran.r-project.org/web/packages/harmony/vignettes/Seurat.html</a></li>
+</ul>
+</blockquote>
+<p>Harmony是2019年Korsunsky等人提出的一种去批次的方法，其计算思路大致为「低维嵌入→软聚类分组→计算聚类质心→计算校正因子→细胞特异性线性因子校正→迭代直到收敛」。下图是论文中给出的算法大纲。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622235357.png" alt="image.png"></p>
+<p>这个方法的计算细节详见论文，此处不做展开。Harmony方法的优点在于速度很快，不过相比于前述Seurat中基于锚点的方法，Harmony方法只能返回去批次以后的细胞坐标，而无法返回基因表达矩阵，因此如果对于跨数据集的表达量有比较的需求，则不建议使用这种方法。</p>
+<p>使用方法如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. merge</span></span><br><span class="line">merged_data <span class="operator">&lt;-</span> merge<span class="punctuation">(</span>sample1<span class="punctuation">,</span>y <span class="operator">=</span> <span class="built_in">c</span><span class="punctuation">(</span>sample2<span class="punctuation">,</span>sample3<span class="punctuation">,</span>sample4<span class="punctuation">)</span><span class="punctuation">,</span> add.cell.ids <span class="operator">=</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;s1&quot;</span><span class="punctuation">,</span><span class="string">&quot;s2&quot;</span><span class="punctuation">,</span><span class="string">&quot;s3&quot;</span><span class="punctuation">,</span><span class="string">&quot;s4&quot;</span><span class="punctuation">)</span><span class="punctuation">,</span> project <span class="operator">=</span> <span class="string">&quot;Demo data&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 2. filter cells, QC, normalization, RunPCA（略）</span></span><br><span class="line"><span class="comment"># 3. remove batch</span></span><br><span class="line">merged_data_harmony <span class="operator">&lt;-</span> RunHarmony<span class="punctuation">(</span>object<span class="operator">=</span>merged_data<span class="punctuation">,</span></span><br><span class="line">								  group.by.vars <span class="operator">=</span> <span class="string">&#x27;orig.ident&#x27;</span><span class="punctuation">,</span></span><br><span class="line">								  kmeans_init_nstart<span class="operator">=</span><span class="number">30</span><span class="punctuation">,</span> </span><br><span class="line">								  kmeans_init_iter_max<span class="operator">=</span><span class="number">180</span><span class="punctuation">,</span></span><br><span class="line">								  plot_convergence <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span></span><br><span class="line">Embeddings<span class="punctuation">(</span>merged_data_harmony<span class="punctuation">,</span> <span class="string">&#x27;harmony&#x27;</span><span class="punctuation">)</span><span class="punctuation">[</span><span class="number">1</span><span class="operator">:</span><span class="number">5</span><span class="punctuation">,</span><span class="punctuation">]</span></span><br><span class="line"><span class="comment"># 4. plot</span></span><br><span class="line">pca_plot1 <span class="operator">=</span> DimPlot<span class="punctuation">(</span>object <span class="operator">=</span> merged_data_harmony <span class="punctuation">,</span> </span><br><span class="line">					reduction <span class="operator">=</span> <span class="string">&quot;pca&quot;</span><span class="punctuation">,</span> pt.size <span class="operator">=</span> <span class="number">.1</span><span class="punctuation">,</span> </span><br><span class="line">					group.by <span class="operator">=</span> <span class="string">&quot;orig.ident&quot;</span><span class="punctuation">)</span></span><br><span class="line">pac_plot2 <span class="operator">=</span> DimPlot<span class="punctuation">(</span>object <span class="operator">=</span> merged_data_harmony <span class="punctuation">,</span> </span><br><span class="line">					reduction <span class="operator">=</span> <span class="string">&quot;harmony&quot;</span><span class="punctuation">,</span> pt.size <span class="operator">=</span> <span class="number">.1</span><span class="punctuation">,</span> </span><br><span class="line">					group.by <span class="operator">=</span> <span class="string">&quot;orig.ident&quot;</span><span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>再附一张图，关于几种方法的比较。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622235421.png" alt="image.png"></p>
+<h3 id="（三）-其他方法"><a href="#（三）-其他方法" class="headerlink" title="（三） 其他方法"></a>（三） 其他方法</h3><blockquote>
+<p>参考：</p>
+<ul>
+<li>Shi, Q., Chen, Y., Li, Y. et al. Cross-tissue multicellular coordination and its rewiring in cancer. Nature (2025). <a target="_blank" rel="noopener" href="https://doi.org/10.1038/s41586-025-09053-4">https://doi.org/10.1038/s41586-025-09053-4</a> ; <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-025-09053-4#citeas">https://www.nature.com/articles/s41586-025-09053-4#citeas</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/iVhNW72YCBy4Yxs6VgStrg">新概念新方法新发现—张泽民课题组揭示跨组织多细胞协同模式及其在肿瘤中的重塑</a></li>
+</ul>
+</blockquote>
+<p>在张泽民老师刚刚发表的论文中，研究团队整合分析了多个单细胞数据，揭示了肿瘤发生过程中多细胞之间的协同模式。在论文methods部分，研究团队测试了多种数据整合和去批次方法，并对这些方法的性能进行了一些的说明。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250615171116.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250615171134.png" alt="image.png"></p>
+<p>如上图。作者使用scIB <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR17" title="Luecken, M. D. et al. Benchmarking atlas-level data integration in single-cell genomics. Nat. Methods 19, 41–50 (2022).">17</a> 这一方法，评估了几种广泛使用的基于 Python 的工具：BBKNN <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR18" title="Polanski, K. et al. BBKNN: fast batch alignment of single cell transcriptomes. Bioinformatics 36, 964–965 (2020).">18</a> 、Harmony <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR51" title="Korsunsky, I. et al. Fast, sensitive and accurate integration of single-cell data with Harmony. Nat. Methods 16, 1289–1296 (2019).">51</a> 、Scanorama <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR52" title="Hie, B., Bryson, B. &amp; Berger, B. Efficient integration of heterogeneous single-cell transcriptomes using Scanorama. Nat. Biotechnol. 37, 685–691 (2019).">52</a> 以及基于深度学习的 scVI <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR53" title="Lopez, R., Regier, J., Cole, M. B., Jordan, M. I. &amp; Yosef, N. Deep generative modeling for single-cell transcriptomics. Nat. Methods 15, 1053–1058 (2018).">53</a> 、scANVI <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR54" title="Xu, C. et al. Probabilistic harmonization and annotation of single-cell transcriptomics data with deep generative models. Mol. Syst. Biol. 17, e9620 (2021).">54</a> 和 SCALEX <a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR55" title="Xiong, L. et al. Online single-cell data integration through projecting heterogeneous datasets into a common cell-embedding space. Nat. Commun. 13, 6118 (2022).">55</a> 。最终，BBKNN 表现出色，被用于整合跨组织的数据集。</p>
+<p>从图中可以看出，除了BBKNN以外，其实scANVI、Harmony和scVI也有比较好的效果。另外，这些工具是基于python的，一般会与scanpy的流程合并起来使用；如果使用Seurat这套流程做分析，或许其中的一些方法（例如张泽民这篇文章中推荐的BBKNN）可能就不适用了。</p>
+<h2 id="三、一些注意事项"><a href="#三、一些注意事项" class="headerlink" title="三、一些注意事项"></a>三、一些注意事项</h2><p>需要注意，归一化方法，尤其是SCTransform方法，是针对单个样本进行的。即使数据已经进行了合并，归一化也是只在单个样本上进行。</p>
+<p>因此，在Github上，有人指出，针对多个样本的归一化处理，SCTransform只需要运行一遍即可，在整合去批次以后的样本上不应该再次运行SCTransform（ <code>&quot;Do not run a second round of SCTransform on the integrated assay&quot;</code>  ,参考 <a target="_blank" rel="noopener" href="https://github.com/satijalab/seurat/issues/1836">issues1836</a> ），否则，可能会引入批次效应（ <code>&quot;SCT normalization was done separately for each sample, which is likely to introduce batch effects down the line&quot;</code> , 参考 <a target="_blank" rel="noopener" href="https://github.com/satijalab/seurat/issues/2023#issuecomment-543178730">issues2023</a> ）。</p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/06/22/SingleCell_data_normalization_and_integration/" title="单细胞数据处理中的归一化和去批次效应">https://wz.anoms.top/2025/06/22/SingleCell_data_normalization_and_integration/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag"><i class="fa fa-tag"></i> 生物信息学</a>
+              <a href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 归一化</a>
+              <a href="/tags/Seurat/" rel="tag"><i class="fa fa-tag"></i> Seurat</a>
+              <a href="/tags/scRNA-seq/" rel="tag"><i class="fa fa-tag"></i> scRNA-seq</a>
+              <a href="/tags/%E5%8E%BB%E6%89%B9%E6%AC%A1%E6%95%88%E5%BA%94/" rel="tag"><i class="fa fa-tag"></i> 去批次效应</a>
+              <a href="/tags/SCTransform/" rel="tag"><i class="fa fa-tag"></i> SCTransform</a>
+              <a href="/tags/Harmony/" rel="tag"><i class="fa fa-tag"></i> Harmony</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/21/Information_Theory_Note08/" rel="prev" title="信息论学习笔记（八）">
+                  <i class="fa fa-chevron-left"></i> 信息论学习笔记（八）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/22/%E6%B2%A1%E6%9C%89%E7%88%B1%E6%83%85%E4%BD%A0%E4%BC%9A%E7%BB%93%E5%A9%9A%E5%90%97/" rel="next" title="【转载】《没有爱情，你会结婚吗？选「会」的人比20年前更多了》">
+                  【转载】《没有爱情，你会结婚吗？选「会」的人比20年前更多了》 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>

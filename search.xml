@@ -19393,4 +19393,478 @@
         <tag>信道容量</tag>
       </tags>
   </entry>
+  <entry>
+    <title>信息论学习笔记（八）</title>
+    <url>/2025/06/21/Information_Theory_Note08/</url>
+    <content><![CDATA[<p>前段时间查文献的时候，偶然看到了一些算法里涉及到了信息论的相关知识。信息论我在几年前通过看书自学过，时间太久有些忘了，正好趁此机会重新复习一下。</p>
+<blockquote>
+<p>参考书籍：机械工业《信息论基础（原书第二版）》（ELEMENTS OF INFORMATION THEORY SECOND EDITION），作者Thomas M. Cover, Joy A. Thomas</p>
+</blockquote>
+<span id="more"></span>
+
+<hr>
+<h2 id="微分熵"><a href="#微分熵" class="headerlink" title="微分熵"></a>微分熵</h2><h3 id="微分熵定义"><a href="#微分熵定义" class="headerlink" title="微分熵定义"></a>微分熵定义</h3><p>微分熵是一个连续随机变量的熵。</p>
+<ul>
+<li><strong>定义</strong>：设 $X$ 是一个随机变量，其累积分布函数 $F(x) = P_r(X \leq x)$。若 $F(x)$ 连续，则称该随机变量是连续的。</li>
+<li><strong>概率密度函数</strong>：当 $F(x)$ 导数存在时，记 $f(x) = F’(x)$。若 $\int_{-\infty}^{\infty} f(x) dx = 1$，则称 $f(x)$ 为 $X$ 的 <strong>概率密度函数</strong>。</li>
+<li><strong>支持集</strong>：使 $f(x) &gt; 0$ 的所有 $x$ 构成的集合称为 $X$ 的 <strong>支持集</strong>。</li>
+</ul>
+<h3 id="连续随机变量的微分熵"><a href="#连续随机变量的微分熵" class="headerlink" title="连续随机变量的微分熵"></a>连续随机变量的微分熵</h3><p>一个以 $f(x)$ 为概率密度函数的连续型随机变量 $X$ 的微分熵 $h(X)$ 定义为：<br>$$h(X) = -\int_S f(x) \log f(x) dx$$</p>
+<p>其中， $S$ 是 $X$ 的支持集。</p>
+<p>考虑一个<strong>区间 $[0, a]$  上的均匀分布</strong>：$h(X) = -\int_0^a \frac{1}{a} \log \frac{1}{a} dx = \log (a)$</p>
+<ul>
+<li><strong>非负性</strong>：当 $a &lt; 1$ 时，$h(X) &lt; 0$，即微分熵可以是负的。</li>
+<li><strong>非负指数性质</strong>：但无论如何，$2^{h(X)} = 2^{log(a)} = a$ 总是非负的。</li>
+</ul>
+<h3 id="连续随机变量的-AEP（典型序列）"><a href="#连续随机变量的-AEP（典型序列）" class="headerlink" title="连续随机变量的 AEP（典型序列）"></a>连续随机变量的 AEP（典型序列）</h3><ul>
+<li><strong>定义</strong>：集合 $A \subseteq \mathbb{R}^n$ 的体积 $\text{Vol}(A) = \int_A dx_1 dx_2 \cdots dx_n$</li>
+<li>**典型集 $A_\varepsilon^{(n)}$**：具有以下性质：<ol>
+<li>对于充分大的 $n$，$P_r(A_\varepsilon^{(n)}) &gt; 1 - \varepsilon$</li>
+<li>对于所有的 $n$，$\text{Vol}(A_\varepsilon^{(n)}) \leq 2^{n(h(X) + \varepsilon)}$</li>
+<li>对于充分大的 $n$，$\text{Vol}(A_\varepsilon^{(n)}) \geq (1 - \varepsilon) 2^{n(h(X) - \varepsilon)}$</li>
+</ol>
+</li>
+</ul>
+<p>在一阶指数意义下，在所有概率 $≥1-ε$ 的集合 $\phi$ 中， $A_\epsilon^{(n)}$ 是体积最小者。</p>
+<p><strong>熵的近似</strong>：如果随机变量 $X$ 的密度函数 $f(x)$ 是黎曼可积的，那么：<br>$$H(X^\Delta) + \log \Delta \to h(f) = h(X), \text{ 当 } \Delta \to 0$$<br>于是，连续随机变量X经过X比特量化处理（此时分割的小区间长度 $\frac{1}{2^n}$ ）之后，熵大约是 $h(x)+n$ 。</p>
+<h3 id="联合微分熵与条件微分熵"><a href="#联合微分熵与条件微分熵" class="headerlink" title="联合微分熵与条件微分熵"></a>联合微分熵与条件微分熵</h3><ul>
+<li><strong>联合微分熵</strong>：<br>$$h(X_1, X_2, \ldots, X_n) = -\int f(x^n) \log f(x^n) dx^n$$</li>
+<li><strong>条件微分熵</strong>：<br>$$h(X|Y) = -\int f(x,y) \log f(x|y) dxdy = h(X,Y) -h(Y)$$</li>
+</ul>
+<ul>
+<li><strong>多元正态分布 $N(\mu, K)$ 的熵：</strong><br>$$h(X) = \frac{1}{2} \log ((2\pi e)^n |K|) \text{ bit}$$</li>
+</ul>
+<h3 id="相对熵与互信息"><a href="#相对熵与互信息" class="headerlink" title="相对熵与互信息"></a>相对熵与互信息</h3><ul>
+<li><strong>相对熵</strong>：<br>$$D(f | g) = \int f \log \frac{f}{g}$$<br>（只有当 $f$ 的支持集包含在 $g$ 的支持集中时，$D(f | g)$ 才是有意义的。）</li>
+<li><strong>互信息</strong>：$$I(X; Y) = \int f(x,y) \log \frac{f(x,y)}{f(x)f(y)} dxdy$$<br>$$I(X; Y) = h(X) - h(X|Y) = h(Y) - h(Y|X) = h(X) + h(Y) - h(X,Y)$$<br>$$I(X; Y) = D(f_{X,Y} | f_X f_Y)$$</li>
+</ul>
+<h4 id="一些性质"><a href="#一些性质" class="headerlink" title="一些性质"></a>一些性质</h4><ol>
+<li><strong>非负性</strong>：$D(f | g) \geq 0$</li>
+<li><strong>链式法则</strong>：$h(X_1, X_2, \ldots, X_n) = \sum_{i=1}^n h(X_i | X_1, X_2, \ldots, X_{i-1})$</li>
+<li><strong>平移不变性</strong>：$h(X + c) = h(X)$（平移不改变微分熵）</li>
+<li><strong>尺度变换</strong>：$h(aX) = h(X) + \log |a|$</li>
+<li><strong>高斯随机向量的熵</strong>：若 $X \in \mathbb{R}^n$ 的均值为 0 ，协方差矩阵 $K = E[XX^T]$，则：<br>$$h(X) \leq \frac{1}{2} \log ((2\pi e)^n |K|)$$<br>当且仅当 $X \sim N(0, K)$ 时取等。</li>
+<li><strong>估计误差</strong>：$E(X - \hat{X})^2 \geq \frac{1}{2\pi e} e^{2h(X)}$<br>当且仅当 $X$ 为高斯分布且 $\hat{X}$ 为其均值时等号成立。</li>
+</ol>
+<h3 id="有效字母表大小"><a href="#有效字母表大小" class="headerlink" title="有效字母表大小"></a>有效字母表大小</h3><ul>
+<li>$2^{H(X)}$ 为一个高斯随机变量的有效字母表大小。</li>
+<li>$2^{h(X)}$ 为一个连续随机变量的有效支持集大小。</li>
+<li>$2^C$ 为一个信道容量为 $C$ 的信道的有效字母表大小。</li>
+</ul>
+<hr>
+<h2 id="高斯信道"><a href="#高斯信道" class="headerlink" title="高斯信道"></a>高斯信道</h2><h3 id="基本模型"><a href="#基本模型" class="headerlink" title="基本模型"></a>基本模型</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250621220841.png" alt="image.png"></p>
+<p><strong>高斯信道</strong>：输入输出关系为 $Y_i = X_i \oplus Z_i$ ，其中：  </p>
+<ul>
+<li>$X_i$ 是时刻 $i$ 的输入信号；  </li>
+<li>$Z_i \sim \mathcal{N}(0, N)$ 是加性高斯白噪声（AWGN）。  </li>
+</ul>
+<p>若噪声方差 $N = 0$ ，则信道容量为无限大。  </p>
+<hr>
+<h3 id="功率受限的高斯信道容量"><a href="#功率受限的高斯信道容量" class="headerlink" title="功率受限的高斯信道容量"></a>功率受限的高斯信道容量</h3><p><strong>问题</strong>：在噪声方差为 $N$ 且平均功率约束为 $P$ （我们令  $\frac{1}{n} \sum_{i=1}^n X_i^2 \leq P$ ）的条件下，求高斯信道的容量，即最大互信息 $I(X; Y)$ 。  </p>
+<p><strong>结论</strong>：</p>
+<p>$$<br>C = \max_{p(x)} I(X; Y) = \frac{1}{2} \log \left( 1 + \frac{P}{N} \right)<br>$$  </p>
+<p>$\Rightarrow$  <strong>高斯信道容量</strong> 由信噪比$\frac{P}{N}$决定。  </p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622230447.png" alt="image.png"></p>
+<p><strong>一次发送1bit信息的错误概率</strong>: 假设发送二进制消息 $b \in {0, 1}$ ，对应输入 $X = \sqrt{P}$ 或 $-\sqrt{P}$：<br>$$<br>P_e = \frac{1}{2} P_r(Y &lt; -\sqrt{P} | X = \sqrt{P}) + \frac{1}{2} P_r(Y &gt; \sqrt{P} | X = -\sqrt{P})<br>$$<br>$\Rightarrow$ 错误概率为：<br>$$<br>P_e = Q\left( \sqrt{\frac{2P}{N}} \right)<br>$$<br>其中$Q(\cdot)$是标准正态分布的尾部概率函数。  </p>
+<h3 id="高斯信道的码结构与可达性"><a href="#高斯信道的码结构与可达性" class="headerlink" title="高斯信道的码结构与可达性"></a>高斯信道的码结构与可达性</h3><h4 id="码的要素"><a href="#码的要素" class="headerlink" title="码的要素"></a>码的要素</h4><p>一个功率限制为 $P$ 的高斯信道所对应的 $(M, n)$ 码由以下几个要素构成：</p>
+<ul>
+<li><strong>下标集</strong>：${1, 2, \cdots, M}$</li>
+<li><strong>编码函数</strong>：$x: {1, 2, \cdots, M} \rightarrow x^n$，相应的码字 $x^n(1), x^n(2), \cdots, x^n(M)$ ，且满足功率限制 $P$，即对每个码字，$\frac{1}{n} \sum_{i=1}^n x_i^2(w) \leq P$，$w = 1, 2, \cdots, M$。</li>
+<li><strong>译码函数</strong>：$g: \mathcal{Y}^n \rightarrow {1, 2, \cdots, M}$</li>
+<li><strong>误差概率的算术平均</strong>：$P_e^{(n)} = \frac{1}{2^{nR}} \sum \lambda_i$</li>
+</ul>
+<h4 id="码的可达性"><a href="#码的可达性" class="headerlink" title="码的可达性"></a>码的可达性</h4><p>对于一个功率限制为 $P$ 的高斯信道，若存在码字功率限制的一个 $(2^{nR}, n)$ 码序列使得最大误差概率 $\lambda^n \rightarrow 0$，则称码率为 $R$ 关于该功率限制为 $P$ 的高斯信道是 <strong>可达的</strong>。</p>
+<h3 id="带宽有限信道"><a href="#带宽有限信道" class="headerlink" title="带宽有限信道"></a>带宽有限信道</h3><p><strong>信道表达式</strong>：</p>
+<p>$Y(t) = (X(t) + Z(t)) * h(t)$</p>
+<ul>
+<li>$X(t)$：信号波形</li>
+<li>$Z(t)$：高斯白噪声</li>
+<li>$h(t)$：理想的低通滤波器（过滤频率大于 $W$ 的所有频率）</li>
+</ul>
+<p><strong>采样定理</strong>：以采样频率 $\frac{1}{2W}$ 进行采样，足以重构信号。</p>
+<p><strong>噪声特性</strong>：</p>
+<ul>
+<li>噪声的功率谱密度为 $\frac{N_0}{2}$ W/Hz</li>
+<li>带宽 $W$ Hz</li>
+<li>其功率为 $\frac{N_0}{2} \cdot 2W = N_0 W$</li>
+</ul>
+<p><strong>每样本容量</strong>：</p>
+<p>$C = \frac{1}{2} \log \left( 1 + \frac{P}{N_0} \right)= \frac{1}{2} \log \left( 1 + \frac{P}{\frac{N_0}{2} \cdot 2W} \right) = \frac{1}{2} \log \left( 1 + \frac{P}{N_0 W} \right)$</p>
+<p><strong>信道容量</strong>：</p>
+<p>$C = W \log \left( 1 + \frac{P}{N_0 W} \right)$</p>
+<ul>
+<li>$N_0/2$：噪声谱密度</li>
+<li>$P$：功率</li>
+</ul>
+<ul>
+<li>每秒有 $2W$ 个样本, 信道容量 = $2W \times$ 每样本容量</li>
+<li>**若 $W \to \infty$**：$C = \frac{P}{N_0} \log_2 e \quad (\text{bit/s})$</li>
+</ul>
+<ul>
+<li>对于无限带宽信道，信道容量与功率成线性增长关系。</li>
+</ul>
+<ul>
+<li>以<strong>电话线路为例</strong>： 带宽 $W = 3300$ Hz ，响度 $33$ dB（即 $\frac{P}{N_0 W} = 2000$），则 $C = W \log \left( 1 + \frac{P}{N_0 W} \right) = 3300 \log \left( 1 + 2000 \right) \approx 36 \text{ kbps}$</li>
+</ul>
+<h3 id="并联高斯信道"><a href="#并联高斯信道" class="headerlink" title="并联高斯信道"></a>并联高斯信道</h3><ul>
+<li><strong>模型</strong>：多个独立子信道 $Y_j = X_j + Z_j$ ，$j = 1, 2, \ldots, K$ ，其中 $Z_j \sim \mathcal{N}(0, N_j)$ 。  </li>
+<li><strong>总容量</strong>：  </li>
+</ul>
+<p>$$<br>C \le \sum_{j=1}^K \frac{1}{2} \log \left( 1 + \frac{P_j}{N_j} \right)<br>$$<br>$\Rightarrow$ 总容量等于各子信道容量之和。  </p>
+<ul>
+<li><strong>功率分配策略</strong>：  <strong>注水法（Water-Filling）</strong>， 在满足总功率约束$\sum_{j=1}^K P_j \leq P$下，最优功率分配为：  </li>
+</ul>
+<p>$$<br>P_j = \left( \nu - {N_j} \right)^+<br>$$</p>
+<p>即对 $P_i$ 取正的部分，而负的部分设为0（公式中的 $\nu$ 由总功率约束确定 ）。注水法的直观理解是优先分配功率给噪声小的信道（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622232345.png" alt="image.png"></p>
+<h3 id="高斯彩色噪声信道（噪声互相相关）"><a href="#高斯彩色噪声信道（噪声互相相关）" class="headerlink" title="高斯彩色噪声信道（噪声互相相关）"></a>高斯彩色噪声信道（噪声互相相关）</h3><ul>
+<li>$K_z$ 为噪声的协方差阵。</li>
+<li>$K_x$ 为输入信号的协方差阵。</li>
+</ul>
+<ul>
+<li><strong>功率限制</strong>： $\frac{1}{n} \sum_{i=1}^n E[X_i^2] \leq P \Leftrightarrow \frac{1}{n} \text{tr}(K_x) \leq P$</li>
+<li>互信息表达式 $I(X_1, X_2, \cdots, X_n; Y_1, Y_2, \cdots, Y_n) = h(Y_1, Y_2, \cdots, Y_n) - h(Z_1, Z_2, \cdots, Z_n)$ ，我们的目标是最大化此表达式中的 $h(Y_1, Y_2, \cdots, Y_n)$ 项，因为后一项 $h(Z_1, Z_2, \cdots, Z_n)$ 由噪声分布唯一决定。</li>
+<li>$h(Y_1, Y_2, \cdots, Y_n)= \frac{1}{2} \log((2\pi e)^n |K_x + K_z|)$ ，<strong>问题简化为在 $K_x$ 约束下，选择 $K_x$，最大化 $|K_x + K_z|$</strong></li>
+</ul>
+<ul>
+<li><strong>分解 $K_z$ 为对角型</strong>：$K_z = Q \Lambda Q^t$，其中 $QQ^t = I$</li>
+<li>**则 $|K_x + K_z| = |K_x + Q \Lambda Q^t| = |Q^t K_x Q + \Lambda| = |A + \Lambda|$**，其中 $A = Q^t K_x Q$</li>
+</ul>
+<ul>
+<li>可证明 $\Pi (A_{ii} + \lambda_i)$ 在 $A_{ii} + \lambda_i = v$ 时取最大，且 $A_{ii}$ 可能为负。 $\Rightarrow A_{ii} = (v - \lambda_i)^+$ ，<strong>选取 $v$ 使得 $\sum A_{ii} = nP$</strong> ，即下图的频域注水法。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622233024.png" alt="image.png"></p>
+<ul>
+<li><strong>一个噪声功率谱为 $N(f)$ 的可加高斯噪声信道的容量</strong>： $C = \int_{-\infty}^{\infty} \frac{1}{2} \log \left( 1 + \frac{(\psi - N(f))^+}{N(f)} \right) df$ ， <strong>其中 $\psi$ 满足 $\int (\psi - N(f))^+ df = P$</strong></li>
+</ul>
+<h3 id="带反馈的高斯信道"><a href="#带反馈的高斯信道" class="headerlink" title="带反馈的高斯信道"></a>带反馈的高斯信道</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622233214.png" alt="image.png"></p>
+<p><strong>信道表达式</strong>： $Y_i = X_i \oplus Z_i, Y_i \xrightarrow{\text{反馈}} X_i, \quad Z_i \sim \mathcal{N}(0, K_z^{(n)})$</p>
+<ul>
+<li>$X_i$：输入信号</li>
+<li>$Y_i$：输出信号</li>
+<li>$Z_i$：高斯噪声，$Z_i \sim \mathcal{N}(0, K_z^{(n)})$</li>
+<li><strong>反馈不会增加离散无记忆信道的容量</strong></li>
+<li><strong>但如果信道有记忆，反馈会增加容量</strong></li>
+</ul>
+<ul>
+<li>记带反馈信道的容量为 $C_{n,FB}$，则有：</li>
+<li>$C_{n,FB} \leq C_n + \frac{1}{2} \quad (\text{bit/传输})$</li>
+<li>$C_{n,FB} \leq 2C_n \quad (\text{bit/传输})$</li>
+<li>$C_n = \max_{\substack{\text{tr}(K_x) \leq nP}} \frac{1}{2n} \log \frac{|K_x + K_z|}{|K_z|}$</li>
+<li>$C_{n,FB} = \max_{\substack{\text{tr}(K_x) \leq nP}} \frac{1}{2n} \log \frac{|K_x + K_z|}{|K_z|}$</li>
+</ul>
+<ul>
+<li><strong>反馈可以增加信道容量，但增量不会超过 $\frac{1}{2}$  bit/传输</strong>, <strong>也不会超过原始信道的两倍</strong></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>信息论</tag>
+        <tag>信道容量</tag>
+        <tag>微分熵</tag>
+        <tag>高斯信道</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>单细胞数据处理中的归一化和去批次效应</title>
+    <url>/2025/06/22/SingleCell_data_normalization_and_integration/</url>
+    <content><![CDATA[<p>如题。在实验数据处理中，我们经常会碰到归一化和去批次的问题。对于RNA-seq数据的归一化，常用的方法有RPKM矫正，TPM矫正，Quantile Normalization等（参见博客往期文章<a href="https://wz.anoms.top/2024/10/20/RNA-seq-normalization/">《RNA-seq的数据归一化》</a> ），而单细胞测序数据，作为一类更加复杂的组学数据，其归一化和去批次的方法也更多更复杂。以下是结合近期实践的一些经验分享，写得不好，请多见谅。</p>
+<span id="more"></span>
+
+
+<h2 id="一、归一化"><a href="#一、归一化" class="headerlink" title="一、归一化"></a>一、归一化</h2><blockquote>
+<p>参考：</p>
+<ul>
+<li><a href="https://www.jianshu.com/p/21b2f08652ed">《SCTransform：单细胞样本的标准化》</a></li>
+<li><a href="https://mp.weixin.qq.com/s/M-Y56hGtxTgYc7G8WH-zGA">《单细胞转录组数据特征与标准化（二）：sctransform原理解析与标准化方法的选择》</a></li>
+<li><a href="https://mp.weixin.qq.com/s/mfu3jsTv6Nk85yNnLQS_zw">《单细胞转录组数据特征与标准化（一）：泊松分布和准泊松回归》</a></li>
+</ul>
+</blockquote>
+<p>单细胞转录组的归一化方法大概可以分成两大类。一类是基于“size factors”的方法，例如LogNormalize，即直接除以总数的log标准化；另一类是基于概率分布的方法，根据每个基因的表达量分布拟合特定的参数，然后对每个基因标准化，例如SCTransform。</p>
+<p>这两大类标准化方法侧重的维度不同，size factors 侧重细胞维度；概率分布侧重基因维度。</p>
+<h3 id="（一）-LogNormalize-in-Seurat"><a href="#（一）-LogNormalize-in-Seurat" class="headerlink" title="（一） LogNormalize in Seurat"></a>（一） <code>LogNormalize</code> in Seurat</h3><p>其使用方法如下：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">library<span class="punctuation">(</span>dplyr<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>Seurat<span class="punctuation">)</span></span><br><span class="line">pbmc <span class="operator">&lt;-</span> NormalizeData<span class="punctuation">(</span>pbmc<span class="punctuation">,</span> normalization.method <span class="operator">=</span> <span class="string">&quot;LogNormalize&quot;</span><span class="punctuation">,</span> scale.factor <span class="operator">=</span> <span class="number">10000</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>归一化之后的表达矩阵数据的存储槽位为 <code>SeuratObject@assays$RNA@layers$data</code> 。</p>
+<p>函数实现见<a href="https://github.com/satijalab/seurat/blob/HEAD/R/preprocessing5.R#L188">Github存储库</a> ， API说明见<a href="https://satijalab.org/seurat/reference/lognormalize">Seurat文档</a>。下面是核心逻辑：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># File seurat/R/preprocessing5.R, Line 188-220.</span></span><br><span class="line">LogNormalize.default <span class="operator">&lt;-</span> <span class="keyword">function</span><span class="punctuation">(</span>data<span class="punctuation">,</span>scale.factor <span class="operator">=</span> <span class="number">1e4</span><span class="punctuation">,</span>margin <span class="operator">=</span> <span class="number">2L</span><span class="punctuation">,</span>verbose <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">,</span>...<span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">  ncells <span class="operator">&lt;-</span> <span class="built_in">dim</span><span class="punctuation">(</span>x <span class="operator">=</span> data<span class="punctuation">)</span><span class="punctuation">[</span>margin<span class="punctuation">]</span></span><br><span class="line">  <span class="keyword">for</span> <span class="punctuation">(</span>i <span class="keyword">in</span> <span class="built_in">seq_len</span><span class="punctuation">(</span>length.out <span class="operator">=</span> ncells<span class="punctuation">)</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">    x <span class="operator">&lt;-</span> <span class="keyword">if</span> <span class="punctuation">(</span>margin <span class="operator">==</span> <span class="number">1L</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">      data<span class="punctuation">[</span>i<span class="punctuation">,</span> <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span> <span class="keyword">else</span> <span class="punctuation">&#123;</span></span><br><span class="line">      data<span class="punctuation">[</span><span class="punctuation">,</span> i<span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">    xnorm <span class="operator">&lt;-</span> log1p<span class="punctuation">(</span>x <span class="operator">=</span> x <span class="operator">/</span> <span class="built_in">sum</span><span class="punctuation">(</span>x<span class="punctuation">)</span> <span class="operator">*</span> scale.factor<span class="punctuation">)</span></span><br><span class="line">    <span class="keyword">if</span> <span class="punctuation">(</span>margin <span class="operator">==</span> <span class="number">1L</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">      data<span class="punctuation">[</span>i<span class="punctuation">,</span> <span class="punctuation">]</span> <span class="operator">&lt;-</span> xnorm</span><br><span class="line">    <span class="punctuation">&#125;</span> <span class="keyword">else</span> <span class="punctuation">&#123;</span></span><br><span class="line">      data<span class="punctuation">[</span><span class="punctuation">,</span> i<span class="punctuation">]</span> <span class="operator">&lt;-</span> xnorm</span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="built_in">return</span><span class="punctuation">(</span>data<span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>LogNormalize使用的归一化公式为</p>
+<p>$$<br>\text{xnorm} = \log_1p\left(\frac{x}{\sum x} \times \text{scale.factor}\right)<br>$$</p>
+<ul>
+<li><code>x/sum(x)</code>：将当前单元（如细胞）的每个基因的UMI计数转换为比例。</li>
+<li><code>scale.factor</code>：将总表达量缩放至目标值（如1e4）。</li>
+<li><code>log1p</code>：对结果取自然对数（<code>log1p(x) = log(x + 1)</code>），避免零值问题。</li>
+</ul>
+<p>LogNormalize是Seurat中默认的归一化方法，其做了两件事：①消除测序深度差异（如不同细胞的UMI总量差异）；②压缩数据动态范围，便于后续分析（如聚类、降维）。   </p>
+<p>核心算法原理非常简单，计算速度也是最快的。但缺点是只矫正了测序深度，并没有矫正异常基因。</p>
+<h3 id="（二）-SCTransform-in-Seurat"><a href="#（二）-SCTransform-in-Seurat" class="headerlink" title="（二） SCTransform in Seurat"></a>（二） <code>SCTransform</code> in Seurat</h3><p>一个<a href="https://satijalab.org/seurat/articles/sctransform_vignette.html">示例</a>如下：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># store mitochondrial percentage in object meta data</span></span><br><span class="line">pbmc <span class="operator">&lt;-</span> PercentageFeatureSet<span class="punctuation">(</span>pbmc<span class="punctuation">,</span> pattern <span class="operator">=</span> <span class="string">&quot;^MT-&quot;</span><span class="punctuation">,</span> col.name <span class="operator">=</span> <span class="string">&quot;percent.mt&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># run sctransform</span></span><br><span class="line">pbmc <span class="operator">&lt;-</span> SCTransform<span class="punctuation">(</span>pbmc<span class="punctuation">,</span> vars.to.regress <span class="operator">=</span> <span class="string">&quot;percent.mt&quot;</span><span class="punctuation">,</span> verbose <span class="operator">=</span> <span class="literal">FALSE</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>这是一个用方差稳定变换对单细胞UMI count 数据标准化的方法，方差稳定变换是基于负二项回归。这个函数在对数据进行均一化的同时还可以去除线粒体红细胞等混杂因素的影响。</p>
+<p>Sctransform先拟合每个基因在不同细胞的reads数和测序深度的关系，然后矫正拟合结果，计算测序深度相关的reads数期望值和对应的方差，利用期望值和方差计算皮尔森残差，最后返回矫正后的reads数。</p>
+<p>SCTransform的优点：</p>
+<ol>
+<li>不根据size factor，也就是总的UMI数对每个细胞标准化；</li>
+<li>标准化方法建立在单细胞数据已知的关系之上：平均表达量和方差的关系。</li>
+<li>没有用log转化，z-scoring标准化（严格来说，sctransform还是有涉及的。计算皮尔森残差的公式很像z-score）</li>
+<li>综合来说，sctransform的标准化结果可以消除测序深度的影响。</li>
+</ol>
+<p>SCTransform标准化的过程大概分为三步（如下图，另外参考<a href="https://mp.weixin.qq.com/s/M-Y56hGtxTgYc7G8WH-zGA">文章</a>）：</p>
+<ol>
+<li>负二项分布回归（广义线性模型）拟合每个基因的表达量和测序深度的关系；</li>
+<li>Ksmooth矫正拟合结果；</li>
+<li>计算皮尔森残差，返回矫正reads数。</li>
+</ol>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250616132643.png" alt="image.png"></p>
+<p>另外 ，有人指出SCTransform只需要运行一遍即可，在整合去批次以后的样本上不应该再次运行SCTransform（ <code>&quot;Do not run a second round of SCTransform on the integrated assay&quot;</code>  ,参考 <a href="https://github.com/satijalab/seurat/issues/1836">issues1836</a> ），这是因为SCT 归一化是针对每个样本单独进行的，因此可能会引入批次效应（ <code>&quot;SCT normalization was done separately for each sample, which is likely to introduce batch effects down the line&quot;</code> , 参考 <a href="https://github.com/satijalab/seurat/issues/2023#issuecomment-543178730">issues2023</a> ）。</p>
+<p>另外，在这个方法中有一个可选参数 <code>vars.to.regress</code> ，在上述Seurat示例中使用的是 <code>vars.to.regress = &quot;percent.mt&quot;</code> ，它表示在建立负二项分布模型时将线粒体基因占比（<code>percent.mt</code>） 也作为一个协变量添加到模型当中，从而在归一化时移除线粒体基因占比造成的差异。这个参数可以换成其他指标，例如某个管家基因的表达量，或者细胞数量等等。如果不需要考虑这些差异，仅仅需要矫正测序深度的影响，则可以留空。</p>
+<p>另外是AI大模型总结的一张表格，对比了两个方法的优缺点：（powered by DeepSeek）</p>
+<h4 id="SCTransform-vs-LogNormalize"><a href="#SCTransform-vs-LogNormalize" class="headerlink" title="SCTransform vs LogNormalize:"></a>SCTransform vs LogNormalize:</h4><table>
+<thead>
+<tr>
+<th>特征</th>
+<th>LogNormalize</th>
+<th>SCTransform</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>核心原理</td>
+<td>全局缩放和对数变换</td>
+<td>正则化负二项回归模型</td>
+</tr>
+<tr>
+<td>关键假设</td>
+<td>所有细胞的初始RNA总量相近</td>
+<td>基因表达计数遵循负二项分布，且受测序深度影响</td>
+</tr>
+<tr>
+<td>PCA输入</td>
+<td>对数变换后的数据（data槽）</td>
+<td>皮尔逊残差（scale.data槽）</td>
+</tr>
+<tr>
+<td>处理测序深度</td>
+<td>隐式处理（作为分母），假设其为唯一技术因素</td>
+<td>显式处理（作为模型协变量），更精确地分离技术与生物变异</td>
+</tr>
+<tr>
+<td>主要优势</td>
+<td>概念简单，计算速度快</td>
+<td>统计学基础扎实，方差稳定效果好，能更有效去除技术噪音</td>
+</tr>
+<tr>
+<td>潜在不足</td>
+<td>核心假设常被违背，可能扭曲生物学差异</td>
+<td>模型相对复杂，计算成本较高，在特定模拟数据中可能存在偏好</td>
+</tr>
+</tbody></table>
+<p>总之，推荐的归一化方法是SCTransform。如果数据量比较大，需要节省时间，或者数据中没有太多高表达的异常基因，则可以使用 LogNormalize。</p>
+<h2 id="二、批次效应移除"><a href="#二、批次效应移除" class="headerlink" title="二、批次效应移除"></a>二、批次效应移除</h2><p>如果我们有多个样本，需要合并在一起，那么样本之间如何保证可比？不同样本（即使来自相同的测序平台），其样本状态、测序深度、技术误差等等因素叠加在一起，也会导致很强的批次效应。下面介绍几种R语音中常用的批次效应移除工具。</p>
+<h3 id="（一）-基于锚点的去批次方法（Integrate-AnchorSet-by-IntegrateData-in-Seurat）"><a href="#（一）-基于锚点的去批次方法（Integrate-AnchorSet-by-IntegrateData-in-Seurat）" class="headerlink" title="（一） 基于锚点的去批次方法（Integrate AnchorSet by IntegrateData  in Seurat）"></a>（一） 基于锚点的去批次方法（Integrate AnchorSet by <code>IntegrateData</code>  in Seurat）</h3><blockquote>
+<p>参考： Stuart T, Butler A, et al. Comprehensive Integration of Single-Cell Data. <a href="https://www.sciencedirect.com/science/article/pii/S0092867419305598?via=ihub">Cell. 2019;177:1888-1902</a> <a href="https://doi.org/10.1016/j.cell.2019.05.031">doi:10.1016/j.cell.2019.05.031</a></p>
+</blockquote>
+<p>某种意义上说，<code>IntegrateData</code> 这一类方法与前面介绍的那些并不相同，它为多组样本的整合任务而生，主要目的是去除样本之间的批次效应。</p>
+<p>通过识别跨数据集的单细胞之间的成对对应关系（称为“锚点”），我们可以将数据集转换到一个共享的空间，这使得能够在组织或生物体尺度构建协调一致的图谱，并且能够有效地将离散或连续的数据从参考数据集转移到查询数据集上。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250616141334.png" alt="image.png"></p>
+<p>具体来说，基于锚点的去批次方法包含如下几个步骤（如上图）</p>
+<ul>
+<li>首先，我们的输入包括两个数据集（参考数据集和查询数据集），每个数据集都来源于单独的单细胞实验。这两个数据集共享来自相似生物状态的细胞，但查询数据集还另外包含一个独特的细胞群体（图A中以黑色标注的细胞簇）。</li>
+<li>对这些细胞进行经典的相关性分析，随后进行 L2 归一化，将数据集投影到由跨数据集的共享相关结构定义的子空间中（B图）。</li>
+<li>在共享空间中，我们在参考细胞和查询细胞之间识别成对的 MNN（最近邻对），它们代表跨数据集处于相同生物状态的细胞（灰色线），并充当引导数据集集成的锚点。原则上，独特群体中的细胞不应参与锚点，但在实践中，我们观察到频率较低的“错误”锚点（红色线）。（C图）</li>
+<li>对于每对锚点，我们根据各个数据集的邻域结构中锚点的一致性来分配一个分数。我们利用锚点及其分数为每个查询细胞计算“校正”向量，从而转换其表达，使其能够作为集成参考的一部分进行联合分析。（D-E图）</li>
+</ul>
+<p>要使用这套方法进行批次效应移除，我们的步骤如下：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 0. 合并多个样本</span></span><br><span class="line"><span class="comment">## （假设我们有三个样本，经过Seurat初步处理和归一化以后的对象分别是sample1, sample2, sample3）</span></span><br><span class="line">merged_sct_list <span class="operator">&lt;-</span> <span class="built_in">list</span><span class="punctuation">(</span>sample1<span class="punctuation">,</span> sample2<span class="punctuation">,</span> sample3<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 选择整合特征</span></span><br><span class="line">features <span class="operator">&lt;-</span> SelectIntegrationFeatures<span class="punctuation">(</span>object.list <span class="operator">=</span> merged_sct_list<span class="punctuation">,</span> nfeatures <span class="operator">=</span> <span class="number">3000</span><span class="punctuation">)</span> <span class="comment"># 增加特征数可能有助于保留更多信息</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 过滤 anchor.features，确保它们存在于所有对象的 SCT scale.data 中</span></span><br><span class="line"><span class="comment">## 获取每个对象的 SCT scale.data 中的特征列表</span></span><br><span class="line">sct_scale_features_list <span class="operator">&lt;-</span> lapply<span class="punctuation">(</span>merged_sct_list<span class="punctuation">,</span> <span class="keyword">function</span><span class="punctuation">(</span>obj<span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="built_in">return</span><span class="punctuation">(</span>rownames<span class="punctuation">(</span>GetAssayData<span class="punctuation">(</span>obj<span class="punctuation">,</span> assay <span class="operator">=</span> <span class="string">&quot;SCT&quot;</span><span class="punctuation">,</span> slot <span class="operator">=</span> <span class="string">&quot;scale.data&quot;</span><span class="punctuation">)</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment">## 找到所有对象 SCT scale.data 中的共同特征</span></span><br><span class="line">common_sct_scale_features <span class="operator">&lt;-</span> Reduce<span class="punctuation">(</span>intersect<span class="punctuation">,</span> sct_scale_features_list<span class="punctuation">)</span></span><br><span class="line"><span class="comment">## 过滤 SelectIntegrationFeatures 选择的特征，只保留共同特征</span></span><br><span class="line">features <span class="operator">&lt;-</span> intersect<span class="punctuation">(</span>features<span class="punctuation">,</span> common_sct_scale_features<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. PrepSCTIntegration (为 SCT 整合做准备)</span></span><br><span class="line">merged_sct_list <span class="operator">&lt;-</span> PrepSCTIntegration<span class="punctuation">(</span>object.list <span class="operator">=</span> merged_sct_list<span class="punctuation">,</span> </span><br><span class="line">									  anchor.features <span class="operator">=</span> features<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 寻找锚点 (FindIntegrationAnchors)</span></span><br><span class="line">anchors <span class="operator">&lt;-</span> FindIntegrationAnchors<span class="punctuation">(</span></span><br><span class="line">  object.list <span class="operator">=</span> merged_sct_list<span class="punctuation">,</span></span><br><span class="line">  normalization.method <span class="operator">=</span> <span class="string">&quot;SCT&quot;</span><span class="punctuation">,</span></span><br><span class="line">  anchor.features <span class="operator">=</span> features</span><br><span class="line"><span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 整合数据 (IntegrateData)</span></span><br><span class="line">integrated_obj <span class="operator">&lt;-</span> IntegrateData<span class="punctuation">(</span></span><br><span class="line">  anchorset <span class="operator">=</span> anchors</span><br><span class="line"><span class="punctuation">)</span></span><br><span class="line"><span class="comment">## 最终保存整合后的对象</span></span><br><span class="line">saveRDS<span class="punctuation">(</span>integrated_obj<span class="punctuation">,</span> <span class="string">&quot;final_integrated_batch_merged.rds&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="（二）-RunHarmony-in-Seurat-and-Harmony"><a href="#（二）-RunHarmony-in-Seurat-and-Harmony" class="headerlink" title="（二） RunHarmony in Seurat and Harmony"></a>（二） <code>RunHarmony</code> in Seurat and Harmony</h3><blockquote>
+<p>参考：</p>
+<ul>
+<li>Korsunsky, I., Millard, N., Fan, J. <em>et al.</em> Fast, sensitive and accurate integration of single-cell data with Harmony. <a href="https://www.nature.com/articles/s41592-019-0619-0#"><em>Nat Methods</em> <strong>16</strong>, 1289–1296 (2019)</a>. <a href="https://doi.org/10.1038/s41592-019-0619-0">https://doi.org/10.1038/s41592-019-0619-0</a></li>
+<li><a href="https://satijalab.org/seurat/reference/harmonyintegration">Harmony Integration</a></li>
+<li><a href="https://cran.r-project.org/web/packages/harmony/index.html">https://cran.r-project.org/web/packages/harmony/index.html</a></li>
+<li><a href="https://cran.r-project.org/web/packages/harmony/harmony.pdf">https://cran.r-project.org/web/packages/harmony/harmony.pdf</a></li>
+<li><a href="https://cran.r-project.org/web/packages/harmony/vignettes/Seurat.html">https://cran.r-project.org/web/packages/harmony/vignettes/Seurat.html</a></li>
+</ul>
+</blockquote>
+<p>Harmony是2019年Korsunsky等人提出的一种去批次的方法，其计算思路大致为「低维嵌入→软聚类分组→计算聚类质心→计算校正因子→细胞特异性线性因子校正→迭代直到收敛」。下图是论文中给出的算法大纲。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622235357.png" alt="image.png"></p>
+<p>这个方法的计算细节详见论文，此处不做展开。Harmony方法的优点在于速度很快，不过相比于前述Seurat中基于锚点的方法，Harmony方法只能返回去批次以后的细胞坐标，而无法返回基因表达矩阵，因此如果对于跨数据集的表达量有比较的需求，则不建议使用这种方法。</p>
+<p>使用方法如下：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. merge</span></span><br><span class="line">merged_data <span class="operator">&lt;-</span> merge<span class="punctuation">(</span>sample1<span class="punctuation">,</span>y <span class="operator">=</span> <span class="built_in">c</span><span class="punctuation">(</span>sample2<span class="punctuation">,</span>sample3<span class="punctuation">,</span>sample4<span class="punctuation">)</span><span class="punctuation">,</span> add.cell.ids <span class="operator">=</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;s1&quot;</span><span class="punctuation">,</span><span class="string">&quot;s2&quot;</span><span class="punctuation">,</span><span class="string">&quot;s3&quot;</span><span class="punctuation">,</span><span class="string">&quot;s4&quot;</span><span class="punctuation">)</span><span class="punctuation">,</span> project <span class="operator">=</span> <span class="string">&quot;Demo data&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 2. filter cells, QC, normalization, RunPCA（略）</span></span><br><span class="line"><span class="comment"># 3. remove batch</span></span><br><span class="line">merged_data_harmony <span class="operator">&lt;-</span> RunHarmony<span class="punctuation">(</span>object<span class="operator">=</span>merged_data<span class="punctuation">,</span></span><br><span class="line">								  group.by.vars <span class="operator">=</span> <span class="string">&#x27;orig.ident&#x27;</span><span class="punctuation">,</span></span><br><span class="line">								  kmeans_init_nstart<span class="operator">=</span><span class="number">30</span><span class="punctuation">,</span> </span><br><span class="line">								  kmeans_init_iter_max<span class="operator">=</span><span class="number">180</span><span class="punctuation">,</span></span><br><span class="line">								  plot_convergence <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span></span><br><span class="line">Embeddings<span class="punctuation">(</span>merged_data_harmony<span class="punctuation">,</span> <span class="string">&#x27;harmony&#x27;</span><span class="punctuation">)</span><span class="punctuation">[</span><span class="number">1</span><span class="operator">:</span><span class="number">5</span><span class="punctuation">,</span><span class="punctuation">]</span></span><br><span class="line"><span class="comment"># 4. plot</span></span><br><span class="line">pca_plot1 <span class="operator">=</span> DimPlot<span class="punctuation">(</span>object <span class="operator">=</span> merged_data_harmony <span class="punctuation">,</span> </span><br><span class="line">					reduction <span class="operator">=</span> <span class="string">&quot;pca&quot;</span><span class="punctuation">,</span> pt.size <span class="operator">=</span> <span class="number">.1</span><span class="punctuation">,</span> </span><br><span class="line">					group.by <span class="operator">=</span> <span class="string">&quot;orig.ident&quot;</span><span class="punctuation">)</span></span><br><span class="line">pac_plot2 <span class="operator">=</span> DimPlot<span class="punctuation">(</span>object <span class="operator">=</span> merged_data_harmony <span class="punctuation">,</span> </span><br><span class="line">					reduction <span class="operator">=</span> <span class="string">&quot;harmony&quot;</span><span class="punctuation">,</span> pt.size <span class="operator">=</span> <span class="number">.1</span><span class="punctuation">,</span> </span><br><span class="line">					group.by <span class="operator">=</span> <span class="string">&quot;orig.ident&quot;</span><span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>再附一张图，关于几种方法的比较。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622235421.png" alt="image.png"></p>
+<h3 id="（三）-其他方法"><a href="#（三）-其他方法" class="headerlink" title="（三） 其他方法"></a>（三） 其他方法</h3><blockquote>
+<p>参考：</p>
+<ul>
+<li>Shi, Q., Chen, Y., Li, Y. et al. Cross-tissue multicellular coordination and its rewiring in cancer. Nature (2025). <a href="https://doi.org/10.1038/s41586-025-09053-4">https://doi.org/10.1038/s41586-025-09053-4</a> ; <a href="https://www.nature.com/articles/s41586-025-09053-4#citeas">https://www.nature.com/articles/s41586-025-09053-4#citeas</a></li>
+<li><a href="https://mp.weixin.qq.com/s/iVhNW72YCBy4Yxs6VgStrg">新概念新方法新发现—张泽民课题组揭示跨组织多细胞协同模式及其在肿瘤中的重塑</a></li>
+</ul>
+</blockquote>
+<p>在张泽民老师刚刚发表的论文中，研究团队整合分析了多个单细胞数据，揭示了肿瘤发生过程中多细胞之间的协同模式。在论文methods部分，研究团队测试了多种数据整合和去批次方法，并对这些方法的性能进行了一些的说明。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250615171116.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250615171134.png" alt="image.png"></p>
+<p>如上图。作者使用scIB <a href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR17" title="Luecken, M. D. et al. Benchmarking atlas-level data integration in single-cell genomics. Nat. Methods 19, 41–50 (2022).">17</a> 这一方法，评估了几种广泛使用的基于 Python 的工具：BBKNN <a href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR18" title="Polanski, K. et al. BBKNN: fast batch alignment of single cell transcriptomes. Bioinformatics 36, 964–965 (2020).">18</a> 、Harmony <a href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR51" title="Korsunsky, I. et al. Fast, sensitive and accurate integration of single-cell data with Harmony. Nat. Methods 16, 1289–1296 (2019).">51</a> 、Scanorama <a href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR52" title="Hie, B., Bryson, B. &amp; Berger, B. Efficient integration of heterogeneous single-cell transcriptomes using Scanorama. Nat. Biotechnol. 37, 685–691 (2019).">52</a> 以及基于深度学习的 scVI <a href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR53" title="Lopez, R., Regier, J., Cole, M. B., Jordan, M. I. &amp; Yosef, N. Deep generative modeling for single-cell transcriptomics. Nat. Methods 15, 1053–1058 (2018).">53</a> 、scANVI <a href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR54" title="Xu, C. et al. Probabilistic harmonization and annotation of single-cell transcriptomics data with deep generative models. Mol. Syst. Biol. 17, e9620 (2021).">54</a> 和 SCALEX <a href="https://www.nature.com/articles/s41586-025-09053-4#ref-CR55" title="Xiong, L. et al. Online single-cell data integration through projecting heterogeneous datasets into a common cell-embedding space. Nat. Commun. 13, 6118 (2022).">55</a> 。最终，BBKNN 表现出色，被用于整合跨组织的数据集。</p>
+<p>从图中可以看出，除了BBKNN以外，其实scANVI、Harmony和scVI也有比较好的效果。另外，这些工具是基于python的，一般会与scanpy的流程合并起来使用；如果使用Seurat这套流程做分析，或许其中的一些方法（例如张泽民这篇文章中推荐的BBKNN）可能就不适用了。</p>
+<h2 id="三、一些注意事项"><a href="#三、一些注意事项" class="headerlink" title="三、一些注意事项"></a>三、一些注意事项</h2><p>需要注意，归一化方法，尤其是SCTransform方法，是针对单个样本进行的。即使数据已经进行了合并，归一化也是只在单个样本上进行。</p>
+<p>因此，在Github上，有人指出，针对多个样本的归一化处理，SCTransform只需要运行一遍即可，在整合去批次以后的样本上不应该再次运行SCTransform（ <code>&quot;Do not run a second round of SCTransform on the integrated assay&quot;</code>  ,参考 <a href="https://github.com/satijalab/seurat/issues/1836">issues1836</a> ），否则，可能会引入批次效应（ <code>&quot;SCT normalization was done separately for each sample, which is likely to introduce batch effects down the line&quot;</code> , 参考 <a href="https://github.com/satijalab/seurat/issues/2023#issuecomment-543178730">issues2023</a> ）。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>生物信息学</tag>
+        <tag>归一化</tag>
+        <tag>Seurat</tag>
+        <tag>scRNA-seq</tag>
+        <tag>去批次效应</tag>
+        <tag>SCTransform</tag>
+        <tag>Harmony</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>服务器子网掩码与路由表问题解决</title>
+    <url>/2025/06/22/Network_problem_with_ip_route_and_solution/</url>
+    <content><![CDATA[<p>由于路由表配置错误，实验室几台服务器之间无法互相登录；通过<code>ip route</code>修改路由表，成功解决问题。</p>
+<span id="more"></span>
+
+<h2 id="一、问题描述"><a href="#一、问题描述" class="headerlink" title="一、问题描述"></a>一、问题描述</h2><p>事情是这样的。所里的计算集群运行在一个内网系统上。其中包括计算节点服务器A（<code>10.10.339.430</code>），任务提交服务器B（<code>10.10.339.337</code>）等。我们组自己也搭建了两台服务器（分别记作C和D），通过绑定固定IP地址接入了上述内网系统。</p>
+<p>在我们组的win10 desktop终端机上，上述所有机器均可以ssh登录。但是这些机器之间的ssh似乎存在一些问题。具体来说，服务器C可以访问服务器A和服务器B等；但是服务器D（<code>10.10.333.37</code>）无法访问两者。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [machine_C]~$ ssh user@machine_B</span><br><span class="line">(base) [machine_B]~$ # 此处C机可以登录到B机</span><br><span class="line"></span><br><span class="line">(base) [machine_C]~$ ssh user@machine_A</span><br><span class="line">Warning: Permanently added &#x27;machine_A&#x27; (ED25519) to the list of known hosts.</span><br><span class="line">user@machine_A&#x27;s password:</span><br><span class="line">Last login: Mon Jun  2 xx:xx:xx xxxx from xxx.xxx.xxx.xxx</span><br><span class="line">(base) [machine_A]~$ # 此处C机可以登录到A机</span><br></pre></td></tr></table></figure>
+
+<p>上面是C机成功登录到计算节点和提交节点的输出结果。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [machine_D]~$ ssh user@machine_B</span><br><span class="line">ssh: connect to host machine_B port 22: No route to host</span><br><span class="line">(base) [machine_D]~$ # 此处D机无法登录到B机</span><br><span class="line"></span><br><span class="line">(base) [machine_D]~$ ssh user@machine_A</span><br><span class="line">ssh: connect to host machine_A port 22: No route to host</span><br><span class="line">(base) [machine_D]~$ # 此处D机无法登录到A机</span><br></pre></td></tr></table></figure>
+
+<p>上面是D机登陆失败的输出结果。ssh报错内容是 <code>No route to host</code></p>
+<p>另外，C和D可以互相ssh到对方，但是服务器A无法ssh到C和D两者（B亦如此）。</p>
+<h2 id="二、原因排查"><a href="#二、原因排查" class="headerlink" title="二、原因排查"></a>二、原因排查</h2><p>经过和AI的讨论分析，可能的原因包括下面这些：</p>
+<ol>
+<li>D机器的路由表配置错误，缺少到A和B的路由或默认网关错误。</li>
+<li>网络设备（如交换机/路由器）上的ACL或VLAN配置阻止了D机器到A机器的流量。</li>
+<li>计算节点或提交节点的防火墙阻止了来自D机器的 IP的入站流量。</li>
+<li>计算节点缺少返回到D机器所在子网的路由，导致无法响应。</li>
+</ol>
+<p>要排查这些原因，可以使用 <code>ip route show</code> 指令展示路由表，或使用 <code>traceroute</code> 查看路由转发的链路。</p>
+<p>下面是C机器上的路由表（IP地址已经经过模糊化处理）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [machine_C]~$ ip route show</span><br><span class="line">default via 10.10.334.1 dev eno1 proto dhcp src 10.10.333.75 metric 100</span><br><span class="line">10.10.332.0/22 dev eno1 proto kernel scope link src 10.10.333.75 metric 100</span><br><span class="line">10.10.334.1 dev eno1 proto dhcp scope link src 10.10.333.75 metric 100</span><br><span class="line">10.10.334.4 dev eno1 proto dhcp scope link src 10.10.333.75 metric 100</span><br></pre></td></tr></table></figure>
+
+<p>下面是D机器上的路由表（IP地址已经经过模糊化处理）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [machine_D]~$ ip route show</span><br><span class="line">default via 10.10.334.1 dev enp0s25 proto static</span><br><span class="line">10.10.0.0/16 dev enp0s25 proto kernel scope link src 10.10.333.37</span><br></pre></td></tr></table></figure>
+
+<p>下面是 在D机器上执行 <code>traceroute 10.10.339.337</code> 即从D到B的链路，程序的输出结果（IP地址已经经过模糊化处理）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [machine_D]~$ traceroute 10.10.339.337</span><br><span class="line">traceroute to 10.10.339.337 (10.10.339.337), 30 hops max, 60 byte packets</span><br><span class="line">1  machine_D (10.10.333.37)  3102.796 ms !H  3102.761 ms !H  3102.748 ms !H</span><br><span class="line">(base) [machine_D]~$</span><br></pre></td></tr></table></figure>
+
+<p>D机器无法访问A和B，错误是“No route to host”。traceroute的结果显示第一跳就是它自己，然后出现 <code>!H</code> ，表示目标不可达。这说明问题可能出在路由或网络配置上。</p>
+<p>比较两者的路由表，C机器的路由更具体，而D机器的则是 <code>10.10.0.0/16</code> 。虽然D机器的路由范围更大，但可能实际网络分段不同。D机器的路由表中存在一条 <strong><code>10.10.0.0/16</code> 的直连路由</strong>（子网掩码 255.255.0.0），覆盖了<code>10.10.0.0~10.10.255.255</code> 的所有地址。A机器（ <code>10.10.339.337</code> ）和B机器（ <code>10.10.339.430</code> ）由于都属于 <code>10.10.xxx.xxx</code> 子网，因此均位于此范围，因此 <strong>系统认为它们与 D机器在同一局域网（链路层）</strong>，直接尝试ARP解析而非通过网关（ <code>10.10.334.1</code> ）转发。因目标主机实际不在同一链路层网络，ARP无响应，最终报错 <code>No route to host</code>。</p>
+<p>解决思路：删除D机器中原先的路由表，增加更精细的路由表，对于不在同一链路中的机器，通过网关进行转发。</p>
+<h2 id="三、解决策略"><a href="#三、解决策略" class="headerlink" title="三、解决策略"></a>三、解决策略</h2><h3 id="（一）临时性策略"><a href="#（一）临时性策略" class="headerlink" title="（一）临时性策略"></a>（一）临时性策略</h3><ol>
+<li>删除原来的路由表：<code>sudo ip route del 10.10.0.0/16 dev enp0s25</code></li>
+<li>增加新的路由表：<code>sudo ip route add 10.10.332.0/22 dev enp0s25</code></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [machine_D]~$ traceroute 10.10.339.430</span><br><span class="line">traceroute to 10.10.339.430 (10.10.339.430), 30 hops max, 60 byte packets</span><br><span class="line"> 1  machine_D (10.10.333.37)  3066.337 ms !H  3066.307 ms !H  3066.295 ms !H</span><br><span class="line">(base) [machine_D]~$ sudo ip route del 10.10.0.0/16 dev enp0s25</span><br><span class="line">(base) [machine_D]~$ ip route show</span><br><span class="line">default via 10.10.334.1 dev enp0s25 proto static</span><br><span class="line">(base) [machine_D]~$ sudo ip route add 10.10.332.0/22 dev enp0s25</span><br><span class="line">(base) [machine_D]~$ ip route show</span><br><span class="line">default via 10.10.334.1 dev enp0s25 proto static</span><br><span class="line">10.10.332.0/22 dev enp0s25 scope link</span><br><span class="line">(base) [machine_D]~$ traceroute 10.10.339.430</span><br><span class="line">traceroute to 10.10.339.430 (10.10.339.430), 30 hops max, 60 byte packets</span><br><span class="line"> 1  sibsrouter-114.icb.ac.cn (10.10.334.1)  0.975 ms  1.189 ms  1.171 ms</span><br><span class="line"> 2  * * *</span><br><span class="line"> 3  * * *</span><br><span class="line"> 4  * * *</span><br><span class="line"> 5  * * *</span><br><span class="line"> 6  * * *</span><br><span class="line"> 7  *</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="（二）解决策略（永久生效）："><a href="#（二）解决策略（永久生效）：" class="headerlink" title="（二）解决策略（永久生效）："></a>（二）解决策略（永久生效）：</h3><p>对于ubuntu24.04LTS系统，路由表管理服务由netplan提供。我们只需要修改netplan的设置即可。用到的指令如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [machine_D]:~$ cd /etc/netplan/</span><br><span class="line">(base) [machine_D]:/etc/netplan$ ls</span><br><span class="line">50-cloud-init.yaml</span><br><span class="line">(base) [machine_D]:/etc/netplan$ sudo vim 50-cloud-init.yaml</span><br><span class="line">(base) [machine_D]:/etc/netplan$ sudo netplan apply</span><br><span class="line">(base) [machine_D]:/etc/netplan$ ip route show</span><br><span class="line">default via 10.10.334.1 dev enp0s25 proto static</span><br><span class="line">10.10.332.0/22 dev enp0s25 proto kernel scope link src 10.10.333.37</span><br></pre></td></tr></table></figure>
+
+<p>其中，编辑 <code>/etc/netplan/50-cloud-init.yaml</code> 文件这一步中，修改内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># This file is generated from information provided by the datasource.  Changes</span><br><span class="line"># to it will not persist across an instance reboot.  To disable cloud-init&#x27;s</span><br><span class="line"># network configuration capabilities, write a file</span><br><span class="line"># /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg with the following:</span><br><span class="line"># network: &#123;config: disabled&#125;</span><br><span class="line">network:</span><br><span class="line">	ethernets:</span><br><span class="line">		enp0s25:</span><br><span class="line">			addresses:</span><br><span class="line">			- 10.10.333.37/22 # 这个位置之前的数字是16，对应的ip范围比较大。现在改为22，相当于缩小范围。</span><br><span class="line">			nameservers:</span><br><span class="line">				addresses:</span><br><span class="line">				- 10.10.334.4</span><br><span class="line">				search: []</span><br><span class="line">			routes:</span><br><span class="line">			-   to: default</span><br><span class="line">				via: 10.10.334.1</span><br><span class="line">	version: 2</span><br></pre></td></tr></table></figure>
+
+
+<p><code>netplan apply</code> 之后路由表即已经刷新。</p>
+<blockquote>
+<p>备注：为了对IP信息保密处理，文章中所有IP地址信息都经过了模糊化和无效化处理。有效的IP地址段为 <code>0.0.0.0~255.255.255.255</code> ，超出255的数字没有任何意义。在读者实际操作时，直接使用 <code>ip route del</code> , <code>ip route add</code>, <code>netplan apply</code> 进行处理即可，其中涉及的IP地址以实际为准。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>SSH</tag>
+        <tag>IP route</tag>
+        <tag>路由表</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【转载】《没有爱情，你会结婚吗？选「会」的人比20年前更多了》</title>
+    <url>/2025/06/22/%E6%B2%A1%E6%9C%89%E7%88%B1%E6%83%85%E4%BD%A0%E4%BC%9A%E7%BB%93%E5%A9%9A%E5%90%97/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="https://mp.weixin.qq.com/s/gsnLDKoYVnHfS3T3Hi0wPA">https://mp.weixin.qq.com/s/gsnLDKoYVnHfS3T3Hi0wPA</a></p>
+</blockquote>
+<p>上世纪90年代，中国青年基本实现了婚恋自主。追求爱情，建立一段由自己选择的深度情感关系，成为当时流行文化中青年反叛与建立主体性的标志。但今天，数据显示，中国父母对子女婚姻的介入似乎又在增加。这一次，是青年「理性选择」的结果。</p>
+<span id="more"></span>
+
+<hr>
+<p>刘汶蓉是上海社会科学院社会学研究所研究员，2023年，她在北上广21-40岁、不在读青年人中开展了一项2400份问卷的调查，希望了解当代青年人的婚恋观。调查数据显示，越来越多的年轻人不再在婚姻中相信爱情。而父母亲友是否支持、客观条件是否相符，则在年轻人的婚恋决定中起到越来越重要的作用。他们似乎变得更愿意相信，「父母之命，媒妁之言」，真的能为他们带来一段更好的婚姻。</p>
+<p>此前的十几年，刘汶蓉一直关注中国青年人在家庭中与父母的代际关系。与1990年代学界的预期相反，城市化、现代化的进程，并未冲淡中国根深蒂固的家庭文化，反而让中国亲代与子代之间的经济和情感绑定更深。这种亲子代际间深深绑定、无限责任的家庭模式，曾经帮助了许多人在中国社会快速转型中站稳脚跟，但在当下青年的婚育抉择上，却也为他们制造了深重的压力。</p>
+<p>虽然，中国父母的「催婚催育」已经成为网络上吐槽的热点，但在刘汶蓉看来，恰恰又是父母和原生家庭，承托了单身青年的情感寄托，让他们得以延长在一个家庭中做「孩子」的时间。不过这种延长，势必是不可持续的。刘汶蓉相信，总有一天，青年们会迈开脚步，创造属于这一代的婚姻与家庭新脚本。</p>
+<p>以下是刘汶蓉的讲述——</p>
+<hr>
+<p>文｜王媛</p>
+<p>编辑｜鱼鹰</p>
+<h2 id="不再相信爱情的年轻人"><a href="#不再相信爱情的年轻人" class="headerlink" title="不再相信爱情的年轻人"></a>不再相信爱情的年轻人</h2><p>如果一个人各方面条件都符合你的择偶要求，但你还没爱上他，你是否会和他结婚？</p>
+<p>2023年底，我对北京、上海、广州，21岁到40岁不在读的青年人做了2400份问卷的抽样调查，想了解现在年轻人的择偶观、婚恋观，家庭、个人的基本情况，以及婚恋过程行为。</p>
+<p>开头提到的，就是问卷中的一个问题。上海的数据显示，选择「会」的比例，达到了男性25%，女性23.6%。也就是说有两成以上的受访者认为，在婚姻当中，跟经济条件、家庭背景、长相等等这些择偶条件相比，我爱不爱TA这事儿没那么重要。2001年时，这个数据还只有男性11.6%，女性8%。它的趋势是显著上升的。坚定地选择「不会」的受访者，大概只占三成。还有四成左右的人觉得，「很难说」。</p>
+<p>在我年轻的时候，很多人相信要有爱情才能结婚。虽然你也不知道爱情到底是啥，但你至少是奔着这个理想去的。现在的年轻人却在非常明确地告诉我们，他们认为恋爱是恋爱，结婚是结婚，两回事儿。2001年，只有6%左右的上海未婚青年对「谈恋爱和结婚是两回事」这个观点「非常同意」，但到了2023年，「非常同意」的比例已经上扬到了40%以上，女性更是达到了46.5%。</p>
+<p>我们都知道，近些年来中国青年的结婚率、生育率降低已经成为一个引发社会关注的话题。2010年以来，中国青年男女平均初婚年龄上涨了近4岁。在这份北上广调查中我们也发现，有接近七成年轻人都认同「结婚是个人选择，结不结都可以」，特别是未婚青年女性，有80%以上都认可这个观念。</p>
+<p>但一个比较出乎意料的调查数据是，青年人在婚恋决策中对父母亲友态度的重视程度是在上升的。「我所爱的人即使父母亲友都反对，我也不在乎」，对于这个观点，在上海的未婚青年女性中，有一半都表示反对。甚至，一些人会主动提出「新包办婚姻」的概念。接受父母介绍或包办，选择「门当户对」的婚姻，成为了一种理性的选择。这引起了我的注意。我们一般认为，中国在1990年代就基本实现了青年人的婚恋自主，但到了今天，父母对子女婚姻的介入似乎又在增加。</p>
+<p>有个男生非常坦然地跟我讲：我恋爱过了，爱情的状态我也体验过了，现在结婚就是按照父母的想法结的。他说，如果我不听从父母的意见结婚，父母不给我买婚房、不帮我带孩子，我怎么办？这是他理性选择的结果。</p>
+<p>一定程度上，我可以理解，现在的年轻人，想要在一线城市立足，面对买房、结婚、带孩子问题上的无力感。2010年是中国青年初婚年龄上涨的一个转折点，这和中国城市房价起飞的时间点是重合的。在此之前，城市当中70后、80后结婚，可能不太依赖父母，甚至是在我领证的时候才告诉你一声，父母在子女婚恋选择上没有太多话语权，「裸婚」一度成为热门话题。但是近十几年来，随着房价上涨，家庭财产主要积累在父母一辈的手中，子女的婚育离不开父母的帮扶，那么父母的话语权自然而然就在上升。</p>
+<p>而从另一个方面讲，一个孩子，只要留在自己原本的家庭里，他就永远是个孩子。虽然父母都在催孩子结婚，但是父母以及这个原生家庭的状态存在，又可以把年轻人拖住。只要父母在，你的那种危险感和孤独感就都还不那么强烈，你不会感到那么紧迫、必须要改变自己。</p>
+<p>近些年，在江浙沪地区，出现了「两头婚」现象。男不娶、女不嫁，虽然结婚，但仍然主要和原生家庭形成支持和互助的网络，生两个孩子，各自养各自的父母。</p>
+<p>从一些方面来看，它有一定积极作用，比如它促进了中国家庭的双性化，改变了只有儿子才拥有家庭姓氏、财产继承权的文化传统，提升了女性的社会经济地位。但从另一些方面看，这样的家庭，其实内部的矛盾非常大。一些两头婚的小夫妻，由于没有共同经营的东西，没有遇到矛盾后不得不妥协的条件，他们的关系很难处理好。让他们还在一起不离婚的，可能就只是两家老人的权威。一些青年人经历了这样的婚姻之后，自己依然非常不成熟，虽然听从父母安排，但缺乏处理关系的能力和意愿，最后两个人只剩煎熬，关系一塌糊涂。</p>
+<p>所以，现在的年轻人，特别是超一线城市的青年人在婚恋决策上选择听父母的，一方面是组建婚姻家庭的经济成本、育儿劳动要求高，现实情况决定了他们离不开父母的支持，但另一方面，也是这些青年人因为从小就被保护得太好，对自己的婚姻和人生缺乏独立和成熟的计划，也不愿意离开父母的避风港去吃苦。好像现在年轻人特别「反对没苦硬吃」，但其实人格上的成熟一定是需要体验痛苦的。</p>
+<h2 id="家庭无限责任，让婚姻变成一种风险"><a href="#家庭无限责任，让婚姻变成一种风险" class="headerlink" title="家庭无限责任，让婚姻变成一种风险"></a>家庭无限责任，让婚姻变成一种风险</h2><p>有一个案例非常有意思。一个女生结婚后，她爸爸一直在催她生孩子，她非常反感。有一次这个女儿就被激怒了，因为她爸爸甚至绕开她，去和她丈夫聊这件事，她跟爸爸大吵一架，说：「你过你的，我过我的，我们都各自过好不好？你干嘛一定要安排我的生活？」</p>
+<p>结果，她爸爸向女儿宣称要和她妈妈离婚。</p>
+<p>这把女儿给弄懵了。我生不生孩子，和你要不要和我妈妈离婚，有什么关系？后来她才了解到，她爸爸其实一直和妈妈感情不合，无法聊到一起去，让爸爸唯一想要在这个家里过下去的动力，就是这个女儿。从小到大，这个父亲给了女儿很多的爱，女儿学业、工作也一直很优秀，是爸爸的骄傲，所以他觉得女儿是他经营这个家庭唯一的意义。当女儿想要与他切割的时候，他就觉得，那我的婚姻也没有必要再维持下去。</p>
+<p>我一直在想，为什么中国的父母这么致力于催婚、催育？为什么当子女不结婚不生孩子，父母一辈会这么痛苦？后来我想到，或许对于一部分中国父母来说，他们自己没有那么好的事业、没有那么好的精神生活，他们一辈子最重要的事业，就是家庭和孩子。在发展家庭的这个脉络里，他们感受到了自己安身立命的价值。但当这个孩子长大了，却决定自己不要结婚、不要生孩子，对于父母来说，是从根本上对他们人生价值选择的否定。他们一辈子辛辛苦苦熬过来的岁月，努力维系的家庭价值，一下子被解构得没有任何意义。这个打击对老年人来说是非常大的。</p>
+<p>在现代话语体系里，这种痛苦是没法言说的。因为我们会觉得，这种价值观很落后，甚至很迷信，是上不了「现代性」的「台面」的。但在我的调查中，这就是很多中国父母根深蒂固的对自我认可的一部分。为什么说中国社会是家庭主义？当家庭变成一种「主义」的时候，它就相当于是一种信仰，是精神生活的一部分。有无数的父母曾经跟我倾诉，他们跟我说，孩子觉得父母好自私，孩子们会说，「我以后都还给你」，父母就觉得，「难道我养他一辈子是为了让他还给我吗？」父母其实想的是，孩子现在没有伴侣，没有孩子，等我们走了之后，他只有孤苦伶仃一个人在这个世界上，他怎么活？这对于父母来说是巨大的恐惧和悲伤。</p>
+<p>中国的文化，是亲子一体的。这和西方的个体主义非常不同。费孝通曾提出，西方是一个接力模式：西方社会的每一代人，只养自己的孩子，孩子成年后再接力养育自己的孩子，不用向上去照顾老人；而中国是一个反哺模式：父母把孩子养大，孩子成年后要反哺父母，为父母养老，同时还要向下养育自己的孩子。</p>
+<p>在1990年代，学界曾经有过这样的预期：随着城市化和现代化的进程，中国也会发生从「反哺模式」到「接力模式」的转变，我们的家庭也会像西方那样，逐渐开始以夫妻关系，而不是代际关系为主轴。但是几次人口普查的调查数据显示，近20年来，中国直系家庭（即祖孙三代在同一屋檐下共同居住生活）的比例一直保持在20%左右，没有下降，反而核心家庭（一对夫妻和其未成年的孩子共居）的比例是下降的。这说明，中国代际支持、互助的模式是相当稳定的，甚至21世纪市场化深入之后，中国家庭代际之间的互助紧密感依然在加强。</p>
+<p>中国的现代化是一个高度浓缩的过程，在几十年间，完成了巨大的社会转型。从计划经济时代，到改革开放，1990年代的下岗潮，市场经济改革的剧烈冲击等等。但是我们没有出现大规模的青年失业、青年贫困等严重的社会问题。在社会公共服务还准备不足的时候，很多社会矛盾，是由家庭承接过去，由父母为子女承接过去的。我们会发现，在这么大的社会变迁过程中，中国家庭的代际关系展现了非常强的韧性。代际之间在经济和非经济方面依旧互相依存，资源依旧互补和互惠。</p>
+<p>在这样的大背景下，中国的子女对父母，又是怎样的态度呢？我记得我2008年读博的时候，社会上一股很大的声音在批判年轻人的「孝道衰落」，觉得年轻人都不愿回馈父母了，道德败坏如何如何。我当时就觉得，这和我的直觉是相悖的。他们所讲的「孝」，在当时我一个年轻人看来，是那种老夫子的经学，好像只有把父母当成至高无上的权威才叫「孝」。但我当时的感受是，我身边的70后、80后们，对父母也都很好，只是我们是很看重情感的，我们对父母是建立在情感上，而不是权威上的关系。</p>
+<p>后来的调研也验证了我的想法。2008年到2012年，我在博士论文期间就以上海和兰州两个地区为样本进行了家庭代际关系的研究。从区别来说，上海城市的父母给子女提供的经济支持更大，兰州农村子女对父母的帮助更大，它背后是谁有给予能力的问题。但总的来说，他们都还是延续着父母哺育子女、子女成年后反哺父母的模式。子女不仅在经济上依然愿意供养父母，甚至很多调查对象跟我们说，年轻人与父母的情感关系，与上一辈相比，是更好、更紧密的。经济的发展、人口流动性的提高，缓解了一些非常僵化和激烈的家庭矛盾，比如农村地区一些极端的婆媳矛盾，随着女性外出打工就有所缓解。这反而让代际之间的自然情感流露出来，子女辈与父母辈的亲情，能从人与人发自内心的爱的角度发展出来。</p>
+<p>这种哺育-反哺的模式，造成了中国家庭代际之间的无限责任。父母倾尽全力养育子女，子女也觉得，自己未来应该倾尽全力地反哺父母。这对年轻人的婚育决定也是有影响的。这种无限责任，和现在巨大的生活成本压力放在一起，让孩子觉得，结婚是一件风险极高的事情。</p>
+<p>这种无限连带责任，也形塑我们的自我感受。年轻人现在不想生孩子，很多人会跟我讲的话是：「我自己都过不好，不想带一个孩子来这个世界上受苦。如果我不能给他很好的教育资源、很好的生活条件，我就对不起他，何必把他带到世上来。」他们把孩子一生发展的责任也全部绑在自己身上了。在一个竞争氛围浓郁的社会环境下，如果未来我的孩子上不了好的学校，无法在竞争中「成功」，那我自己都会感觉好痛苦。这一系列捆绑的压力，就都变成了未来生活不幸福的风险源。</p>
+<p>韩国学者张庆燮提出了一个概念，叫「无个体主义的个体化」。我们东亚文化是家庭主义，不是个体主义，但是我们出现了个体化的现象，我们的一些青年不再结婚，「去家庭化」，这是他们「规避风险的个体化」。在无限责任家庭中，结婚、生育变成了一个风险源，年轻人想要规避这种风险。</p>
+<h2 id="家庭脚本，没有完美的选择"><a href="#家庭脚本，没有完美的选择" class="headerlink" title="家庭脚本，没有完美的选择"></a>家庭脚本，没有完美的选择</h2><p>有时候在网上，我们也能看到现在的年轻人，对集体经济时期育儿环境的向往。那时候，单位里有统一的托儿所、幼儿园，孩子的养育没有那么困难。那个时期，我们的社会制度尝试着去探索，儿童共育，老人公养，从摇篮到坟墓，全部由国家承担，育儿劳动也被视为社会劳动的一部分。我们经历过那样一种探索实践。</p>
+<p>我是1978年生人，就成长在这样的「单位大院」里。我的父母，在大学毕业后被分配到远离家乡的地质队工作，在单位的家属院中申请到一套房屋。单位基本就是一个熟人社会，里面又有托儿所，又有幼儿园，子弟学校的学业一点也不卷，大家反正都过着差不多的生活，没有非要怎么学习这一说法。我每天和同龄的小伙伴们一起玩，没有太多对于未来的忧虑，相比于现在的孩子，确实比较轻松。</p>
+<p>但是我当时作为一个孩子的体验，并没有大家想象中的那么好。当时的单位大院里，大家普遍是没有能力把父母、也就是我的爷爷奶奶辈接过来一起生活的。我6岁之前，就被留在老家的爷爷奶奶家，其实是一个留守儿童。等到我快要上学时，父母把我接过来，我度过了一个很残酷的适应期。父亲是一个地质工作者，经常出野外，基本上半年都不在家。家里有我母亲，还有一个哥哥和一个姐姐。我母亲每天在单位上班，回家要带三个孩子，她的时间紧迫感非常强。比如她分配给我们的家务，我们没做好，地没扫干净，或者摔了什么东西，她会一下子变得非常愤怒，用非常恶毒的语言攻击我们，上升到人格。大院里，家家户户打孩子都非常狠，后来我跟很多同辈人聊天，很多人小时候都有这种创伤的经历。</p>
+<p>我直到上大学之前，都一直在做被父母遗弃的噩梦。作为一个年轻人的迷茫、痛苦和无意义感，我也全部都体验过。那时候，我跟我妈妈的矛盾很深，经常离家出走。所以我也是非常理解中国家庭对孩子的伤害的。如果我之后没有做社会学研究，可能我长大了也会加入「父母皆祸害」小组。但后来，我开始做家庭研究、女性研究，我开始意识到，我们家里的情况，其实与「核心家庭」没有援助是有关系的。我开始能理解，为什么我妈妈对待我们如此粗暴。她作为一个女性，家里家外一肩挑，在家务上没有支持，她的那种焦虑和痛苦，发泄在了我们身上。</p>
+<p>在当时，女性走向解放、走向工作，其实损害了一部分的孩子利益。比如我母亲去上班的时候，就只能把我哥锁在家里，我哥哥就在家里一直哭。后来我看到很多材料，都在讲这种童年创伤的案例，母亲休完产假必须返工、家庭缺少外部的支持，小孩很小就只能交到托儿所，或者就被锁在家里。但是没有办法，当时的整个生活水平、经济水平是有限的，这就是当时很多家庭的状况。</p>
+<p>这也是我后来进入家庭社会学领域的一个原因。我想探寻更多的人、更多的青年是怎么活的，想要解决我自己压抑的、无出口的问题。那个时候，我们没有网络，没有地方去诉说，无法像现在的年轻人一样，「抱团取暖」。所以我只能试图努力地去看，去理解，别人是怎样的，为什么我是这样。不过我现在觉得，这也未尝不是一件好事。大家现在可以很容易地找到与自己有相似感受的人，建立起自己的情绪茧房，反而对与自己不同的人变得无法理解，没有理解别人的那种空间了。</p>
+<p>「核心家庭」的困境，并不是中国集体经济时代所独有的。在西方，以美国为例，他们1960年代最经典的核心家庭模式，是以男主外、女主内，女性不工作，全心全意地照顾孩子为基础的。当时的女性，被塑造成「幸福的主妇」，然而在她们的个体体验中，因为缺乏社会价值感而产生的「无名的痛苦和压抑」是非常强的，所谓「幸福的主妇」，其实是「绝望的主妇」。这才有后来西方的第二次女权运动，女性要冲出家庭，参与就业，实现独立。但即使到现在，美国的女性依然很难同时拥有全职工作和孩子，她们可以向市场购买托育服务，但成本很高，不是所有夫妻都能支付得起，或者算下来根本不划算。</p>
+<p>2014年，我到美国访问，调查了他们的家庭关系。在之前，我们理解他们的核心家庭，以夫妻关系为主要轴线，老年人不依赖子女供养，很多人年纪很大时，还在不断地结婚、离婚，寻找一段合适的夫妻关系，当时我会把它理解成是一种个体主义文化的浪漫。但当我真的仔细去调查、走访他们的家庭，会发现这也是一种无奈。因为他们跟子女之间的边界非常强，子女不邀请，他们不能擅自登门，即使非常想念，也需要克制。在孩子们成年之后，老人们的支持网络主要就来自婚姻。如果婚姻轴断了，比如离婚、丧偶，他们就必须再去建立婚姻轴。</p>
+<p>我记得有一位80多岁的老人，是一个非常精神的老保守党，用上海话讲「老克拉」那样的人。他一辈子几次再婚，当时的妻子是一位日裔女性。当我们提出要去他家拜访的时候，他几次跟我们强调，你们见到她一定要赞美她、一定要表达感谢。当时我们都不太能理解，觉得他是不是在妻子面前太小心翼翼了。后来我意识到，是因为他现在80多岁了，他非常需要这段婚姻，如果对方不高兴，提出离婚，他一个人的生活将变得非常艰难。我们还访问到一个中年人，他说他妈妈去世的时候，自己都没有去看她。因为她60多岁时自己嫁去了另外一个州，她在那个州没有朋友，以至于去世时，没有一个亲人、朋友去看她，就连这个儿子也没有去。我当时就在想，如果是一个中国老太太，她会在自己60多岁的时候，为了再婚，搬到远离故乡和子女的地方去吗？恐怕中国老太太会更倾向于搬去和儿子一起住。甚至，一个中国老太太如果想要再婚，很有可能她的儿子都不会同意。当然，这种干预对老年人是一种限制，但其实也是一种保护。这就是文化的差异。</p>
+<p>每一种文化下的人都有其难的一面。美国的个体主义文化要求你不能表达你想要与家人连接的那种温情，你只能靠两性关系来完成与人的连接，这是他们的难。而我们，则是父母与子女之间的捆绑过深，有时候成为了一种禁锢。</p>
+<p>现在，中国年轻人的育儿压力，很大程度上是转嫁到祖辈身上的。年轻夫妻都在外工作，老人就牺牲了自己的退休生活，甚至成为「老漂」，各种的矛盾、讨论也非常多。没有一个家庭模式能让所有人都满意，家庭制度到底该怎么设计，其实到最后就变成一个男女之间、代际之间，不同群体的利益博弈问题。</p>
+<p>我觉得这是一个开放性的问题。我们还需要去探讨，我们需要一个什么样的家庭脚本、婚姻脚本、文化脚本，尽可能地让每个人都幸福。但我觉得，有的时候我们需要看得更远。建立亲密关系和家庭，不仅仅是一场利益博弈，它也是一个人的生命过程。如果你觉得这个东西对我是重要的，并且你对自己的付出也有心理预期，它可以是一个心甘情愿的选择。</p>
+<h2 id="「关系贫困」"><a href="#「关系贫困」" class="headerlink" title="「关系贫困」"></a>「关系贫困」</h2><p>我和我妈妈真正的和解，发生在我自己有了女儿之后。在生孩子之前，我就想，我一定要让我的孩子特别幸福，我要对她特别好，我也确实尽了全力。但是后来我发现，我的孩子依然有创伤。</p>
+<p>很多我当时认为对的事情，比如小的时候要分床、比如不能孩子一哭就抱，这些我在书上看到的，我以为科学的养育方式，实际上对我女儿是有伤害的。因为我的孩子是一个高敏感高需求的孩子，我后来才知道，面对这样的孩子，你必须先满足她。我记得她有一次跟我说：「妈妈，从我记事以来，我的世界就是灰的。」我发现她完全复制了我小时候对世界的体验。</p>
+<p>那个时候我突然意识到，我小时候那种悲伤的状态，不一定是我妈恶意带来的。</p>
+<p>后来，我也调整了我带女儿的方式。我能看到她的笑容慢慢变多、信心慢慢增强，我的感觉也会变得非常好。我曾经也非常讨厌别人跟我说，「你不结婚生子，就永远长不大」，我很讨厌这句话。现在回头想想，婚姻比我想象的要复杂，育儿也比我想象的更困难，正因为如此，我一点都不后悔进入婚姻。它让我从小时候的那种脆弱里走出来，变得更加坦然、更加自信，也更了解自己。我非常明显地感觉到了自己的成长。我觉得，一段好的关系，是能够带来自我成长的关系，如果我一直不去经历这些磨合，我可能永远都不能和解，我会被困在原地走不出来。</p>
+<p>我访谈的很多年轻人跟我说，结婚这件事「太麻烦了」。结婚需要跟一个人磨合，建立这种深度连接太难了。现在单身经济非常发达，如果你在一线城市里有一份工作，那么一个人也可以生活得很好。快递、外卖、保洁工，机器和劳动力市场可以解决你的各种问题。我们的情感需求，也有各种情感消费来提供替代，比如追剧、磕cp、养宠物，甚至可以购买陪聊服务、虚拟恋爱。很多人觉得，已经不太需要一个「伴儿」来一起生活了。甚至在朋友关系里，大家的距离感也比我们之前要强。我们年轻的时候，流行的是「古惑仔」，我要为对方两肋插刀，而现在更流行的是「搭子社交」，我想完成一项娱乐，看个电影，或者玩一场剧本杀，我去找个搭子就好了，我不想麻烦别人，也不想被别人麻烦。</p>
+<p>按理来说，现在年轻人的父母，跟再上一辈，我的父母那一代相比，无论是对孩子的态度，还是养育投入，都在变得更好。但2023年在上海的调查数据显示，青年人对与父母关系的满意度比2001年显著下降。大家对父母的期待变得非常高，也将很多的问题归责于自己的原生家庭。我觉得，这是因为他们的社会关系太少了，能够投放情感需求的地方，就只有自己的原生家庭，只有父母。这也反映出青年人社会网络和社会发展空间的一种逼仄，青年人，现在正在面临严峻的「关系贫困」。</p>
+<p>现在的很多年轻人，小时候都是独生子女，大家生活在一个高度竞争的环境里，经历也非常单一，上学、工作、挣钱，就已经非常疲惫。这种成长环境下的人，想要与他人深度沟通、产生情感联结，它的心理成本变得特别大。我女儿就经常担心别人会不会不喜欢她，带她和同龄的小伙伴一起去玩，孩子们之间的互动都特别客气，就觉得他们非常的不释放，很难开心，没有我们小时候的那种「随便」。</p>
+<p>其实在我们的调查当中，年轻人最希望在亲密关系中得到的依然是心理回馈和成长，但是他们不知道怎么去达到。因为这些东西非常依赖体验、很难把握，所以他们在择偶的时候，会用很实在但也非常浮于表面的价值标准去评判这个人：长得怎么样、学历怎么样、收入怎么样、家庭背景怎么样，等等。但是，他们不能从两个人实实在在克服生活困境、应对生活所需要的价值去评判对方是否合适。在很大程度上，是因为缺乏人生历练的他们，不仅对生活缺乏现实感，对自我、对人性、对关系都缺乏体悟。</p>
+<p>我觉得，这是我们现在所缺失的一块生命教育。人无论最终到什么阶段，都还是需要一个稳定的人际链接来产生一种底层的安全感的。这是无论你采取什么样的爱情观、友情观，都逃不过去的。它最终指向的是「我是谁」的问题——谁知道我的过去，参与我的现在，期待我的未来。如果你无法建立自己深度的人际关系，那么这个角色可能就只有父母，但父母不在了以后呢？</p>
+<p>最重要的问题是，我们的社会能不能从高度竞争的氛围中缓和下来，让我们的年轻人重新拥有松弛感，让他们能够去体验生命。让交友、恋爱、婚姻、育儿，建立人与人之间深层次的链接，不再是一场博弈的结果，而是一个生命体验的过程。</p>
+]]></content>
+      <categories>
+        <category>摘抄</category>
+      </categories>
+      <tags>
+        <tag>爱情</tag>
+        <tag>心理学</tag>
+        <tag>婚姻</tag>
+        <tag>自我成长</tag>
+        <tag>社会观察</tag>
+      </tags>
+  </entry>
 </search>

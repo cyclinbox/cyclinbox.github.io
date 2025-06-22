@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前段时间查文献的时候，偶然看到了一些算法里涉及到了信息论的相关知识。信息论我在几年前通过看书自学过，时间太久有些忘了，正好趁此机会重新复习一下。  参考书籍：机械工业《信息论基础（原书第二版）》（ELEMENTS OF INFORMATION THEORY SECOND EDITION），作者Thomas M. Cover, Joy A. Thomas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="信息论学习笔记（八）">
+<meta property="og:url" content="https://wz.anoms.top/2025/06/21/Information_Theory_Note08/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="前段时间查文献的时候，偶然看到了一些算法里涉及到了信息论的相关知识。信息论我在几年前通过看书自学过，时间太久有些忘了，正好趁此机会重新复习一下。  参考书籍：机械工业《信息论基础（原书第二版）》（ELEMENTS OF INFORMATION THEORY SECOND EDITION），作者Thomas M. Cover, Joy A. Thomas">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250621220841.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622230447.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622232345.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622233024.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622233214.png">
+<meta property="article:published_time" content="2025-06-21T15:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-22T17:00:30.080Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="信息论">
+<meta property="article:tag" content="信道容量">
+<meta property="article:tag" content="微分熵">
+<meta property="article:tag" content="高斯信道">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250621220841.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/06/21/Information_Theory_Note08/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/06/21/Information_Theory_Note08/","path":"2025/06/21/Information_Theory_Note08/","title":"信息论学习笔记（八）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>信息论学习笔记（八） | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E5%88%86%E7%86%B5"><span class="nav-number">1.</span> <span class="nav-text">微分熵</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E5%88%86%E7%86%B5%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">微分熵定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E7%9A%84%E5%BE%AE%E5%88%86%E7%86%B5"><span class="nav-number">1.2.</span> <span class="nav-text">连续随机变量的微分熵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E7%9A%84-AEP%EF%BC%88%E5%85%B8%E5%9E%8B%E5%BA%8F%E5%88%97%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">连续随机变量的 AEP（典型序列）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E5%90%88%E5%BE%AE%E5%88%86%E7%86%B5%E4%B8%8E%E6%9D%A1%E4%BB%B6%E5%BE%AE%E5%88%86%E7%86%B5"><span class="nav-number">1.4.</span> <span class="nav-text">联合微分熵与条件微分熵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%AF%B9%E7%86%B5%E4%B8%8E%E4%BA%92%E4%BF%A1%E6%81%AF"><span class="nav-number">1.5.</span> <span class="nav-text">相对熵与互信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%80%A7%E8%B4%A8"><span class="nav-number">1.5.1.</span> <span class="nav-text">一些性质</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E6%95%88%E5%AD%97%E6%AF%8D%E8%A1%A8%E5%A4%A7%E5%B0%8F"><span class="nav-number">1.6.</span> <span class="nav-text">有效字母表大小</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E6%96%AF%E4%BF%A1%E9%81%93"><span class="nav-number">2.</span> <span class="nav-text">高斯信道</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">基本模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%9F%E7%8E%87%E5%8F%97%E9%99%90%E7%9A%84%E9%AB%98%E6%96%AF%E4%BF%A1%E9%81%93%E5%AE%B9%E9%87%8F"><span class="nav-number">2.2.</span> <span class="nav-text">功率受限的高斯信道容量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%96%AF%E4%BF%A1%E9%81%93%E7%9A%84%E7%A0%81%E7%BB%93%E6%9E%84%E4%B8%8E%E5%8F%AF%E8%BE%BE%E6%80%A7"><span class="nav-number">2.3.</span> <span class="nav-text">高斯信道的码结构与可达性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A0%81%E7%9A%84%E8%A6%81%E7%B4%A0"><span class="nav-number">2.3.1.</span> <span class="nav-text">码的要素</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A0%81%E7%9A%84%E5%8F%AF%E8%BE%BE%E6%80%A7"><span class="nav-number">2.3.2.</span> <span class="nav-text">码的可达性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A6%E5%AE%BD%E6%9C%89%E9%99%90%E4%BF%A1%E9%81%93"><span class="nav-number">2.4.</span> <span class="nav-text">带宽有限信道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E8%81%94%E9%AB%98%E6%96%AF%E4%BF%A1%E9%81%93"><span class="nav-number">2.5.</span> <span class="nav-text">并联高斯信道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%96%AF%E5%BD%A9%E8%89%B2%E5%99%AA%E5%A3%B0%E4%BF%A1%E9%81%93%EF%BC%88%E5%99%AA%E5%A3%B0%E4%BA%92%E7%9B%B8%E7%9B%B8%E5%85%B3%EF%BC%89"><span class="nav-number">2.6.</span> <span class="nav-text">高斯彩色噪声信道（噪声互相相关）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A6%E5%8F%8D%E9%A6%88%E7%9A%84%E9%AB%98%E6%96%AF%E4%BF%A1%E9%81%93"><span class="nav-number">2.7.</span> <span class="nav-text">带反馈的高斯信道</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">209</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">373</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/06/21/Information_Theory_Note08/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="信息论学习笔记（八） | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          信息论学习笔记（八）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-21 23:00:00" itemprop="dateCreated datePublished" datetime="2025-06-21T23:00:00+08:00">2025-06-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-23 01:00:30" itemprop="dateModified" datetime="2025-06-23T01:00:30+08:00">2025-06-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>前段时间查文献的时候，偶然看到了一些算法里涉及到了信息论的相关知识。信息论我在几年前通过看书自学过，时间太久有些忘了，正好趁此机会重新复习一下。</p>
+<blockquote>
+<p>参考书籍：机械工业《信息论基础（原书第二版）》（ELEMENTS OF INFORMATION THEORY SECOND EDITION），作者Thomas M. Cover, Joy A. Thomas</p>
+</blockquote>
+<span id="more"></span>
+
+<hr>
+<h2 id="微分熵"><a href="#微分熵" class="headerlink" title="微分熵"></a>微分熵</h2><h3 id="微分熵定义"><a href="#微分熵定义" class="headerlink" title="微分熵定义"></a>微分熵定义</h3><p>微分熵是一个连续随机变量的熵。</p>
+<ul>
+<li><strong>定义</strong>：设 $X$ 是一个随机变量，其累积分布函数 $F(x) = P_r(X \leq x)$。若 $F(x)$ 连续，则称该随机变量是连续的。</li>
+<li><strong>概率密度函数</strong>：当 $F(x)$ 导数存在时，记 $f(x) = F’(x)$。若 $\int_{-\infty}^{\infty} f(x) dx = 1$，则称 $f(x)$ 为 $X$ 的 <strong>概率密度函数</strong>。</li>
+<li><strong>支持集</strong>：使 $f(x) &gt; 0$ 的所有 $x$ 构成的集合称为 $X$ 的 <strong>支持集</strong>。</li>
+</ul>
+<h3 id="连续随机变量的微分熵"><a href="#连续随机变量的微分熵" class="headerlink" title="连续随机变量的微分熵"></a>连续随机变量的微分熵</h3><p>一个以 $f(x)$ 为概率密度函数的连续型随机变量 $X$ 的微分熵 $h(X)$ 定义为：<br>$$h(X) = -\int_S f(x) \log f(x) dx$$</p>
+<p>其中， $S$ 是 $X$ 的支持集。</p>
+<p>考虑一个<strong>区间 $[0, a]$  上的均匀分布</strong>：$h(X) = -\int_0^a \frac{1}{a} \log \frac{1}{a} dx = \log (a)$</p>
+<ul>
+<li><strong>非负性</strong>：当 $a &lt; 1$ 时，$h(X) &lt; 0$，即微分熵可以是负的。</li>
+<li><strong>非负指数性质</strong>：但无论如何，$2^{h(X)} = 2^{log(a)} = a$ 总是非负的。</li>
+</ul>
+<h3 id="连续随机变量的-AEP（典型序列）"><a href="#连续随机变量的-AEP（典型序列）" class="headerlink" title="连续随机变量的 AEP（典型序列）"></a>连续随机变量的 AEP（典型序列）</h3><ul>
+<li><strong>定义</strong>：集合 $A \subseteq \mathbb{R}^n$ 的体积 $\text{Vol}(A) = \int_A dx_1 dx_2 \cdots dx_n$</li>
+<li>**典型集 $A_\varepsilon^{(n)}$**：具有以下性质：<ol>
+<li>对于充分大的 $n$，$P_r(A_\varepsilon^{(n)}) &gt; 1 - \varepsilon$</li>
+<li>对于所有的 $n$，$\text{Vol}(A_\varepsilon^{(n)}) \leq 2^{n(h(X) + \varepsilon)}$</li>
+<li>对于充分大的 $n$，$\text{Vol}(A_\varepsilon^{(n)}) \geq (1 - \varepsilon) 2^{n(h(X) - \varepsilon)}$</li>
+</ol>
+</li>
+</ul>
+<p>在一阶指数意义下，在所有概率 $≥1-ε$ 的集合 $\phi$ 中， $A_\epsilon^{(n)}$ 是体积最小者。</p>
+<p><strong>熵的近似</strong>：如果随机变量 $X$ 的密度函数 $f(x)$ 是黎曼可积的，那么：<br>$$H(X^\Delta) + \log \Delta \to h(f) = h(X), \text{ 当 } \Delta \to 0$$<br>于是，连续随机变量X经过X比特量化处理（此时分割的小区间长度 $\frac{1}{2^n}$ ）之后，熵大约是 $h(x)+n$ 。</p>
+<h3 id="联合微分熵与条件微分熵"><a href="#联合微分熵与条件微分熵" class="headerlink" title="联合微分熵与条件微分熵"></a>联合微分熵与条件微分熵</h3><ul>
+<li><strong>联合微分熵</strong>：<br>$$h(X_1, X_2, \ldots, X_n) = -\int f(x^n) \log f(x^n) dx^n$$</li>
+<li><strong>条件微分熵</strong>：<br>$$h(X|Y) = -\int f(x,y) \log f(x|y) dxdy = h(X,Y) -h(Y)$$</li>
+</ul>
+<ul>
+<li><strong>多元正态分布 $N(\mu, K)$ 的熵：</strong><br>$$h(X) = \frac{1}{2} \log ((2\pi e)^n |K|) \text{ bit}$$</li>
+</ul>
+<h3 id="相对熵与互信息"><a href="#相对熵与互信息" class="headerlink" title="相对熵与互信息"></a>相对熵与互信息</h3><ul>
+<li><strong>相对熵</strong>：<br>$$D(f | g) = \int f \log \frac{f}{g}$$<br>（只有当 $f$ 的支持集包含在 $g$ 的支持集中时，$D(f | g)$ 才是有意义的。）</li>
+<li><strong>互信息</strong>：$$I(X; Y) = \int f(x,y) \log \frac{f(x,y)}{f(x)f(y)} dxdy$$<br>$$I(X; Y) = h(X) - h(X|Y) = h(Y) - h(Y|X) = h(X) + h(Y) - h(X,Y)$$<br>$$I(X; Y) = D(f_{X,Y} | f_X f_Y)$$</li>
+</ul>
+<h4 id="一些性质"><a href="#一些性质" class="headerlink" title="一些性质"></a>一些性质</h4><ol>
+<li><strong>非负性</strong>：$D(f | g) \geq 0$</li>
+<li><strong>链式法则</strong>：$h(X_1, X_2, \ldots, X_n) = \sum_{i=1}^n h(X_i | X_1, X_2, \ldots, X_{i-1})$</li>
+<li><strong>平移不变性</strong>：$h(X + c) = h(X)$（平移不改变微分熵）</li>
+<li><strong>尺度变换</strong>：$h(aX) = h(X) + \log |a|$</li>
+<li><strong>高斯随机向量的熵</strong>：若 $X \in \mathbb{R}^n$ 的均值为 0 ，协方差矩阵 $K = E[XX^T]$，则：<br>$$h(X) \leq \frac{1}{2} \log ((2\pi e)^n |K|)$$<br>当且仅当 $X \sim N(0, K)$ 时取等。</li>
+<li><strong>估计误差</strong>：$E(X - \hat{X})^2 \geq \frac{1}{2\pi e} e^{2h(X)}$<br>当且仅当 $X$ 为高斯分布且 $\hat{X}$ 为其均值时等号成立。</li>
+</ol>
+<h3 id="有效字母表大小"><a href="#有效字母表大小" class="headerlink" title="有效字母表大小"></a>有效字母表大小</h3><ul>
+<li>$2^{H(X)}$ 为一个高斯随机变量的有效字母表大小。</li>
+<li>$2^{h(X)}$ 为一个连续随机变量的有效支持集大小。</li>
+<li>$2^C$ 为一个信道容量为 $C$ 的信道的有效字母表大小。</li>
+</ul>
+<hr>
+<h2 id="高斯信道"><a href="#高斯信道" class="headerlink" title="高斯信道"></a>高斯信道</h2><h3 id="基本模型"><a href="#基本模型" class="headerlink" title="基本模型"></a>基本模型</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250621220841.png" alt="image.png"></p>
+<p><strong>高斯信道</strong>：输入输出关系为 $Y_i = X_i \oplus Z_i$ ，其中：  </p>
+<ul>
+<li>$X_i$ 是时刻 $i$ 的输入信号；  </li>
+<li>$Z_i \sim \mathcal{N}(0, N)$ 是加性高斯白噪声（AWGN）。  </li>
+</ul>
+<p>若噪声方差 $N = 0$ ，则信道容量为无限大。  </p>
+<hr>
+<h3 id="功率受限的高斯信道容量"><a href="#功率受限的高斯信道容量" class="headerlink" title="功率受限的高斯信道容量"></a>功率受限的高斯信道容量</h3><p><strong>问题</strong>：在噪声方差为 $N$ 且平均功率约束为 $P$ （我们令  $\frac{1}{n} \sum_{i=1}^n X_i^2 \leq P$ ）的条件下，求高斯信道的容量，即最大互信息 $I(X; Y)$ 。  </p>
+<p><strong>结论</strong>：</p>
+<p>$$<br>C = \max_{p(x)} I(X; Y) = \frac{1}{2} \log \left( 1 + \frac{P}{N} \right)<br>$$  </p>
+<p>$\Rightarrow$  <strong>高斯信道容量</strong> 由信噪比$\frac{P}{N}$决定。  </p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622230447.png" alt="image.png"></p>
+<p><strong>一次发送1bit信息的错误概率</strong>: 假设发送二进制消息 $b \in {0, 1}$ ，对应输入 $X = \sqrt{P}$ 或 $-\sqrt{P}$：<br>$$<br>P_e = \frac{1}{2} P_r(Y &lt; -\sqrt{P} | X = \sqrt{P}) + \frac{1}{2} P_r(Y &gt; \sqrt{P} | X = -\sqrt{P})<br>$$<br>$\Rightarrow$ 错误概率为：<br>$$<br>P_e = Q\left( \sqrt{\frac{2P}{N}} \right)<br>$$<br>其中$Q(\cdot)$是标准正态分布的尾部概率函数。  </p>
+<h3 id="高斯信道的码结构与可达性"><a href="#高斯信道的码结构与可达性" class="headerlink" title="高斯信道的码结构与可达性"></a>高斯信道的码结构与可达性</h3><h4 id="码的要素"><a href="#码的要素" class="headerlink" title="码的要素"></a>码的要素</h4><p>一个功率限制为 $P$ 的高斯信道所对应的 $(M, n)$ 码由以下几个要素构成：</p>
+<ul>
+<li><strong>下标集</strong>：${1, 2, \cdots, M}$</li>
+<li><strong>编码函数</strong>：$x: {1, 2, \cdots, M} \rightarrow x^n$，相应的码字 $x^n(1), x^n(2), \cdots, x^n(M)$ ，且满足功率限制 $P$，即对每个码字，$\frac{1}{n} \sum_{i=1}^n x_i^2(w) \leq P$，$w = 1, 2, \cdots, M$。</li>
+<li><strong>译码函数</strong>：$g: \mathcal{Y}^n \rightarrow {1, 2, \cdots, M}$</li>
+<li><strong>误差概率的算术平均</strong>：$P_e^{(n)} = \frac{1}{2^{nR}} \sum \lambda_i$</li>
+</ul>
+<h4 id="码的可达性"><a href="#码的可达性" class="headerlink" title="码的可达性"></a>码的可达性</h4><p>对于一个功率限制为 $P$ 的高斯信道，若存在码字功率限制的一个 $(2^{nR}, n)$ 码序列使得最大误差概率 $\lambda^n \rightarrow 0$，则称码率为 $R$ 关于该功率限制为 $P$ 的高斯信道是 <strong>可达的</strong>。</p>
+<h3 id="带宽有限信道"><a href="#带宽有限信道" class="headerlink" title="带宽有限信道"></a>带宽有限信道</h3><p><strong>信道表达式</strong>：</p>
+<p>$Y(t) = (X(t) + Z(t)) * h(t)$</p>
+<ul>
+<li>$X(t)$：信号波形</li>
+<li>$Z(t)$：高斯白噪声</li>
+<li>$h(t)$：理想的低通滤波器（过滤频率大于 $W$ 的所有频率）</li>
+</ul>
+<p><strong>采样定理</strong>：以采样频率 $\frac{1}{2W}$ 进行采样，足以重构信号。</p>
+<p><strong>噪声特性</strong>：</p>
+<ul>
+<li>噪声的功率谱密度为 $\frac{N_0}{2}$ W/Hz</li>
+<li>带宽 $W$ Hz</li>
+<li>其功率为 $\frac{N_0}{2} \cdot 2W = N_0 W$</li>
+</ul>
+<p><strong>每样本容量</strong>：</p>
+<p>$C = \frac{1}{2} \log \left( 1 + \frac{P}{N_0} \right)= \frac{1}{2} \log \left( 1 + \frac{P}{\frac{N_0}{2} \cdot 2W} \right) = \frac{1}{2} \log \left( 1 + \frac{P}{N_0 W} \right)$</p>
+<p><strong>信道容量</strong>：</p>
+<p>$C = W \log \left( 1 + \frac{P}{N_0 W} \right)$</p>
+<ul>
+<li>$N_0/2$：噪声谱密度</li>
+<li>$P$：功率</li>
+</ul>
+<ul>
+<li>每秒有 $2W$ 个样本, 信道容量 = $2W \times$ 每样本容量</li>
+<li>**若 $W \to \infty$**：$C = \frac{P}{N_0} \log_2 e \quad (\text{bit/s})$</li>
+</ul>
+<ul>
+<li>对于无限带宽信道，信道容量与功率成线性增长关系。</li>
+</ul>
+<ul>
+<li>以<strong>电话线路为例</strong>： 带宽 $W = 3300$ Hz ，响度 $33$ dB（即 $\frac{P}{N_0 W} = 2000$），则 $C = W \log \left( 1 + \frac{P}{N_0 W} \right) = 3300 \log \left( 1 + 2000 \right) \approx 36 \text{ kbps}$</li>
+</ul>
+<h3 id="并联高斯信道"><a href="#并联高斯信道" class="headerlink" title="并联高斯信道"></a>并联高斯信道</h3><ul>
+<li><strong>模型</strong>：多个独立子信道 $Y_j = X_j + Z_j$ ，$j = 1, 2, \ldots, K$ ，其中 $Z_j \sim \mathcal{N}(0, N_j)$ 。  </li>
+<li><strong>总容量</strong>：  </li>
+</ul>
+<p>$$<br>C \le \sum_{j=1}^K \frac{1}{2} \log \left( 1 + \frac{P_j}{N_j} \right)<br>$$<br>$\Rightarrow$ 总容量等于各子信道容量之和。  </p>
+<ul>
+<li><strong>功率分配策略</strong>：  <strong>注水法（Water-Filling）</strong>， 在满足总功率约束$\sum_{j=1}^K P_j \leq P$下，最优功率分配为：  </li>
+</ul>
+<p>$$<br>P_j = \left( \nu - {N_j} \right)^+<br>$$</p>
+<p>即对 $P_i$ 取正的部分，而负的部分设为0（公式中的 $\nu$ 由总功率约束确定 ）。注水法的直观理解是优先分配功率给噪声小的信道（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622232345.png" alt="image.png"></p>
+<h3 id="高斯彩色噪声信道（噪声互相相关）"><a href="#高斯彩色噪声信道（噪声互相相关）" class="headerlink" title="高斯彩色噪声信道（噪声互相相关）"></a>高斯彩色噪声信道（噪声互相相关）</h3><ul>
+<li>$K_z$ 为噪声的协方差阵。</li>
+<li>$K_x$ 为输入信号的协方差阵。</li>
+</ul>
+<ul>
+<li><strong>功率限制</strong>： $\frac{1}{n} \sum_{i=1}^n E[X_i^2] \leq P \Leftrightarrow \frac{1}{n} \text{tr}(K_x) \leq P$</li>
+<li>互信息表达式 $I(X_1, X_2, \cdots, X_n; Y_1, Y_2, \cdots, Y_n) = h(Y_1, Y_2, \cdots, Y_n) - h(Z_1, Z_2, \cdots, Z_n)$ ，我们的目标是最大化此表达式中的 $h(Y_1, Y_2, \cdots, Y_n)$ 项，因为后一项 $h(Z_1, Z_2, \cdots, Z_n)$ 由噪声分布唯一决定。</li>
+<li>$h(Y_1, Y_2, \cdots, Y_n)= \frac{1}{2} \log((2\pi e)^n |K_x + K_z|)$ ，<strong>问题简化为在 $K_x$ 约束下，选择 $K_x$，最大化 $|K_x + K_z|$</strong></li>
+</ul>
+<ul>
+<li><strong>分解 $K_z$ 为对角型</strong>：$K_z = Q \Lambda Q^t$，其中 $QQ^t = I$</li>
+<li>**则 $|K_x + K_z| = |K_x + Q \Lambda Q^t| = |Q^t K_x Q + \Lambda| = |A + \Lambda|$**，其中 $A = Q^t K_x Q$</li>
+</ul>
+<ul>
+<li>可证明 $\Pi (A_{ii} + \lambda_i)$ 在 $A_{ii} + \lambda_i = v$ 时取最大，且 $A_{ii}$ 可能为负。 $\Rightarrow A_{ii} = (v - \lambda_i)^+$ ，<strong>选取 $v$ 使得 $\sum A_{ii} = nP$</strong> ，即下图的频域注水法。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622233024.png" alt="image.png"></p>
+<ul>
+<li><strong>一个噪声功率谱为 $N(f)$ 的可加高斯噪声信道的容量</strong>： $C = \int_{-\infty}^{\infty} \frac{1}{2} \log \left( 1 + \frac{(\psi - N(f))^+}{N(f)} \right) df$ ， <strong>其中 $\psi$ 满足 $\int (\psi - N(f))^+ df = P$</strong></li>
+</ul>
+<h3 id="带反馈的高斯信道"><a href="#带反馈的高斯信道" class="headerlink" title="带反馈的高斯信道"></a>带反馈的高斯信道</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250622233214.png" alt="image.png"></p>
+<p><strong>信道表达式</strong>： $Y_i = X_i \oplus Z_i, Y_i \xrightarrow{\text{反馈}} X_i, \quad Z_i \sim \mathcal{N}(0, K_z^{(n)})$</p>
+<ul>
+<li>$X_i$：输入信号</li>
+<li>$Y_i$：输出信号</li>
+<li>$Z_i$：高斯噪声，$Z_i \sim \mathcal{N}(0, K_z^{(n)})$</li>
+<li><strong>反馈不会增加离散无记忆信道的容量</strong></li>
+<li><strong>但如果信道有记忆，反馈会增加容量</strong></li>
+</ul>
+<ul>
+<li>记带反馈信道的容量为 $C_{n,FB}$，则有：</li>
+<li>$C_{n,FB} \leq C_n + \frac{1}{2} \quad (\text{bit/传输})$</li>
+<li>$C_{n,FB} \leq 2C_n \quad (\text{bit/传输})$</li>
+<li>$C_n = \max_{\substack{\text{tr}(K_x) \leq nP}} \frac{1}{2n} \log \frac{|K_x + K_z|}{|K_z|}$</li>
+<li>$C_{n,FB} = \max_{\substack{\text{tr}(K_x) \leq nP}} \frac{1}{2n} \log \frac{|K_x + K_z|}{|K_z|}$</li>
+</ul>
+<ul>
+<li><strong>反馈可以增加信道容量，但增量不会超过 $\frac{1}{2}$  bit/传输</strong>, <strong>也不会超过原始信道的两倍</strong></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/06/21/Information_Theory_Note08/" title="信息论学习笔记（八）">https://wz.anoms.top/2025/06/21/Information_Theory_Note08/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E4%BF%A1%E6%81%AF%E8%AE%BA/" rel="tag"><i class="fa fa-tag"></i> 信息论</a>
+              <a href="/tags/%E4%BF%A1%E9%81%93%E5%AE%B9%E9%87%8F/" rel="tag"><i class="fa fa-tag"></i> 信道容量</a>
+              <a href="/tags/%E5%BE%AE%E5%88%86%E7%86%B5/" rel="tag"><i class="fa fa-tag"></i> 微分熵</a>
+              <a href="/tags/%E9%AB%98%E6%96%AF%E4%BF%A1%E9%81%93/" rel="tag"><i class="fa fa-tag"></i> 高斯信道</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/08/Information_Theory_Note07/" rel="prev" title="信息论学习笔记（七）">
+                  <i class="fa fa-chevron-left"></i> 信息论学习笔记（七）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/22/SingleCell_data_normalization_and_integration/" rel="next" title="单细胞数据处理中的归一化和去批次效应">
+                  单细胞数据处理中的归一化和去批次效应 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
