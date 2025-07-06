@@ -19904,4 +19904,120 @@
         <tag>秩序</tag>
       </tags>
   </entry>
+  <entry>
+    <title>YOLO11图像识别模型初次上手</title>
+    <url>/2025/07/06/YOLO11_demo_deploy/</url>
+    <content><![CDATA[<p>如题。周末闲来无事，尝试配置了opencv-python和yolo11的环境，运行起来了一个比较基础的图像识别程序。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="一、介绍"><a href="#一、介绍" class="headerlink" title="一、介绍"></a>一、介绍</h2><p><a href="https://github.com/ultralytics/ultralytics">YOLO（you-only-look-once）</a>是一个轻量级、高效率的图像识别模型。其基于卷积神经网络但做了许多优化（形象来说就是把一张图片切成许许多多小方块，然后并行对每个小方块做图像识别任务，最后合并相同对象的方块），流线型设计使其适用于各种应用，并可轻松适应从边缘设备到云 API 等不同硬件平台。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250707002517.png" alt="image.png"></p>
+<p>想要了解更多，可以参考下面这些内容：</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/13491328897">YOLO 详解：从 v1 到 v11 - 敖丙学AI的文章 - 知乎</a> </li>
+<li><a href="https://docs.ultralytics.com/quickstart/">YOLO官方文档</a></li>
+<li><a href="https://github.com/ultralytics/ultralytics">YOLO github存储库</a></li>
+</ul>
+<h2 id="二、搭建yolo11环境"><a href="#二、搭建yolo11环境" class="headerlink" title="二、搭建yolo11环境"></a>二、搭建yolo11环境</h2><p>YOLO官网上给出了详细的安装步骤，并提供了模型权重的下载链接。主要分两步：安装python依赖，以及准备模型权重文件。</p>
+<h3 id="（一）安装依赖"><a href="#（一）安装依赖" class="headerlink" title="（一）安装依赖"></a>（一）安装依赖</h3><blockquote>
+<p>参考： <a href="https://docs.ultralytics.com/quickstart/#use-ultralytics-with-cli">https://docs.ultralytics.com/quickstart/#use-ultralytics-with-cli</a></p>
+</blockquote>
+<p>安装环境的步骤很简单。首先，电脑上要有python和pip，接下来我们使用pip运行下面的指令即可：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Install the ultralytics package from PyPI</span></span><br><span class="line">pip install ultralytics</span><br></pre></td></tr></table></figure>
+
+<p>这一步一并会安装依赖项，包括 <code>torch, torchvision, numpy, matplotlib, pandas, pyyaml, pillow, psutil, requests, tqdm, scipy, seaborn, ultralytics-thop</code> 等。如果电脑上已经有相关python库，则可以使用 <code>pip install ultralytics --no-deps</code> 单独安装yolo本身。</p>
+<h3 id="（二）下载YOLO11模型权重文件"><a href="#（二）下载YOLO11模型权重文件" class="headerlink" title="（二）下载YOLO11模型权重文件"></a>（二）下载YOLO11模型权重文件</h3><blockquote>
+<p>参考： <a href="https://docs.ultralytics.com/models/yolo11/">https://docs.ultralytics.com/models/yolo11/</a></p>
+</blockquote>
+<p>我们访问YOLO11的<a href="https://docs.ultralytics.com/models/yolo11/">介绍页面</a> ，在这个页面中有一个performance小节，比较了YOLO11的5个不同参数规模版本的性能。此处的Model列是带有链接的，点击会被链接到GitHub存储库release页面，从而进行权重文件（pt文件）的下载。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250707003358.png" alt="image.png"></p>
+<p>简单讲一下这几个模型的区别：模型后缀<code>n,s,m,l,x</code>对应着从小到大的5个模型（nano,small,median,large,extreme），它们各自的参数规模在params列有显示。具体到文件大小，nano版本的模型大概有5.4MB（因此可以部署在一些边缘计算设备上），而median版本的模型大约是38.8MB，在普通家用笔记本电脑上足够运行起来。</p>
+<p>我们以median版为例，下载下来的文件名为 <code>yolo11m.pt</code> ，我们可以把它放在待会儿要用的工作目录当中。这样，准备工作就完成了。</p>
+<h2 id="三、YOLO的正式运行"><a href="#三、YOLO的正式运行" class="headerlink" title="三、YOLO的正式运行"></a>三、YOLO的正式运行</h2><h3 id="（一）检测静态图片"><a href="#（一）检测静态图片" class="headerlink" title="（一）检测静态图片"></a>（一）检测静态图片</h3><p>如下是我的工作区目录结构。我创建了一个目录 <code>models</code> 用于存放模型文件，一个 <code>dataset</code> 用来存放待检测的静态图片。<code>yolo11-demo.ipynb</code> 是我的工作文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(torch) H:\temp\temp-2025-07-06-yolo11-demo&gt;tree /f</span><br><span class="line">卷 新加卷 的文件夹 PATH 列表</span><br><span class="line">卷序列号为 A6CF-4B51</span><br><span class="line">H:.</span><br><span class="line">│  yolo11-demo.ipynb</span><br><span class="line">│</span><br><span class="line">├─dataset</span><br><span class="line">│      captured_photo0.jpg</span><br><span class="line">│      captured_photo1.jpg</span><br><span class="line">│</span><br><span class="line">└─models</span><br><span class="line">       yolo11m.pt</span><br><span class="line">       yolo11n.pt</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>YOLO识别静态图片的任务很简单：读取图片，然后识别，这样就可以了。代码如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment"># Load a model</span></span><br><span class="line">model = YOLO(<span class="string">&quot;models/yolo11m.pt&quot;</span>)  <span class="comment"># load an official model</span></span><br><span class="line"><span class="comment"># Predict with the model</span></span><br><span class="line">results = model(<span class="string">&quot;dataset/captured_photo*.jpg&quot;</span>)  <span class="comment"># predict on images</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制并显示结果</span></span><br><span class="line"><span class="keyword">for</span> i, result <span class="keyword">in</span> <span class="built_in">enumerate</span>(results):</span><br><span class="line">    plotted_img = result.plot()  <span class="comment"># 获取带标注的BGR格式图片</span></span><br><span class="line">    <span class="comment"># 将BGR转换为RGB（Matplotlib需要RGB格式）</span></span><br><span class="line">    rgb_img = plotted_img[..., ::-<span class="number">1</span>]  <span class="comment"># 或使用 cv2.cvtColor(plotted_img, cv2.COLOR_BGR2RGB)</span></span><br><span class="line">    <span class="comment"># 用Matplotlib显示</span></span><br><span class="line">    plt.figure(figsize=(<span class="number">5</span>, <span class="number">5</span>))</span><br><span class="line">    plt.imshow(rgb_img)</span><br><span class="line">    plt.axis(<span class="string">&#x27;off&#x27;</span>)  <span class="comment"># 隐藏坐标轴</span></span><br><span class="line">    plt.title(<span class="string">f&quot;Detection Result <span class="subst">&#123;i&#125;</span>&quot;</span>)</span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>输出大约是下面这个样子：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250707010106.png" alt="image.png"></p>
+<p>也可以打印出各个识别框的具体位置以及类别信息：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> r <span class="keyword">in</span> results:</span><br><span class="line">    <span class="built_in">print</span>(r.boxes)  <span class="comment"># print the Boxes object containing the detection bounding boxes</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250707010413.png" alt="image.png"></p>
+<h3 id="（二）配合摄像头的实时场景检测"><a href="#（二）配合摄像头的实时场景检测" class="headerlink" title="（二）配合摄像头的实时场景检测"></a>（二）配合摄像头的实时场景检测</h3><p>首先，确保电脑有摄像头（如果是台式机，则可以外接一个USB摄像头）。</p>
+<p>下面的代码可以用来测试摄像头能否正常调用。运行代码，如果没有异常，则在代码同级目录下应该会生成一张文件名为 <code>captured_photo0.jpg</code> 的图片，具体分辨率以及图像尺寸取决于摄像头。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># To install the package, try: pip install opencv-python</span></span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line">current_dir = <span class="string">&quot;.&quot;</span></span><br><span class="line">cap0 = cv2.VideoCapture(<span class="number">0</span>)</span><br><span class="line">ret0, frame0 = cap0.read()  <span class="comment"># ret=True表示成功，frame是图像数据</span></span><br><span class="line"><span class="keyword">if</span> ret0:</span><br><span class="line">    filename0 = <span class="string">f&quot;captured_photo0.jpg&quot;</span>  <span class="comment"># :02d 表示两位数补零</span></span><br><span class="line">    relative_path0 = current_dir+<span class="string">&quot;/&quot;</span>+filename0</span><br><span class="line">    <span class="built_in">print</span>(relative_path0)</span><br><span class="line">    cv2.imwrite(relative_path0, frame0)</span><br></pre></td></tr></table></figure>
+
+<p>要使用YOLO实时检测，我们可以对上面的代码进行一些修改（仍然基于前面那个ipynb文档）。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO</span><br><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> display, clear_output</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化</span></span><br><span class="line">model = YOLO(<span class="string">&quot;models/yolo11m.pt&quot;</span>)  <span class="comment"># 加载YOLO模型</span></span><br><span class="line">cap = cv2.VideoCapture(<span class="number">0</span>)          <span class="comment"># 摄像头ID（0通常是默认摄像头）</span></span><br><span class="line">cap.<span class="built_in">set</span>(cv2.CAP_PROP_BUFFERSIZE, <span class="number">1</span>)  <span class="comment"># 减少缓冲区到1帧</span></span><br><span class="line">cap.<span class="built_in">set</span>(cv2.CAP_PROP_FPS, <span class="number">30</span>)        <span class="comment"># 设置摄像头FPS（与硬件匹配）</span></span><br><span class="line">plt.figure(figsize=(<span class="number">5</span>, <span class="number">4</span>))        <span class="comment"># 设置显示窗口大小</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 实时检测循环</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="comment"># 1. 捕获帧</span></span><br><span class="line">        ret, frame = cap.read()</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> ret:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="comment"># 2. YOLO检测</span></span><br><span class="line">        results = model(frame, imgsz=<span class="number">320</span>, int8=<span class="literal">True</span>) <span class="comment"># 分辨率设为320x320，int8加速</span></span><br><span class="line">        <span class="comment"># 3. 绘制结果</span></span><br><span class="line">        plotted_img = results[<span class="number">0</span>].plot()  <span class="comment"># 获取带标注的BGR图像</span></span><br><span class="line">        rgb_img = cv2.cvtColor(plotted_img, cv2.COLOR_BGR2RGB)  <span class="comment"># 转为Matplotlib需要的RGB格式</span></span><br><span class="line">        <span class="comment"># 4. 在Jupyter中动态更新显示</span></span><br><span class="line">        clear_output(wait=<span class="literal">True</span>)  <span class="comment"># 清除上一个输出</span></span><br><span class="line">        plt.imshow(rgb_img)</span><br><span class="line">        plt.axis(<span class="string">&#x27;off&#x27;</span>)</span><br><span class="line">        display(plt.gcf())  <span class="comment"># 显示当前图像</span></span><br><span class="line">        time.sleep(<span class="number">0.5</span>)    <span class="comment"># 控制帧率（单位：秒）</span></span><br><span class="line"><span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Stopped by user&quot;</span>)</span><br><span class="line"><span class="comment"># 释放资源</span></span><br><span class="line">cap.release()</span><br><span class="line">plt.close()</span><br></pre></td></tr></table></figure>
+
+<p>运行效果如下：</p>
+<p><video src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/%E6%A0%BC%E5%BC%8F%E5%B7%A5%E5%8E%82%20%E5%B1%8F%E5%B9%95%E5%BD%95%E5%83%8F20250707_010947%2000_02_54-00_03_23.mp4"></video></p>
+<h2 id="四、一些遗留问题"><a href="#四、一些遗留问题" class="headerlink" title="四、一些遗留问题"></a>四、一些遗留问题</h2><p>1、实时检测代码在运行时，发现随着运行时间的变长，图像识别速度有显著下降，推测可能和摄像头缓冲区数据交换瓶颈有关。对此，AI提出可以使用异步的图像捕获与YOLO检测，但代码比较复杂，此处没有进一步探索。<br>2、YOLO提供了对模型进行微调、训练的方法，在官方文档中有详细介绍，此处不做展开。这一模型在众多领域都有应用，例如交通监测、医学图像处理等等，感兴趣的读者可以后续慢慢了解。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>YOLO</tag>
+        <tag>opencv</tag>
+        <tag>图像识别</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>友情、恋爱与关系中的磨合：一些观察与思考</title>
+    <url>/2025/07/06/20250706_updatelog/</url>
+    <content><![CDATA[<p>好想谈恋爱。</p>
+<span id="more"></span>
+
+<hr>
+<h3 id="一、晚饭期间的孤独与缺爱"><a href="#一、晚饭期间的孤独与缺爱" class="headerlink" title="一、晚饭期间的孤独与缺爱"></a><strong>一、晚饭期间的孤独与缺爱</strong></h3><p>是这样的。这个星期总体上比较忙，除了跑数据以外还进行了几次汇报。今天很晚才吃上晚饭，也错过了很好看的晚霞。</p>
+<p>实验室里，Z师妹回家了。前来实习的X师弟也早早下了班。另外几位师兄师姐也都出去了，晚饭那会儿只有我和P总在实验室。突然感觉实验室还挺空荡荡的，有些落寞。想找个人说说话，却又担心会不会打扰到谁。</p>
+<p>好孤独，好难过。是不是又到了想谈恋爱的季节了？甜甜的恋爱什么时候能够落在我身上呀😭</p>
+<h3 id="二、朋友关系为什么取代不了恋爱关系：关系中的稳定性预期以及安全感"><a href="#二、朋友关系为什么取代不了恋爱关系：关系中的稳定性预期以及安全感" class="headerlink" title="二、朋友关系为什么取代不了恋爱关系：关系中的稳定性预期以及安全感"></a><strong>二、朋友关系为什么取代不了恋爱关系：关系中的稳定性预期以及安全感</strong></h3><p>如果单看前面那段话，也许有人会觉得我矫情，你有那么多朋友，有那么多nice的师兄师姐师弟师妹，甚至你们这几天还聊了很多天/吃了几次饭，这么丰富的社交活动，为什么还能让你感受到缺爱？</p>
+<p>于是我想了想。也许是因为，朋友关系（包括supportive friendship，这些都属于广义亲密关系）并没有恋爱关系（狭义亲密关系）中所包含的那种承诺。这里复习一下斯滕伯格的恋爱三角：好的恋爱关系需要 亲密+激情+承诺。我对激情不怎么看重，只要 亲密+承诺 能够到位（这种一般是老夫老妻、人生至交、亲子关系中所包含的），我就心满意足了。但是朋友关系，甚至包括我大学期间建立至今的相对更深厚的友情，可能都没有包含足够稳定的承诺（或者说 友情中的承诺属于一种君子协定，我愿意持续为朋友们提供帮助、维持友谊，但不能期待对方也可以这样对待我——虽然，我很感谢我的朋友们，至少到目前为止，我的情绪和需求都能够被接住、接纳，误解也可以被说开——谢谢你们！）。</p>
+<p>这种缺乏承诺的亲密关系，会让我体会到安全感的缺失，担心“现在的连接感和小确幸会不会不可持续”。甚至，集体活动的当下越幸福，活动结束后的戒断反应越严重——还记得去年五月份S师姐毕业时，我的快乐与寂寞（“昨日的快乐衬托出今天的孤独。草坪音乐节结束了，热闹散去，又只剩下我一个人。早上醒来，一个人吃早饭，一个人来到实验室，属实有些落差感”）。虽然，这种戒断反应某种意义上好像和分手也有点像——也许在神经层面二者激活了相似的神经通路？</p>
+<p>恋爱关系（或者说，好的恋爱关系）之所以被人们推崇，不仅仅是因为其中的甜蜜幸福，也不仅仅是因为两个人可以互相陪伴互相鼓励，一起变得更好，或许还有一部分原因就是恋爱关系中隐含着一种“关系稳定性”的承诺，这种承诺本身（即，“幸好啊，你还在我身边”）就足以吸引人了。</p>
+<h3 id="三、恋爱关系的反例：以身边一对情侣为例"><a href="#三、恋爱关系的反例：以身边一对情侣为例" class="headerlink" title="三、恋爱关系的反例：以身边一对情侣为例"></a><strong>三、恋爱关系的反例：以身边一对情侣为例</strong></h3><p>某天实验室聊八卦，得知了发生在师弟师妹身边的一对情侣的故事。</p>
+<p>我们把两位当事人分别称为A师弟和B师妹。A和B因为在同一个实验室轮转而相互认识，但是很不幸，他俩谈了几个月就走向了分手。许多原因导致了最终的分手：一方面，A和B同在一个实验室轮转，但是实验室只有一个定导名额，本来两个人约好一起汇报，但临汇报前两天，A师弟居然提前给导师偷偷做了汇报，也因此换来了定导资格——B师妹只得多做了两轮轮转才定导——这种背刺行径实在不应该在情侣之间发生；另一方面，A的控制欲过于旺盛，总是希望B汇报自己的社交行程（哪怕只是和室友一起出去吃饭），还说出过“我不介意你和其他男生出去玩，但是你得和我汇报”这样的话（“汇报”这俩字带着一种高高在上的审判感，很不尊重人）。</p>
+<p>很显然这是一个负面例子，告诉我们即使是亲密关系，控制欲也不能太强。但是另一个角度想，这好像也有些悲哀：即使恋爱，人们也会希望有一些自己的空间——而这可能会加重伴侣的不安全感。</p>
+<p>当然这个问题因人而异。曾经身边某位朋友就表示，她觉得恋爱好麻烦，需要天天打视频、报备做过的事情；但我好像对这种事无巨细的报备接受程度很高（笑死曾经我就是这么事无巨细报备的——然后就被说好像学生给老师汇报工作）。如果两个人能够在这些细节问题上达成一致，应该就能少许多麻烦。</p>
+<p>于是，这就来到了关系磨合的话题：我们该如何选择我们的伴侣？应不应该在磨合中对伴侣提出改造？</p>
+<h3 id="四、只筛选不改变vs改造你的伴侣"><a href="#四、只筛选不改变vs改造你的伴侣" class="headerlink" title="四、只筛选不改变vs改造你的伴侣"></a><strong>四、只筛选不改变vs改造你的伴侣</strong></h3><p>这是前段时间在小红书上刷到的一个讨论。贴主表示，</p>
+<blockquote>
+<p>「”只筛选不改变”听起来像是清醒独立，但这句话很容易让人走向一个错误的极端，那就是不解决问题，只解决对方。关系中只要有了“筛选”意识，你就会不自觉得站在审判者位置上，这份“高高在上”很破坏爱。筛选应该是在最开始去筛底线、筛三观、筛解决问题的能力，没有天生就般配的两个人，只不过一个懂得迁就、包容，另一个懂得适可而止」</p>
+</blockquote>
+<p>评论区的讨论进一步指出，“只筛选不改变”是在恋爱前期用的，用来在一些大方向上做筛选，例如伴侣的个人条件、家庭背景、性格、人格底色等等。但是之后，既然都谈上恋爱了，说明这个人大方向都过关，此时就别谈什么只筛选不改变了，应该去体验、去沟通、去磨合，改变对方身上一些你不喜欢的小缺点，同时也慢慢改变自己，两个人互相朝着更契合彼此的方向迈进，这才是最为合适的做法。</p>
+<p>我觉得很有道理。</p>
+<h3 id="五、独生子女所欠缺的能力"><a href="#五、独生子女所欠缺的能力" class="headerlink" title="五、独生子女所欠缺的能力"></a><strong>五、独生子女所欠缺的能力</strong></h3><p>但是，即使知道了这些大道理，为什么恋爱还那么困难呢？</p>
+<p>尤其是作为独生子女，好像开启一段恋爱尤为困难。缺乏和同龄人单独且深度交流的经验，以至于不知道如何主动（这个应该是最主要的原因！）、如何应对关系中的变动、如何处理摩擦，于是大家好像都慢慢被剩下了。</p>
+<p>有人提出，可以靠相亲和建立亲密关系，去锻炼这些能力。但相亲（包括年轻人之间那种带着网络交友性质的“相亲”）也并非一个容易的过程，其间同样会遇到许多问题，也会对我们的人际处理能力提出很高的挑战。</p>
+<p>这可真是难办呀。</p>
+<h3 id="六、未来怎么做？"><a href="#六、未来怎么做？" class="headerlink" title="六、未来怎么做？"></a><strong>六、未来怎么做？</strong></h3><p>当我把上面这些吐槽发给某位师兄后，收到了师兄的批评。师兄觉得我好像太犹豫和磨叽，“想要恋爱就去谈而不是在这写小作文”。</p>
+<p>被批评当然不好受，但确实也提醒我，去行动而不是停留在理论层面才是硬道理。</p>
+<p>但是我也有顾虑——</p>
+<p>首先，我在回顾身边人的爱情观时遇到了一个矛盾，“恋爱过程中应该互相给彼此留下一些空间”vs“恋爱关系中包含着一种关系稳定性的承诺”。身边有一些朋友曾表示，恋爱中仍需要自由空间，无法接受无时无刻的黏在一起（抱有这种想法的人应该还有很多）。但是但是，如果恋爱中实质上还是需要给彼此留下空间，而不是无时无刻黏在一起，那么似乎恋爱中所隐含的“关系稳定性”的承诺也就有名无实了——那样的话，恋爱的意义又在哪里？【Gemini：“稳定性”并不等同于“持续的物理/信息连接”，“空间”不是“疏离”，而是“健康关系的呼吸”，这里所谓的矛盾并非真正的矛盾，仅仅是“依恋风格”之分】</p>
+<p>其次，贸然开启一段恋爱关系，代价又会是什么呢？也许会认识错误的人。也许会错付真心，或白白浪费恋爱的时间。更有可能因为认识错误的人给自己带来伤害（我不想再经历一遍研一寒假时的痛苦了呜呜呜呜呜😭）。特别是，作为一个更在意感情生活幸福的人，好像我的情感洁癖也不允许我随随便便进入一段关系。恋爱可真难啊。</p>
+<p>但是还是期待爱情。期待一段入室抢劫的爱情（bushi）</p>
+<p>以上。</p>
+<p>也愿大家都能找到属于自己的爱情。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>日记</tag>
+        <tag>恋爱</tag>
+        <tag>亲密关系</tag>
+        <tag>deep think</tag>
+        <tag>deeptalk</tag>
+      </tags>
+  </entry>
 </search>
