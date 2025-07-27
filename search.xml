@@ -20176,4 +20176,101 @@
         <tag>梅森旋转算法</tag>
       </tags>
   </entry>
+  <entry>
+    <title>PDF文字注释的底层机制与数据结构：从一条bug说起</title>
+    <url>/2025/07/26/PDF-annotation-structure-and-a-bug/</url>
+    <content><![CDATA[<p>PDF（portable document format）自从上世纪末由adobe提出以来，已经渐渐成为了广泛流行的文档格式之一。这是一个排版格式，其内部由二进制信息流（版面上的对象模型）组成，相比于word文档这种流式文档格式，PDF原则上不可修改（除了可以进行标注和标记），但其格式规范使其有着极高的兼容性，可以在任何设备上以相同的排版浏览文档内容。</p>
+<span id="more"></span>
+
+<p>最初，能够浏览PDF文件的软件是adobe官方推出的查看器（Adobe Acrobat），随后市面上陆陆续续有许多公司也推出了自己的PDF查看器或渲染引擎。其中，有一个很著名的软件叫福昕PDF（Foxit PDF），这是一个中国人开发的软件，其底层渲染引擎使用C++编写，性能很强——于是后来谷歌与福昕达成合作，共同推出了PDFium这一开源库，供其他PDF浏览器的开发者使用——包括谷歌chrome，微软edge浏览器，甚至WPS PDF在内的许多软件，都使用了这一开源库。因此某种意义上，福昕PDF的技术支撑了PDF阅读器的半壁江山。</p>
+<p>但开源的PDF阅读器不止这些。PDFjs是另一个流派的渲染引擎，纯JavaScript编写，最初是一个实验性项目，随后被Firefox浏览器收编并开源，目前由Mozilla基金会管理。PDFjs作为纯JavaScript实现的引擎，在网页端开发领域天然具有极大的优势，因此不止Firefox浏览器自身，还有许多提供PDF文件在线浏览功能的网站也使用了这一技术。</p>
+<p>PDFium vs PDFjs，C++ vs JavaScript，孰好孰坏？这个问题恐怕见仁见智。毕竟PDFium有着更好的性能和排版效果，但也更加笨重，启动比较慢；PDFjs在面对大文件时力不从心，但小小的体积也使它身轻如燕，十分灵活。特别是最近几年，Mozilla的开发者们为PDFjs新增了PDF标注的功能（包括文本高亮、文字标注、随笔画等等），更使其具备了一个成熟PDF阅读器的素养。</p>
+<p>然而今天要讲的bug，就与PDFjs的标记功能有关。</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>在阅读并标注PDF文件时，我发现了一些奇怪的现象。</p>
+<p>我有两个PDF阅读器，其中一个是金山WPS PDF，底层使用了PDFium的库进行解析（由foxitPDF出品）。另一个是Firefox自带的PDF浏览器，底层是PDFjs库。这两个阅读器都有文本标注和标记功能。</p>
+<p>在阅读时，我有时候会使用文本标注功能添加文字笔记。但是使用了一段时间以后，我发现金山WPS PDF（PDFium）的文字标注功能的兼容性更好，其添加的文本标注在Firefox（PDFjs）中依然能够正常显示；但是Firefox（PDFjs）的文本标注，大部分情况下无法被金山WPS （PDFium）解析和显示，只有少数情况下可以正常显示。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250727114050.png" alt="image.png"></p>
+<p>感觉有点奇怪。于是我去查看了PDF文件的源码，希望找到问题的关键所在。</p>
+<h2 id="PDF源码反编译"><a href="#PDF源码反编译" class="headerlink" title="PDF源码反编译"></a>PDF源码反编译</h2><p>为了理解问题的产生原因，我去翻阅了PDF文件的源代码，并找到了几段疑似这些软件添加的文本标注功能的信息流的内容，如下：</p>
+<p><strong>1. 疑似kingsoft PDF（PDFium）标注的信息流。这几段信息流都可以在Firefox（PDFjs）中正确渲染。</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/845e7ee7-de0d-4cc9-ab88-4cdddb8c2d43.png" alt="845e7ee7-de0d-4cc9-ab88-4cdddb8c2d43.png"></p>
+<p><strong>2.  疑似Firefox（PDFjs）标注的标注信息流，其中第一段是可以被正确显示的内容，第二段是无法被显示的内容</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/d1ce1823-3744-4a63-b3a1-457727846cd5.png" alt="d1ce1823-3744-4a63-b3a1-457727846cd5.png"></p>
+<h2 id="进一步的探索与问题排查"><a href="#进一步的探索与问题排查" class="headerlink" title="进一步的探索与问题排查"></a>进一步的探索与问题排查</h2><p>虽然定位到了出问题的源码，但是作为一个什么都不懂的小白，想要理解问题出现的原因依然很困难。所以我求助了AI（DeepSeek+Gemini）。下面是AI的一些介绍和回答：</p>
+<p>首先，关于PDF注释的文件格式规范：如下图，有一系列的标签用来存储这些注释，但是在不同PDF阅读器商的具体实现中会有区别（例如PDFium会生成符合标准的详细注释信息，但是PDFjs会偷懒只生成一两个标签）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250727120005.png" alt="image.png"></p>
+<p>具体来说，PDFium实现了更为完整的注释信息流，尤其是包括外观流（Appearance Stream， <code>/AP</code>），这是PDFium的注释有着更好兼容性的关键（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250727120222.png" alt="image.png"></p>
+<p>反观PDFjs，其注释内容只有 <code>/DA</code> 和  <code>/Contents</code> 字段，未能实现 <code>/AP</code> 流，且缺乏中文字体的嵌入，所以当注释内容是英文时还好（可以使用默认字体渲染），但是遇到中文注释时就力不从心了，生成的注释只有PDFjs自己认识，其他的PDF阅读器都看不懂，自然无法显示（如下图）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250727120419.png" alt="image.png"></p>
+<h2 id="尾声"><a href="#尾声" class="headerlink" title="尾声"></a>尾声</h2><p>这个bug对我来说影响其实并不算大：PDF中文标注并非刚需，且有WPS PDF兜底，不用担心这个功能用不了。但是bug依然很烦人——已经和Mozilla官方提交了这个bug的<a href="https://github.com/mozilla/pdf.js/issues/20117">issue</a> ，期待他们后面可以重视并修复吧。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>PDF</tag>
+        <tag>annotation</tag>
+        <tag>数据结构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决一个安装R包以后libgfortran链接库丢失的问题</title>
+    <url>/2025/07/27/Solve-a-problem-about-libgfortran-lost/</url>
+    <content><![CDATA[<p>前一阵子工作比较忙，因此博客疏于打理，见谅。好在今天开始终于休假了！最近应该更新会比较频繁。</p>
+<p>休假前，依然碰到了几个程序方面的小问题——不过现在已经解决啦！下面是debug的记录，放在这里，也供有需要的朋友参考awa</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>某天，因为分析数据需要，我在服务器的miniconda环境下安装了一些软件包：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda repoquery depends -c bioconda r-bpcells</span><br><span class="line">conda install bioconda::r-bpcells</span><br><span class="line">conda install bioconda::r-monocle3</span><br></pre></td></tr></table></figure>
+
+<p>安装过程很顺利，但是在安装完这些之后，我的R出问题了：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) ~$ Rscript --version</span><br><span class="line">Rscript (R) version 4.4.1 (2024-06-14)</span><br><span class="line">(base) ~$ R --version</span><br><span class="line">/home/zhangwanyu/miniconda3/lib/R/bin/exec/R: error while loading shared libraries: libgfortran.so.5: cannot open shared object file: No such file or directory</span><br><span class="line">(base) ~$ R</span><br><span class="line">/home/zhangwanyu/miniconda3/lib/R/bin/exec/R: error while loading shared libraries: libgfortran.so.5: cannot open shared object file: No such file or directory</span><br></pre></td></tr></table></figure>
+
+
+<p>base环境下的python也出了问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) ~$ python</span><br><span class="line">Python 3.9.18 | packaged by conda-forge | (main, Aug 30 2023, 03:49:32)</span><br><span class="line">[GCC 12.3.0] on linux</span><br><span class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span><br><span class="line">&gt;&gt;&gt; import numpy as np</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;/home/zhangwanyu/miniconda3/lib/python3.9/site-packages/numpy/core/__init__.py&quot;, line 24, in &lt;module&gt;</span><br><span class="line">    from . import multiarray</span><br><span class="line">  File &quot;/home/zhangwanyu/miniconda3/lib/python3.9/site-packages/numpy/core/multiarray.py&quot;, line 10, in &lt;module&gt;</span><br><span class="line">    from . import overrides</span><br><span class="line">  File &quot;/home/zhangwanyu/miniconda3/lib/python3.9/site-packages/numpy/core/overrides.py&quot;, line 8, in &lt;module&gt;</span><br><span class="line">    from numpy.core._multiarray_umath import (</span><br><span class="line">ImportError: libgfortran.so.5: cannot open shared object file: No such file or directory</span><br><span class="line"></span><br><span class="line">During handling of the above exception, another exception occurred:</span><br><span class="line"></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;/home/zhangwanyu/miniconda3/lib/python3.9/site-packages/numpy/__init__.py&quot;, line 130, in &lt;module&gt;</span><br><span class="line">    from numpy.__config__ import show as show_config</span><br><span class="line">  File &quot;/home/zhangwanyu/miniconda3/lib/python3.9/site-packages/numpy/__config__.py&quot;, line 4, in &lt;module&gt;</span><br><span class="line">    from numpy.core._multiarray_umath import (</span><br><span class="line">  File &quot;/home/zhangwanyu/miniconda3/lib/python3.9/site-packages/numpy/core/__init__.py&quot;, line 50, in &lt;module&gt;</span><br><span class="line">    raise ImportError(msg)</span><br><span class="line">ImportError:</span><br></pre></td></tr></table></figure>
+
+
+<p>看起来是fortran动态链接库（<code>libgfortran.so.5</code>）出了问题。这可真是件麻烦事啊。</p>
+<h2 id="排查与解决"><a href="#排查与解决" class="headerlink" title="排查与解决"></a>排查与解决</h2><h3 id="（一）排查思路"><a href="#（一）排查思路" class="headerlink" title="（一）排查思路"></a>（一）排查思路</h3><p>在Linux系统下，<code>.so</code>文件是一类动态链接库文件，在程序执行时通过 <code>LD_LIBRARY_PATH</code> 环境变量进行寻找和加载。因此，我的思路是这样：</p>
+<ul>
+<li>先检查这个动态链接库文件存在的位置</li>
+<li>之后修复 <code>LD_LIBRARY_PATH</code> 环境变量，使其可以被正确寻找和加载。</li>
+</ul>
+<h3 id="（二）解决过程"><a href="#（二）解决过程" class="headerlink" title="（二）解决过程"></a>（二）解决过程</h3><h4 id="1-找到的libfortran链接库文件的位置："><a href="#1-找到的libfortran链接库文件的位置：" class="headerlink" title="1. 找到的libfortran链接库文件的位置："></a>1. 找到的libfortran链接库文件的位置：</h4><p>我检查了libgfortran5的安装情况，conda报告这个包已经安装，但是我在 <code>~/miniconda3/lib</code> 下面找不到这个库（按理来说它应该在这里的）。这很奇怪，所以我还需要去别的地方找一找。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [zhangwanyu@lih-svr01]lib$ mamba list | grep libgfortran</span><br><span class="line">WARNING: pip inspect is currently an experimental command. The output format may change in a future release without prior warning.</span><br><span class="line">  libgfortran                          14.2.0        h69a702a_2              conda-forge</span><br><span class="line">  libgfortran-ng                       14.2.0        h69a702a_2              conda-forge</span><br><span class="line">  libgfortran5                         14.2.0        hf1ad2bd_2              conda-forge</span><br></pre></td></tr></table></figure>
+
+<p>此处使用 <code>find</code> 指令，去miniconda根目录下寻找，最终在 <code>pkgs</code> 目录下找到了它们：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [zhangwanyu@lih-svr01]include$ find ~/miniconda3 -name &quot;libgfortran.so.5&quot;</span><br><span class="line">/home/zhangwanyu/miniconda3/x86_64-conda-linux-gnu/sysroot/lib64/libgfortran.so.5</span><br><span class="line">/home/zhangwanyu/miniconda3/pkgs/libgfortran-ng-8.2.0-hdf63c60_1/lib/libgfortran.so.5</span><br><span class="line">/home/zhangwanyu/miniconda3/pkgs/libgfortran-ng-8.2.0-hdf63c60_1/x86_64-conda_cos6-linux-gnu/sysroot/lib/libgfortran.so.5</span><br><span class="line">/home/zhangwanyu/miniconda3/pkgs/libgfortran5-14.2.0-hf1ad2bd_2/lib/libgfortran.so.5</span><br><span class="line">/home/zhangwanyu/miniconda3/pkgs/libgfortran5-11.2.0-h1234567_1/lib/libgfortran.so.5</span><br><span class="line">/home/zhangwanyu/miniconda3/pkgs/gcc_impl_linux-64-11.2.0-h1234567_1/x86_64-conda-linux-gnu/sysroot/lib64/libgfortran.so.5</span><br><span class="line">/home/zhangwanyu/miniconda3/pkgs/libgfortran5-13.2.0-h43f5ff8_6/lib/libgfortran.so.5</span><br><span class="line">/home/zhangwanyu/miniconda3/pkgs/libgfortran5-13.1.0-h15d22d2_0/lib/libgfortran.so.5</span><br><span class="line">/home/zhangwanyu/miniconda3/pkgs/gcc_impl_linux-64-13.1.0-hc4be1a9_0/x86_64-conda-linux-gnu/lib/libgfortran.so.5</span><br><span class="line">^C</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-确认这些文件存在"><a href="#2-确认这些文件存在" class="headerlink" title="2. 确认这些文件存在"></a>2. 确认这些文件存在</h4><p>使用 <code>ls -lhF</code> 指令，对上面找到的文件进行检查。有一些文件链接到了无效的文件路径上（下图中红色的文件），这些无效路径也需要处理一下。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250727110804.png" alt="image.png"></p>
+<p>如上图。绿色和浅蓝色的链接库对应着正确的路径；红色则是出现问题的链接路径。</p>
+<h4 id="3-重建软链接-amp-使用R验证问题是否解决"><a href="#3-重建软链接-amp-使用R验证问题是否解决" class="headerlink" title="3. 重建软链接 &amp; 使用R验证问题是否解决"></a>3. 重建软链接 &amp; 使用R验证问题是否解决</h4><p>其实 <code>LD_LIBRARY_PATH</code> 包含了 <code>~/miniconda3/lib</code> 这一目录，且后者是miniconda环境下的动态链接库的默认存储位置。因此我们不必修改 <code>LD_LIBRARY_PATH</code> 环境变量，只需要把正确的文件链接到此目录即可。</p>
+<p>重建软连接：先切换到 lib 目录，随后使用 <code>ln -s</code> 将正确的文件链接过来：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) [zhangwanyu@lih-svr01]~$ cd ~/miniconda3/lib</span><br><span class="line">(base) [zhangwanyu@lih-svr01]lib$ ln -s /home/zhangwanyu/miniconda3/pkgs/libgfortran5-14.2.0-hf1ad2bd_2/lib/libgfortran.so.5.0.0 libgfortran.so.5</span><br></pre></td></tr></table></figure>
+
+<p>随后使用R验证：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">(base) [zhangwanyu@lih-svr01]lib$ R</span><br><span class="line">R version 4.4.1 (2024-06-14) -- &quot;Race for Your Life&quot;</span><br><span class="line">Copyright (C) 2024 The R Foundation for Statistical Computing</span><br><span class="line">Platform: x86_64-conda-linux-gnu</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250727110935.png" alt="image.png"></p>
+<p>完结撒花！</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>R</tag>
+        <tag>Linux</tag>
+        <tag>conda</tag>
+        <tag>libgfortran</tag>
+        <tag>服务器维护</tag>
+      </tags>
+  </entry>
 </search>
