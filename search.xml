@@ -20306,4 +20306,88 @@
         <tag>司汤达</tag>
       </tags>
   </entry>
+  <entry>
+    <title>火狐浏览器国内版账号迁移至国际版</title>
+    <url>/2025/08/08/Firefox_account_migration/</url>
+    <content><![CDATA[<p>2025 年 5 月 8 日，Mozilla 与北京火狐达成一致，北京火狐将不再运营 Firefox 浏览器及任何与 Firefox 有关的中国大陆业务。因此，<a href="https://www.firefox.com.cn/farewell/">北京火狐将于 2025 年 9 月 29 日后，正式终止与 Mozilla 及 Firefox 浏览器相关的中国大陆运营</a>——说人话，就是Firefox（火狐浏览器）的中国版要停服了，以后世界上只有一个Firefox，即火狐国际版。</p>
+<span id="more"></span>
+
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>Firefox中国版和国际版的区别，简单来说如下：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>中国版</th>
+<th>国际版</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>下载地址</td>
+<td><a href="https://www.firefox.com.cn/">https://www.firefox.com.cn/</a></td>
+<td><a href="https://www.firefox.com/en-US/download/all/desktop-release/">https://www.firefox.com/en-US/download/all/desktop-release/</a> 或 <a href="https://ftp.mozilla.org/pub/firefox/releases/">Mozilla FTP</a></td>
+</tr>
+<tr>
+<td>用户数据同步服务器</td>
+<td>在北京谋智火狐公司，位于境内</td>
+<td>在Mozilla的服务器上，位于境外</td>
+</tr>
+<tr>
+<td>多语言支持</td>
+<td>只有简体中文</td>
+<td>支持包括英文，中文等在内的数十种语言，并可自由切换语言包</td>
+</tr>
+<tr>
+<td>功能差异</td>
+<td>有国内网站的推广（如携程，百度等），可以通过设置关闭</td>
+<td>有国外网站的推广（如Google，MSN，Firefox pocket等），可以通过设置关闭</td>
+</tr>
+</tbody></table>
+<p>初次接触Firefox时我还在上高中，当时为了填报夏令营的志愿信息遂安装了这个浏览器（当然，是火狐浏览器中国版），此后Firefox账号伴随我度过了许多年——哪怕后来我知道了还有国际版，由于潜意识里迁移数据太麻烦，就一直没有弄。</p>
+<p>现在，总算是到了迁移数据的时候了。</p>
+<h2 id="PC端数据迁移"><a href="#PC端数据迁移" class="headerlink" title="PC端数据迁移"></a>PC端数据迁移</h2><blockquote>
+<p>参考： <a href="https://zhuanlan.zhihu.com/p/1933222320845075351">火狐浏览器中国特供版关闭，如何下载 Firefox 国际版？如何备份数据？ - 星哥玩云的文章 - 知乎</a></p>
+</blockquote>
+<h3 id="（一）下载国际版的火狐浏览器"><a href="#（一）下载国际版的火狐浏览器" class="headerlink" title="（一）下载国际版的火狐浏览器"></a>（一）下载国际版的火狐浏览器</h3><p>网址如下（任选其一即可）：</p>
+<ul>
+<li>Mozilla Firefox官方网站： <a href="https://www.firefox.com/en-US/download/all/desktop-release/">https://www.firefox.com/en-US/download/all/desktop-release/</a>  ，根据自己的电脑系统选择合适的版本和语言，下载安装包</li>
+<li><a href="https://ftp.mozilla.org/pub/firefox/releases/">Mozilla FTP</a> ，这个是包含所有Firefox版本的FTP站点，需要手动导航至最新版（截至本文写作时，最新版本是141.0），然后选择对应的系统和语言，下载安装包（例如Windows用户可以从 <a href="https://ftp.mozilla.org/pub/firefox/releases/141.0/win64/zh-CN/">https://ftp.mozilla.org/pub/firefox/releases/141.0/win64/zh-CN/</a> 下载安装包，win64代表64位Windows系统，zh-CN代表简体中文版）</li>
+</ul>
+<h3 id="（二）收藏夹数据迁移"><a href="#（二）收藏夹数据迁移" class="headerlink" title="（二）收藏夹数据迁移"></a>（二）收藏夹数据迁移</h3><p>具体步骤如下图所示。</p>
+<p>step1到step4在旧版本（火狐国内版）上进行：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250805172127.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1754386177005.png" alt="1754386177005.png"></p>
+<p>step5到step6在新版本（火狐国际版）上进行：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1754386347878.png" alt="1754386347878.png"></p>
+<p>导入完成的样子：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250805173252.png" alt="image.png"></p>
+<h3 id="（三）密码迁移"><a href="#（三）密码迁移" class="headerlink" title="（三）密码迁移"></a>（三）密码迁移</h3><p>具体步骤如下图所示。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1754387543795.png" alt="1754387543795.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1754387662286.png" alt="1754387662286.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1754388053827.png" alt="1754388053827.png"></p>
+<h2 id="安卓手机端启用国际版服务"><a href="#安卓手机端启用国际版服务" class="headerlink" title="安卓手机端启用国际版服务"></a>安卓手机端启用国际版服务</h2><p>火狐浏览器国际版的安装包（apk文件）同样可以从Mozilla FTP下载，具体的网址是 <a href="https://ftp.mozilla.org/pub/fenix/releases/">https://ftp.mozilla.org/pub/fenix/releases/</a>，和Firefox桌面版一样也是手动导航到最新版本号（目前是141.0）然后下载apk文件。这种方式直接得到的就是火狐国际版，不需要做额外设置。</p>
+<p>如果是在国内应用市场下载安装的火狐浏览器，其账户同步服务默认使用的是火狐中国服务。要使用国际版的服务，可以参考下图所示的流程进行操作。</p>
+<ul>
+<li>①进入火狐浏览器的设置页面</li>
+<li>②滑动到页面底部，点击“关于火狐”（“About Firefox”）</li>
+<li>③连续点击5次火狐浏览器的logo，直到出现提示“Debug menu enabled”</li>
+<li>④返回上一层菜单，注意到此时多了一些选项。此处如果有“使用中国大陆同步服务器”（“Use domestic China service”）之类的开关，也顺便关一下。</li>
+<li>⑤进入账号设置，退出登录当前账号</li>
+<li>⑥进入Sync Debug设置（同步服务调试），根据下图修改三个同步服务器的URL选项，之后根据提示重启浏览器</li>
+</ul>
+<p><img src="https://pic1.imgdb.cn/item/6891fd3558cb8da5c806e8a7.png"></p>
+<p>其中，step 6 到 step 7 设置的sync URL内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Account server:</span><br><span class="line">	https://accounts.firefox.com   </span><br><span class="line">Sync server:</span><br><span class="line">	https://token.services.mozilla.com/1.0/sync/1.5</span><br><span class="line">Push server:</span><br><span class="line">	wss://push.services.mozilla.com/</span><br></pre></td></tr></table></figure>
+
+
+<p>设置完以后重启并登录，这时候可以留意一下打开的页面是以 <code>.cn</code> 结尾的域名（火狐中国版服务）还是 <code>.com</code> 结尾的域名（火狐国际版服务）；如果依然是火狐中国版，可能是sync URL设置还未生效，此时重复上图步骤 step 6到step 7 并再次重启，一般可以解决。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Firefox</tag>
+        <tag>数据同步</tag>
+      </tags>
+  </entry>
 </search>
