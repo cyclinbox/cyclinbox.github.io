@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="最近发生了一件事：聚合图床（superbed） 好像挂了，导致博客上的部分图片无法加载。 这个周末尝试解决了一下这个问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="博客图床迁移">
+<meta property="og:url" content="https://wz.anoms.top/2025/08/17/migrate_img_from_superbed_to_Tencent-COS/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="最近发生了一件事：聚合图床（superbed） 好像挂了，导致博客上的部分图片无法加载。 这个周末尝试解决了一下这个问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817153603.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817155634.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/b8b9e761-37ff-4a54-abdc-c1b9fc2e2cb1.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817160413.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817161349.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817161615.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817181126.png">
+<meta property="article:published_time" content="2025-08-17T15:00:00.000Z">
+<meta property="article:modified_time" content="2025-08-17T15:31:45.736Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="数据同步">
+<meta property="article:tag" content="图床">
+<meta property="article:tag" content="superbed">
+<meta property="article:tag" content="腾讯云COS对象存储服务">
+<meta property="article:tag" content="博客">
+<meta property="article:tag" content="markdown">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817153603.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/08/17/migrate_img_from_superbed_to_Tencent-COS/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/08/17/migrate_img_from_superbed_to_Tencent-COS/","path":"2025/08/17/migrate_img_from_superbed_to_Tencent-COS/","title":"博客图床迁移"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>博客图床迁移 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF%EF%BC%9A%E4%BB%80%E4%B9%88%E6%98%AF%E5%9B%BE%E5%BA%8A"><span class="nav-number">1.</span> <span class="nav-text">一、背景：什么是图床</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%81%9A%E5%90%88%E5%9B%BE%E5%BA%8A%EF%BC%88superbed%EF%BC%89%E7%9A%84%E8%AE%BF%E9%97%AE%E9%94%99%E8%AF%AF%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">二、聚合图床（superbed）的访问错误问题分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9B%BE%E7%89%87%E7%9A%84%E6%89%B9%E9%87%8F%E4%B8%8B%E8%BD%BD%E3%80%81%E8%BD%AC%E5%AD%98%E3%80%81%E6%9B%BF%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">三、图片的批量下载、转存、替换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%89%B9%E9%87%8F%E4%B8%8B%E8%BD%BD%E5%9B%BE%E7%89%87"><span class="nav-number">3.1.</span> <span class="nav-text">（一）批量下载图片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BD%BF%E7%94%A8picgo%E6%89%B9%E9%87%8F%E4%B8%8A%E4%BC%A0%E5%88%B0%E8%85%BE%E8%AE%AF%E4%BA%91COS%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.2.</span> <span class="nav-text">（二）使用picgo批量上传到腾讯云COS对象存储服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E6%89%B9%E9%87%8F%E6%9B%BF%E6%8D%A2%E5%8D%9A%E5%AE%A2%E6%96%87%E7%AB%A0%E4%B8%AD%E7%9A%84URL"><span class="nav-number">3.3.</span> <span class="nav-text">（三）批量替换博客文章中的URL</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">221</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">400</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/08/17/migrate_img_from_superbed_to_Tencent-COS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="博客图床迁移 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          博客图床迁移
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-08-17 23:00:00 / 修改时间：23:31:45" itemprop="dateCreated datePublished" datetime="2025-08-17T23:00:00+08:00">2025-08-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>最近发生了一件事：聚合图床（<a target="_blank" rel="noopener" href="https://www.superbed.cn/">superbed</a>） 好像挂了，导致博客上的部分图片无法加载。</p>
+<p>这个周末尝试解决了一下这个问题。</p>
+<span id="more"></span>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817153603.png" alt="image.png"></p>
+<p>如上图，原先的图床无法访问，图片也一并无法加载。</p>
+<h2 id="一、背景：什么是图床"><a href="#一、背景：什么是图床" class="headerlink" title="一、背景：什么是图床"></a>一、背景：什么是图床</h2><p>一句话总结： <strong>图床（Image Hosting）</strong> 是一个用来存储图片的网络服务。图床的出现，与网页富文本格式HTML以及后来的笔记格式markdown紧密相关。</p>
+<p>通常来说，一个文本文件（如txt文件）是不含图片等资源的。一些本地储存的富文本文件，如word文档（<code>.doc</code>, <code>.docx</code>）、keynote演示文稿（<code>.ppt</code>, <code>.pptx</code>, <code>.key</code>）等，本质上是一个压缩文档，其中既包含了文本文件，也包含了格式排版样式表和图片、形状、声音等资源文件。</p>
+<p>在互联网领域，一个网站所显示的页面，本质上也是一个富文本文件（HTML，Ajax，PHP等），其中文本格式的源代码是其主要框架，而网站上要显示的各种资源如图片、视频等需要单独存放。由于网页开发的灵活性，开发者不必将图片与网页源代码完全打包在一起，也可以另行存储，并使用 <code>&lt;img src=&quot;...&quot;/&gt;</code> 之类的标签进行引用——而用户在浏览器端访问这个页面时，浏览器就会自动从 <code>src=&quot;...&quot;</code> 处下载图片并嵌入到网页当中。而批量储存这些图片的服务提供商，就可以称之为图床。</p>
+<p>具体来说，用户上传图片后 ，图床会返回一个<strong>图片的外链地址（URL）</strong>，我们可以把这个链接嵌入到网页 、博客、论坛、Markdown 文档中，从而展示这张图片。</p>
+<p>关于图床服务的选择，网络上有许多教程，本文不再赘述，下面列举几篇之前参考过的博客文章，感兴趣的读者可以自行阅读：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7084137919845236743">《关于图床的一些使用心得总结》</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kjcy8/articles/16648814.html">《免费图床，看这一篇就够了》</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/436/74373">《使用 PicGo+Typora+COS 搭建图床服务》</a></li>
+</ul>
+<p>最初，我的博客系统使用的是WordPress框架，其自带图片存储功能，不需要图床。后来因为服务器到期，文章迁移到了Github上，从那时起聚合图床（<a target="_blank" rel="noopener" href="https://www.superbed.cn/">superbed</a>） 成为了我存储图片的地方。</p>
+<p>再往后，由于担心安全问题，我开通了腾讯云COS对象存储服务（参考往期文章 <a href="https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/?highlight=picgo">《obsidian探索小记（二）——配置obsidian的自动上传图床》</a> ，这是一个按量计费的服务，但胜在安全可靠），并以此作为主要的图床；但一些过去的图片并没有来得及迁移。也许现在是迁移的时候了。</p>
+<h2 id="二、聚合图床（superbed）的访问错误问题分析"><a href="#二、聚合图床（superbed）的访问错误问题分析" class="headerlink" title="二、聚合图床（superbed）的访问错误问题分析"></a>二、聚合图床（superbed）的访问错误问题分析</h2><p>我在AI工具的帮助下，对 <code>SEC_ERROR_OCSP_OLD_RESPONSE</code> 这个错误进行了分析。一些解释如下图所示，简单来说，网站的 SSL 证书可能已经过期，因此所有指向superbed的访问都被浏览器拦截。但这并不意味着图片丢失——也就是说，还有希望把图片找回来！</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817155634.png" alt="image.png"></p>
+<p>有一种方法是使用<code>curl -k</code>工具去访问网站，其中 <code>-k</code> 参数代表忽略SSL/TLS证书验证错误。于是我进行了尝试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v -k https://pic.imgdb.cn/item/657ef7dfc458853aefe61be8.jpg -o temp.jpg</span><br></pre></td></tr></table></figure>
+
+<p>输出如下，服务器给出了302重定向的返回值，提示网站域名可能变了。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/b8b9e761-37ff-4a54-abdc-c1b9fc2e2cb1.png" alt="b8b9e761-37ff-4a54-abdc-c1b9fc2e2cb1.png"></p>
+<p><code>curl</code> 工具还有 <code>-L</code> 参数可以追踪网页的重定向，让我们现在试一试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v -k -L https://pic.imgdb.cn/item/657ef7dfc458853aefe61be8.jpg -o temp.jpg</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817160413.png" alt="image.png"></p>
+<p>于是我们成功下载到了图片。这说明，聚合图床还没完全挂，图片还有挽救的希望。</p>
+<h2 id="三、图片的批量下载、转存、替换"><a href="#三、图片的批量下载、转存、替换" class="headerlink" title="三、图片的批量下载、转存、替换"></a>三、图片的批量下载、转存、替换</h2><p>由于聚合图床还没完全挂（只不过浏览器无法访问），我们或许可以使用下面的方法解决博客中的图片问题：</p>
+<p><code>利用curl工具下载图片→使用picgo上传到腾讯云COS→批量替换博客文章中的图片链接</code></p>
+<p>下面是具体步骤。</p>
+<h3 id="（一）批量下载图片"><a href="#（一）批量下载图片" class="headerlink" title="（一）批量下载图片"></a>（一）批量下载图片</h3><p>先获取需要替换的图片链接</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先cd到博客文章源代码目录</span></span><br><span class="line"><span class="built_in">cat</span> *|grep -i <span class="string">&quot;\!\[&quot;</span> &gt; ~/temp/img_bed_file_list.txt</span><br><span class="line"><span class="built_in">cat</span> img_bed_file_list.txt |grep -i <span class="string">&quot;imgdb.cn&quot;</span> &gt; img_to_download.txt</span><br></pre></td></tr></table></figure>
+
+<p><code>img_to_download.txt</code> 文件内容长这个样子：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817161349.png" alt="image.png"></p>
+<p>接下来，使用python的<code>os</code>库批量调用外部命令 <code>curl</code> ，将图片下载到 <code>files/</code> 目录下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># filename:batch_download.py   </span></span><br><span class="line"><span class="keyword">import</span> os,sys</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line">os.system(<span class="string">&quot;mkdir -p ./files/&quot;</span>)</span><br><span class="line">i=<span class="number">0</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;img_to_download.txt&quot;</span>,<span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        i+=<span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(i) <span class="comment"># 进度展示</span></span><br><span class="line">        a = line.strip().split(<span class="string">&quot;](&quot;</span>)[<span class="number">1</span>].split(<span class="string">&quot;)&quot;</span>)[<span class="number">0</span>] <span class="comment"># 图片URL</span></span><br><span class="line">        b = a.split(<span class="string">&quot;/&quot;</span>)[-<span class="number">1</span>] <span class="comment"># 图片文件名</span></span><br><span class="line">        cmd = <span class="string">f&quot;curl -k -v -L <span class="subst">&#123;a&#125;</span> -o files/<span class="subst">&#123;b&#125;</span>&quot;</span> <span class="comment"># 要调用的指令</span></span><br><span class="line">        os.system(cmd)</span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>下载完以后的文件夹长这个样子。如果有一些图片显示不出来，可能是下载失败，这个时候可以继续使用curl指令手动重新下载。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817161615.png" alt="image.png"></p>
+<h3 id="（二）使用picgo批量上传到腾讯云COS对象存储服务"><a href="#（二）使用picgo批量上传到腾讯云COS对象存储服务" class="headerlink" title="（二）使用picgo批量上传到腾讯云COS对象存储服务"></a>（二）使用picgo批量上传到腾讯云COS对象存储服务</h3><p>配置picgo和腾讯云对象存储服务的方法，可以参考博客往期文章：</p>
+<ul>
+<li><a href="https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/?highlight=picgo">《obsidian探索小记（二）——配置obsidian的自动上传图床》</a> </li>
+</ul>
+<p>首先，我们需要注册和开通腾讯云COS对象存储服务（此处使用其他云服务商的对象存储服务也可以，常用的有亚马逊S3、阿里云OSS等），并安装picgo-core。使用 <code>picgo set uploader</code> 进行账号设置，随后随意选取一张照片 <code>picgo upload</code> 一下，只要没有报错，就意味着配置成功。</p>
+<p>接下来，我们依然使用python实现一个批量上传的脚本。其原理是使用 <code>os.listdir()</code> 获取文件夹下的所有文件，之后调用 <code>picgo upload</code> 实现上传。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># filename:batch_upload.py</span></span><br><span class="line"><span class="keyword">import</span> os,sys</span><br><span class="line">fl = os.listdir(<span class="string">&quot;./files&quot;</span>)</span><br><span class="line"><span class="comment">#print(fl)</span></span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> fl:</span><br><span class="line">    cmd = <span class="string">f&quot;picgo upload ./files/<span class="subst">&#123;f&#125;</span>&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(cmd)</span><br><span class="line">    os.system(cmd)</span><br></pre></td></tr></table></figure>
+
+<p>运行截图如下。这里有一个有意思的点，上传的图片其URL后缀和我们的初始文件名是一致的，因此后续在文章中替换URL时，可以只匹配聚合图床的域名部分并替换，而不需要考虑完整的URL路径。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250817181126.png" alt="image.png"></p>
+<h3 id="（三）批量替换博客文章中的URL"><a href="#（三）批量替换博客文章中的URL" class="headerlink" title="（三）批量替换博客文章中的URL"></a>（三）批量替换博客文章中的URL</h3><p>这一步依然使用python实现，使用 <code>os.listdir()</code> 批量读取当前文件夹下的markdown文件，并对图片URL进行替换。</p>
+<p>聚合图床原先的URL链接到的域名有两个，一个是 <code>https://pic.imgdb.cn/item/</code> ，另一个是 <code>https://pic1.imgdb.cn/item/</code> 。因此我们只需要匹配这个域名，然后替换为腾讯云COS的域名 <code>https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/</code> 即可。</p>
+<p>代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># filename:batch_replace_img_link.py</span></span><br><span class="line"><span class="keyword">import</span> os,sys</span><br><span class="line">fl = os.listdir()</span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> fl:</span><br><span class="line">    <span class="keyword">if</span>(f[-<span class="number">3</span>:]!=<span class="string">&quot;.md&quot;</span>):<span class="keyword">continue</span></span><br><span class="line">    <span class="built_in">print</span>(f)</span><br><span class="line">    <span class="keyword">try</span>: <span class="comment"># 使用UTF-8编码读取文件</span></span><br><span class="line">        g = <span class="built_in">open</span>(f,<span class="string">&#x27;r&#x27;</span>,encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">        text = g.read()</span><br><span class="line">        g.close()</span><br><span class="line">    <span class="keyword">except</span>: <span class="comment"># 有些文件是GBK（即cp936）编码的，因此读取时需要指定编码为cp936</span></span><br><span class="line">        g = <span class="built_in">open</span>(f,<span class="string">&#x27;r&#x27;</span>,encoding=<span class="string">&quot;cp936&quot;</span>)</span><br><span class="line">        text = g.read()</span><br><span class="line">        g.close()</span><br><span class="line">    <span class="keyword">if</span>(<span class="string">&quot;pic.imgdb.cn/item&quot;</span> <span class="keyword">in</span> text <span class="keyword">or</span> <span class="string">&quot;pic1.imgdb.cn/item&quot;</span> <span class="keyword">in</span> text):</span><br><span class="line">        text = text.replace(<span class="string">&quot;https://pic.imgdb.cn/item/&quot;</span>,<span class="string">&quot;https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/&quot;</span>)</span><br><span class="line">        text = text.replace(<span class="string">&quot;https://pic1.imgdb.cn/item/&quot;</span>,<span class="string">&quot;https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/&quot;</span>)</span><br><span class="line">        g = <span class="built_in">open</span>(f,<span class="string">&#x27;w&#x27;</span>,encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">        g.write(text)</span><br><span class="line">        g.close()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;URL replaced in `<span class="subst">&#123;f&#125;</span>`&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>到此，我们的问题就解决了。完结撒花！</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/08/17/migrate_img_from_superbed_to_Tencent-COS/" title="博客图床迁移">https://wz.anoms.top/2025/08/17/migrate_img_from_superbed_to_Tencent-COS/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/" rel="tag"><i class="fa fa-tag"></i> 数据同步</a>
+              <a href="/tags/%E5%9B%BE%E5%BA%8A/" rel="tag"><i class="fa fa-tag"></i> 图床</a>
+              <a href="/tags/superbed/" rel="tag"><i class="fa fa-tag"></i> superbed</a>
+              <a href="/tags/%E8%85%BE%E8%AE%AF%E4%BA%91COS%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E6%9C%8D%E5%8A%A1/" rel="tag"><i class="fa fa-tag"></i> 腾讯云COS对象存储服务</a>
+              <a href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag"><i class="fa fa-tag"></i> 博客</a>
+              <a href="/tags/markdown/" rel="tag"><i class="fa fa-tag"></i> markdown</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/10/Nanjing_Travel_Diary/" rel="prev" title="南京两日游">
+                  <i class="fa fa-chevron-left"></i> 南京两日游
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/17/%E8%BF%9F%E5%AD%90%E5%BB%BA%E3%80%8A%E9%A2%9D%E5%B0%94%E5%8F%A4%E7%BA%B3%E6%B2%B3%E5%8F%B3%E5%B2%B8%E3%80%8B/" rel="next" title="迟子建《额尔古纳河右岸》">
+                  迟子建《额尔古纳河右岸》 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>

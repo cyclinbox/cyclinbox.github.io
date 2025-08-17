@@ -28,18 +28,18 @@
 <meta property="og:site_name" content="Warren&#39;s Blog">
 <meta property="og:description" content="由于工作需要，我要在一个docker环境中安装一个mysql，于是对docker和mysql做了一点探究，笔记如下。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://pic.imgdb.cn/item/665dbe7b5e6d1bfa0526f386.png">
-<meta property="og:image" content="https://pic.imgdb.cn/item/665dbc485e6d1bfa05240bab.png">
-<meta property="og:image" content="https://pic.imgdb.cn/item/665dc1e05e6d1bfa052acd36.png">
-<meta property="og:image" content="https://pic.imgdb.cn/item/665dc3255e6d1bfa052c2f46.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dbe7b5e6d1bfa0526f386.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dbc485e6d1bfa05240bab.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dc1e05e6d1bfa052acd36.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dc3255e6d1bfa052c2f46.png">
 <meta property="article:published_time" content="2024-06-03T02:00:00.000Z">
-<meta property="article:modified_time" content="2024-06-03T13:24:45.113Z">
+<meta property="article:modified_time" content="2025-08-17T07:04:56.093Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="docker">
 <meta property="article:tag" content="mysql">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://pic.imgdb.cn/item/665dbe7b5e6d1bfa0526f386.png">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dbe7b5e6d1bfa0526f386.png">
 
 
 <link rel="canonical" href="https://wz.anoms.top/2024/06/03/install-mysql-via-docker/">
@@ -169,7 +169,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-count">221</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -180,7 +180,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">392</span>
+        <span class="site-state-item-count">400</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -264,9 +264,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-06-03 10:00:00 / 修改时间：21:24:45" itemprop="dateCreated datePublished" datetime="2024-06-03T10:00:00+08:00">2024-06-03</time>
+      <time title="创建时间：2024-06-03 10:00:00" itemprop="dateCreated datePublished" datetime="2024-06-03T10:00:00+08:00">2024-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-17 15:04:56" itemprop="dateModified" datetime="2025-08-17T15:04:56+08:00">2025-08-17</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +302,7 @@
 <p>简单来说，Docker将应用程序及其运行环境（包括操作系统、库、配置 等）封装在一个独立的、可移植的“容器”中。这个容器可以在任何支持Docker的平台上运行，无需关心底层的操作系统或硬件差异。这使得开发者可以更加专注于代码开发，而不用担心环境配置的问题，同时也简化 了部署和运维过程。</p>
 <p>Docker的核心组件包括镜像（Image）、容器（Container）和仓库（Repository）。镜像是创建容器的基础，它包含了应用程序的所有依赖；容器是从镜像创建的一个运行实例；仓库则是用来存储和分发镜像的地方 。</p>
 <p>Docker改变了软件的交付方式，使得开发、测试、部署变得更加高效和 一致。其logo是一条托着一堆集装箱的鲸鱼，更是展示出其包容一切、托付一切的美好愿景。</p>
-<p><img src="https://pic.imgdb.cn/item/665dbe7b5e6d1bfa0526f386.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dbe7b5e6d1bfa0526f386.png"></p>
 <h2 id="一、基本概念"><a href="#一、基本概念" class="headerlink" title="一、基本概念"></a>一、基本概念</h2><p>在Docker技术中，有一些基本概念需要辨析一下：</p>
 <ol>
 <li><strong>镜像（Image）</strong>：Docker镜像是一个只读模板，包含了应用程序 的代码、运行时依赖（比如库、配置文件等），以及运行时的环境。它 是构建容器的基础，类似于软件包（安装包）或安装系统所需的ISO镜像。每个镜像都有一个唯一的ID，并且可以通过命令行工具如<code>docker pull</code>从Docker Hub等仓库下载，或者通过<code>docker build</code>自己创建。    </li>
@@ -356,7 +362,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo docker search hello-world <span class="comment"># 查询名叫hello-world的镜像。这个镜像是docker中很著名的测试镜像</span></span><br><span class="line">sudo docker pull   hello-world <span class="comment"># 将上述镜像下载到本地</span></span><br><span class="line">sudo docker run    hello-world <span class="comment"># 基于上述镜像运行一个容器</span></span><br></pre></td></tr></table></figure>
 
 <p>运行效果如下：</p>
-<p><img src="https://pic.imgdb.cn/item/665dbc485e6d1bfa05240bab.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dbc485e6d1bfa05240bab.png"></p>
 <h2 id="四、使用docker安装mysql-server"><a href="#四、使用docker安装mysql-server" class="headerlink" title="四、使用docker安装mysql-server"></a>四、使用docker安装mysql-server</h2><p>由于我在公共服务器上没有root权限，无法使用正常的方式安装mysql-server，因此只能使用docker曲线救国。下面是探索的结果：</p>
 <p>首先，从dockerhub上拉取镜像：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker search mysql</span><br><span class="line">docker pull mysql:5.7 <span class="comment"># 从docker仓库中拉取mysql的基础镜像</span></span><br><span class="line">docker images <span class="comment"># 列出已经下载的容器列表</span></span><br></pre></td></tr></table></figure>
@@ -377,14 +383,14 @@
 <li><code>-d</code>表明让这个docker容器后台运行，就像一个服务程序那样。</li>
 </ul>
 <p>运行上面的指令可以让mysql服务在后台运行。可以使用<code>docker ps -a</code>查看服务状态：</p>
-<p><img src="https://pic.imgdb.cn/item/665dc1e05e6d1bfa052acd36.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dc1e05e6d1bfa052acd36.png"></p>
 <p>（注意，一些停止运行的容器也会被列出）</p>
 <p>要暂停这个容器，可以使用<code>docker stop &lt;container ID/name&gt;</code>指令。要彻底删除这个容器，可以使用<code>docker rm &lt;container ID/name&gt;</code>。</p>
 <p>我们也可以登录到这个容器内部看一看：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mysql bash</span><br></pre></td></tr></table></figure>
 
 <p>上面这串指令的意思是在mysql容器中，以交互式的方式（由参数<code>-it</code>控制）运行<code>bash</code>指令。效果如下：</p>
-<p><img src="https://pic.imgdb.cn/item/665dc3255e6d1bfa052c2f46.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/665dc3255e6d1bfa052c2f46.png"></p>
 <h2 id="五、宿主机mysql客户端连接容器内的mysql服务端"><a href="#五、宿主机mysql客户端连接容器内的mysql服务端" class="headerlink" title="五、宿主机mysql客户端连接容器内的mysql服务端"></a>五、宿主机mysql客户端连接容器内的mysql服务端</h2><p>最后，我们看一下如何在宿主机中连接这个数据库。在宿主机中使用下面的命令即可登录（其中，<code>-h</code>指定mysql-server的IP地址，此处为本地即127.0.0.1（不设置这个参数的话，mysql客户端会去找套接字文件<code>/tmp/mysql.sock</code>，从而引发一些报错）；<code>-P</code>指定端口，此处为前面使用的3306；<code>-p</code>指定使用交互式密码输入界面登录数据库）</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -h 127.0.0.1 -P 3306 -u root -p </span><br></pre></td></tr></table></figure>
 

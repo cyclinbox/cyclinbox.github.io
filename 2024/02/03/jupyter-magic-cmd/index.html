@@ -28,19 +28,19 @@
 <meta property="og:site_name" content="Warren&#39;s Blog">
 <meta property="og:description" content="如题。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://pic.imgdb.cn/item/65bf96ab871b83018a32707e.png">
-<meta property="og:image" content="https://pic.imgdb.cn/item/65bf98d8871b83018a3cb75b.jpg">
-<meta property="og:image" content="https://pic.imgdb.cn/item/65bf9b66871b83018a483585.jpg">
-<meta property="og:image" content="https://pic.imgdb.cn/item/65bf9a0a871b83018a421038.jpg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf96ab871b83018a32707e.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf98d8871b83018a3cb75b.jpg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf9b66871b83018a483585.jpg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf9a0a871b83018a421038.jpg">
 <meta property="article:published_time" content="2024-02-03T11:20:21.000Z">
-<meta property="article:modified_time" content="2024-02-17T12:03:58.209Z">
+<meta property="article:modified_time" content="2025-08-17T07:04:56.095Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="python">
 <meta property="article:tag" content="jupyter">
 <meta property="article:tag" content="魔法指令">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://pic.imgdb.cn/item/65bf96ab871b83018a32707e.png">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf96ab871b83018a32707e.png">
 
 
 <link rel="canonical" href="https://wz.anoms.top/2024/02/03/jupyter-magic-cmd/">
@@ -170,7 +170,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-count">221</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -181,7 +181,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">392</span>
+        <span class="site-state-item-count">400</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -273,7 +273,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-02-17 20:03:58" itemprop="dateModified" datetime="2024-02-17T20:03:58+08:00">2024-02-17</time>
+      <time title="修改时间：2025-08-17 15:04:56" itemprop="dateModified" datetime="2025-08-17T15:04:56+08:00">2025-08-17</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -314,14 +314,14 @@
 </blockquote>
 <p>在Jupyter Notebook中，“魔法指令”（Magic Commands）是一组特殊的命令，它们以百分号（<code>%</code>）或双百分号（<code>%%</code>）为前缀。这些命令用于执行一些特殊的操作，如操作系统命令、调用系统工具、测量代码 执行时间等。</p>
 <p>需要注意的是，提供这些魔法指令的并非jupyter notebook本身，而是jupyter所连接到的IPython内核。<code>%</code> 符号并非python语言中的有效一元运算符，因此IPython内核得以对其进行重载以提供这些魔法指令；然而jupyter也可以连接到其他语言的内核（如IJulia、IRKernel等，如下图），在这些语言中 <code>%</code> 可能有功能，因此当使用其他编程语言编写jupyter notebook时，这些魔法指令可能无法使用。</p>
-<p><img src="https://pic.imgdb.cn/item/65bf96ab871b83018a32707e.png" alt="jupyter project review"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf96ab871b83018a32707e.png" alt="jupyter project review"></p>
 <h2 id="jupyter魔法指令有哪些，怎么用"><a href="#jupyter魔法指令有哪些，怎么用" class="headerlink" title="jupyter魔法指令有哪些，怎么用"></a>jupyter魔法指令有哪些，怎么用</h2><h3 id="两类魔法指令"><a href="#两类魔法指令" class="headerlink" title="两类魔法指令"></a>两类魔法指令</h3><p>魔法指令分为两种类型：行魔法指令和单元格魔法指令。</p>
 <ul>
 <li>前者以一个百分号 <code>%</code> 开头，只对当前行的代码有效。</li>
 <li>后者以两个百分号 <code>%%</code> 开头，必须放在单元格的第一行，其对整个单元格的代码都有效。</li>
 </ul>
 <p>可以使用 <code>%lsmagic</code> 命令来列出所有可用的魔术命令，或者使用 <code>%quickref</code> 命令来查看简要的帮助文档。</p>
-<p><img src="https://pic.imgdb.cn/item/65bf98d8871b83018a3cb75b.jpg" alt="lsmagic"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf98d8871b83018a3cb75b.jpg" alt="lsmagic"></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">In [1]: %quickref</span><br><span class="line"></span><br><span class="line">IPython -- An enhanced Interactive Python - Quick Reference Card</span><br><span class="line">================================================================</span><br><span class="line"></span><br><span class="line">obj?, obj??      : Get help, or more help for object (also works as</span><br><span class="line">                   ?obj, ??obj).</span><br><span class="line">?foo.*abc*       : List names in &#x27;foo&#x27; containing &#x27;abc&#x27; in them.</span><br><span class="line">%magic           : Information about IPython&#x27;s &#x27;magic&#x27; % functions.</span><br><span class="line"></span><br><span class="line">Magic functions are prefixed by % or %%, and typically take their arguments</span><br><span class="line">without parentheses, quotes or even commas for convenience.  Line magics take a</span><br><span class="line">single % and cell magics are prefixed with two %%.</span><br><span class="line"></span><br><span class="line">The following magic functions are currently available:</span><br><span class="line"></span><br><span class="line">%alias:</span><br><span class="line">    Define an alias for a system command.</span><br><span class="line">%alias_magic:</span><br><span class="line">    ::</span><br><span class="line">%autoawait:</span><br><span class="line"></span><br><span class="line">%autocall:</span><br><span class="line">    Make functions callable without having to type parentheses.</span><br><span class="line">%autoindent:</span><br><span class="line">    Toggle autoindent on/off (deprecated)</span><br><span class="line">%automagic:</span><br><span class="line">    Make magic functions callable without having to type the initial %.</span><br><span class="line">%bookmark:</span><br><span class="line">    Manage IPython&#x27;s bookmark system.</span><br><span class="line">%cd:</span><br><span class="line">    Change the current working directory.</span><br><span class="line">%cls:</span><br><span class="line">    Clear screen.</span><br><span class="line">--- more ---</span><br></pre></td></tr></table></figure>
 
 
@@ -339,7 +339,7 @@
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">%%time</span><br><span class="line">x = <span class="built_in">sum</span>(<span class="built_in">range</span>(<span class="number">100</span>))</span><br><span class="line">y = <span class="built_in">sum</span>(<span class="built_in">range</span>(<span class="number">200</span>))</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://pic.imgdb.cn/item/65bf9b66871b83018a483585.jpg" alt="time statictis"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf9b66871b83018a483585.jpg" alt="time statictis"></p>
 <ul>
 <li><code>%%writefile</code>：将当前单元格的内容写入文件中，比如：</li>
 </ul>
@@ -350,7 +350,7 @@
 </ul>
 <figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">%%latex</span></span><br><span class="line"><span class="keyword">\begin</span>&#123;equation&#125;</span><br><span class="line"><span class="keyword">\int</span><span class="built_in">_</span>0<span class="built_in">^</span><span class="keyword">\infty</span> <span class="keyword">\frac</span>&#123;x<span class="built_in">^</span>3&#125; &#123;e<span class="built_in">^</span>x-1&#125;<span class="keyword">\,</span>dx = <span class="keyword">\frac</span>&#123;<span class="keyword">\pi</span><span class="built_in">^</span>4&#125; &#123;15&#125; <span class="keyword">\label</span>&#123;eq:sample&#125;</span><br><span class="line"><span class="keyword">\end</span>&#123;equation&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://pic.imgdb.cn/item/65bf9a0a871b83018a421038.jpg" alt="latex"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/65bf9a0a871b83018a421038.jpg" alt="latex"></p>
 <ul>
 <li><code>%matplotlib</code>：设置Matplotlib图形的渲染方式。比如<code>%matplotlib inline</code></li>
 <li><code>%reset</code>：清除所有变量的名称空间。</li>

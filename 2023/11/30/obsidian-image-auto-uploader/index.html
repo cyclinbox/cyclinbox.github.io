@@ -28,17 +28,17 @@
 <meta property="og:site_name" content="Warren&#39;s Blog">
 <meta property="og:description" content="本文介绍了obsidian图片自动上传插件Image auto upload plugin的配置与使用方法，并配置了腾讯云对象存储服务器作为上传图床。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://pic.imgdb.cn/item/656c7bf6c458853aef7f6f76.jpg">
-<meta property="og:image" content="https://pic.imgdb.cn/item/656c7c36c458853aef80ac0d.jpg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/656c7bf6c458853aef7f6f76.jpg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/656c7c36c458853aef80ac0d.jpg">
 <meta property="article:published_time" content="2023-11-30T12:33:43.000Z">
-<meta property="article:modified_time" content="2023-12-17T13:56:58.977Z">
+<meta property="article:modified_time" content="2025-08-17T07:04:56.110Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="obsidian探索小记">
 <meta property="article:tag" content="图片自动上传">
 <meta property="article:tag" content="nodejs">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://pic.imgdb.cn/item/656c7bf6c458853aef7f6f76.jpg">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/656c7bf6c458853aef7f6f76.jpg">
 
 
 <link rel="canonical" href="https://wz.anoms.top/2023/11/30/obsidian-image-auto-uploader/">
@@ -168,7 +168,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-count">221</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -179,7 +179,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">392</span>
+        <span class="site-state-item-count">400</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -271,7 +271,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-12-17 21:56:58" itemprop="dateModified" datetime="2023-12-17T21:56:58+08:00">2023-12-17</time>
+      <time title="修改时间：2025-08-17 15:04:56" itemprop="dateModified" datetime="2025-08-17T15:04:56+08:00">2025-08-17</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -308,7 +308,7 @@
 <p>obsidian提供了一款名为Image auto upload plugin的插件，可以实现自动将图片上传到图床的功能。下面是一些探索。</p>
 <h2 id="一、安装插件"><a href="#一、安装插件" class="headerlink" title="一、安装插件"></a>一、安装插件</h2><p>在插件商城中搜索这一插件然后点击安装即可。</p>
 <p>插件设置界面如下：</p>
-<p><img src="https://pic.imgdb.cn/item/656c7bf6c458853aef7f6f76.jpg" alt="config panel"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/656c7bf6c458853aef7f6f76.jpg" alt="config panel"></p>
 <h2 id="二、开通腾讯云对象存储服务"><a href="#二、开通腾讯云对象存储服务" class="headerlink" title="二、开通腾讯云对象存储服务"></a>二、开通腾讯云对象存储服务</h2><p>这款插件支持PicGo和PicGo-core两款图片上传器。先不着急安装图片上传器，我们看看PicGo的文档，确定可以使用的图床范围。</p>
 <ul>
 <li>PicGo: <a target="_blank" rel="noopener" href="https://picgo.github.io/PicGo-Doc/zh/guide/#picgo-is-here">https://picgo.github.io/PicGo-Doc/zh/guide/#picgo-is-here</a><ul>
@@ -363,7 +363,7 @@
 
 <p>如果收到<code>[PicGo SUCCESS]</code>的标签，则表明上传成功。此外，还可以检查腾讯云下面的存储桶文件列表，看一看这张图片是否正确上传。</p>
 <h2 id="四、Image-auto-upload-plugin插件配置"><a href="#四、Image-auto-upload-plugin插件配置" class="headerlink" title="四、Image auto upload plugin插件配置"></a>四、Image auto upload plugin插件配置</h2><p>如下图。将默认上传器设置为picGO-core，然后填写picGO-core path即可（可以在terminal中用<code>which picgo</code>指令获得picGO-core的path）<br>其他项目使用默认设置即可。</p>
-<p><img src="https://pic.imgdb.cn/item/656c7c36c458853aef80ac0d.jpg" alt="config panel 2"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/656c7c36c458853aef80ac0d.jpg" alt="config panel 2"></p>
 <p>如果插件无法上传图片，尝试关闭obsidian主程序并重启。一般来说重启后上传功能就能正常。<br>如果依然有问题，可以尝试打开obsidian软件的开发工具（dev Tools），并查询console输出以定位问题。</p>
 <ul>
 <li>devtools打开方式：<ul>

@@ -28,19 +28,19 @@
 <meta property="og:site_name" content="Warren&#39;s Blog">
 <meta property="og:description" content="之前读到了一篇使用LSTM检测正选择的算法文章，对LSTM以及衍生出的Transformer很感兴趣，于是花了一晚上了解了一下。下面是一些参考链接和笔记，记得不好，权当抛砖引玉了。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://pic.imgdb.cn/item/64a2e3aa1ddac507cc80711a.png">
-<meta property="og:image" content="https://pic.imgdb.cn/item/64a2e3c01ddac507cc809889.png">
-<meta property="og:image" content="https://pic.imgdb.cn/item/64a2e3d51ddac507cc80bc1f.png">
-<meta property="og:image" content="https://pic.imgdb.cn/item/64a2e3ef1ddac507cc80e69e.png">
-<meta property="og:image" content="https://pic.imgdb.cn/item/64a2e4031ddac507cc81041d.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3aa1ddac507cc80711a.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3c01ddac507cc809889.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3d51ddac507cc80bc1f.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3ef1ddac507cc80e69e.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e4031ddac507cc81041d.png">
 <meta property="article:published_time" content="2023-06-19T13:18:09.000Z">
-<meta property="article:modified_time" content="2023-07-03T15:08:11.000Z">
+<meta property="article:modified_time" content="2025-08-17T07:04:56.101Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="Attention机制">
 <meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://pic.imgdb.cn/item/64a2e3aa1ddac507cc80711a.png">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3aa1ddac507cc80711a.png">
 
 
 <link rel="canonical" href="https://wz.anoms.top/2023/06/19/LSTM/">
@@ -169,7 +169,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-count">221</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -180,7 +180,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">392</span>
+        <span class="site-state-item-count">400</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -272,7 +272,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-07-03 23:08:11" itemprop="dateModified" datetime="2023-07-03T23:08:11+08:00">2023-07-03</time>
+      <time title="修改时间：2025-08-17 15:04:56" itemprop="dateModified" datetime="2025-08-17T15:04:56+08:00">2025-08-17</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -312,16 +312,16 @@
 </ul>
 <p>2013年最早提出了attention机制（ <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1409.0473">https://arxiv.org/abs/1409.0473</a> ），当时的attention机制是与RNN/LSTM一起工作的。</p>
 <p>2017年，谷歌机器翻译团队提出了Transformer算法，在这个算法中他们改进了attention，使其以self-attention的方式能够单独工作，相关论文见 Attention is All You Need（ <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1706.03762.pdf">https://arxiv.org/pdf/1706.03762.pdf</a> ）。</p>
-<p><img src="https://pic.imgdb.cn/item/64a2e3aa1ddac507cc80711a.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3aa1ddac507cc80711a.png"></p>
 <p>（上图展示了self-attention的计算细节。attention 机制里主要有三个向量 - key, query 和 value，分别对应公式中的三个向量K、Q和V。其实可以将 Attention 机制看作一种软寻址（Soft Addressing）:Source 可以看作一个中药铺子的储物箱，储物箱里的药品由地址 Key（药品名）和值 Value（药品）组成，当前有个 Key=Query（药方）的查询，目的是取出储物箱里对应的 Value 值（药品），即 Attention 数值。通过 Query 和储物箱内元素 Key 的地址进行相似性比较来寻址，之所以说是软寻址，指的是我们不只从储物箱里面找出一中药物，而是可能从每个 Key 地址都会取出内容，取出内容的重要性（量的多少）根据 Query 和 Key 的相似性来决定，之后对 Value 进行加权求和，这样就可以取出最终的 Value 值（一副中药），也即 Attention 值。所以不少研究人员将 Attention 机制看作软寻址的一种特例，这也是非常有道理的）</p>
-<p><img src="https://pic.imgdb.cn/item/64a2e3c01ddac507cc809889.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3c01ddac507cc809889.png"></p>
 <p>（对于一个词（query），attention可以给出这个词与句子中其他词的相关性概率值）</p>
-<p><img src="https://pic.imgdb.cn/item/64a2e3d51ddac507cc80bc1f.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3d51ddac507cc80bc1f.png"></p>
 <p>（self-attention的机制总结为公式的话就是上图。分母中的 $\sqrt{dk}$ 是为了score归一化，从而保证梯度稳定）</p>
 <p>transformer的模型架构如下：</p>
-<p><img src="https://pic.imgdb.cn/item/64a2e3ef1ddac507cc80e69e.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e3ef1ddac507cc80e69e.png"></p>
 <p>如果这个图过于复杂，可以参考下面这个简化版的卡通图（来自 <a target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-transformer/">http://jalammar.github.io/illustrated-transformer/</a> ）：</p>
-<p><img src="https://pic.imgdb.cn/item/64a2e4031ddac507cc81041d.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64a2e4031ddac507cc81041d.png"></p>
 <p>输入层被一个Encoder处理，再经过一个decoder得到输出。decoder模块比encoder模块多一个encoder-decoder attention层，这个层结合了decoder的输入和encoder的输出。</p>
 <p>transformer最初用于机器翻译模型，后来被迁移到文本处理和图像处理上，衍生出了一大堆模型，比较出名的有语言模型GPT和BRAT，以及图像识别模型ViT。其中，ViT抛弃了传统的CNN结构，而是将图形分割成多个区域，并学习不同区域之间的关联性。</p>
 <p>其中，GPT继承了decoder的部分，而BRAT继承了encoder的部分。BRAT在文本分类的任务上表现很好，而GPT则展现出了更加通用的能力。</p>

@@ -28,18 +28,18 @@
 <meta property="og:site_name" content="Warren&#39;s Blog">
 <meta property="og:description" content="本文介绍了样条曲线的原理，以及如何计算三次样条曲线。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://pic.imgdb.cn/item/6558e4ebc458853aef156483.jpg">
-<meta property="og:image" content="https://pic.imgdb.cn/item/6558ed9ec458853aef3c5f88.jpg">
-<meta property="og:image" content="https://pic.imgdb.cn/item/6558f4d8c458853aef589055.jpg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/6558e4ebc458853aef156483.jpg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/6558ed9ec458853aef3c5f88.jpg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/6558f4d8c458853aef589055.jpg">
 <meta property="article:published_time" content="2023-11-18T14:20:20.000Z">
-<meta property="article:modified_time" content="2023-11-19T14:48:18.190Z">
+<meta property="article:modified_time" content="2025-08-17T07:04:56.156Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="插值">
 <meta property="article:tag" content="样条曲线">
 <meta property="article:tag" content="龙格现象">
 <meta property="article:tag" content="scipy">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://pic.imgdb.cn/item/6558e4ebc458853aef156483.jpg">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/6558e4ebc458853aef156483.jpg">
 
 
 <link rel="canonical" href="https://wz.anoms.top/2023/11/18/%E6%95%B0%E5%AD%A6%E6%8F%92%E5%80%BC%E4%B8%8E%E4%B8%89%E6%AC%A1%E6%A0%B7%E6%9D%A1%E6%9B%B2%E7%BA%BF/">
@@ -169,7 +169,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-count">221</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -180,7 +180,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">392</span>
+        <span class="site-state-item-count">400</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -272,7 +272,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-11-19 22:48:18" itemprop="dateModified" datetime="2023-11-19T22:48:18+08:00">2023-11-19</time>
+      <time title="修改时间：2025-08-17 15:04:56" itemprop="dateModified" datetime="2025-08-17T15:04:56+08:00">2025-08-17</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
 <blockquote>
 <p>龙格现象(Runge Phenomenon) ：对于某些函数，使用均匀节点构造高次多项式差值时，在插值区间的边缘的误差可能很大的现象。如下图所示，蓝线为样本点的真实方程（ $y=1/(1-25\times x^2)$ ，红线为高阶函数插值结果，可以看出其与实际方程差别很大 ）</p>
 </blockquote>
-<p><img src="https://pic.imgdb.cn/item/6558e4ebc458853aef156483.jpg" alt="龙格现象"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/6558e4ebc458853aef156483.jpg" alt="龙格现象"></p>
 <p>高阶函数插值会出现上述问题，那么另一种方法就是分段函数插值了。最简单的分段函数就是直接用线段连接各个点，但那样得到的曲线并不平滑，各段函数之间有很大的转折。另一种策略就是用曲线进行插值，这就是所谓的样条曲线。</p>
 <blockquote>
 <p>样条曲线（spline）这个词来源于一种在工程制图时用来画出光滑形状的工具，这种工具一般为富有弹性的细木条或薄钢条。由这样的样条形成的曲线在连接点处具有连续的坡度与曲率。</p>
@@ -329,13 +329,13 @@
 </li>
 </ul>
 <p>三种边界条件的区别如下图所示。可以看出，自然边界和非扭结边界看起来更自然一点。</p>
-<p><img src="https://pic.imgdb.cn/item/6558ed9ec458853aef3c5f88.jpg" alt="边界条件"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/6558ed9ec458853aef3c5f88.jpg" alt="边界条件"></p>
 <p>如此，我们得到了 $4n$ 个方程组，可以解对应的 $4n$ 个方程系数。具体推导略，主要涉及多元一次函数的解法，或者参考文章：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/62860859">《三次样条（cubic spline）插值》</a>。总之在确定方程以后，主要工作就是解方程组。</p>
 <h2 id="三、代码方法求解三次样条曲线"><a href="#三、代码方法求解三次样条曲线" class="headerlink" title="三、代码方法求解三次样条曲线"></a>三、代码方法求解三次样条曲线</h2><p><code>scipy</code>库是一个强大的科学计算函数库，其中提供了<code>interpolate</code>模块，实现了多种插值方法。其中，<code>scipy.interpolate.CubicSpline</code>是三次样条插值的官方实现。我们可以使用这一模块来实现插值程序。</p>
 <p>下面的程序将接收两个数组作为输入，一个代表样本点的x坐标，另一个代表y坐标，返回一个代表样条曲线系数的矩阵。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy.interpolate <span class="keyword">import</span> CubicSpline</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment"># 测试数据</span></span><br><span class="line">x = np.array([<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>])</span><br><span class="line">y = np.array([<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>])</span><br><span class="line"><span class="comment"># 三次样条函数插值</span></span><br><span class="line">cs = CubicSpline(x, y)</span><br><span class="line">xs = np.arange(<span class="number">0</span>,<span class="number">5</span>,<span class="number">0.001</span>)</span><br><span class="line"><span class="comment"># 绘制图形</span></span><br><span class="line">plt.plot(xs, cs(xs))</span><br><span class="line">plt.scatter(x,y)</span><br><span class="line"><span class="comment"># 获取样条函数的系数</span></span><br><span class="line"><span class="built_in">print</span>(cs.c)</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://pic.imgdb.cn/item/6558f4d8c458853aef589055.jpg" alt="插值结果"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/6558f4d8c458853aef589055.jpg" alt="插值结果"></p>
 <p>样条函数的系数矩阵：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[[ 0.28888889  0.28888889  0.55555556 -0.51111111 -0.51111111]</span><br><span class="line"> [-1.86666667 -1.         -0.13333333  1.53333333  0.        ]</span><br><span class="line"> [ 2.57777778 -0.28888889 -1.42222222 -0.02222222  1.51111111]</span><br><span class="line"> [ 0.          1.          0.         -1.          0.        ]]</span><br></pre></td></tr></table></figure>
 

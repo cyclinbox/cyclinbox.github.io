@@ -28,13 +28,13 @@
 <meta property="og:site_name" content="Warren&#39;s Blog">
 <meta property="og:description" content="从Z-library上下载的epub电子书有点多了。有时候想要统计这些电子书都有多少字，另外想要简单做一个全局查询功能，节省导入到阅读器软件里去查询的时间。在AI的帮助下，完成了这个工具。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://pic1.imgdb.cn/item/683dbe8458cb8da5c825c78c.png">
-<meta property="og:image" content="https://pic1.imgdb.cn/item/683dbf3d58cb8da5c825c7c5.png">
-<meta property="og:image" content="https://pic1.imgdb.cn/item/683dc05558cb8da5c825ce9d.png">
-<meta property="og:image" content="https://pic1.imgdb.cn/item/683dd15e58cb8da5c825daa8.png">
-<meta property="og:image" content="https://pic1.imgdb.cn/item/683dd06058cb8da5c825da6f.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dbe8458cb8da5c825c78c.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dbf3d58cb8da5c825c7c5.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dc05558cb8da5c825ce9d.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dd15e58cb8da5c825daa8.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dd06058cb8da5c825da6f.png">
 <meta property="article:published_time" content="2025-06-02T15:30:00.000Z">
-<meta property="article:modified_time" content="2025-06-02T16:30:42.390Z">
+<meta property="article:modified_time" content="2025-08-17T07:04:56.080Z">
 <meta property="article:author" content="Warren Z">
 <meta property="article:tag" content="计算机技术杂谈">
 <meta property="article:tag" content="python">
@@ -42,7 +42,7 @@
 <meta property="article:tag" content="BeautifulSoup">
 <meta property="article:tag" content="电子书字数统计">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://pic1.imgdb.cn/item/683dbe8458cb8da5c825c78c.png">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dbe8458cb8da5c825c78c.png">
 
 
 <link rel="canonical" href="https://wz.anoms.top/2025/06/02/epub_file_convert_tool/">
@@ -172,7 +172,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-count">221</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -183,7 +183,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">392</span>
+        <span class="site-state-item-count">400</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -275,7 +275,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-06-03 00:30:42" itemprop="dateModified" datetime="2025-06-03T00:30:42+08:00">2025-06-03</time>
+      <time title="修改时间：2025-08-17 15:04:56" itemprop="dateModified" datetime="2025-08-17T15:04:56+08:00">2025-08-17</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -305,11 +305,11 @@
 <p>ePub（Electronic Publication的缩写，意为：电子出版），是一个自由的开放标准，属于一种可以“自动重新编排”的内容；也就是文字内容可以根据阅读设备的特性，以最适于阅读的方式显示。EPub档案内部使用了XHTML或DTBook （一种由DAISY Consortium提出的XML标准）来展现文字、并以zip压缩格式来包裹档案内容</p>
 </blockquote>
 <p>本质上，epub文件是一个zip压缩包，当我们使用zip解压工具进行解包以后，可以看到其内部大致结构是这样（左图是我从Z-library上下载的《悉达多》的电子书预览界面，右图是解包内容），其包含<code>META-INF</code> 和<code>OEBPS</code> 文件夹（有些电子书可能还会有别的文件夹），在这些文件夹下面是一系列xml文件或html文件，记录着书籍的目录信息或者具体的章节内容。</p>
-<p><img src="https://pic1.imgdb.cn/item/683dbe8458cb8da5c825c78c.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dbe8458cb8da5c825c78c.png"></p>
 <p>在解包得到的目录当中，有一个文件路径 <code>META-INF/container.xml</code> ，这是epub文件最重要的内容清单，其格式大致如下，其中记录了根文件路径、目录文件的文件名（例如此处是<code>OEBPS/content.opf</code>）。</p>
-<p><img src="https://pic1.imgdb.cn/item/683dbf3d58cb8da5c825c7c5.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dbf3d58cb8da5c825c7c5.png"></p>
 <p>我们也可以去看一看这个文件：</p>
-<p><img src="https://pic1.imgdb.cn/item/683dc05558cb8da5c825ce9d.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dc05558cb8da5c825ce9d.png"></p>
 <p>这是书籍的目录，其中引用了一堆html文件的地址，每一个html文件对应着书籍当中的一个章节。</p>
 <p>关于html格式的介绍，网上有许多，此处不再赘述。需要注意的是，epub文件中封装的html并不支持完整的html标准（例如许多动态效果无法实现），只支持一些基础的文本标签（如标题 <code>&lt;h1&gt;</code>,<code>&lt;h2&gt;</code>,等，段落<code>&lt;p&gt;</code>，引文和链接<code>&lt;a&gt;</code>，图片 <code>&lt;img&gt;</code>，等等，以及一些基础的CSS样式表），以允许出版商在书籍中添加多样的富文本效果。</p>
 <h2 id="二、原理与代码"><a href="#二、原理与代码" class="headerlink" title="二、原理与代码"></a>二、原理与代码</h2><p>基于上一段中对epub格式的介绍，我们大致可以知道如何去解析一个epub文件：使用zip文件接口解压缩并获取内容清单文件 <code>META-INF/container.xml</code> ，随后根据这个内容清单文件去寻找根文件目录以及目录文件，最后根据目录文件去解析书籍内容的html文件，即可获得整本epub的文本内容。</p>
@@ -348,9 +348,9 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">~$ python epub_file_convert_tool.py 李娟阿勒泰系列典藏合集.epub  1  下雪了</span><br><span class="line">rootfile:       OEBPS/content.opf</span><br><span class="line">File:   Text/cover_page.xhtml</span><br><span class="line">        word_count:     11</span><br><span class="line">        char_count:     11</span><br><span class="line">        chinese_word_count:     11</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0000.xhtml</span><br><span class="line">        word_count:     25</span><br><span class="line">        char_count:     25</span><br><span class="line">        chinese_word_count:     25</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0001.xhtml</span><br><span class="line">        word_count:     1</span><br><span class="line">        char_count:     5</span><br><span class="line">        chinese_word_count:     0</span><br><span class="line">        english_word_count:     1</span><br><span class="line"></span><br><span class="line">... ...</span><br><span class="line"></span><br><span class="line">File:   Text/part0142.xhtml</span><br><span class="line">        word_count:     2976</span><br><span class="line">        char_count:     3458</span><br><span class="line">        chinese_word_count:     2976</span><br><span class="line">        english_word_count:     0</span><br><span class="line">File:   Text/part0143.xhtml</span><br><span class="line">        word_count:     1912</span><br><span class="line">        char_count:     2234</span><br><span class="line">        chinese_word_count:     1912</span><br><span class="line">        english_word_count:     0</span><br><span class="line">Text file is saved as `李娟阿勒泰系列典藏合集.epub.txt`.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">===&gt; Text finding result: &lt;===</span><br><span class="line">dict_keys([&#x27;Text/part0018.xhtml&#x27;, &#x27;Text/part0038.xhtml&#x27;, &#x27;Text/part0059.xhtml&#x27;, &#x27;Text/part0064.xhtml&#x27;, &#x27;Text/part0079.xhtml&#x27;, &#x27;Text/part0096.xhtml&#x27;, &#x27;Text/part0097.xhtml&#x27;, &#x27;Text/part0119.xhtml&#x27;])</span><br><span class="line">See more details in `text_finding_result.json`</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; total count of `李娟阿勒泰系列典藏合集.epub` &lt;&lt;&lt;</span><br><span class="line"></span><br><span class="line">word_count:     468396</span><br><span class="line">char_count:     537405</span><br><span class="line">chinese_word_count:     468380</span><br><span class="line">english_word_count:     16</span><br></pre></td></tr></table></figure>
 
 <p>其导出的txt文件为 <code>李娟阿勒泰系列典藏合集.epub.txt</code> ，打开以后的内容是这样的：</p>
-<p><img src="https://pic1.imgdb.cn/item/683dd15e58cb8da5c825daa8.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dd15e58cb8da5c825daa8.png"></p>
 <p>另外，我们还找到了包含“下雪了”这个词的多个章节文件，包括<code>part0018.xhtml</code>,<code>part0038.xhtml</code>等。查找结果的详细输出在<code>text_finding_result.json</code>文件当中，我们可以打开看一下这个文件的内容：</p>
-<p><img src="https://pic1.imgdb.cn/item/683dd06058cb8da5c825da6f.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/683dd06058cb8da5c825da6f.png"></p>
 <p>可以看到，这些章节有《住在山野》《九篇雪》《唯一的水》等，我们可以基于此进一步定位想要寻找的文章段落。</p>
 <p>多说一句：这个工具可以配合shell脚本实现批量提取epub文件的文本内容，从而可以用于大模型训练或者大模型的知识库的构建。</p>
 <p>以上。</p>
