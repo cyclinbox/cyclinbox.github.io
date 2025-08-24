@@ -20563,7 +20563,7 @@
 <p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420232127.png" alt="image.png"></p>
 <p>在安装完成以后，我们来配置大模型API。这里以Github model的API配置为例，详细的配置过程如下图所示。</p>
 <p>首先，我们需要准备好三样东西： API密钥(API KEY)、API地址(endpoint)、模型ID。例如，下面是我的GitHub models的信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API KEY:  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</span><br><span class="line">endpoint: https://models.inference.ai.azure.com/</span><br><span class="line">model ID: gpt-4o</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API KEY:  （由于GitHub安全设置，此处无法上传。读者朋友可以自行去 [Github Tokens](https://github.com/settings/tokens) 处申请）</span><br><span class="line">endpoint: https://models.inference.ai.azure.com/</span><br><span class="line">model ID: gpt-4o</span><br></pre></td></tr></table></figure>
 
 <p>我们在模型服务的设置中找到Github model，在这里填入API密钥，然后点击“检查”看一下服务状态。如果配置成功，会有“连接正常”的提示出现。</p>
 <p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745162829247.png" alt="1745162829247.png"></p>
