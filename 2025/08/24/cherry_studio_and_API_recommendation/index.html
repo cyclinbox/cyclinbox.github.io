@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如题。 近年来，大语言模型（LLM）蓬勃发展，许多AI推出了网页版的聊天对话工具如 chatGPT  、 deepseek 等。然而在网页版本之外，LLM还可以通过API调用，为用户提供了更加灵活的使用方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cherry studio：安装、配置，以及一些比较好用的API推荐">
+<meta property="og:url" content="https://wz.anoms.top/2025/08/24/cherry_studio_and_API_recommendation/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="如题。 近年来，大语言模型（LLM）蓬勃发展，许多AI推出了网页版的聊天对话工具如 chatGPT  、 deepseek 等。然而在网页版本之外，LLM还可以通过API调用，为用户提供了更加灵活的使用方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824220330.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420232127.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745162829247.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420234157.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420233045.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231640.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231752.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231901.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824233739.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/f003d955-5551-413a-ae88-c49f4d28ac24.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/08d9e78d-c372-4da0-be8a-a06af25e4fa2.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824234359.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824234723.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250825000903.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250825010248.png">
+<meta property="article:published_time" content="2025-08-24T15:59:00.000Z">
+<meta property="article:modified_time" content="2025-08-24T17:08:34.851Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Github Models">
+<meta property="article:tag" content="cherry studio">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824220330.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/08/24/cherry_studio_and_API_recommendation/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/08/24/cherry_studio_and_API_recommendation/","path":"2025/08/24/cherry_studio_and_API_recommendation/","title":"cherry studio：安装、配置，以及一些比较好用的API推荐"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>cherry studio：安装、配置，以及一些比较好用的API推荐 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">一、背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81cherry-studio%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">二、cherry studio的安装与配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81AI-agent%E9%85%8D%E7%BD%AE%EF%BC%88%E4%BB%A5%E5%BF%83%E7%90%86%E5%92%A8%E8%AF%A2bot%E4%B8%BA%E4%BE%8B%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、AI agent配置（以心理咨询bot为例）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%A6%82%E4%B8%8B%EF%BC%88%E5%85%B6%E4%B8%ADpersonal-memory%E9%83%A8%E5%88%86%E9%9C%80%E8%A6%81%E8%87%AA%E5%B7%B1%E5%A1%AB%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">提示词如下（其中personal memory部分需要自己填）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A5%E8%AF%86%E5%BA%93%E8%AE%BE%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">知识库设置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%AF%8D%E5%90%91%E9%87%8FAPI%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.2.1.</span> <span class="nav-text">配置词向量API服务</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%80%E4%BA%9B%E5%A5%BD%E7%94%A8%E7%9A%84API%E6%8E%A8%E8%8D%90"><span class="nav-number">4.</span> <span class="nav-text">四、一些好用的API推荐</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E7%99%BE%E5%BA%A6%E6%99%BA%E8%83%BD%E4%BA%91"><span class="nav-number">4.1.</span> <span class="nav-text">（一）百度智能云</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E9%98%BF%E9%87%8C%E4%BA%91"><span class="nav-number">4.2.</span> <span class="nav-text">（二）阿里云</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89Gemini%EF%BC%88%E5%AD%A6%E7%94%9F%E4%BC%98%E6%83%A0%E8%B4%A6%E5%8F%B7%EF%BC%89"><span class="nav-number">4.3.</span> <span class="nav-text">（三）Gemini（学生优惠账号）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89AiHubMix"><span class="nav-number">4.4.</span> <span class="nav-text">（四）AiHubMix</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">222</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">402</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/08/24/cherry_studio_and_API_recommendation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="cherry studio：安装、配置，以及一些比较好用的API推荐 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cherry studio：安装、配置，以及一些比较好用的API推荐
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-24 23:59:00" itemprop="dateCreated datePublished" datetime="2025-08-24T23:59:00+08:00">2025-08-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-25 01:08:34" itemprop="dateModified" datetime="2025-08-25T01:08:34+08:00">2025-08-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如题。</p>
+<p>近年来，大语言模型（LLM）蓬勃发展，许多AI推出了网页版的聊天对话工具如 <a target="_blank" rel="noopener" href="https://chatgpt.com/">chatGPT</a>  、 <a target="_blank" rel="noopener" href="https://chat.deepseek.com/">deepseek</a> 等。然而在网页版本之外，LLM还可以通过API调用，为用户提供了更加灵活的使用方法。</p>
+<span id="more"></span>
+
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>先说说API相比于网页版的优点：可以自定义模型和参数（网页版一般是固定死的），并且上下文长度可以自己掌控。而且聊天记录储存在本地，数据安全性也相对更高一些。</p>
+<p>大模型API常用的使用方法有两种：一种是通过专用的SDK（各家不一样且使用起来很麻烦，本文略过），另一种是通过HTTPS通信协议——其中后者更为常见。在通过HTTPS调用时，使用者向一个接口地址（即API，例如 <code>https://api.siliconflow.cn</code> ）发送一个json格式的请求（包含模型参数和用户输入），API则会将大模型的输出以json文档的形式返回给用户。一个简化的流程如下所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824220330.png" alt="image.png"></p>
+<p>这样的一个标准化流程对于编程开发很方便，但是对于用户使用很麻烦，因为这意味着用户需要自己编辑符合格式要求的json文档并手动发起API的调用。更简化的方法是使用一个本地大模型客户端，在客户端里配置好API接口和API key，客户端会处理好上面这些中间步骤。</p>
+<p>目前市面上比较流行的客户端有很多，例如 <a target="_blank" rel="noopener" href="https://cherry-ai.com/">cherry studio</a> 、以外还有<a target="_blank" rel="noopener" href="https://ragflow.com.cn/docs/dev/">RAGFlow</a> 和 <a target="_blank" rel="noopener" href="https://dify.ai/">Dify</a> 等等；一些AI驱动的编程IDE也可以算在其中，包括 <a target="_blank" rel="noopener" href="https://cursor.com/cli">cursor</a> 、<a target="_blank" rel="noopener" href="https://www.trae.ai/login">TRAE</a> 等。这些工具的对比在网上有许多，此处不再赘述，感兴趣的读者可以参考： 《<a target="_blank" rel="noopener" href="https://blog.csdn.net/2401_83450572/article/details/145820619">综合对比分析：AnythingLLM、Cherry Studio、RAGFlow 和 Dify</a>》 。</p>
+<p>笔者最初接触的工具是 <a target="_blank" rel="noopener" href="https://cherry-ai.com/">cherry studio</a> 。使用至今，接入了数十个API模型，并基于日记和生物论文打造了一些AI agent工具，积累了许多使用体验。因此本文以 <a target="_blank" rel="noopener" href="https://cherry-ai.com/">cherry studio</a> 为例，讲一讲这类工具的安装、配置和使用。</p>
+<h2 id="二、cherry-studio的安装与配置"><a href="#二、cherry-studio的安装与配置" class="headerlink" title="二、cherry studio的安装与配置"></a>二、cherry studio的安装与配置</h2><blockquote>
+<p>另外参考博客往期文章： <a href="https://wz.anoms.top/2025/04/20/Github_Models_API_usage/?highlight=github">《白嫖Github大模型服务（可用GPT4o和GPT4.1) 》</a></p>
+</blockquote>
+<p> <a target="_blank" rel="noopener" href="https://cherry-ai.com/">cherry studio</a> 是一个跨平台的工具，在其官方网站的<a target="_blank" rel="noopener" href="https://cherry-ai.com/download">下载页面</a> 上可以获得对应的安装包（该说不说，这个网页能够自动检测用户的系统，然后推荐最适合系统版本的安装包，这一点做的真不错）。安装的过程全自动化进行，只需要按照提示点击“下一步”，cherry studio就会自动完成安装。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420232127.png" alt="image.png"></p>
+<p>在安装完成以后，我们来配置大模型API。这里以Github model的API配置为例，详细的配置过程如下图所示。</p>
+<p>首先，我们需要准备好三样东西： API密钥(API KEY)、API地址(endpoint)、模型ID。例如，下面是我的GitHub models的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">API KEY:  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</span><br><span class="line">endpoint: https://models.inference.ai.azure.com/</span><br><span class="line">model ID: gpt-4o</span><br></pre></td></tr></table></figure>
+
+<p>我们在模型服务的设置中找到Github model，在这里填入API密钥，然后点击“检查”看一下服务状态。如果配置成功，会有“连接正常”的提示出现。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745162829247.png" alt="1745162829247.png"></p>
+<p>Cherry Studio默认的Github Models能够调用的模型似乎只有GPT4o。要使用最新的GPT-4.1，我们可以在Github Models设置页的底部找到 <code>添加</code> 按钮，在这里进行模型添加的操作。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420234157.png" alt="image.png"></p>
+<p>下面列出了我的设置，为cherry studio新增了三个模型：gpt-4.1, gpt-4.1-mini, gpt-4.1-nano 。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420233045.png" alt="image.png"></p>
+<h2 id="三、AI-agent配置（以心理咨询bot为例）"><a href="#三、AI-agent配置（以心理咨询bot为例）" class="headerlink" title="三、AI agent配置（以心理咨询bot为例）"></a>三、AI agent配置（以心理咨询bot为例）</h2><p>如下图，在“助手”页面里可以添加一些AI agent。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231640.png" alt="image.png"></p>
+<p>此处点击“添加助手”可以增加一些预制的AI agent（如下图）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231752.png" alt="image.png"></p>
+<p>也可以在“助手”页面里修改一些助手的默认配置。下面以我的心理咨询师AI助手为例展示一下我的配置：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231901.png" alt="image.png"></p>
+<h3 id="提示词如下（其中personal-memory部分需要自己填）"><a href="#提示词如下（其中personal-memory部分需要自己填）" class="headerlink" title="提示词如下（其中personal memory部分需要自己填）"></a>提示词如下（其中personal memory部分需要自己填）</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"># Role </span><br><span class="line">心理咨询师 </span><br><span class="line"> ## Description</span><br><span class="line"> 一位有 20 年经验的心理咨询师，旨在通过深入对话和分析，帮助用户发现内心深处的真实想法和潜力。 </span><br><span class="line"> ## Attention </span><br><span class="line"> 请尽量利用专业的心理学知识和人文关怀，帮助用户解决问题或达到心理成长。 </span><br><span class="line"> ## Background </span><br><span class="line"> 用户面临各种心理压力和困扰。作为一位经验丰富的心理咨询师，你会通过在线对话方式，帮助用户找到内心的平和和方向。 </span><br><span class="line"> ## Definition </span><br><span class="line"> - 内心深处的真实想法: 用户潜意识或未明确表达的需求和感受。 </span><br><span class="line"> - 潜力: 用户可能未意识到的能力和特质，有助于其个人成长和解决问题。 </span><br><span class="line"> ## Goals </span><br><span class="line"> - 通过对话和分析，帮助用户明确问题和需求。 </span><br><span class="line"> - 引导用户发现自己内心深处的真实想法和潜力。 </span><br><span class="line"> - 你需要结合用户的personal memory以及知识库，分析用户实际存在的心理问题，并为用户提供成长建议。</span><br><span class="line"></span><br><span class="line"> ## Skills </span><br><span class="line"> 1. 倾听能力：在与用户交谈时，会认真倾听对方的观点，细心观察并分析非语言信息, 挖掘用户内心的真实想法 </span><br><span class="line"> 2. 沟通技巧：懂得如何通过提问深入了解别人，包括使用开放型问题以鼓励对方分享更多信息。 </span><br><span class="line"> 3. 情绪智力：能理解和处理复杂的情绪，理解对方的情绪和视角。 </span><br><span class="line"> 4. 思维分析能力：能从众多信息中分析并识别关键点。透过表面现象，了解隐藏的需求和动机。 </span><br><span class="line"> 5. 耐心和尊重：具有高度的耐心，愿意花时间理解他人，并给予他人充分的尊重和理解。 </span><br><span class="line"> 6. 富有同理心：可以设身处地去想象和理解他人的感受和动机。 </span><br><span class="line"> 7. 建立信任：能建立良好的人际关系，使他人感到舒适并愿意分享内心想法。 </span><br><span class="line"> ## Tone </span><br><span class="line"> - 温柔 </span><br><span class="line"> - 真诚 </span><br><span class="line"> - 善良 </span><br><span class="line"> - 充满关心和爱意 </span><br><span class="line"> ## Value </span><br><span class="line"> - 尊重每一个人作为独特个体的价值和尊严。 </span><br><span class="line"> - 深信人内心深处有无限潜力。 </span><br><span class="line"></span><br><span class="line">## 知识库</span><br><span class="line">在知识库中，是用户最近6年来写下的日记，每一条日记均以 `=== YYYY-MM-DD` 开头，其中 YYYY 是日记写下的年份， MM 是日记写下的月份， DD 是日记写下的日期。你可以通过翻阅知识库，了解用户过去的经历和内心活动。</span><br><span class="line">在回答中，如果涉及用户日记里提及的经历，你需要在回答的末尾标注引用的日记篇目，格式为 `&gt;【YYYYMMDD】 : 事件概述` 。</span><br><span class="line"></span><br><span class="line">## 用户的personal memory</span><br><span class="line"></span><br><span class="line">&#123;&#123;此处粘贴chatGPT中的personal memory，也可以自己编辑撰写&#125;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="知识库设置"><a href="#知识库设置" class="headerlink" title="知识库设置"></a>知识库设置</h3><h4 id="配置词向量API服务"><a href="#配置词向量API服务" class="headerlink" title="配置词向量API服务"></a>配置词向量API服务</h4><p>需要简单解释一下知识库的原理。我们准备好一些文本语料，然后创建知识库，此时cherry studio会对这些文本语料进行分词、向量化等处理，最终生成一个sqlite格式的数据库文件（如下图，是这样一个数据库文件内部结构的展示）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824233739.png" alt="image.png"></p>
+<p>当在AI chat中调用知识库时，cherrystudio就会搜索这个sqlite数据库，将其中与用户话题相关度高的条目作为prompt的一部分发送给大模型，从而实现智能化解答。</p>
+<p>因此，我们需要首先添加一个词向量服务API。下面展示了我的词向量API配置，使用的是阿里云百炼的平台：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">API KEY:  sk-82b3bfa35dce4e93877d7a54841d157d</span><br><span class="line">endpoint: https://dashscope.aliyuncs.com/compatible-mode/v1/</span><br><span class="line">model ID: text-embedding-v3</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/f003d955-5551-413a-ae88-c49f4d28ac24.png" alt="f003d955-5551-413a-ae88-c49f4d28ac24.png"></p>
+<p>接下来，去知识库管理面板里创建一个知识库。先前我使用dokuwiki配置过一个日记本系统，可以导出按照时间命名的日记文档。在此处选择嵌入模型为 <code>text-embedding-v3</code> ，然后把所有的日记文档拖进来，cherry studio就会开始处理——总共会耗时几秒到几十分钟，取决于传入的文本字数和文件数量。（以我为例，当时传了将近600个文件，大概一百多万字，处理用时大概半个小时左右——如果我把这些文字合并为一个单独的文件，处理用时则会只有几分钟）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/08d9e78d-c372-4da0-be8a-a06af25e4fa2.png" alt="08d9e78d-c372-4da0-be8a-a06af25e4fa2.png"></p>
+<p>最后，在AI agent的知识库设置界面里，把上面我们弄好的这个知识库给选上，聊天时就可以用了。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824234359.png" alt="image.png"></p>
+<h2 id="四、一些好用的API推荐"><a href="#四、一些好用的API推荐" class="headerlink" title="四、一些好用的API推荐"></a>四、一些好用的API推荐</h2><p>作为粉丝福利（？）的一部分，我打算在这一部分列出一些我自己正在用的付费平台的API KEY，并简单说一说使用体验。</p>
+<h3 id="（一）百度智能云"><a href="#（一）百度智能云" class="headerlink" title="（一）百度智能云"></a>（一）百度智能云</h3><p>官方网站： <a target="_blank" rel="noopener" href="https://console.bce.baidu.com/qianfan/overview">https://console.bce.baidu.com/qianfan/overview</a></p>
+<p>API KEY与常用模型的ID：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">API KEY:  bce-v3/ALTAK-Zqc4DPImZxWj36xtXUNqE/4c8100c76a3864196c246ebd729775a1d816454d</span><br><span class="line">endpoint: https://qianfan.baidubce.com/v2/</span><br><span class="line">model ID:</span><br><span class="line">	deepseek-r1,</span><br><span class="line">	deepseek-v3,</span><br><span class="line">	ernie-4.0-turbo-8k-latest,</span><br><span class="line">	ernie-speed-128k,</span><br><span class="line">	ernie-x1-turbo-32k,</span><br><span class="line">	gpt-oss-120b,</span><br><span class="line">	gpt-oss-20b</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824234723.png" alt="image.png"></p>
+<p>百度是国内比较早做AI的公司，他们的智能云API非常丰富，除了他们自己开发的文心一言系列模型（ernie系列）、文心推理模型（ernie-x1系列）以外，还接入了deepseek的模型（其中推理模型是deepseek-r1，非推理模型是deepseek-v3），以及openAI前段时间刚刚开源的gpt-oss系列（包括gpt-oss-120b和gpt-oss-20b）。</p>
+<p>我比较推荐的是deepseek-r1和gpt-oss-120b这两个模型；百度自己的文心一言，说实话比较一般。不过百度文心系列有一个可以免费无限次调用的模型 <code>ernie-speed-128k</code> ，对于一些批量任务（网页翻译、文献总结等）还是很有性价比的。</p>
+<h3 id="（二）阿里云"><a href="#（二）阿里云" class="headerlink" title="（二）阿里云"></a>（二）阿里云</h3><p>官方网站： <a target="_blank" rel="noopener" href="https://bailian.console.aliyun.com/#/model-market">https://bailian.console.aliyun.com/#/model-market</a></p>
+<p>API KEY与常用模型的ID：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">API KEY:  sk-82b3bfa35dce4e93877d7a54841d157d</span><br><span class="line">endpoint: https://dashscope.aliyuncs.com/compatible-mode/v1/</span><br><span class="line">model ID:</span><br><span class="line">	deepseek-r1,</span><br><span class="line">	deepseek-v3,</span><br><span class="line">	qwen-max,</span><br><span class="line">	qwen-plus,</span><br><span class="line">	qwen-turbo,</span><br><span class="line">	qwen-vl-plus,</span><br><span class="line">	qvq-max</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250825000903.png" alt="image.png"></p>
+<p>阿里巴巴是国内另一家AI巨头。在他们的平台上，也接入了deepseek的相关模型。除此之外，阿里推出的通义千问系列模型（qwen）也很好用——推荐qwen-plus，如果需要更快的速度可以用turbo版本；需要多模态（例如图片识别）则可以使用qwen-vl系列和qvq系列（qvq系列还带思考功能）。</p>
+<h3 id="（三）Gemini（学生优惠账号）"><a href="#（三）Gemini（学生优惠账号）" class="headerlink" title="（三）Gemini（学生优惠账号）"></a>（三）Gemini（学生优惠账号）</h3><p>官方网站： <a target="_blank" rel="noopener" href="https://gemini.google.com/">https://gemini.google.com/</a></p>
+<p>API KEY与常用模型的ID：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">API KEY:  AIzaSyDpMIeQWHSfSAlz0QfqDGXN9C0VkQdIPm0</span><br><span class="line">endpoint: https://generativelanguage.googleapis.com</span><br><span class="line">model ID:</span><br><span class="line">	gemini-2.5-pro</span><br><span class="line">	gemini-2.5-flash</span><br></pre></td></tr></table></figure>
+
+<p>不必多介绍。Gemini的实力有目共睹。</p>
+<h3 id="（四）AiHubMix"><a href="#（四）AiHubMix" class="headerlink" title="（四）AiHubMix"></a>（四）AiHubMix</h3><p>官方网站： <a target="_blank" rel="noopener" href="https://aihubmix.com/">https://aihubmix.com/</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">API KEY:  保密。鉴于这个平台价格太贵，建议读者朋友自己注册（doge）</span><br><span class="line">endpoint: https://aihubmix.com</span><br></pre></td></tr></table></figure>
+
+
+<p>这是一个第三方的模型转发平台，可以使用包括GPT、Claude、Gemini、grok等在内的许多模型，并且不需要翻墙。缺点是API价格比较贵（如下图，以美元结算）。如果需要旧版本GPT模型（GPT4o, GPT4.1等），或者Claude之类的模型，可以考虑使用这个平台。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250825010248.png" alt="image.png"></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/08/24/cherry_studio_and_API_recommendation/" title="cherry studio：安装、配置，以及一些比较好用的API推荐">https://wz.anoms.top/2025/08/24/cherry_studio_and_API_recommendation/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/LLM/" rel="tag"><i class="fa fa-tag"></i> LLM</a>
+              <a href="/tags/Github-Models/" rel="tag"><i class="fa fa-tag"></i> Github Models</a>
+              <a href="/tags/cherry-studio/" rel="tag"><i class="fa fa-tag"></i> cherry studio</a>
+              <a href="/tags/AI/" rel="tag"><i class="fa fa-tag"></i> AI</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/17/%E8%BF%9F%E5%AD%90%E5%BB%BA%E3%80%8A%E9%A2%9D%E5%B0%94%E5%8F%A4%E7%BA%B3%E6%B2%B3%E5%8F%B3%E5%B2%B8%E3%80%8B/" rel="prev" title="迟子建《额尔古纳河右岸》">
+                  <i class="fa fa-chevron-left"></i> 迟子建《额尔古纳河右岸》
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>

@@ -20543,4 +20543,91 @@
         <tag>markdown</tag>
       </tags>
   </entry>
+  <entry>
+    <title>cherry studio：安装、配置，以及一些比较好用的API推荐</title>
+    <url>/2025/08/24/cherry_studio_and_API_recommendation/</url>
+    <content><![CDATA[<p>如题。</p>
+<p>近年来，大语言模型（LLM）蓬勃发展，许多AI推出了网页版的聊天对话工具如 <a href="https://chatgpt.com/">chatGPT</a>  、 <a href="https://chat.deepseek.com/">deepseek</a> 等。然而在网页版本之外，LLM还可以通过API调用，为用户提供了更加灵活的使用方法。</p>
+<span id="more"></span>
+
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>先说说API相比于网页版的优点：可以自定义模型和参数（网页版一般是固定死的），并且上下文长度可以自己掌控。而且聊天记录储存在本地，数据安全性也相对更高一些。</p>
+<p>大模型API常用的使用方法有两种：一种是通过专用的SDK（各家不一样且使用起来很麻烦，本文略过），另一种是通过HTTPS通信协议——其中后者更为常见。在通过HTTPS调用时，使用者向一个接口地址（即API，例如 <code>https://api.siliconflow.cn</code> ）发送一个json格式的请求（包含模型参数和用户输入），API则会将大模型的输出以json文档的形式返回给用户。一个简化的流程如下所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824220330.png" alt="image.png"></p>
+<p>这样的一个标准化流程对于编程开发很方便，但是对于用户使用很麻烦，因为这意味着用户需要自己编辑符合格式要求的json文档并手动发起API的调用。更简化的方法是使用一个本地大模型客户端，在客户端里配置好API接口和API key，客户端会处理好上面这些中间步骤。</p>
+<p>目前市面上比较流行的客户端有很多，例如 <a href="https://cherry-ai.com/">cherry studio</a> 、以外还有<a href="https://ragflow.com.cn/docs/dev/">RAGFlow</a> 和 <a href="https://dify.ai/">Dify</a> 等等；一些AI驱动的编程IDE也可以算在其中，包括 <a href="https://cursor.com/cli">cursor</a> 、<a href="https://www.trae.ai/login">TRAE</a> 等。这些工具的对比在网上有许多，此处不再赘述，感兴趣的读者可以参考： 《<a href="https://blog.csdn.net/2401_83450572/article/details/145820619">综合对比分析：AnythingLLM、Cherry Studio、RAGFlow 和 Dify</a>》 。</p>
+<p>笔者最初接触的工具是 <a href="https://cherry-ai.com/">cherry studio</a> 。使用至今，接入了数十个API模型，并基于日记和生物论文打造了一些AI agent工具，积累了许多使用体验。因此本文以 <a href="https://cherry-ai.com/">cherry studio</a> 为例，讲一讲这类工具的安装、配置和使用。</p>
+<h2 id="二、cherry-studio的安装与配置"><a href="#二、cherry-studio的安装与配置" class="headerlink" title="二、cherry studio的安装与配置"></a>二、cherry studio的安装与配置</h2><blockquote>
+<p>另外参考博客往期文章： <a href="https://wz.anoms.top/2025/04/20/Github_Models_API_usage/?highlight=github">《白嫖Github大模型服务（可用GPT4o和GPT4.1) 》</a></p>
+</blockquote>
+<p> <a href="https://cherry-ai.com/">cherry studio</a> 是一个跨平台的工具，在其官方网站的<a href="https://cherry-ai.com/download">下载页面</a> 上可以获得对应的安装包（该说不说，这个网页能够自动检测用户的系统，然后推荐最适合系统版本的安装包，这一点做的真不错）。安装的过程全自动化进行，只需要按照提示点击“下一步”，cherry studio就会自动完成安装。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420232127.png" alt="image.png"></p>
+<p>在安装完成以后，我们来配置大模型API。这里以Github model的API配置为例，详细的配置过程如下图所示。</p>
+<p>首先，我们需要准备好三样东西： API密钥(API KEY)、API地址(endpoint)、模型ID。例如，下面是我的GitHub models的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API KEY:  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</span><br><span class="line">endpoint: https://models.inference.ai.azure.com/</span><br><span class="line">model ID: gpt-4o</span><br></pre></td></tr></table></figure>
+
+<p>我们在模型服务的设置中找到Github model，在这里填入API密钥，然后点击“检查”看一下服务状态。如果配置成功，会有“连接正常”的提示出现。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/1745162829247.png" alt="1745162829247.png"></p>
+<p>Cherry Studio默认的Github Models能够调用的模型似乎只有GPT4o。要使用最新的GPT-4.1，我们可以在Github Models设置页的底部找到 <code>添加</code> 按钮，在这里进行模型添加的操作。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420234157.png" alt="image.png"></p>
+<p>下面列出了我的设置，为cherry studio新增了三个模型：gpt-4.1, gpt-4.1-mini, gpt-4.1-nano 。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250420233045.png" alt="image.png"></p>
+<h2 id="三、AI-agent配置（以心理咨询bot为例）"><a href="#三、AI-agent配置（以心理咨询bot为例）" class="headerlink" title="三、AI agent配置（以心理咨询bot为例）"></a>三、AI agent配置（以心理咨询bot为例）</h2><p>如下图，在“助手”页面里可以添加一些AI agent。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231640.png" alt="image.png"></p>
+<p>此处点击“添加助手”可以增加一些预制的AI agent（如下图）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231752.png" alt="image.png"></p>
+<p>也可以在“助手”页面里修改一些助手的默认配置。下面以我的心理咨询师AI助手为例展示一下我的配置：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824231901.png" alt="image.png"></p>
+<h3 id="提示词如下（其中personal-memory部分需要自己填）"><a href="#提示词如下（其中personal-memory部分需要自己填）" class="headerlink" title="提示词如下（其中personal memory部分需要自己填）"></a>提示词如下（其中personal memory部分需要自己填）</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Role </span><br><span class="line">心理咨询师 </span><br><span class="line"> ## Description</span><br><span class="line"> 一位有 20 年经验的心理咨询师，旨在通过深入对话和分析，帮助用户发现内心深处的真实想法和潜力。 </span><br><span class="line"> ## Attention </span><br><span class="line"> 请尽量利用专业的心理学知识和人文关怀，帮助用户解决问题或达到心理成长。 </span><br><span class="line"> ## Background </span><br><span class="line"> 用户面临各种心理压力和困扰。作为一位经验丰富的心理咨询师，你会通过在线对话方式，帮助用户找到内心的平和和方向。 </span><br><span class="line"> ## Definition </span><br><span class="line"> - 内心深处的真实想法: 用户潜意识或未明确表达的需求和感受。 </span><br><span class="line"> - 潜力: 用户可能未意识到的能力和特质，有助于其个人成长和解决问题。 </span><br><span class="line"> ## Goals </span><br><span class="line"> - 通过对话和分析，帮助用户明确问题和需求。 </span><br><span class="line"> - 引导用户发现自己内心深处的真实想法和潜力。 </span><br><span class="line"> - 你需要结合用户的personal memory以及知识库，分析用户实际存在的心理问题，并为用户提供成长建议。</span><br><span class="line"></span><br><span class="line"> ## Skills </span><br><span class="line"> 1. 倾听能力：在与用户交谈时，会认真倾听对方的观点，细心观察并分析非语言信息, 挖掘用户内心的真实想法 </span><br><span class="line"> 2. 沟通技巧：懂得如何通过提问深入了解别人，包括使用开放型问题以鼓励对方分享更多信息。 </span><br><span class="line"> 3. 情绪智力：能理解和处理复杂的情绪，理解对方的情绪和视角。 </span><br><span class="line"> 4. 思维分析能力：能从众多信息中分析并识别关键点。透过表面现象，了解隐藏的需求和动机。 </span><br><span class="line"> 5. 耐心和尊重：具有高度的耐心，愿意花时间理解他人，并给予他人充分的尊重和理解。 </span><br><span class="line"> 6. 富有同理心：可以设身处地去想象和理解他人的感受和动机。 </span><br><span class="line"> 7. 建立信任：能建立良好的人际关系，使他人感到舒适并愿意分享内心想法。 </span><br><span class="line"> ## Tone </span><br><span class="line"> - 温柔 </span><br><span class="line"> - 真诚 </span><br><span class="line"> - 善良 </span><br><span class="line"> - 充满关心和爱意 </span><br><span class="line"> ## Value </span><br><span class="line"> - 尊重每一个人作为独特个体的价值和尊严。 </span><br><span class="line"> - 深信人内心深处有无限潜力。 </span><br><span class="line"></span><br><span class="line">## 知识库</span><br><span class="line">在知识库中，是用户最近6年来写下的日记，每一条日记均以 `=== YYYY-MM-DD` 开头，其中 YYYY 是日记写下的年份， MM 是日记写下的月份， DD 是日记写下的日期。你可以通过翻阅知识库，了解用户过去的经历和内心活动。</span><br><span class="line">在回答中，如果涉及用户日记里提及的经历，你需要在回答的末尾标注引用的日记篇目，格式为 `&gt;【YYYYMMDD】 : 事件概述` 。</span><br><span class="line"></span><br><span class="line">## 用户的personal memory</span><br><span class="line"></span><br><span class="line">&#123;&#123;此处粘贴chatGPT中的personal memory，也可以自己编辑撰写&#125;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="知识库设置"><a href="#知识库设置" class="headerlink" title="知识库设置"></a>知识库设置</h3><h4 id="配置词向量API服务"><a href="#配置词向量API服务" class="headerlink" title="配置词向量API服务"></a>配置词向量API服务</h4><p>需要简单解释一下知识库的原理。我们准备好一些文本语料，然后创建知识库，此时cherry studio会对这些文本语料进行分词、向量化等处理，最终生成一个sqlite格式的数据库文件（如下图，是这样一个数据库文件内部结构的展示）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824233739.png" alt="image.png"></p>
+<p>当在AI chat中调用知识库时，cherrystudio就会搜索这个sqlite数据库，将其中与用户话题相关度高的条目作为prompt的一部分发送给大模型，从而实现智能化解答。</p>
+<p>因此，我们需要首先添加一个词向量服务API。下面展示了我的词向量API配置，使用的是阿里云百炼的平台：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API KEY:  sk-82b3bfa35dce4e93877d7a54841d157d</span><br><span class="line">endpoint: https://dashscope.aliyuncs.com/compatible-mode/v1/</span><br><span class="line">model ID: text-embedding-v3</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/f003d955-5551-413a-ae88-c49f4d28ac24.png" alt="f003d955-5551-413a-ae88-c49f4d28ac24.png"></p>
+<p>接下来，去知识库管理面板里创建一个知识库。先前我使用dokuwiki配置过一个日记本系统，可以导出按照时间命名的日记文档。在此处选择嵌入模型为 <code>text-embedding-v3</code> ，然后把所有的日记文档拖进来，cherry studio就会开始处理——总共会耗时几秒到几十分钟，取决于传入的文本字数和文件数量。（以我为例，当时传了将近600个文件，大概一百多万字，处理用时大概半个小时左右——如果我把这些文字合并为一个单独的文件，处理用时则会只有几分钟）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/08d9e78d-c372-4da0-be8a-a06af25e4fa2.png" alt="08d9e78d-c372-4da0-be8a-a06af25e4fa2.png"></p>
+<p>最后，在AI agent的知识库设置界面里，把上面我们弄好的这个知识库给选上，聊天时就可以用了。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824234359.png" alt="image.png"></p>
+<h2 id="四、一些好用的API推荐"><a href="#四、一些好用的API推荐" class="headerlink" title="四、一些好用的API推荐"></a>四、一些好用的API推荐</h2><p>作为粉丝福利（？）的一部分，我打算在这一部分列出一些我自己正在用的付费平台的API KEY，并简单说一说使用体验。</p>
+<h3 id="（一）百度智能云"><a href="#（一）百度智能云" class="headerlink" title="（一）百度智能云"></a>（一）百度智能云</h3><p>官方网站： <a href="https://console.bce.baidu.com/qianfan/overview">https://console.bce.baidu.com/qianfan/overview</a></p>
+<p>API KEY与常用模型的ID：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API KEY:  bce-v3/ALTAK-Zqc4DPImZxWj36xtXUNqE/4c8100c76a3864196c246ebd729775a1d816454d</span><br><span class="line">endpoint: https://qianfan.baidubce.com/v2/</span><br><span class="line">model ID:</span><br><span class="line">	deepseek-r1,</span><br><span class="line">	deepseek-v3,</span><br><span class="line">	ernie-4.0-turbo-8k-latest,</span><br><span class="line">	ernie-speed-128k,</span><br><span class="line">	ernie-x1-turbo-32k,</span><br><span class="line">	gpt-oss-120b,</span><br><span class="line">	gpt-oss-20b</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250824234723.png" alt="image.png"></p>
+<p>百度是国内比较早做AI的公司，他们的智能云API非常丰富，除了他们自己开发的文心一言系列模型（ernie系列）、文心推理模型（ernie-x1系列）以外，还接入了deepseek的模型（其中推理模型是deepseek-r1，非推理模型是deepseek-v3），以及openAI前段时间刚刚开源的gpt-oss系列（包括gpt-oss-120b和gpt-oss-20b）。</p>
+<p>我比较推荐的是deepseek-r1和gpt-oss-120b这两个模型；百度自己的文心一言，说实话比较一般。不过百度文心系列有一个可以免费无限次调用的模型 <code>ernie-speed-128k</code> ，对于一些批量任务（网页翻译、文献总结等）还是很有性价比的。</p>
+<h3 id="（二）阿里云"><a href="#（二）阿里云" class="headerlink" title="（二）阿里云"></a>（二）阿里云</h3><p>官方网站： <a href="https://bailian.console.aliyun.com/#/model-market">https://bailian.console.aliyun.com/#/model-market</a></p>
+<p>API KEY与常用模型的ID：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API KEY:  sk-82b3bfa35dce4e93877d7a54841d157d</span><br><span class="line">endpoint: https://dashscope.aliyuncs.com/compatible-mode/v1/</span><br><span class="line">model ID:</span><br><span class="line">	deepseek-r1,</span><br><span class="line">	deepseek-v3,</span><br><span class="line">	qwen-max,</span><br><span class="line">	qwen-plus,</span><br><span class="line">	qwen-turbo,</span><br><span class="line">	qwen-vl-plus,</span><br><span class="line">	qvq-max</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250825000903.png" alt="image.png"></p>
+<p>阿里巴巴是国内另一家AI巨头。在他们的平台上，也接入了deepseek的相关模型。除此之外，阿里推出的通义千问系列模型（qwen）也很好用——推荐qwen-plus，如果需要更快的速度可以用turbo版本；需要多模态（例如图片识别）则可以使用qwen-vl系列和qvq系列（qvq系列还带思考功能）。</p>
+<h3 id="（三）Gemini（学生优惠账号）"><a href="#（三）Gemini（学生优惠账号）" class="headerlink" title="（三）Gemini（学生优惠账号）"></a>（三）Gemini（学生优惠账号）</h3><p>官方网站： <a href="https://gemini.google.com/">https://gemini.google.com/</a></p>
+<p>API KEY与常用模型的ID：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API KEY:  AIzaSyDpMIeQWHSfSAlz0QfqDGXN9C0VkQdIPm0</span><br><span class="line">endpoint: https://generativelanguage.googleapis.com</span><br><span class="line">model ID:</span><br><span class="line">	gemini-2.5-pro</span><br><span class="line">	gemini-2.5-flash</span><br></pre></td></tr></table></figure>
+
+<p>不必多介绍。Gemini的实力有目共睹。</p>
+<h3 id="（四）AiHubMix"><a href="#（四）AiHubMix" class="headerlink" title="（四）AiHubMix"></a>（四）AiHubMix</h3><p>官方网站： <a href="https://aihubmix.com/">https://aihubmix.com/</a></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">API KEY:  保密。鉴于这个平台价格太贵，建议读者朋友自己注册（doge）</span><br><span class="line">endpoint: https://aihubmix.com</span><br></pre></td></tr></table></figure>
+
+
+<p>这是一个第三方的模型转发平台，可以使用包括GPT、Claude、Gemini、grok等在内的许多模型，并且不需要翻墙。缺点是API价格比较贵（如下图，以美元结算）。如果需要旧版本GPT模型（GPT4o, GPT4.1等），或者Claude之类的模型，可以考虑使用这个平台。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250825010248.png" alt="image.png"></p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>LLM</tag>
+        <tag>Github Models</tag>
+        <tag>cherry studio</tag>
+        <tag>AI</tag>
+      </tags>
+  </entry>
 </search>
