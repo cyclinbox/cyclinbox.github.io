@@ -20817,4 +20817,184 @@
         <tag>Gemini</tag>
       </tags>
   </entry>
+  <entry>
+    <title>《自然》论文：多个重叠的结合位点决定转录因子占据情况</title>
+    <url>/2025/09/14/Multiple_overlapping_binding_sites_determine_transcription_factor_occupancy.Nature/</url>
+    <content><![CDATA[<p>这周组会上讲述的一篇论文。作者提出了一种检测蛋白质和DNA之间低亲和力相互作用的技术PADIT-seq，并通过这种技术发现了转录因子调控中的两种新机制。</p>
+<blockquote>
+<p>Citation：Khetan, S., Carroll, B.S. &amp; Bulyk, M.L. Multiple overlapping binding sites determine transcription factor occupancy. <em>Nature</em> (2025). <a href="https://doi.org/10.1038/s41586-025-09472-3">doi:10.1038/s41586-025-09472-3</a></p>
+</blockquote>
+<span id="more"></span>
+
+<p>本文另见微信公众号报道：<br><a href="https://mp.weixin.qq.com/s/JrxyjS3kYVo0rMyJd4uJ2Q?scene=1">Nature | DNA的“俄罗斯套娃”：PADIT-seq揭示了一个颠覆教科书的转录因子结合新模型</a></p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h3 id="（一）作者信息："><a href="#（一）作者信息：" class="headerlink" title="（一）作者信息："></a>（一）作者信息：</h3><p>本文的作者团队均来自哈佛大学医学院（更详细的信息可见 <a href="https://biophysics.fas.harvard.edu/people/martha-l-bulyk">课题组官网</a> ）。研究团队聚焦于转录因子结合的生物学机制研究，开发了大量技术和软件工具，自2002年起，已发表近百篇论文和十多种软件工具。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172252.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172303.png" alt="image.png"></p>
+<h3 id="（二）前人研究：检测蛋白质-DNA互作的技术"><a href="#（二）前人研究：检测蛋白质-DNA互作的技术" class="headerlink" title="（二）前人研究：检测蛋白质-DNA互作的技术"></a>（二）前人研究：检测蛋白质-DNA互作的技术</h3><p>文章中提到了如下技术：</p>
+<ul>
+<li>PBM：一种基于微阵列的检测技术，可以大规模检测一种蛋白质和不同DNA的互作。 <strong>优点</strong> ：高通量；成本低（并且为本文实验室首创，有大量技术积累）。 <strong>缺点</strong> ：只能检测高亲和力的DNA片段，对于低亲和力片段的敏感性不足。<ul>
+<li>uPBM：是PBM的变种方法。PBM的微阵列上附着的是天然存在的DNA片段，但是uPBM上附着的是经过数学计算的所有可能的DNA序列组合。 <strong>因此理论上uPBM可以检测一种特定转录因子的所有潜在DNA结合片段。</strong> </li>
+</ul>
+</li>
+<li>HT-SELEX：基于多轮扩增反应，对高亲和力DNA片段进行富集。优缺点和PBM相同。</li>
+<li>MITOMI：一种基于微流控系统的检测技术。<strong>优点</strong> ：可以精确定量蛋白质和DNA之间的作用力强度（以化学平衡常数 $K_d$ 计）。 <strong>缺点</strong> ：测序通量较低，并且无法用于发现未知的高亲和力片段。</li>
+<li>BET-seq：一种基于微流控系统的高通量检测技术，相比于MITOMI改进了控制系统和测序方法，并在下游分析技术中引入了深度学习模型。<strong>优点</strong> ：可以精确定量蛋白质和DNA之间的作用力强度（以相对自由能变化 $\text{ΔΔ}G$ 计），测序通量较高，可用于发现未知的高亲和力片段。 <strong>缺点</strong> ：成本较高。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172715.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172728.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172740.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172753.png" alt="image.png"></p>
+<p>本文的出发点在于，如何寻找那些与转录因子有较低亲和力的DNA片段（作者认为这些低亲和力片段也有重要的调控功能），同时降低实验成本。最终，作者提出了PADIT-seq，在体外系统中通过两阶段的转录，实现低亲和力片段的发现。</p>
+<h2 id="本文研究结果"><a href="#本文研究结果" class="headerlink" title="本文研究结果"></a>本文研究结果</h2><h3 id="（一）提出了一种新方法：PADIT-seq"><a href="#（一）提出了一种新方法：PADIT-seq" class="headerlink" title="（一）提出了一种新方法：PADIT-seq"></a>（一）提出了一种新方法：PADIT-seq</h3><p>PADIT-seq = protein affinity to DNA by in vitro transcription and RNA sequencing</p>
+<p>这是一种 <strong>体外</strong> 的TF结合位点筛选方法。（注意和ChIP-seq之类的方法的区别——后者是体内方法）。</p>
+<p>虽然先前已经有许多种TF-DNA binding检测方法，但作者提出的新方法旨在克服现有技术的以下局限：</p>
+<ul>
+<li>灵敏度不足 (Low Sensitivity)：<ul>
+<li>如PBM和HT-SELEX等主流高通量方法，由于其检测原理（荧光信号强度或富集倍数），对低亲和力的结合事件不敏感。它们的检测阈值较高，导致大量真实的低亲和力位点被当作“噪音”而忽略。</li>
+</ul>
+</li>
+<li>功能相关性不明确 (Lack of Functional Relevance)：<ul>
+<li>PBM测量的是“结合”，MITOMI/BET-seq测量的是“亲和力/能量”，HT-SELEX测量的是“富集”。但这些物理化学上的测量结果是否直接对应于功能性的相互作用（即能驱动下游生物学过程）并不总是清晰的。一个微弱的结合可能没有实际功能意义。</li>
+</ul>
+</li>
+</ul>
+<p>PADIT-seq的原理如下图所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914234402.png" alt="image.png"></p>
+<ul>
+<li>第一阶段的转录产生一个带有ALFA标签的转录因子融合蛋白（DBD就是转录因子的DNA结合结构域），这些融合蛋白将对第二阶段的转录产生影响。</li>
+<li>第二阶段的转录由D1pT7启动子调控，这是一个人为修改的T7启动子：<ul>
+<li>在没有转录因子的条件下，D1pT7会启动低水平转录，产生本底水平的报告基因表达</li>
+<li>当融合蛋白（DBD）与候选的DNA片段（TFBS-M）发生结合时，融合蛋白的ALFA标签就会招募T7-RNA聚合酶，启动更高水平的报告基因表达</li>
+<li>报告基因的表达水平与DBD-TFBS结合的亲和力成正比——因此可以检测低水平的DNA亲和力片段。</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914235445.png" alt="image.png"></p>
+<p>作者对比了PADIT-seq和另外两种传统方法（uPBM和HT-SELEX）。如Fig1c所示，PADIT-seq在假阳性率的控制上优于uPBM；如Fig1d-e所示，PADIT-seq能够找到比HT-SELEX更多的低亲和力位点。</p>
+<p>作者还发现，这些低亲和力位点，并不会决定转录因子是否结合，但是能够影响结合的水平。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914235919.png" alt="image.png"></p>
+<h3 id="（二）转录因子在基因组中结合重叠的位点"><a href="#（二）转录因子在基因组中结合重叠的位点" class="headerlink" title="（二）转录因子在基因组中结合重叠的位点"></a>（二）转录因子在基因组中结合重叠的位点</h3><p>作者使用PADIT-seq，以1bp的步长，对ChIP-seq的peak区域的DNA序列进行滑窗检测。发现在高亲和力位点两侧存在重叠的低亲和力位点。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003903.png" alt="image.png"></p>
+<p>另外，如Fig2b所示，相比于背景基因组，ChIP-seq的peak区域，倾向于富集更多的连续亲和位点，这表明连续位点的存在可能对于转录因子的结合是重要的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003910.png" alt="image.png"></p>
+<p>并且这些位点的保守性也更强。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003920.png" alt="image.png"></p>
+<h3 id="（三）转录因子对于每个重叠位点的结合是互相独立的"><a href="#（三）转录因子对于每个重叠位点的结合是互相独立的" class="headerlink" title="（三）转录因子对于每个重叠位点的结合是互相独立的"></a>（三）转录因子对于每个重叠位点的结合是互相独立的</h3><p>如下图。ChIP-nexus是一种能够以1bp分辨率检测DNA上的转录因子结合区域边界的技术。每个“cut”的位置代表TF与DNA的一个精确的接触边界。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004211.png" alt="image.png"></p>
+<p>作者发现，随着重叠的结合位点(overlapping binding site)数量增加：</p>
+<ul>
+<li><ol>
+<li>检测到的cuts信号的强度在增加（5→10→20）</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>有cuts信号的位点数量在增加（a/b → a/b/c → a/b/c/d）</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>足迹的整体大小在增加（28bp→29bp→30bp）</li>
+</ol>
+</li>
+</ul>
+<p>也就是说，每个额外的重叠结合位点都会在每条链上多产生一个精确的cut，导致总足迹大小每次增加1bp，<strong>因此TF对各个位点是独立结合的。</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004340.png" alt="image.png"></p>
+<h3 id="（四）同源转录因子的竞争性结合机制"><a href="#（四）同源转录因子的竞争性结合机制" class="headerlink" title="（四）同源转录因子的竞争性结合机制"></a>（四）同源转录因子的竞争性结合机制</h3><p>这是本文的重要生物学发现之一。</p>
+<p>同源转录因子意味着它们有着相同的识别基序（例如下图中的Cbf1和Pho4，都识别CACGTG框），那么在实际的转录调控中，它们是如何识别各自特异的结合位点呢？</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004441.png" alt="image.png"></p>
+<p>作者首先通过PADIT-seq鉴定出了311个有亲和力的8-mer结合位点序列。其中，有58个是Cbf1特异的，有219个是Pho4特异的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004740.png" alt="image.png"></p>
+<p>作者使用BET-seq检测了每一种16bp长度的DNA序列组合（其中包括CACGTG这段核心的motif，而侧翼序列则是所有可能的碱基组合）与这两种转录因子的结合亲和力（以相对自由能ΔΔG计）。</p>
+<ul>
+<li>Fig4b：按照相对亲和力的序列频数统计。存在两个峰，说明侧翼序列对结合特异性有影响。（如果没有影响，那么频数分布应该呈现以0为均值的正态分布）</li>
+<li>Fig4c：侧翼序列中，Cbf1特异的8-mer越多，则DNA片段对Cbf1的亲和力越强；反之亦然。也就是说，高亲和力位点两侧的低亲和力位点塑造了TF识别的特异性</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005141.png" alt="image.png"></p>
+<p>作者还使用另外几种方法分别验证了这一点。最终，作者将这一个机制总结为 <strong>重叠结合位点模型(overlapping binding sites model)</strong> ，即 <strong>高亲和力位点两侧的低亲和力位点塑造了TF识别的特异性</strong> 。</p>
+<h3 id="（五）突变对转录因子结合的影响"><a href="#（五）突变对转录因子结合的影响" class="headerlink" title="（五）突变对转录因子结合的影响"></a>（五）突变对转录因子结合的影响</h3><p>检测了SNP对TF-binding的影响。如下图所示，作者发现，SNP影响的位点越多，TF结合的改变越大。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005249.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005258.png" alt="image.png"></p>
+<h3 id="（六）转录因子结合位点的内在可编织性"><a href="#（六）转录因子结合位点的内在可编织性" class="headerlink" title="（六）转录因子结合位点的内在可编织性"></a>（六）转录因子结合位点的内在可编织性</h3><p>所谓“可编织性”（weavable），指的是这些位点之间互相有overlap，可以编织出一张连通图。</p>
+<p>如下图，作者提出了一种对TF-binding site进行描述和定量的方法，即网络图——一个节点代表一个k碱基的结合位点（PADIT-seq active k-mers），一条边表示两个节点之间有k-1个bp的序列是重叠的。</p>
+<p>作者发现，随机的8-mer序列形成的连通图并不好——最大的单一联通组件只包括7个节点（如下图，左下角）。相比之下，转录因子的连通图，可以形成非常大的单一联通组件（包含80%以上的大部分节点）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005306.png" alt="image.png"></p>
+<p>作者还使用 <a href="http://the_brain.bwh.harvard.edu/uniprobe/">UniProbe</a> 的数据库中的公共数据进行了验证。发现，对于其他转录因子来说，在这样的网络图中也是能够形成极大的单一联通组件（“这些TF 结合位点始终形成了更广泛的网络”）。</p>
+<p>这些结果证明：</p>
+<ul>
+<li>“可编织性”是真核生物中不同结构家族的 TFBSs 的固有且普遍的特性</li>
+<li>重叠结合位点模型很可能代表了真核生物 TF-DNA 相互作用的基本特征。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005744.png" alt="image.png"></p>
+<h2 id="结论与讨论"><a href="#结论与讨论" class="headerlink" title="结论与讨论"></a>结论与讨论</h2><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005920.png" alt="image.png"></p>
+<p>本文的创新与重要发现：</p>
+<ul>
+<li>提出了一个检测TF-DNA相互作用的测序技术，即PADIT-seq，能够以高灵敏度检测TF的低亲和力位点</li>
+<li>发现TF的高亲和力位点侧翼会有许多低亲和力位点，这些低亲和力位点对于TF的结合起到重要调控作用 → 重叠结合位点模型</li>
+<li>回答了两个生物学问题：<ul>
+<li>①旁系同源TF的竞争特异性</li>
+<li>②非编码变异（SNPs）的功能效应</li>
+</ul>
+</li>
+<li>通过连通图发现TF-binding site的序列特征表现出一种“可编织性”</li>
+</ul>
+<p>局限性：</p>
+<ul>
+<li>PADIT-seq是一种体外测序技术，无法完全模拟体内环境</li>
+<li>PADIT-seq的检测灵敏度，受到多种因素的影响：反应底物浓度（转录因子、T7聚合酶等），测序深度，统计检验阈值。因此PADIT-seq可能仍然无法捕获所有的低亲和力相互作用。</li>
+<li>文章研究对象是真核生物；对于原核生物，其转录因子是否也有“可编织性”？这种特性的进化起源又是什么？这些问题值得研究</li>
+</ul>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>转录因子</tag>
+        <tag>DNA</tag>
+        <tag>转录调控</tag>
+        <tag>分子生物学</tag>
+        <tag>测序技术</tag>
+        <tag>微流控</tag>
+        <tag>Nature</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>近期生活记录（2025年9月）</title>
+    <url>/2025/09/14/20250914_updatelog/</url>
+    <content><![CDATA[<p>好久没有碎碎念了——因为确实有点忙。</p>
+<span id="more"></span>
+
+<h2 id="一"><a href="#一" class="headerlink" title="一"></a>一</h2><p>很久没有写日记了。这一周忙且痛并快乐着。</p>
+<p>9月10日教师节，上午给从小学至今的多位老师发祝福短信，也幸运的和高中生物老师取得了联系。本科的几位老师还表示“常回家看看”——是啊，好久没有回天津和北京了。想念校园的一草一木，想念本科的同学们。</p>
+<p>还是教师节那天的事情。我们集思广益分工合作，为导师准备了一个惊喜——定制版的贺卡与蛋糕（顺便感谢Gemini的nano-banana模型！这个模型用来生成卡通大头贴可真好用呀）。和导师一起分蛋糕，闲聊课题组过去的故事和人生经历，度过了一个充实的下午。</p>
+<p>这周要在组会上讲journal club，抽到的是一篇nature刚刚发表的论文。为了看懂作者的工作内容，连着好几天看论文和查资料查到头秃，也没怎么睡好，好在最终汇报的效果还可以。</p>
+<p>周末去黄浦滨江参观了「Inclusion外滩大会」，这是一个蚂蚁金融主办的人工智能科技展&amp;科技人才招聘会。在刷到了许多现场动态的帖子以后，颇为心动，遂做计划前往——赶到时已是中午，许多线下展位的小礼品都已被领完，逛完一圈只领到了一枚茶杯托和几片NFC芯片卡，有点遗憾。展览还是有意思的——仿生生机械手，加密计算卡，边缘计算芯片，还有一些智能服务平台。在另一个场馆里是“机器人小镇”，据说有机器人踢球和炒菜之类的表演活动，很有意思，但排队人数太多，遂放弃。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/17354be425d45e1d144695b89fbe44c6.jpg" alt="17354be425d45e1d144695b89fbe44c6.jpg"></p>
+<p>最近和师弟师妹们交流也比较多，并承蒙师弟邀请参与了多次羽毛球——由衷感谢可爱的师弟师妹！</p>
+<p>也有灰色的阴霾：周中发生了一些事情，和研究生同学发生了一些冲突，也有一些人际上的变动和失去——此处不想多说。感觉一些社交方面的受挫是成长中的必修课，这些课程曾经我没有学，现在是时候还债了。</p>
+<h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>因为最近现实世界的生活太过忙碌，似乎也很久没有一些人生思考，更重要的——很久没看书了。</p>
+<p>上一本看完的书是迟子建的《额尔古纳河右岸》，最近则正在读《病隙碎笔》——史铁生在病床上的岁月中，慢慢琢磨出的一些思考（或者说，看开了人生的各种苦难以后，继续努力生活、继续爱这个世界）。看了差不多有几十页了，感觉史铁生的一些思考还挺有道理的——虽然这本书的情感基调有些灰暗，也许和作者的经历有关。</p>
+<p>哦对，还有一件很遗憾的事情——徐家汇美罗城五楼的大众书局，几个月前闭店装修，至今仍然未开，原本堆放书籍的角落被改造成了电影院供观众歇脚的场所（以及卖电影周边小玩具的地方）。少了个可以看书的地方，有些感慨。</p>
+<h2 id="三"><a href="#三" class="headerlink" title="三"></a>三</h2><p>感觉从几个月前（大约，今年七月？）开始，自己的身体状态就出了点问题——不知道是缺乏血清素或者多巴胺还是因为什么原因，很容易感觉困倦和厌烦，精神也有点难以集中——很久很久没有体会过大学周末去图书馆时的那种内心的清澈与平静了。难以集中注意力，总是分心，内心的杂音也很多，做科研时畏手畏脚，这样的状态很不好。</p>
+<p>也许我需要一些调整和休息（？）。总之，今天在球场上连着失了好几球后，突然意识到时刻保持高精力的重要性。没有高精力的支撑，专注于工作任务无从谈起。而在空闲的时间，如果把精力花费在一些低成本娱乐上（譬如说，刷手机和打游戏），似乎只会消耗精力，多巴胺++但是专注力–，最终的工作效果还不如不休息。</p>
+<h2 id="四"><a href="#四" class="headerlink" title="四"></a>四</h2><p>收藏一条知乎回答</p>
+<p><a href="https://www.zhihu.com/question/9903931776/answer/1947475936179106745">为什么说向上生长的女性都及其稀缺? - 相知柚归零的回答 - 知乎</a></p>
+<p>作者说，「<strong>人太容易放过自己了，而“向上”，是反势能的。这就是持续向上生长很难的原因</strong>」 。</p>
+<p>感觉这个回答写的很好，有现实意义。结合最近在上海团校学到的一些课程，更深有同感。</p>
+<p>有一阵子我有些悲观——感觉自己很难再像中学或大学时单靠卷学习变得强大，因为那很可能就会就像我考研那三个月一样——会失去很多社交，会丢掉喜欢的人，甚至被视作竞争对手而影响到朋友关系本身。我还不想失去这些。后来想了想，也许没有必要这样非黑即白，也许还可以多去接触真实的社会以学习和成长。</p>
+<p>总之，生活应该向前看，千万不要轻而易举就说“我不行”而放弃。人生的道路远没有想象中的那么平整和笔直，但是披荆斩棘的走下去也远比“为了不受伤而停留在原地”要好。路还很长，千万别停下来呀！</p>
+<p>加油。</p>
+<hr>
+<p>附：知乎回答 <a href="https://www.zhihu.com/question/9903931776/answer/1947475936179106745">为什么说向上生长的女性都及其稀缺?</a></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">为什么说向上生长的女性都及其稀缺?</span><br><span class="line">相知柚归零</span><br><span class="line">相是她的相，由是你的由</span><br><span class="line">谢邀 @66666666</span><br><span class="line">293 人赞同了该回答</span><br><span class="line"> </span><br><span class="line">举个例子哈。</span><br><span class="line">我今天想要换宿舍，换到单人间，独立卫浴。</span><br><span class="line">学校的房子嘛，再贵一年也就几千块，比起外面租房简直性价比太高。</span><br><span class="line">为了完成【换宿舍】这个目标，我进行了以下几步操作：</span><br><span class="line">1.假期打电话确认换房时间→得到信息：9月份到宿管阿姨处做登记。</span><br><span class="line">2.9月份如约去找宿管阿姨→得到信息：要先去确认意向宿舍是否有房源。</span><br><span class="line">3.去到目标宿舍区询问→得到信息：单人寝信息不明，需要和楼长交涉。</span><br><span class="line">4.去到楼长处咨询→得到信息：单人寝很少，且都是博士住，通常延毕，退宿时间不可控。</span><br><span class="line">掉落一个额外信息：要想换寝，除非我找到一个明确退宿的学姐，两个人商量好，她退我进，除此外，别无他法。</span><br><span class="line">5.发小红书/查小红书/实地考察是否有人退宿→得到信息：每层楼只有1个单人间，加起来不超过20间，得到概率极低。</span><br><span class="line">综上，这是我为了“换寝室”这个目标，但最后“行为落地”（尚未完成）的整个过程。</span><br><span class="line">而所谓的“向上生长”，不是做梦，不是空想，不是一拍屁股说自己要财富自由，是切切实实亲身历经“梦想落地”这个过程。</span><br><span class="line">我们通常是先有一个意向性“愿望”（得到单人间寝室），然后根据这个方向，一步一步把愿望落实。</span><br><span class="line">在这个过程中，你会发现，很多东西“扭曲”了。</span><br><span class="line">（3d世界的必然规律，3d是理念世界的投影，会打折）</span><br><span class="line">比如，单人间的数量并没有我一开始以为的这么多。</span><br><span class="line">比如，每个宿舍区之间的信息并不透明，制度也不完善。</span><br><span class="line">比如，宿管阿姨并不想多管闲事，不会愿意在单人间有人退宿时电话通知我。</span><br><span class="line">这些【实际操作】过程中的问题，都是人一开始拥有这个愿望时无法预料到，且就算预料到也无法一次性解决的。</span><br><span class="line">我把这个过程，定义为现实生活中的“向上生长”。</span><br><span class="line">所谓“向上生长”，是根据自己的理想意愿，进行的一场现实设计。</span><br><span class="line">需要一个主体目标足够明确，且尽全力去弥合“理想”与“现实”之间的裂缝和差距。</span><br><span class="line">需要足够的环境支持和条件成熟，甚至，要创造条件来挺进。</span><br><span class="line">这很难。</span><br><span class="line">真的很难。</span><br><span class="line">在弥合的过程中，首先需要你不忘初心，其次还需要你付出大量精力。</span><br><span class="line">拿换寝这件事来说，打电话是不够的，需要顶着30的高温一趟趟跑，甚至要亲自去对接同学。</span><br><span class="line">为此，实地考察、小红书发帖、一个个敲门询问——该做的不该做的，这些都是弥合“现实”和“理想”的手段。</span><br><span class="line">是需要耗费精力的。</span><br><span class="line">所谓“向上生长”，是有机会就尽力抓住机会，没有条件，创造条件也要上。</span><br><span class="line">而不是有一个美丽愿望，在现实中遇到困难的时候就想，“算了算了，现在也挺好的。”</span><br><span class="line">“算了算了，住现在这个也挺好，太累了，懒得折腾了。”</span><br><span class="line">向上生长，往往不能给自己留退路，因为一旦留了退路，人就容易选择那条退路，</span><br><span class="line">向上生长，需要目标明确，还要“忍得折腾”。</span><br><span class="line">不是一拔苗，“噌”地一下就青云直上了。</span><br><span class="line">是“螺旋式上升，波浪式前进”，没有那么快，你必须忍受3d世界里的零零碎碎。</span><br><span class="line">你必须容忍现实世界想象力的扁平。</span><br><span class="line">你面对的一切，和你一开始的设想，都是不一样的。</span><br><span class="line">这就是向上生长，你得目标明确，忍得折腾，还同时得是一个“长期主义者”。</span><br><span class="line">因为一切来的没那么快，当你的主观意志作用于现实，会产生摩擦、碰撞，甚至是对立。</span><br><span class="line">会延时。</span><br><span class="line">你得知道，得忍，还得坚持。</span><br><span class="line">**所以为什么持续向上生长的人少？**</span><br><span class="line">**因为累，因为难。**</span><br><span class="line">**一件事做到的人特别少，就证明，它特别难。**</span><br><span class="line">**难，你就累，就不想做，就想找退路，妥协于现有条件，然后就流于“平均”和“普通”。**</span><br><span class="line">这就是为什么，普通人永远是大多数。</span><br><span class="line">躺平多舒服啊！其实，用不着把躺平甩锅给经济大环境不好，躺平就是爽，这是一个自己选择的低难度行为，得认。</span><br><span class="line">这也是为什么，古人强调“立志”的重要性。</span><br><span class="line">**所谓“立志”，就是树立目标，赋予目标一个意义，然后坚定地朝着目标走。**</span><br><span class="line">**克服累的抓手，一定是目标，别无其他。**</span><br><span class="line">**就是那句话：**</span><br><span class="line">**“如果我知道我为了什么而活，我就可以忍受任何生活。”**</span><br><span class="line">**目标，坚定的目标，才是向上生长的原动力。**</span><br><span class="line">所以，这件事不分男女，你不能说女性向上生长的少，男性也少啊。</span><br><span class="line">君不见，有多少男人中年发福，这就是不向上生长、放自己一把的表象。</span><br><span class="line">**人太容易放过自己了，而“向上”，是反势能的。**</span><br><span class="line">**这就是持续向上生长很难的原因。**</span><br><span class="line">大部分人的向上生长，都是社交表演，欺骗别人，也欺骗自己。</span><br><span class="line">有的人看起来忙忙碌碌，其实是在逃避空虚，不是向上生长。</span><br><span class="line">向上生长，是要有“轴心”和“向度”的。</span><br><span class="line">是始终围绕一个方向，甚至一件事的。</span><br><span class="line">你这一辈子，把一件事做好，做精进，这就是“向上生长”。</span><br><span class="line">所以，综上，【向上生长】至少需要：</span><br><span class="line">1.志向：明确的目标</span><br><span class="line">2.意志：愿意为目标付出精力，能“扛事”</span><br><span class="line">3.清醒：明确知道3d世界和理念世界的差距，并接受</span><br><span class="line">4.坚持：接受螺旋式上升，波浪式前进，不功利</span><br><span class="line">5.有抓手：围绕一个方向，深耕一项事业</span><br><span class="line">6.踏实：不社交表演，不自我欺骗，不自我感动</span><br><span class="line">7.健康：有精力折腾</span><br><span class="line">大家想想，现实生活中有多少人能做到？</span><br><span class="line">没有滴。</span><br><span class="line">大部分人（包括男人）都在生活中妥协啦。</span><br><span class="line">而且就新时代观察来看，妥协的男人更多。</span><br><span class="line">这或许是我的圈子问题？</span><br><span class="line">感觉听到的女生都读博啊，奋斗啊，力争上游啊，事业都很不错。</span><br><span class="line">男生都窝在家里打游戏，做饭之类的，年纪轻轻肚子就有赘肉。</span><br><span class="line">不知道大家身边是不是这样。</span><br><span class="line">感觉这个年头上进的男生不多啊……</span><br><span class="line">我的猜测是啥：</span><br><span class="line">男人的向上生长，过去是以女人作为血包的。</span><br><span class="line">也就是男人在外面拼事业，一定有女人、丈母娘在家里为他带孩子牺牲。</span><br><span class="line">但现在，男人很少能找到血包了，凭借他们一个人的能力，向上生长很难。</span><br><span class="line">（对不起，我的一向观点是：男人的独立性更差！没人为自己献祭就很不爽的那种差！）</span><br><span class="line">没人当血包，他们就有后顾之忧，甚至连老婆都找不到，找到了也没外部动力，反正现在经济又差，对吧？</span><br><span class="line">男人一切都是向外求滴。</span><br><span class="line">很少向内探索自我。</span><br><span class="line">什么专注事业，都是为了功名利禄，平步青云，碾压众人。再不济，就是企图获取女人的崇拜——哟哟哟，这可不是向上生长。</span><br><span class="line">这叫装逼。</span><br><span class="line">功利就功利，别扯意识形态哈。</span><br><span class="line">（比如说，拼命考个公务员/水利/电网/银行/大学行政那种然后躺平追求稳定体面，这都不叫向上生长哈，这叫胸无大志了此残生观念传统，你也可以把它叫做“等死”或者“乡土中国”或者“听妈妈的话”之类的，望周知，千万不要对自己的心志有什么误解。）</span><br><span class="line">所以说，我惯见不得把这问题局限于女人的，</span><br><span class="line">在我看来，绝大部分男人也是不优秀的……</span><br><span class="line">（而且更懒，懒到个人卫生的那种懒！）</span><br><span class="line">（尤其是中年男人！懒得像条死麻蛇，走到哪里，身上仿佛会掉渣渣！脏乱差代名词！）</span><br><span class="line">你们并不会因为性别为男就赢在起跑线上……</span><br><span class="line">只有你们自己这么认为……</span><br><span class="line">俗称……普信。</span><br><span class="line">（用现实的眼光看：要身材没身材，要颜值没颜值，要气质没气质，要才华没才华，要钱没钱，要思想有抖音。）</span><br><span class="line">说真的，真要放开了场域去挣、去抢、去战斗，</span><br><span class="line">我觉得男人未必强得过女人。</span><br><span class="line">冒饭了冒饭啦。</span><br><span class="line">希望看到的男同志不要自尊心破防，</span><br><span class="line">因为我讲的是实话……</span><br><span class="line">当然了，我并不是骂整个男性群体哈，我骂的是一类人的“妥协与侥幸”：</span><br><span class="line">那些一边觉得“男性天生该有优势”，一边又躺平摆烂的人；</span><br><span class="line">那些把“向上生长”等同于“装样子求崇拜”，却没真为目标扛过事、折腾过的人；</span><br><span class="line">那些嘴上说“要奋斗”，实际遇到点难就找退路，还不愿承认自己“胸无大志”的人。</span><br><span class="line">不分男女，女人群体里这种人也大有人在。</span><br><span class="line">但是她们嘴上是不会承认的，承认了就破坏了自己良好的自我感觉了。</span><br><span class="line">很多女人不奋斗的，付出不了一点真行动和真坚持，</span><br><span class="line">她们只追求自我感觉良好，大概率承受不了思觉失调。</span><br><span class="line">会比来大姨妈都难过，真的。</span><br><span class="line">（有时候对女人哀其不幸怒其不争就在这里，太他妈喜欢社交表演了，务不了一点实。</span><br><span class="line">虽然说没有男人那种普信的烂毛病，但总希望“别人觉得自己过得好”，又日常摆烂没什么行动力，嘴上喊着什么清醒独立，实际上还不是躺平求稳定，说一套做一套，一声叹息。）</span><br><span class="line">**大部分人更愿意温和地走进那个凉夜，把眼睛蒙起来。**</span><br><span class="line">**然后自欺欺人。**</span><br><span class="line">**大部分人，从中年以后到死都这个姿态。**</span><br><span class="line">编辑于 2025-09-07 03:24・上海</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>日记</tag>
+      </tags>
+  </entry>
 </search>

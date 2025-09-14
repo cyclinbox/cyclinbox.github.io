@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="这周组会上讲述的一篇论文。作者提出了一种检测蛋白质和DNA之间低亲和力相互作用的技术PADIT-seq，并通过这种技术发现了转录因子调控中的两种新机制。  Citation：Khetan, S., Carroll, B.S. &amp; Bulyk, M.L. Multiple overlapping binding sites determine transcription factor occ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《自然》论文：多个重叠的结合位点决定转录因子占据情况">
+<meta property="og:url" content="https://wz.anoms.top/2025/09/14/Multiple_overlapping_binding_sites_determine_transcription_factor_occupancy.Nature/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="这周组会上讲述的一篇论文。作者提出了一种检测蛋白质和DNA之间低亲和力相互作用的技术PADIT-seq，并通过这种技术发现了转录因子调控中的两种新机制。  Citation：Khetan, S., Carroll, B.S. &amp; Bulyk, M.L. Multiple overlapping binding sites determine transcription factor occ">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172252.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172303.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172715.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172728.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172740.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172753.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914234402.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914235445.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914235919.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003903.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003910.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003920.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004211.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004340.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004441.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004740.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005141.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005249.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005258.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005306.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005744.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005920.png">
+<meta property="article:published_time" content="2025-09-14T15:59:00.000Z">
+<meta property="article:modified_time" content="2025-09-14T17:55:06.090Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="转录因子">
+<meta property="article:tag" content="DNA">
+<meta property="article:tag" content="转录调控">
+<meta property="article:tag" content="分子生物学">
+<meta property="article:tag" content="测序技术">
+<meta property="article:tag" content="微流控">
+<meta property="article:tag" content="Nature">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172252.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/09/14/Multiple_overlapping_binding_sites_determine_transcription_factor_occupancy.Nature/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/09/14/Multiple_overlapping_binding_sites_determine_transcription_factor_occupancy.Nature/","path":"2025/09/14/Multiple_overlapping_binding_sites_determine_transcription_factor_occupancy.Nature/","title":"《自然》论文：多个重叠的结合位点决定转录因子占据情况"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《自然》论文：多个重叠的结合位点决定转录因子占据情况 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E4%BD%9C%E8%80%85%E4%BF%A1%E6%81%AF%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">（一）作者信息：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%89%8D%E4%BA%BA%E7%A0%94%E7%A9%B6%EF%BC%9A%E6%A3%80%E6%B5%8B%E8%9B%8B%E7%99%BD%E8%B4%A8-DNA%E4%BA%92%E4%BD%9C%E7%9A%84%E6%8A%80%E6%9C%AF"><span class="nav-number">1.2.</span> <span class="nav-text">（二）前人研究：检测蛋白质-DNA互作的技术</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E6%96%87%E7%A0%94%E7%A9%B6%E7%BB%93%E6%9E%9C"><span class="nav-number">2.</span> <span class="nav-text">本文研究结果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%8F%90%E5%87%BA%E4%BA%86%E4%B8%80%E7%A7%8D%E6%96%B0%E6%96%B9%E6%B3%95%EF%BC%9APADIT-seq"><span class="nav-number">2.1.</span> <span class="nav-text">（一）提出了一种新方法：PADIT-seq</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E8%BD%AC%E5%BD%95%E5%9B%A0%E5%AD%90%E5%9C%A8%E5%9F%BA%E5%9B%A0%E7%BB%84%E4%B8%AD%E7%BB%93%E5%90%88%E9%87%8D%E5%8F%A0%E7%9A%84%E4%BD%8D%E7%82%B9"><span class="nav-number">2.2.</span> <span class="nav-text">（二）转录因子在基因组中结合重叠的位点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E8%BD%AC%E5%BD%95%E5%9B%A0%E5%AD%90%E5%AF%B9%E4%BA%8E%E6%AF%8F%E4%B8%AA%E9%87%8D%E5%8F%A0%E4%BD%8D%E7%82%B9%E7%9A%84%E7%BB%93%E5%90%88%E6%98%AF%E4%BA%92%E7%9B%B8%E7%8B%AC%E7%AB%8B%E7%9A%84"><span class="nav-number">2.3.</span> <span class="nav-text">（三）转录因子对于每个重叠位点的结合是互相独立的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89%E5%90%8C%E6%BA%90%E8%BD%AC%E5%BD%95%E5%9B%A0%E5%AD%90%E7%9A%84%E7%AB%9E%E4%BA%89%E6%80%A7%E7%BB%93%E5%90%88%E6%9C%BA%E5%88%B6"><span class="nav-number">2.4.</span> <span class="nav-text">（四）同源转录因子的竞争性结合机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%94%EF%BC%89%E7%AA%81%E5%8F%98%E5%AF%B9%E8%BD%AC%E5%BD%95%E5%9B%A0%E5%AD%90%E7%BB%93%E5%90%88%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">2.5.</span> <span class="nav-text">（五）突变对转录因子结合的影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%85%AD%EF%BC%89%E8%BD%AC%E5%BD%95%E5%9B%A0%E5%AD%90%E7%BB%93%E5%90%88%E4%BD%8D%E7%82%B9%E7%9A%84%E5%86%85%E5%9C%A8%E5%8F%AF%E7%BC%96%E7%BB%87%E6%80%A7"><span class="nav-number">2.6.</span> <span class="nav-text">（六）转录因子结合位点的内在可编织性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA%E4%B8%8E%E8%AE%A8%E8%AE%BA"><span class="nav-number">3.</span> <span class="nav-text">结论与讨论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">414</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/09/14/Multiple_overlapping_binding_sites_determine_transcription_factor_occupancy.Nature/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《自然》论文：多个重叠的结合位点决定转录因子占据情况 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《自然》论文：多个重叠的结合位点决定转录因子占据情况
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-14 23:59:00" itemprop="dateCreated datePublished" datetime="2025-09-14T23:59:00+08:00">2025-09-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-09-15 01:55:06" itemprop="dateModified" datetime="2025-09-15T01:55:06+08:00">2025-09-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%89%A9/" itemprop="url" rel="index"><span itemprop="name">生物</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>这周组会上讲述的一篇论文。作者提出了一种检测蛋白质和DNA之间低亲和力相互作用的技术PADIT-seq，并通过这种技术发现了转录因子调控中的两种新机制。</p>
+<blockquote>
+<p>Citation：Khetan, S., Carroll, B.S. &amp; Bulyk, M.L. Multiple overlapping binding sites determine transcription factor occupancy. <em>Nature</em> (2025). <a target="_blank" rel="noopener" href="https://doi.org/10.1038/s41586-025-09472-3">doi:10.1038/s41586-025-09472-3</a></p>
+</blockquote>
+<span id="more"></span>
+
+<p>本文另见微信公众号报道：<br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/JrxyjS3kYVo0rMyJd4uJ2Q?scene=1">Nature | DNA的“俄罗斯套娃”：PADIT-seq揭示了一个颠覆教科书的转录因子结合新模型</a></p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h3 id="（一）作者信息："><a href="#（一）作者信息：" class="headerlink" title="（一）作者信息："></a>（一）作者信息：</h3><p>本文的作者团队均来自哈佛大学医学院（更详细的信息可见 <a target="_blank" rel="noopener" href="https://biophysics.fas.harvard.edu/people/martha-l-bulyk">课题组官网</a> ）。研究团队聚焦于转录因子结合的生物学机制研究，开发了大量技术和软件工具，自2002年起，已发表近百篇论文和十多种软件工具。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172252.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172303.png" alt="image.png"></p>
+<h3 id="（二）前人研究：检测蛋白质-DNA互作的技术"><a href="#（二）前人研究：检测蛋白质-DNA互作的技术" class="headerlink" title="（二）前人研究：检测蛋白质-DNA互作的技术"></a>（二）前人研究：检测蛋白质-DNA互作的技术</h3><p>文章中提到了如下技术：</p>
+<ul>
+<li>PBM：一种基于微阵列的检测技术，可以大规模检测一种蛋白质和不同DNA的互作。 <strong>优点</strong> ：高通量；成本低（并且为本文实验室首创，有大量技术积累）。 <strong>缺点</strong> ：只能检测高亲和力的DNA片段，对于低亲和力片段的敏感性不足。<ul>
+<li>uPBM：是PBM的变种方法。PBM的微阵列上附着的是天然存在的DNA片段，但是uPBM上附着的是经过数学计算的所有可能的DNA序列组合。 <strong>因此理论上uPBM可以检测一种特定转录因子的所有潜在DNA结合片段。</strong> </li>
+</ul>
+</li>
+<li>HT-SELEX：基于多轮扩增反应，对高亲和力DNA片段进行富集。优缺点和PBM相同。</li>
+<li>MITOMI：一种基于微流控系统的检测技术。<strong>优点</strong> ：可以精确定量蛋白质和DNA之间的作用力强度（以化学平衡常数 $K_d$ 计）。 <strong>缺点</strong> ：测序通量较低，并且无法用于发现未知的高亲和力片段。</li>
+<li>BET-seq：一种基于微流控系统的高通量检测技术，相比于MITOMI改进了控制系统和测序方法，并在下游分析技术中引入了深度学习模型。<strong>优点</strong> ：可以精确定量蛋白质和DNA之间的作用力强度（以相对自由能变化 $\text{ΔΔ}G$ 计），测序通量较高，可用于发现未知的高亲和力片段。 <strong>缺点</strong> ：成本较高。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172715.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172728.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172740.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914172753.png" alt="image.png"></p>
+<p>本文的出发点在于，如何寻找那些与转录因子有较低亲和力的DNA片段（作者认为这些低亲和力片段也有重要的调控功能），同时降低实验成本。最终，作者提出了PADIT-seq，在体外系统中通过两阶段的转录，实现低亲和力片段的发现。</p>
+<h2 id="本文研究结果"><a href="#本文研究结果" class="headerlink" title="本文研究结果"></a>本文研究结果</h2><h3 id="（一）提出了一种新方法：PADIT-seq"><a href="#（一）提出了一种新方法：PADIT-seq" class="headerlink" title="（一）提出了一种新方法：PADIT-seq"></a>（一）提出了一种新方法：PADIT-seq</h3><p>PADIT-seq = protein affinity to DNA by in vitro transcription and RNA sequencing</p>
+<p>这是一种 <strong>体外</strong> 的TF结合位点筛选方法。（注意和ChIP-seq之类的方法的区别——后者是体内方法）。</p>
+<p>虽然先前已经有许多种TF-DNA binding检测方法，但作者提出的新方法旨在克服现有技术的以下局限：</p>
+<ul>
+<li>灵敏度不足 (Low Sensitivity)：<ul>
+<li>如PBM和HT-SELEX等主流高通量方法，由于其检测原理（荧光信号强度或富集倍数），对低亲和力的结合事件不敏感。它们的检测阈值较高，导致大量真实的低亲和力位点被当作“噪音”而忽略。</li>
+</ul>
+</li>
+<li>功能相关性不明确 (Lack of Functional Relevance)：<ul>
+<li>PBM测量的是“结合”，MITOMI/BET-seq测量的是“亲和力/能量”，HT-SELEX测量的是“富集”。但这些物理化学上的测量结果是否直接对应于功能性的相互作用（即能驱动下游生物学过程）并不总是清晰的。一个微弱的结合可能没有实际功能意义。</li>
+</ul>
+</li>
+</ul>
+<p>PADIT-seq的原理如下图所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914234402.png" alt="image.png"></p>
+<ul>
+<li>第一阶段的转录产生一个带有ALFA标签的转录因子融合蛋白（DBD就是转录因子的DNA结合结构域），这些融合蛋白将对第二阶段的转录产生影响。</li>
+<li>第二阶段的转录由D1pT7启动子调控，这是一个人为修改的T7启动子：<ul>
+<li>在没有转录因子的条件下，D1pT7会启动低水平转录，产生本底水平的报告基因表达</li>
+<li>当融合蛋白（DBD）与候选的DNA片段（TFBS-M）发生结合时，融合蛋白的ALFA标签就会招募T7-RNA聚合酶，启动更高水平的报告基因表达</li>
+<li>报告基因的表达水平与DBD-TFBS结合的亲和力成正比——因此可以检测低水平的DNA亲和力片段。</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914235445.png" alt="image.png"></p>
+<p>作者对比了PADIT-seq和另外两种传统方法（uPBM和HT-SELEX）。如Fig1c所示，PADIT-seq在假阳性率的控制上优于uPBM；如Fig1d-e所示，PADIT-seq能够找到比HT-SELEX更多的低亲和力位点。</p>
+<p>作者还发现，这些低亲和力位点，并不会决定转录因子是否结合，但是能够影响结合的水平。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250914235919.png" alt="image.png"></p>
+<h3 id="（二）转录因子在基因组中结合重叠的位点"><a href="#（二）转录因子在基因组中结合重叠的位点" class="headerlink" title="（二）转录因子在基因组中结合重叠的位点"></a>（二）转录因子在基因组中结合重叠的位点</h3><p>作者使用PADIT-seq，以1bp的步长，对ChIP-seq的peak区域的DNA序列进行滑窗检测。发现在高亲和力位点两侧存在重叠的低亲和力位点。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003903.png" alt="image.png"></p>
+<p>另外，如Fig2b所示，相比于背景基因组，ChIP-seq的peak区域，倾向于富集更多的连续亲和位点，这表明连续位点的存在可能对于转录因子的结合是重要的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003910.png" alt="image.png"></p>
+<p>并且这些位点的保守性也更强。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915003920.png" alt="image.png"></p>
+<h3 id="（三）转录因子对于每个重叠位点的结合是互相独立的"><a href="#（三）转录因子对于每个重叠位点的结合是互相独立的" class="headerlink" title="（三）转录因子对于每个重叠位点的结合是互相独立的"></a>（三）转录因子对于每个重叠位点的结合是互相独立的</h3><p>如下图。ChIP-nexus是一种能够以1bp分辨率检测DNA上的转录因子结合区域边界的技术。每个“cut”的位置代表TF与DNA的一个精确的接触边界。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004211.png" alt="image.png"></p>
+<p>作者发现，随着重叠的结合位点(overlapping binding site)数量增加：</p>
+<ul>
+<li><ol>
+<li>检测到的cuts信号的强度在增加（5→10→20）</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>有cuts信号的位点数量在增加（a/b → a/b/c → a/b/c/d）</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>足迹的整体大小在增加（28bp→29bp→30bp）</li>
+</ol>
+</li>
+</ul>
+<p>也就是说，每个额外的重叠结合位点都会在每条链上多产生一个精确的cut，导致总足迹大小每次增加1bp，<strong>因此TF对各个位点是独立结合的。</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004340.png" alt="image.png"></p>
+<h3 id="（四）同源转录因子的竞争性结合机制"><a href="#（四）同源转录因子的竞争性结合机制" class="headerlink" title="（四）同源转录因子的竞争性结合机制"></a>（四）同源转录因子的竞争性结合机制</h3><p>这是本文的重要生物学发现之一。</p>
+<p>同源转录因子意味着它们有着相同的识别基序（例如下图中的Cbf1和Pho4，都识别CACGTG框），那么在实际的转录调控中，它们是如何识别各自特异的结合位点呢？</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004441.png" alt="image.png"></p>
+<p>作者首先通过PADIT-seq鉴定出了311个有亲和力的8-mer结合位点序列。其中，有58个是Cbf1特异的，有219个是Pho4特异的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915004740.png" alt="image.png"></p>
+<p>作者使用BET-seq检测了每一种16bp长度的DNA序列组合（其中包括CACGTG这段核心的motif，而侧翼序列则是所有可能的碱基组合）与这两种转录因子的结合亲和力（以相对自由能ΔΔG计）。</p>
+<ul>
+<li>Fig4b：按照相对亲和力的序列频数统计。存在两个峰，说明侧翼序列对结合特异性有影响。（如果没有影响，那么频数分布应该呈现以0为均值的正态分布）</li>
+<li>Fig4c：侧翼序列中，Cbf1特异的8-mer越多，则DNA片段对Cbf1的亲和力越强；反之亦然。也就是说，高亲和力位点两侧的低亲和力位点塑造了TF识别的特异性</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005141.png" alt="image.png"></p>
+<p>作者还使用另外几种方法分别验证了这一点。最终，作者将这一个机制总结为 <strong>重叠结合位点模型(overlapping binding sites model)</strong> ，即 <strong>高亲和力位点两侧的低亲和力位点塑造了TF识别的特异性</strong> 。</p>
+<h3 id="（五）突变对转录因子结合的影响"><a href="#（五）突变对转录因子结合的影响" class="headerlink" title="（五）突变对转录因子结合的影响"></a>（五）突变对转录因子结合的影响</h3><p>检测了SNP对TF-binding的影响。如下图所示，作者发现，SNP影响的位点越多，TF结合的改变越大。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005249.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005258.png" alt="image.png"></p>
+<h3 id="（六）转录因子结合位点的内在可编织性"><a href="#（六）转录因子结合位点的内在可编织性" class="headerlink" title="（六）转录因子结合位点的内在可编织性"></a>（六）转录因子结合位点的内在可编织性</h3><p>所谓“可编织性”（weavable），指的是这些位点之间互相有overlap，可以编织出一张连通图。</p>
+<p>如下图，作者提出了一种对TF-binding site进行描述和定量的方法，即网络图——一个节点代表一个k碱基的结合位点（PADIT-seq active k-mers），一条边表示两个节点之间有k-1个bp的序列是重叠的。</p>
+<p>作者发现，随机的8-mer序列形成的连通图并不好——最大的单一联通组件只包括7个节点（如下图，左下角）。相比之下，转录因子的连通图，可以形成非常大的单一联通组件（包含80%以上的大部分节点）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005306.png" alt="image.png"></p>
+<p>作者还使用 <a target="_blank" rel="noopener" href="http://the_brain.bwh.harvard.edu/uniprobe/">UniProbe</a> 的数据库中的公共数据进行了验证。发现，对于其他转录因子来说，在这样的网络图中也是能够形成极大的单一联通组件（“这些TF 结合位点始终形成了更广泛的网络”）。</p>
+<p>这些结果证明：</p>
+<ul>
+<li>“可编织性”是真核生物中不同结构家族的 TFBSs 的固有且普遍的特性</li>
+<li>重叠结合位点模型很可能代表了真核生物 TF-DNA 相互作用的基本特征。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005744.png" alt="image.png"></p>
+<h2 id="结论与讨论"><a href="#结论与讨论" class="headerlink" title="结论与讨论"></a>结论与讨论</h2><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250915005920.png" alt="image.png"></p>
+<p>本文的创新与重要发现：</p>
+<ul>
+<li>提出了一个检测TF-DNA相互作用的测序技术，即PADIT-seq，能够以高灵敏度检测TF的低亲和力位点</li>
+<li>发现TF的高亲和力位点侧翼会有许多低亲和力位点，这些低亲和力位点对于TF的结合起到重要调控作用 → 重叠结合位点模型</li>
+<li>回答了两个生物学问题：<ul>
+<li>①旁系同源TF的竞争特异性</li>
+<li>②非编码变异（SNPs）的功能效应</li>
+</ul>
+</li>
+<li>通过连通图发现TF-binding site的序列特征表现出一种“可编织性”</li>
+</ul>
+<p>局限性：</p>
+<ul>
+<li>PADIT-seq是一种体外测序技术，无法完全模拟体内环境</li>
+<li>PADIT-seq的检测灵敏度，受到多种因素的影响：反应底物浓度（转录因子、T7聚合酶等），测序深度，统计检验阈值。因此PADIT-seq可能仍然无法捕获所有的低亲和力相互作用。</li>
+<li>文章研究对象是真核生物；对于原核生物，其转录因子是否也有“可编织性”？这种特性的进化起源又是什么？这些问题值得研究</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/09/14/Multiple_overlapping_binding_sites_determine_transcription_factor_occupancy.Nature/" title="《自然》论文：多个重叠的结合位点决定转录因子占据情况">https://wz.anoms.top/2025/09/14/Multiple_overlapping_binding_sites_determine_transcription_factor_occupancy.Nature/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%BD%AC%E5%BD%95%E5%9B%A0%E5%AD%90/" rel="tag"><i class="fa fa-tag"></i> 转录因子</a>
+              <a href="/tags/DNA/" rel="tag"><i class="fa fa-tag"></i> DNA</a>
+              <a href="/tags/%E8%BD%AC%E5%BD%95%E8%B0%83%E6%8E%A7/" rel="tag"><i class="fa fa-tag"></i> 转录调控</a>
+              <a href="/tags/%E5%88%86%E5%AD%90%E7%94%9F%E7%89%A9%E5%AD%A6/" rel="tag"><i class="fa fa-tag"></i> 分子生物学</a>
+              <a href="/tags/%E6%B5%8B%E5%BA%8F%E6%8A%80%E6%9C%AF/" rel="tag"><i class="fa fa-tag"></i> 测序技术</a>
+              <a href="/tags/%E5%BE%AE%E6%B5%81%E6%8E%A7/" rel="tag"><i class="fa fa-tag"></i> 微流控</a>
+              <a href="/tags/Nature/" rel="tag"><i class="fa fa-tag"></i> Nature</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/14/20250914_updatelog/" rel="prev" title="近期生活记录（2025年9月）">
+                  <i class="fa fa-chevron-left"></i> 近期生活记录（2025年9月）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
