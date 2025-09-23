@@ -21036,7 +21036,7 @@
     <content><![CDATA[<p>如题。探索了如何从源代码编译安装opencv-python并开启cuda支持。</p>
 <span id="more"></span>
 
-<h2 id="一、背景介绍"><a href="#一、背景介绍" class="headerlink" title="一、背景介绍"></a>一、背景介绍</h2><p>这个问题来自于前几天朋友的求助。由于课题需要，她想在Linux GPU服务器上安装opencv-python这个软件包。虽然官方提供了针对 <a href="https://anaconda.org/conda-forge/opencv-python-headless">conda</a> 和 <a href="https://pypi.org/project/opencv-python/">pypi</a> 平台的预编译版本，但是按照官方文档的说法，这些预编译版本是针对GPU架构编译的，并不支持GPU加速（即CUDA）。</p>
+<h2 id="一、背景介绍"><a href="#一、背景介绍" class="headerlink" title="一、背景介绍"></a>一、背景介绍</h2><p>这个问题来自于前几天朋友的求助。由于课题需要，她想在Linux GPU服务器上安装opencv-python这个软件包。虽然官方提供了针对 <a href="https://anaconda.org/conda-forge/opencv-python-headless">conda</a> 和 <a href="https://pypi.org/project/opencv-python/">pypi</a> 平台的预编译版本，但是按照官方文档的说法，这些预编译版本是针对CPU架构编译的，并不支持GPU加速（即CUDA）。</p>
 <p>检索了一下互联网，也参考了几个AI工具的回答，最终得出的结论是要想启用cuda支持，只能从opencv源代码开始手动编译安装。因此，利用闲暇时间，对这一部分的工作进行了一下探索。</p>
 <h2 id="二、一些参考资料和需要准备的东西"><a href="#二、一些参考资料和需要准备的东西" class="headerlink" title="二、一些参考资料和需要准备的东西"></a>二、一些参考资料和需要准备的东西</h2><p>下面是一些有用的教程和博客</p>
 <ul>
