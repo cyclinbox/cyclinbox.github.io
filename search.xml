@@ -21030,4 +21030,116 @@
         <tag>余光中</tag>
       </tags>
   </entry>
+  <entry>
+    <title>编译安装CUDA版本的opencv-python包</title>
+    <url>/2025/09/23/compile_and_install_opencv-python_with_cuda_support/</url>
+    <content><![CDATA[<p>如题。探索了如何从源代码编译安装opencv-python并开启cuda支持。</p>
+<span id="more"></span>
+
+<h2 id="一、背景介绍"><a href="#一、背景介绍" class="headerlink" title="一、背景介绍"></a>一、背景介绍</h2><p>这个问题来自于前几天朋友的求助。由于课题需要，她想在Linux GPU服务器上安装opencv-python这个软件包。虽然官方提供了针对 <a href="https://anaconda.org/conda-forge/opencv-python-headless">conda</a> 和 <a href="https://pypi.org/project/opencv-python/">pypi</a> 平台的预编译版本，但是按照官方文档的说法，这些预编译版本是针对GPU架构编译的，并不支持GPU加速（即CUDA）。</p>
+<p>检索了一下互联网，也参考了几个AI工具的回答，最终得出的结论是要想启用cuda支持，只能从opencv源代码开始手动编译安装。因此，利用闲暇时间，对这一部分的工作进行了一下探索。</p>
+<h2 id="二、一些参考资料和需要准备的东西"><a href="#二、一些参考资料和需要准备的东西" class="headerlink" title="二、一些参考资料和需要准备的东西"></a>二、一些参考资料和需要准备的东西</h2><p>下面是一些有用的教程和博客</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/640084627">《在 Linux 系统中编译安装 带GPU支持的OpenCV》 - 知乎用户2iUCri的文章 - 知乎</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/10455933570">《Windows安装CUDA版OpenCV【really有用哦+墙裂推荐！】》 - AI技术库的文章 - 知乎</a></li>
+<li><a href="https://www.cnblogs.com/guojin-blogs/p/17939955">《【OpenCV】 OpenCV 源码编译并实现 CUDA 加速 (Windows)》 - 椒颜皮皮虾的文章 - 博客园</a></li>
+</ul>
+<p>另外，在开始本篇的工作前，需要准备好一台装有GPU的Linux服务器，并安装好驱动程序（GPU driver和CUDA）。这一部分可以参考博客的先前文章 <a href="https://wz.anoms.top/2024/12/22/Ubuntu_installation_and_CPU_driver_installation/">《Ubuntu系统的从头安装、显卡驱动与CUDA安装》</a> 。此外，编译过程还需要cmake以及gcc套件，需要预先准备好。</p>
+<p>在安装过程中，需要配置<code>ARCH_BIN</code> 参数（即Compute Capability参数，与显卡型号有关），这个参数需要从 Nvidia官网的 <a href="https://developer.nvidia.com/cuda-legacy-gpus">这个页面</a>上获取。此处我测试的机器上安装的GPU是Tesla P40，因此对应的 <code>ARCH_BIN</code> 参数是6.1。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/44af978e-7af6-4420-96ae-8d8afbb7900e.png" alt="44af978e-7af6-4420-96ae-8d8afbb7900e.png"></p>
+<p>opencv源代码要从GitHub存储库下载，链接如下。其中，<code>opencv_contrib</code> 在opencv主仓库的基础上增加了许多拓展功能，推荐一起安装。</p>
+<ul>
+<li><a href="https://github.com/opencv/opencv">opencv</a></li>
+<li><a href="https://github.com/opencv/opencv_contrib">opencv contrib</a></li>
+</ul>
+<p>进入上述网站以后，点击页面右侧的release，然后选择最新版本的tag（本文写作时是4.12.0），从此处下载tar.gz或者zip格式的文件，这个文件就是最新版的opencv的源代码包。推荐Windows用户下载zip格式，Linux/mac用户下载tar.gz格式。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/df28599b-e3fb-41d3-a37c-e258023c2f34.png" alt="df28599b-e3fb-41d3-a37c-e258023c2f34.png"></p>
+<h2 id="三、编译安装：step-by-step的过程"><a href="#三、编译安装：step-by-step的过程" class="headerlink" title="三、编译安装：step-by-step的过程"></a>三、编译安装：step-by-step的过程</h2><h3 id="3-1-安装准备：新建文件夹、解压源代码"><a href="#3-1-安装准备：新建文件夹、解压源代码" class="headerlink" title="3.1 安装准备：新建文件夹、解压源代码"></a>3.1 安装准备：新建文件夹、解压源代码</h3><p>如题。</p>
+<p>下面我们以有root权限的用户身份演示代码。理论上，一些步骤可以在无root权限的情况下成功运行，只需要调整一下环境变量即可。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 创建工作目录。如果非root，可以在自己的home目录下创建</span></span><br><span class="line"><span class="built_in">cd</span> /opt </span><br><span class="line"><span class="built_in">mkdir</span> opencv_compile</span><br><span class="line"><span class="built_in">cd</span> opencv_compile</span><br><span class="line"></span><br><span class="line"><span class="comment">## 下载源代码包并解压</span></span><br><span class="line"><span class="comment">#  如果网络不好，下载失败，可以在本地下载之后手动上传到服务器</span></span><br><span class="line">wget https://github.com/opencv/opencv/archive/refs/tags/4.12.0.tar.gz -o opencv-4.12.0.tar.gz </span><br><span class="line">wget https://github.com/opencv/opencv_contrib/archive/refs/tags/4.12.0.tar.gz -o  opencv_contrib-4.12.0.tar.gz</span><br><span class="line">tar -zxvf opencv-4.12.0.tar.gz </span><br><span class="line">tar -zxvf opencv_contrib-4.12.0.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="comment">## 创建build目录，后续编译工作将在此处进行</span></span><br><span class="line"><span class="built_in">mkdir</span> -p opencv-4.12.0/build</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-通过cmake预生成配置文件"><a href="#3-2-通过cmake预生成配置文件" class="headerlink" title="3.2 通过cmake预生成配置文件"></a>3.2 通过cmake预生成配置文件</h3><p>这里需要用到cmake工具——这是make的前置步骤，用于生成针对特定系统和硬件配置的makefile——后者是编译步骤（也就是make）时需要用到的配置文件。</p>
+<p>可以使用 <code>which cmake</code> 检查系统中是否安装。如果未安装，则需要预先运行 <code>sudo apt install cmake</code> （Ubuntu/Debian）或 <code>sudo yum install cmake</code> （Redhat/CentOS/RockyLinux）</p>
+<p>另外，后续的编译步骤需要GCC套件，可以使用 <code>which gcc</code> 和 <code>which g++</code> 检查是否安装。如果未安装，则需要 <code>sudo apt install gcc g++</code> 或 <code>sudo yum install gcc g++</code> 来安装。</p>
+<p>接下来， <strong>我们创建一个自动化脚本，用来调用cmake，生成make的配置文件</strong> 。这个自动化脚本的文件路径是 <code>/opt/opencv_compile/auto_compile.sh</code>  ，因为涉及到一些相对路径，所以文件路径不要放错。</p>
+<p>文件内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">cd</span> opencv-4.12.0/build</span><br><span class="line"></span><br><span class="line">cmake \</span><br><span class="line">-D CMAKE_C_COMPILER=/usr/bin/gcc \</span><br><span class="line">-D CMAKE_CXX_COMPILER=/usr/bin/g++ \</span><br><span class="line">-D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-12.4 \</span><br><span class="line">-D CMAKE_BUILD_TYPE=RELEASE \</span><br><span class="line">-D CMAKE_INSTALL_PREFIX=$(python3 -c <span class="string">&quot;import sys; print(sys.prefix)&quot;</span>)  \</span><br><span class="line">-D INSTALL_PYTHON_EXAMPLES=ON  \</span><br><span class="line">-D INSTALL_C_EXAMPLES=OFF  \</span><br><span class="line">-D OPENCV_ENABLE_NONFREE=ON  \</span><br><span class="line">-D WITH_CUDA=ON \</span><br><span class="line">-D WITH_CUDNN=ON  \</span><br><span class="line">-D OPENCV_DNN_CUDA=ON  \</span><br><span class="line">-D ENABLE_FAST_MATH=1  \</span><br><span class="line">-D CUDA_FAST_MATH=1  \</span><br><span class="line">-D CUDA_ARCH_BIN=6.1  \</span><br><span class="line">-D WITH_CUBLAS=ON  \</span><br><span class="line">-D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_compile/opencv_contrib-4.12.0/modules \</span><br><span class="line">-D OPENCV_PYTHON3_INSTALL_PATH=/opt/minconda3/envs/pytorch_env/lib/python3.12/site-packages \</span><br><span class="line">-D BUILD_EXAMPLES=ON \</span><br><span class="line">-D PYTHON_EXECUTABLE=$(<span class="built_in">which</span> python3) ..</span><br></pre></td></tr></table></figure>
+
+<p>其中的部分参数的解释：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CMAKE_C_COMPILER</code></td>
+<td>C语言编译器的位置。可以通过 <code>which gcc</code> 找到</td>
+</tr>
+<tr>
+<td><code>CMAKE_CXX_COMPILER</code></td>
+<td>C++语言编译器的位置。可以通过 <code>which g++</code> 找到</td>
+</tr>
+<tr>
+<td><code>CUDA_TOOLKIT_ROOT_DIR</code></td>
+<td>CUDA的安装目录。可以通过 <code>which nvcc</code> 找到，注意只保留到cuda这一层目录，不要带子目录</td>
+</tr>
+<tr>
+<td><code>CUDA_ARCH_BIN</code></td>
+<td>Compute Capability参数，与显卡型号有关，获取方法见上一节</td>
+</tr>
+<tr>
+<td><code>OPENCV_EXTRA_MODULES_PATH</code></td>
+<td>opencv_contrib的源码路径</td>
+</tr>
+<tr>
+<td><code>OPENCV_PYTHON3_INSTALL_PATH</code></td>
+<td>当前环境下python3的site-package目录的路径。需要手动检查，一般来说在 <code>conda/envs</code> 的某个子目录下</td>
+</tr>
+<tr>
+<td><code>WITH_CUDA</code> 和 <code>WITH_CUDNN</code></td>
+<td>编译带有CUDA支持的版本</td>
+</tr>
+</tbody></table>
+<p>上述shell脚本末尾的 <code>..</code> 不要删，表示使用当前目录的上一级（即 <code>/opt/opencv_compile/opencv-4.12.0</code> ）作为cmake的工作目录。</p>
+<p>读者朋友可以根据自身的实际情况调整参数，并保存为 <code>auto_compile.sh</code> 文件。 </p>
+<p>之后，运行下面的指令进行cmake。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo bash ./auto_compile.sh  2&gt;&amp;1 | <span class="built_in">tee</span> output.log</span><br></pre></td></tr></table></figure>
+
+<p>这个过程中的所有输出会打印到控制台，同时在 <code>/opt/opencv_compile/output.log</code> 文件当中保存一份副本——这份输出日志可以用于后续问题的排查（比如说，交给AI判断cmake是否成功）</p>
+<p>整个过程大约会持续几分钟，最终的输出大致如下（只截取最后一部分输出）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/f1f3c216-fc24-476b-a2c4-c3b57b73b701.png" alt="f1f3c216-fc24-476b-a2c4-c3b57b73b701.png"></p>
+<h3 id="3-3-编译与安装"><a href="#3-3-编译与安装" class="headerlink" title="3.3 编译与安装"></a>3.3 编译与安装</h3><p>cmake会有几千行输出。可以把最后几百行输出发送给AI，让其帮忙判断是否cmake成功。如果cmake成功，我们就可以正式进入编译的过程了。</p>
+<p>下面是编译指令。其中， <code>nproc</code> 是CPU核数——使用 <code>make -j$nproc</code> 可以调用机器上的所有CPU核并行编译，从而加快编译速度。在我们实验室的服务器上，总共有8个核，并行编译大约花了几十分钟。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /opt/opencv_compile/opencv-4.12.0/build</span><br><span class="line"><span class="comment"># 使用多核编译（根据你的CPU调整线程数）</span></span><br><span class="line"><span class="built_in">nproc</span>=`grep -c ^processor /proc/cpuinfo`</span><br><span class="line">sudo make -j<span class="variable">$nproc</span> 2&gt;&amp;1 | <span class="built_in">tee</span> make.output.log </span><br><span class="line"><span class="comment"># 编译成功以后，再使用下面的指令安装，否则在python中import cv2会报错</span></span><br><span class="line">sudo make install </span><br></pre></td></tr></table></figure>
+
+<p>编译过程的所有输出同样会打印到控制台，同时在 <code>/opt/opencv_compile/opencv-4.12.0/build/make.output.log</code> 文件当中保存一份副本——这份输出日志可以用于后续问题的排查（比如说，交给AI判断make是否成功）</p>
+<p>make阶段耗时最长，大约几十分钟的样子，最终的输出大致如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/a1530407-a121-45d0-a316-14a669db9957.png" alt="a1530407-a121-45d0-a316-14a669db9957.png"></p>
+<p>make install阶段要快很多，几分钟就可以完成，输出大致如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250923154901.png" alt="image.png"></p>
+<h2 id="四、在python中检测opencv是否安装成功"><a href="#四、在python中检测opencv是否安装成功" class="headerlink" title="四、在python中检测opencv是否安装成功"></a>四、在python中检测opencv是否安装成功</h2><p>运行下面的python代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="built_in">print</span>(cv2.__version__) <span class="comment"># 查看opencv的版本号</span></span><br><span class="line"><span class="built_in">print</span>(cv2.cuda.getCudaEnabledDeviceCount()) <span class="comment"># 查看opencv启用了多少个CUDA设备</span></span><br></pre></td></tr></table></figure>
+
+<p>对于CPU版本的opencv，其启用的CUDA设备数量为0。只要CUDA设备的数量大于0，就说明opencv启用GPU成功。</p>
+<p>实际运行截图：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/9f41c95c-7295-430a-8b4d-f5ae6ec599be.png" alt="9f41c95c-7295-430a-8b4d-f5ae6ec599be.png"></p>
+<p>完结撒花！</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>Ubuntu</tag>
+        <tag>GPU</tag>
+        <tag>Nvidia</tag>
+        <tag>CUDA</tag>
+        <tag>OpenCV</tag>
+        <tag>cmake</tag>
+        <tag>编译安装</tag>
+      </tags>
+  </entry>
 </search>

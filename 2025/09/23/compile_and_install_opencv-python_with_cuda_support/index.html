@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如题。探索了如何从源代码编译安装opencv-python并开启cuda支持。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译安装CUDA版本的opencv-python包">
+<meta property="og:url" content="https://wz.anoms.top/2025/09/23/compile_and_install_opencv-python_with_cuda_support/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="如题。探索了如何从源代码编译安装opencv-python并开启cuda支持。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/44af978e-7af6-4420-96ae-8d8afbb7900e.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/df28599b-e3fb-41d3-a37c-e258023c2f34.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/f1f3c216-fc24-476b-a2c4-c3b57b73b701.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/a1530407-a121-45d0-a316-14a669db9957.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250923154901.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/9f41c95c-7295-430a-8b4d-f5ae6ec599be.png">
+<meta property="article:published_time" content="2025-09-23T07:00:00.000Z">
+<meta property="article:modified_time" content="2025-09-23T08:07:36.590Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="GPU">
+<meta property="article:tag" content="Nvidia">
+<meta property="article:tag" content="CUDA">
+<meta property="article:tag" content="OpenCV">
+<meta property="article:tag" content="cmake">
+<meta property="article:tag" content="编译安装">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/44af978e-7af6-4420-96ae-8d8afbb7900e.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/09/23/compile_and_install_opencv-python_with_cuda_support/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/09/23/compile_and_install_opencv-python_with_cuda_support/","path":"2025/09/23/compile_and_install_opencv-python_with_cuda_support/","title":"编译安装CUDA版本的opencv-python包"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>编译安装CUDA版本的opencv-python包 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">一、背景介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%B8%80%E4%BA%9B%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99%E5%92%8C%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E7%9A%84%E4%B8%9C%E8%A5%BF"><span class="nav-number">2.</span> <span class="nav-text">二、一些参考资料和需要准备的东西</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85%EF%BC%9Astep-by-step%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">三、编译安装：step-by-step的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%AE%89%E8%A3%85%E5%87%86%E5%A4%87%EF%BC%9A%E6%96%B0%E5%BB%BA%E6%96%87%E4%BB%B6%E5%A4%B9%E3%80%81%E8%A7%A3%E5%8E%8B%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 安装准备：新建文件夹、解压源代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E9%80%9A%E8%BF%87cmake%E9%A2%84%E7%94%9F%E6%88%90%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 通过cmake预生成配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E7%BC%96%E8%AF%91%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 编译与安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%9C%A8python%E4%B8%AD%E6%A3%80%E6%B5%8Bopencv%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F"><span class="nav-number">4.</span> <span class="nav-text">四、在python中检测opencv是否安装成功</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">418</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/09/23/compile_and_install_opencv-python_with_cuda_support/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="编译安装CUDA版本的opencv-python包 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          编译安装CUDA版本的opencv-python包
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-23 15:00:00 / 修改时间：16:07:36" itemprop="dateCreated datePublished" datetime="2025-09-23T15:00:00+08:00">2025-09-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如题。探索了如何从源代码编译安装opencv-python并开启cuda支持。</p>
+<span id="more"></span>
+
+<h2 id="一、背景介绍"><a href="#一、背景介绍" class="headerlink" title="一、背景介绍"></a>一、背景介绍</h2><p>这个问题来自于前几天朋友的求助。由于课题需要，她想在Linux GPU服务器上安装opencv-python这个软件包。虽然官方提供了针对 <a target="_blank" rel="noopener" href="https://anaconda.org/conda-forge/opencv-python-headless">conda</a> 和 <a target="_blank" rel="noopener" href="https://pypi.org/project/opencv-python/">pypi</a> 平台的预编译版本，但是按照官方文档的说法，这些预编译版本是针对GPU架构编译的，并不支持GPU加速（即CUDA）。</p>
+<p>检索了一下互联网，也参考了几个AI工具的回答，最终得出的结论是要想启用cuda支持，只能从opencv源代码开始手动编译安装。因此，利用闲暇时间，对这一部分的工作进行了一下探索。</p>
+<h2 id="二、一些参考资料和需要准备的东西"><a href="#二、一些参考资料和需要准备的东西" class="headerlink" title="二、一些参考资料和需要准备的东西"></a>二、一些参考资料和需要准备的东西</h2><p>下面是一些有用的教程和博客</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/640084627">《在 Linux 系统中编译安装 带GPU支持的OpenCV》 - 知乎用户2iUCri的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/10455933570">《Windows安装CUDA版OpenCV【really有用哦+墙裂推荐！】》 - AI技术库的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/guojin-blogs/p/17939955">《【OpenCV】 OpenCV 源码编译并实现 CUDA 加速 (Windows)》 - 椒颜皮皮虾的文章 - 博客园</a></li>
+</ul>
+<p>另外，在开始本篇的工作前，需要准备好一台装有GPU的Linux服务器，并安装好驱动程序（GPU driver和CUDA）。这一部分可以参考博客的先前文章 <a href="https://wz.anoms.top/2024/12/22/Ubuntu_installation_and_CPU_driver_installation/">《Ubuntu系统的从头安装、显卡驱动与CUDA安装》</a> 。此外，编译过程还需要cmake以及gcc套件，需要预先准备好。</p>
+<p>在安装过程中，需要配置<code>ARCH_BIN</code> 参数（即Compute Capability参数，与显卡型号有关），这个参数需要从 Nvidia官网的 <a target="_blank" rel="noopener" href="https://developer.nvidia.com/cuda-legacy-gpus">这个页面</a>上获取。此处我测试的机器上安装的GPU是Tesla P40，因此对应的 <code>ARCH_BIN</code> 参数是6.1。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/44af978e-7af6-4420-96ae-8d8afbb7900e.png" alt="44af978e-7af6-4420-96ae-8d8afbb7900e.png"></p>
+<p>opencv源代码要从GitHub存储库下载，链接如下。其中，<code>opencv_contrib</code> 在opencv主仓库的基础上增加了许多拓展功能，推荐一起安装。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/opencv/opencv">opencv</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/opencv/opencv_contrib">opencv contrib</a></li>
+</ul>
+<p>进入上述网站以后，点击页面右侧的release，然后选择最新版本的tag（本文写作时是4.12.0），从此处下载tar.gz或者zip格式的文件，这个文件就是最新版的opencv的源代码包。推荐Windows用户下载zip格式，Linux/mac用户下载tar.gz格式。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/df28599b-e3fb-41d3-a37c-e258023c2f34.png" alt="df28599b-e3fb-41d3-a37c-e258023c2f34.png"></p>
+<h2 id="三、编译安装：step-by-step的过程"><a href="#三、编译安装：step-by-step的过程" class="headerlink" title="三、编译安装：step-by-step的过程"></a>三、编译安装：step-by-step的过程</h2><h3 id="3-1-安装准备：新建文件夹、解压源代码"><a href="#3-1-安装准备：新建文件夹、解压源代码" class="headerlink" title="3.1 安装准备：新建文件夹、解压源代码"></a>3.1 安装准备：新建文件夹、解压源代码</h3><p>如题。</p>
+<p>下面我们以有root权限的用户身份演示代码。理论上，一些步骤可以在无root权限的情况下成功运行，只需要调整一下环境变量即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 创建工作目录。如果非root，可以在自己的home目录下创建</span></span><br><span class="line"><span class="built_in">cd</span> /opt </span><br><span class="line"><span class="built_in">mkdir</span> opencv_compile</span><br><span class="line"><span class="built_in">cd</span> opencv_compile</span><br><span class="line"></span><br><span class="line"><span class="comment">## 下载源代码包并解压</span></span><br><span class="line"><span class="comment">#  如果网络不好，下载失败，可以在本地下载之后手动上传到服务器</span></span><br><span class="line">wget https://github.com/opencv/opencv/archive/refs/tags/4.12.0.tar.gz -o opencv-4.12.0.tar.gz </span><br><span class="line">wget https://github.com/opencv/opencv_contrib/archive/refs/tags/4.12.0.tar.gz -o  opencv_contrib-4.12.0.tar.gz</span><br><span class="line">tar -zxvf opencv-4.12.0.tar.gz </span><br><span class="line">tar -zxvf opencv_contrib-4.12.0.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="comment">## 创建build目录，后续编译工作将在此处进行</span></span><br><span class="line"><span class="built_in">mkdir</span> -p opencv-4.12.0/build</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-通过cmake预生成配置文件"><a href="#3-2-通过cmake预生成配置文件" class="headerlink" title="3.2 通过cmake预生成配置文件"></a>3.2 通过cmake预生成配置文件</h3><p>这里需要用到cmake工具——这是make的前置步骤，用于生成针对特定系统和硬件配置的makefile——后者是编译步骤（也就是make）时需要用到的配置文件。</p>
+<p>可以使用 <code>which cmake</code> 检查系统中是否安装。如果未安装，则需要预先运行 <code>sudo apt install cmake</code> （Ubuntu/Debian）或 <code>sudo yum install cmake</code> （Redhat/CentOS/RockyLinux）</p>
+<p>另外，后续的编译步骤需要GCC套件，可以使用 <code>which gcc</code> 和 <code>which g++</code> 检查是否安装。如果未安装，则需要 <code>sudo apt install gcc g++</code> 或 <code>sudo yum install gcc g++</code> 来安装。</p>
+<p>接下来， <strong>我们创建一个自动化脚本，用来调用cmake，生成make的配置文件</strong> 。这个自动化脚本的文件路径是 <code>/opt/opencv_compile/auto_compile.sh</code>  ，因为涉及到一些相对路径，所以文件路径不要放错。</p>
+<p>文件内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">cd</span> opencv-4.12.0/build</span><br><span class="line"></span><br><span class="line">cmake \</span><br><span class="line">-D CMAKE_C_COMPILER=/usr/bin/gcc \</span><br><span class="line">-D CMAKE_CXX_COMPILER=/usr/bin/g++ \</span><br><span class="line">-D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-12.4 \</span><br><span class="line">-D CMAKE_BUILD_TYPE=RELEASE \</span><br><span class="line">-D CMAKE_INSTALL_PREFIX=$(python3 -c <span class="string">&quot;import sys; print(sys.prefix)&quot;</span>)  \</span><br><span class="line">-D INSTALL_PYTHON_EXAMPLES=ON  \</span><br><span class="line">-D INSTALL_C_EXAMPLES=OFF  \</span><br><span class="line">-D OPENCV_ENABLE_NONFREE=ON  \</span><br><span class="line">-D WITH_CUDA=ON \</span><br><span class="line">-D WITH_CUDNN=ON  \</span><br><span class="line">-D OPENCV_DNN_CUDA=ON  \</span><br><span class="line">-D ENABLE_FAST_MATH=1  \</span><br><span class="line">-D CUDA_FAST_MATH=1  \</span><br><span class="line">-D CUDA_ARCH_BIN=6.1  \</span><br><span class="line">-D WITH_CUBLAS=ON  \</span><br><span class="line">-D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_compile/opencv_contrib-4.12.0/modules \</span><br><span class="line">-D OPENCV_PYTHON3_INSTALL_PATH=/opt/minconda3/envs/pytorch_env/lib/python3.12/site-packages \</span><br><span class="line">-D BUILD_EXAMPLES=ON \</span><br><span class="line">-D PYTHON_EXECUTABLE=$(<span class="built_in">which</span> python3) ..</span><br></pre></td></tr></table></figure>
+
+<p>其中的部分参数的解释：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CMAKE_C_COMPILER</code></td>
+<td>C语言编译器的位置。可以通过 <code>which gcc</code> 找到</td>
+</tr>
+<tr>
+<td><code>CMAKE_CXX_COMPILER</code></td>
+<td>C++语言编译器的位置。可以通过 <code>which g++</code> 找到</td>
+</tr>
+<tr>
+<td><code>CUDA_TOOLKIT_ROOT_DIR</code></td>
+<td>CUDA的安装目录。可以通过 <code>which nvcc</code> 找到，注意只保留到cuda这一层目录，不要带子目录</td>
+</tr>
+<tr>
+<td><code>CUDA_ARCH_BIN</code></td>
+<td>Compute Capability参数，与显卡型号有关，获取方法见上一节</td>
+</tr>
+<tr>
+<td><code>OPENCV_EXTRA_MODULES_PATH</code></td>
+<td>opencv_contrib的源码路径</td>
+</tr>
+<tr>
+<td><code>OPENCV_PYTHON3_INSTALL_PATH</code></td>
+<td>当前环境下python3的site-package目录的路径。需要手动检查，一般来说在 <code>conda/envs</code> 的某个子目录下</td>
+</tr>
+<tr>
+<td><code>WITH_CUDA</code> 和 <code>WITH_CUDNN</code></td>
+<td>编译带有CUDA支持的版本</td>
+</tr>
+</tbody></table>
+<p>上述shell脚本末尾的 <code>..</code> 不要删，表示使用当前目录的上一级（即 <code>/opt/opencv_compile/opencv-4.12.0</code> ）作为cmake的工作目录。</p>
+<p>读者朋友可以根据自身的实际情况调整参数，并保存为 <code>auto_compile.sh</code> 文件。 </p>
+<p>之后，运行下面的指令进行cmake。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo bash ./auto_compile.sh  2&gt;&amp;1 | <span class="built_in">tee</span> output.log</span><br></pre></td></tr></table></figure>
+
+<p>这个过程中的所有输出会打印到控制台，同时在 <code>/opt/opencv_compile/output.log</code> 文件当中保存一份副本——这份输出日志可以用于后续问题的排查（比如说，交给AI判断cmake是否成功）</p>
+<p>整个过程大约会持续几分钟，最终的输出大致如下（只截取最后一部分输出）：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/f1f3c216-fc24-476b-a2c4-c3b57b73b701.png" alt="f1f3c216-fc24-476b-a2c4-c3b57b73b701.png"></p>
+<h3 id="3-3-编译与安装"><a href="#3-3-编译与安装" class="headerlink" title="3.3 编译与安装"></a>3.3 编译与安装</h3><p>cmake会有几千行输出。可以把最后几百行输出发送给AI，让其帮忙判断是否cmake成功。如果cmake成功，我们就可以正式进入编译的过程了。</p>
+<p>下面是编译指令。其中， <code>nproc</code> 是CPU核数——使用 <code>make -j$nproc</code> 可以调用机器上的所有CPU核并行编译，从而加快编译速度。在我们实验室的服务器上，总共有8个核，并行编译大约花了几十分钟。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /opt/opencv_compile/opencv-4.12.0/build</span><br><span class="line"><span class="comment"># 使用多核编译（根据你的CPU调整线程数）</span></span><br><span class="line"><span class="built_in">nproc</span>=`grep -c ^processor /proc/cpuinfo`</span><br><span class="line">sudo make -j<span class="variable">$nproc</span> 2&gt;&amp;1 | <span class="built_in">tee</span> make.output.log </span><br><span class="line"><span class="comment"># 编译成功以后，再使用下面的指令安装，否则在python中import cv2会报错</span></span><br><span class="line">sudo make install </span><br></pre></td></tr></table></figure>
+
+<p>编译过程的所有输出同样会打印到控制台，同时在 <code>/opt/opencv_compile/opencv-4.12.0/build/make.output.log</code> 文件当中保存一份副本——这份输出日志可以用于后续问题的排查（比如说，交给AI判断make是否成功）</p>
+<p>make阶段耗时最长，大约几十分钟的样子，最终的输出大致如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/a1530407-a121-45d0-a316-14a669db9957.png" alt="a1530407-a121-45d0-a316-14a669db9957.png"></p>
+<p>make install阶段要快很多，几分钟就可以完成，输出大致如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20250923154901.png" alt="image.png"></p>
+<h2 id="四、在python中检测opencv是否安装成功"><a href="#四、在python中检测opencv是否安装成功" class="headerlink" title="四、在python中检测opencv是否安装成功"></a>四、在python中检测opencv是否安装成功</h2><p>运行下面的python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="built_in">print</span>(cv2.__version__) <span class="comment"># 查看opencv的版本号</span></span><br><span class="line"><span class="built_in">print</span>(cv2.cuda.getCudaEnabledDeviceCount()) <span class="comment"># 查看opencv启用了多少个CUDA设备</span></span><br></pre></td></tr></table></figure>
+
+<p>对于CPU版本的opencv，其启用的CUDA设备数量为0。只要CUDA设备的数量大于0，就说明opencv启用GPU成功。</p>
+<p>实际运行截图：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/9f41c95c-7295-430a-8b4d-f5ae6ec599be.png" alt="9f41c95c-7295-430a-8b4d-f5ae6ec599be.png"></p>
+<p>完结撒花！</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/09/23/compile_and_install_opencv-python_with_cuda_support/" title="编译安装CUDA版本的opencv-python包">https://wz.anoms.top/2025/09/23/compile_and_install_opencv-python_with_cuda_support/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
+              <a href="/tags/GPU/" rel="tag"><i class="fa fa-tag"></i> GPU</a>
+              <a href="/tags/Nvidia/" rel="tag"><i class="fa fa-tag"></i> Nvidia</a>
+              <a href="/tags/CUDA/" rel="tag"><i class="fa fa-tag"></i> CUDA</a>
+              <a href="/tags/OpenCV/" rel="tag"><i class="fa fa-tag"></i> OpenCV</a>
+              <a href="/tags/cmake/" rel="tag"><i class="fa fa-tag"></i> cmake</a>
+              <a href="/tags/%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/" rel="tag"><i class="fa fa-tag"></i> 编译安装</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/22/%E8%90%BD%E6%9E%AB%E5%9F%8E/" rel="prev" title="【摘抄】《落枫城》余光中">
+                  <i class="fa fa-chevron-left"></i> 【摘抄】《落枫城》余光中
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
