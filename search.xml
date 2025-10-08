@@ -21142,4 +21142,176 @@
         <tag>编译安装</tag>
       </tags>
   </entry>
+  <entry>
+    <title>GREAT：一种富集分析与可视化的方法</title>
+    <url>/2025/10/08/GREAT_method_for_GO_annotation/</url>
+    <content><![CDATA[<p>基因组区域富集注释工具（Genomic Regions Enrichment of Annotations Tool, GREAT）是一个用来进行功能注释和下游分析的工具集，用于分析通过全基因组范围内 DNA 结合事件的局部测量所确定的顺式调控区域的功能意义。与传统的基因富集分析工具如DAVID、enrichr或clusterprofiler不同，GREAT直接分析基因组区域而非基因列表，能够更全面地评估非编码区域的功能意义。</p>
+<p>和先前的方法（如DAVID、enrichr等基于基因集列表的方法）相比，GREAT方法考虑了基因组片段，也能够正确纳入远端结合位点，因此在研究基因调控关系等方面效果更好。</p>
+<span id="more"></span>
+
+<h2 id="一、计算原理（by-AI总结）"><a href="#一、计算原理（by-AI总结）" class="headerlink" title="一、计算原理（by AI总结）"></a>一、计算原理（by AI总结）</h2><blockquote>
+<p>参考论文：McLean, C., Bristor, D., Hiller, M. et al. GREAT improves functional interpretation of cis-regulatory regions. <a href="http://www.nature.com/doifinder/10.1038/nbt.1630">Nat Biotechnol 28, 495–501 (2010)</a>. <a href="https://doi.org/10.1038/nbt.1630">DOI: 10.1038/nbt.1630</a></p>
+</blockquote>
+<h3 id="GREAT-的基因组注释原理"><a href="#GREAT-的基因组注释原理" class="headerlink" title="GREAT 的基因组注释原理"></a>GREAT 的基因组注释原理</h3><p>GREAT (Genomic Regions Enrichment of Annotations Tool) 的核心创新在于它<strong>直接对“基因组区域”(genomic regions) 而非“基因列表”(gene list) 进行功能富集分析</strong>。它解决了传统方法在处理远端顺式调控元件（如增强子）时的两大根本性缺陷：<strong>信息丢失</strong>和<strong>假阳性偏差</strong>。</p>
+<p>其原理可以分解为以下三个关键步骤：</p>
+<ol>
+<li><p><strong>定义“调控域”(Regulatory Domain) 而非简单关联：</strong></p>
+<ul>
+<li>  传统的“最近基因法”或“2kb内”方法非常武断，会丢失大量远端调控事件。</li>
+<li>  GREAT 提出一个更符合生物学实际的模型：为基因组中的每一个基因定义一个“调控域”。这个域不仅包括启动子区域（默认5kb上游 + 1kb下游），还允许向两侧延伸，直到遇到邻近基因的调控域边界，但最大不超过1Mb（用户可自定义参数）。这模拟了基因可能受到其上下游一定范围内所有调控元件影响的概念。</li>
+<li>  每个输入的基因组区域（例如ChIP-seq峰）会被映射到其覆盖的所有基因的调控域中。这意味着一个区域可以同时关联多个基因。</li>
+</ul>
+</li>
+<li><p><strong>采用“二项检验”(Binomial Test) 作为统计基础：</strong></p>
+<ul>
+<li>  这是GREAT最核心的统计学创新。它不计算有多少“基因”被选中，而是计算有多少“基因组区域”落在了具有特定功能注释的基因的调控域内。</li>
+<li>  具体来说，它首先计算整个基因组中，被特定功能术语（如“细胞骨架”）所覆盖的基因的调控域总长度占全基因组的比例（<code>p_π</code>）。这个比例就是该功能术语的“先验概率”。</li>
+<li>  然后，它使用二项分布来检验：观察到有 <code>k</code> 个输入区域落在这些“功能相关”的调控域内，在总共 <code>n</code> 个输入区域的情况下，是否显著多于随机期望值（即 <code>n * p_π</code>）。</li>
+<li>  <strong>关键优势</strong>：这种方法天然地校正了“调控域大小偏差”。那些调控域很大的基因（如发育相关基因），其调控域在基因组中占比就大，因此随机情况下也更容易捕获到调控区域。二项检验通过 <code>p_π</code> 将这种大小差异纳入考量，从而避免了将这些大基因相关的通用功能错误地判断为显著富集（假阳性）。</li>
+</ul>
+</li>
+<li><p><strong>结合多种本体论并提供双重验证：</strong></p>
+<ul>
+<li>  GREAT整合了20种不同的本体论数据库，涵盖基因功能（GO）、表型、疾病、通路、表达谱、转录因子靶点、基因家族等多个维度，提供了丰富的注释资源。</li>
+<li>它同时运行二项检验（基于区域）和传统的超几何检验（基于基因），并将结果对比展示：<ul>
+<li>  <strong>仅二项检验显著</strong>：可能代表少数几个关键基因吸引了大量调控区域（基因特异性富集）。</li>
+<li>  <strong>仅超几何检验显著</strong>：很可能是由调控域大小偏差导致的假阳性。</li>
+<li>  <strong>两者均显著</strong>：这是最可靠的结果，表明该功能不仅在区域层面富集，而且涉及的基因数量也足够多，提供了强有力的支持。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="GREAT-与其他工具的不同之处"><a href="#GREAT-与其他工具的不同之处" class="headerlink" title="GREAT 与其他工具的不同之处"></a>GREAT 与其他工具的不同之处</h3><p>如下图，是文章中对现有方法（a图）和GREAT方法（b图）的方法总结与对比。GREAT方法使用二项分布进行建模，计算基因组区域的覆盖长度（而传统方法使用超几何分布，计算基因集的交集），因此可以更好的分析调控元件的相互作用。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251008200712.png" alt="image.png"></p>
+<table>
+<thead>
+<tr>
+<th align="left">特征</th>
+<th align="left"><strong>GREAT</strong></th>
+<th align="left"><strong>DAVID / clusterProfiler / Enrichr</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>分析对象</strong></td>
+<td align="left"><strong>基因组区域</strong> (Genomic Regions)。输入是一系列坐标区间（BED文件）。</td>
+<td align="left"><strong>基因列表</strong> (Gene List)。输入是一个基因ID列表（如从DEG分析得到）。</td>
+</tr>
+<tr>
+<td align="left"><strong>关联方式</strong></td>
+<td align="left">基于<strong>调控域模型</strong>（如5+1kb + 最大1Mb扩展）。一个区域可关联多个基因。</td>
+<td align="left">主要基于<strong>距离</strong>。通常是取峰附近最近的基因，或限定在TSS ± X kb内的基因。一个区域通常只关联一个或两个最近的基因。</td>
+</tr>
+<tr>
+<td align="left"><strong>核心统计模型</strong></td>
+<td align="left"><strong>二项检验</strong> (Binomial Test)，以基因组覆盖率为背景。显式地校正了调控域大小带来的偏差。</td>
+<td align="left"><strong>超几何检验</strong> (Hypergeometric Test) 或 Fisher精确检验。以基因总数为背景。无法校正调控域大小偏差，易产生假阳性。</td>
+</tr>
+<tr>
+<td align="left"><strong>主要优势</strong></td>
+<td align="left">1. <strong>充分利用远端调控信息</strong>，避免因忽略远端峰而丢失重要功能。<br>2. <strong>有效控制假阳性</strong>，特别是对于调控域大的基因。<br>3. 分析结果更贴近真实的顺式调控机制。</td>
+<td align="left">1. <strong>应用范围广</strong>，适用于任何能生成基因列表的场景（如RNA-seq, microarray）。<br>2. <strong>生态成熟</strong>，拥有庞大的数据库支持和丰富的可视化功能（尤其是clusterProfiler）。<br>3. <strong>操作简便</strong>，流程标准化。</td>
+</tr>
+<tr>
+<td align="left"><strong>主要局限/适用场景</strong></td>
+<td align="left"><strong>专用于顺式调控数据</strong>。必须有明确的基因组坐标（如ChIP-seq, ATAC-seq, ChIA-PET等）。不能直接用于分析基因表达水平变化。</td>
+<td align="left"><strong>不适合分析富含远端调控元件的数据</strong>。当输入的调控区域大部分位于基因远端时，这些方法会严重低估或完全遗漏其功能。</td>
+</tr>
+</tbody></table>
+<p><strong>总结来说：</strong></p>
+<ul>
+<li>  <strong>DAVID、clusterProfiler、Enrichr</strong> 是经典的<strong>基因列表富集分析工具</strong>，它们的输入是“哪些基因发生了变化”，输出是“这些基因参与了什么功能”。它们依赖于“调控=靠近基因”的简化假设。</li>
+<li>  <strong>GREAT</strong> 是专门为<strong>顺式调控区域富集分析</strong>设计的下一代工具。它的输入是“基因组上哪些区域有功能活性”，输出是“这些活性区域的功能意义是什么”。它通过建立“调控域”模型和使用“二项检验”，打破了“调控=靠近”的限制，能够更准确、更全面地解读远端调控元件的生物学功能，尤其是在研究增强子、超级增强子等长距离调控机制时，GREAT的优势尤为突出。</li>
+</ul>
+<h2 id="二、使用方法（网页端接口）"><a href="#二、使用方法（网页端接口）" class="headerlink" title="二、使用方法（网页端接口）"></a>二、使用方法（网页端接口）</h2><p>此处需要访问GREAT的官网： <a href="http://great.stanford.edu/public/html/">http://great.stanford.edu/public/html/</a></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251008223106.png" alt="image.png"></p>
+<p>与DAVID等网站的使用方法不同，GREAT在注释时需要准备一个用于检验的bed文件，即test region文件。如有需要，可以再准备第二个背景区域的文件（background region），其必须是test region所包含区域的超集。</p>
+<p>关于背景区域文件，官方给出的说明如下图（更多详情见<a href="https://great-help.atlassian.net/wiki/spaces/GREAT/pages/655452/File+Formats#FileFormats-Whatshouldmytestregionsfilecontain%3F">网站</a>）。这个文件是可选的，如果不上传，则在统计检验中会使用全基因组的所有区域作为检验区域。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251008223230.png" alt="image.png"></p>
+<p>所谓bed文件，就是以tsv表格形式存储的基因组坐标，其中第一列是染色体编号，第二列是基因组区域的起始位置，第三列是基因组区域的终止位置，从第四列开始用户可以存储一些自定义的信息（例如一些元数据）。下面是一个bed文件的例子：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">chrX    55009055        55030977        ALAS2</span><br><span class="line">chr11   57551656        57568284        UBE2L6</span><br><span class="line">chr1    156668763       156677407       NES</span><br><span class="line">chr10   17228241        17237593        VIM</span><br><span class="line">chr10   17214239        17230018        VIM-AS1</span><br><span class="line">chr10   132783179       132786147       NKX6-2</span><br><span class="line">chr2    238238267       238240662       HES6</span><br><span class="line">chr3    185712528       185729787       IGF2BP2-AS1</span><br><span class="line">chr3    185643130       185825042       IGF2BP2</span><br><span class="line">chr6    159969082       160113507       IGF2R</span><br><span class="line">chr16   89171748        89195492        CDH15</span><br></pre></td></tr></table></figure>
+
+<p>上传bed文件，选择合适的物种参考基因组（例如上面那个bed文件使用的是人类GRCh38的参考基因组坐标），然后点击submit就可以运行了。输出的结果如下所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251008223541.png" alt="image.png"></p>
+<h2 id="三、附带小工具：一个从gtf文件转bed文件的python代码"><a href="#三、附带小工具：一个从gtf文件转bed文件的python代码" class="headerlink" title="三、附带小工具：一个从gtf文件转bed文件的python代码"></a>三、附带小工具：一个从gtf文件转bed文件的python代码</h2><p>这个工具是在组会上听到的，笔者在自己的课题中暂时还没有涉及到需要对基因组调控区和非编码区做功能注释的工作。为了能够检验这个工具的效果，笔者攒了一个小工具，通过给定基因列表和GTF文件，来得到一份bed格式的test region文件（ <code>result.bed</code> ）。以下是代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment">## GTF文件路径</span></span><br><span class="line">gtf_file = <span class="string">&quot;F:/Download/GTF/Homo_sapiens.GRCh38.110.gtf.gz&quot;</span> <span class="comment"># 此处根据情况，换成具体的文件路径</span></span><br><span class="line"><span class="comment">## 要注释的基因列表</span></span><br><span class="line">gene_list = [<span class="string">&quot;Alas2&quot;</span>,<span class="string">&quot;Ube2L6&quot;</span>,<span class="string">&quot;Nes&quot;</span>,<span class="string">&quot;Vim&quot;</span>,<span class="string">&quot;Nkx6-2&quot;</span>,<span class="string">&quot;Hes6&quot;</span>,<span class="string">&quot;Igf2&quot;</span>,<span class="string">&quot;Tubb6&quot;</span>,<span class="string">&quot;Penk&quot;</span>,<span class="string">&quot;Eno1&quot;</span>,<span class="string">&quot;Ldha&quot;</span>,<span class="string">&quot;Ralgps2&quot;</span>,<span class="string">&quot;Cdh15&quot;</span>] <span class="comment"># 此处根据情况，换成具体的基因列表</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">df1 = pd.read_csv(gtf_file,comment=<span class="string">&#x27;#&#x27;</span>,sep=<span class="string">&quot;\t&quot;</span>,header=<span class="literal">None</span>)</span><br><span class="line">df1_exon = df1[df1[<span class="number">2</span>] == <span class="string">&#x27;gene&#x27;</span>]</span><br><span class="line">index_arr = np.array(df1_exon[<span class="number">8</span>]).reshape(-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">search_and_format</span>(<span class="params">gene_list</span>):</span><br><span class="line">    chrom_ = []</span><br><span class="line">    start_ = []</span><br><span class="line">    final_ = []</span><br><span class="line">    genes_ = []</span><br><span class="line">    <span class="keyword">for</span> gene <span class="keyword">in</span> gene_list:</span><br><span class="line">        patten = gene.upper()</span><br><span class="line">        <span class="built_in">print</span>(patten)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(index_arr)):</span><br><span class="line">            <span class="keyword">if</span>(patten <span class="keyword">in</span> index_arr[i]):</span><br><span class="line">                chrom_.append(<span class="string">&quot;chr&quot;</span>+<span class="built_in">str</span>(df1_exon.iloc[i:i+<span class="number">1</span>,<span class="number">0</span>:<span class="number">1</span>].values[<span class="number">0</span>][<span class="number">0</span>]))</span><br><span class="line">                start_.append(df1_exon.iloc[i:i+<span class="number">1</span>,<span class="number">3</span>:<span class="number">4</span>].values[<span class="number">0</span>][<span class="number">0</span>])</span><br><span class="line">                final_.append(df1_exon.iloc[i:i+<span class="number">1</span>,<span class="number">4</span>:<span class="number">5</span>].values[<span class="number">0</span>][<span class="number">0</span>])</span><br><span class="line">                genes_.append(df1_exon.iloc[i:i+<span class="number">1</span>,<span class="number">8</span>:<span class="number">9</span>].values[<span class="number">0</span>][<span class="number">0</span>].split(<span class="string">&quot;gene_name&quot;</span>)[<span class="number">1</span>].split(<span class="string">&quot;;&quot;</span>)[<span class="number">0</span>].strip().replace(<span class="string">&#x27;&quot;&#x27;</span>,<span class="string">&#x27;&#x27;</span>))</span><br><span class="line">    res_df = pd.DataFrame(&#123;<span class="string">&quot;#chromesome&quot;</span>:chrom_,</span><br><span class="line">	    <span class="string">&quot;start_pos&quot;</span>:start_,</span><br><span class="line">	    <span class="string">&quot;final_pos&quot;</span>:final_,</span><br><span class="line">	    <span class="string">&quot;gene_name&quot;</span>:genes_&#125;)</span><br><span class="line">    <span class="keyword">return</span> res_df</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(__name__==<span class="string">&quot;__main__&quot;</span>):</span><br><span class="line">    res_df = search_and_format(gene_list)</span><br><span class="line">    res_df.to_csv(<span class="string">&quot;result.bed&quot;</span>,sep=<span class="string">&quot;\t&quot;</span>,header=<span class="literal">False</span>,index=<span class="literal">False</span>)   </span><br></pre></td></tr></table></figure>
+
+
+<h2 id="四、下期预告：基于R包rGREAT的注释"><a href="#四、下期预告：基于R包rGREAT的注释" class="headerlink" title="四、下期预告：基于R包rGREAT的注释"></a>四、下期预告：基于R包rGREAT的注释</h2><p>rGREAT是一个基于GREAT方法的R包，其功能更全面，可以自定义的选项也更多。</p>
+<p>本来应该这期一起讲的，但是来不及准备了。所以，相关内容留到下期，敬请期待！</p>
+<p>一些有用的参考链接：</p>
+<ul>
+<li><a href="https://bioconductor.org/packages/release/bioc/html/rGREAT.html">rGREAT - bioconductor</a></li>
+<li><a href="https://github.com/jokergoo/rGREAT">rGREAT - github</a></li>
+<li><a href="http://great.stanford.edu/public/html/">GREAT website tool</a></li>
+<li><a href="https://maayanlab.cloud/Enrichr/">Enrichr website tool</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>生物学</tag>
+        <tag>富集分析</tag>
+        <tag>GREAT</tag>
+        <tag>调控元件</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>大五人格（OCEAN）问卷与计分程序</title>
+    <url>/2025/10/08/OCEAN_personality_test/</url>
+    <content><![CDATA[<p>是这样的。前一阵子在知乎上面刷到一个工具，叫做 <a href="https://heifangti.com/life-assessment">“黑方体-人生梳理器”</a> ，可以通过填写一系列问卷并调用AI大模型，实现对短期人生目标的梳理和规划。在填写问卷时，我发现需要提供大五人格的测试结果——幸运的是，多年前我曾经自测过大五人格，还编写过一个python程序用来自动计分。因此这几天我也整理了一下代码并在<a href="https://github.com/cyclinbox/OCEAN_personality_test/">GitHub上开源</a> ，以方便大家自测。</p>
+<span id="more"></span>
+
+<h2 id="什么是大五人格"><a href="#什么是大五人格" class="headerlink" title="什么是大五人格"></a>什么是大五人格</h2><p>下面是一份通义千问的回答：</p>
+<p>大五人格测评（Big Five Personality Test），又称“五因素模型”（Five-Factor Model, FFM），是心理学中广泛使用的一种人格评估工具， 用于描述和测量个体的人格特质。该模型认为，人类的人格可以归纳为 五个基本维度，这五个维度几乎涵盖了人格的主要方面。</p>
+<p>这五大人格维度分别是：</p>
+<ol>
+<li><p><strong>开放性（Openness to Experience）</strong><br>指个体对新思想、新经验的接受程度。高分者通常富有想象力、好奇心强、喜欢艺术和抽象思维；低分者则更务实、偏好常规和熟悉的事物 。</p>
+</li>
+<li><p><strong>尽责性（Conscientiousness）</strong><br>反映个体的自律性、组织性和目标导向程度。高分者通常有条理、可靠、勤奋；低分者可能较为随意、拖延或缺乏计划性。</p>
+</li>
+<li><p><strong>外向性（Extraversion）</strong><br>描述个体在社交中的活跃程度和能量水平。高分者热情、健谈、喜欢社交；低分者（内向者）则更安静、偏好独处或小群体交流。</p>
+</li>
+<li><p><strong>宜人性（Agreeableness）</strong><br>表示个体在人际交往中的合作性、同情心和信任程度。高分者通常友善、富有同理心、乐于助人；低分者可能更具竞争性、怀疑或冷漠。</p>
+</li>
+<li><p><strong>神经质（Neuroticism）</strong><br>也称情绪不稳定性，指个体体验负面情绪（如焦虑、抑郁、愤怒）的倾向。高分者容易情绪波动、感到压力；低分者则情绪稳定、冷静从容 。</p>
+</li>
+</ol>
+<h2 id="Github存储库"><a href="#Github存储库" class="headerlink" title="Github存储库"></a>Github存储库</h2><p>链接： <a href="https://github.com/cyclinbox/OCEAN_personality_test/">https://github.com/cyclinbox/OCEAN_personality_test/</a></p>
+<p>里面包括一个Excel表格（手动校对的大五人格测评问卷，共240题），一个python程序，还有一个示例答题卷文件。</p>
+<p>每一道题目，回答都是0到4之间的一个整数，其中0代表“完全 <strong>不</strong> 符合我自己”，4代表“完全符合我自己”。</p>
+<p>Excel表格中也附带了计分方法，如果运行python不方便，读者朋友可以手动计分。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
+<li>打开Excel文件，其中包含一份大五人格的测评问卷，总共240道题目，每一题的答案都是一个 <code>0-4</code> 之间的整数，其中0代表和自己完全不相符，4代表和自己完全相符</li>
+<li>依次做完这240道题目，将回答保存在一个txt文件当中，每一行是一道题目的回答，第一行是第一题的回答，第二行是第二题的回答，以此类推（格式参考 <code>答题卷示例.txt</code>）</li>
+<li>运行python脚本： <code>python 大五人格（OCEAN）分数计算程序.py &lt;gender&gt; &lt;answer file&gt;</code> （例如 <code>python 大五人格（OCEAN）分数计算程序.py m 答题卷示例.txt</code>），程序会自动核算分数并输出结果<ul>
+<li>其中，参数 <code>gender</code> 是性别，可选的值包括 <code>m</code> （男性）或 <code>w</code> （女性）。不同选项对应着不同常模，会影响计算结果</li>
+<li>参数 <code>answer file</code> 是答题卷文件的路径</li>
+</ul>
+</li>
+</ol>
+<h2 id="输出示例"><a href="#输出示例" class="headerlink" title="输出示例"></a>输出示例</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~$ python 大五人格（OCEAN）分数计算程序.py  m 答题卷示例.txt</span><br><span class="line">Gender= male</span><br><span class="line">len of s= 241</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">N - 维度计分</span><br><span class="line">总分统计</span><br><span class="line">[High]  8.0     n       敏感性</span><br><span class="line">各分项统计</span><br><span class="line">[High]  8.0     n1      焦虑</span><br><span class="line">[Mid]   4.0     n2      愤怒敌意</span><br><span class="line">[High]  8.0     n3      抑郁</span><br><span class="line">[High]  10.0    n4      自我意识</span><br><span class="line">[High]  8.0     n5      冲动性</span><br><span class="line">[High]  9.0     n6      脆弱性</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">E - 维度计分</span><br><span class="line">总分统计</span><br><span class="line">[Low]   2.0     e       外向性</span><br><span class="line">各分项统计</span><br><span class="line">[Low]   3.0     e1      热情性</span><br><span class="line">[Low]   3.0     e2      乐群性</span><br><span class="line">[Low]   3.0     e3      自我肯定</span><br><span class="line">[Mid]   4.0     e4      活跃性</span><br><span class="line">[Low]   2.0     e5      刺激追寻</span><br><span class="line">[Mid]   5.0     e6      正性情绪</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">O - 维度计分</span><br><span class="line">总分统计</span><br><span class="line">[Mid]   5.0     o       开放性</span><br><span class="line">各分项统计</span><br><span class="line">[High]  7.0     o1      幻想</span><br><span class="line">[Mid]   6.0     o2      美感</span><br><span class="line">[Mid]   5.0     o3      情感</span><br><span class="line">[Mid]   4.0     o4      行动</span><br><span class="line">[Mid]   5.0     o5      观念</span><br><span class="line">[High]  7.0     o6      价值</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">A - 维度计分</span><br><span class="line">总分统计</span><br><span class="line">[High]  8.0     a       宜人性</span><br><span class="line">各分项统计</span><br><span class="line">[Low]   3.0     a1      信任</span><br><span class="line">[High]  10.0    a2      坦诚</span><br><span class="line">[Mid]   6.0     a3      利他性</span><br><span class="line">[High]  8.0     a4      顺从性</span><br><span class="line">[Mid]   6.0     a5      谦虚</span><br><span class="line">[High]  8.0     a6      温存</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">C - 维度计分</span><br><span class="line">总分统计</span><br><span class="line">[Mid]   4.0     c       严谨性</span><br><span class="line">各分项统计</span><br><span class="line">[Mid]   4.0     c1      胜任感</span><br><span class="line">[High]  8.0     c2      条理性</span><br><span class="line">[Mid]   6.0     c3      责任心</span><br><span class="line">[Low]   2.0     c4      事业心</span><br><span class="line">[Low]   3.0     c5      自律性</span><br><span class="line">[Low]   3.0     c6      审慎性</span><br></pre></td></tr></table></figure>
+
+
+<p>这一份输出也可以交给AI来解析，例如：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251008232902.png" alt="image.png"></p>
+<blockquote>
+<p>“（前面粘贴报告内容）以上内容是我的大五人格测评问卷的结果。请问如何解读这个结果？”</p>
+</blockquote>
+<p>大抵如此。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>心理学</tag>
+        <tag>大五人格</tag>
+        <tag>人格测评</tag>
+        <tag>OCEAN</tag>
+      </tags>
+  </entry>
 </search>
