@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="最近的一些code实践。包括两个部分：基于ffmpeg的批量图片压缩，以及基于adb的软件安装包提取。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一些代码与命令行小工具">
+<meta property="og:url" content="https://wz.anoms.top/2025/10/18/Some-code-and-command-application-20251019/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="最近的一些code实践。包括两个部分：基于ffmpeg的批量图片压缩，以及基于adb的软件安装包提取。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019145844.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019150016.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019151022.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019151442.png">
+<meta property="article:published_time" content="2025-10-18T11:30:00.000Z">
+<meta property="article:modified_time" content="2025-10-19T08:49:13.306Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="FFmpeg">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="ADB">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019145844.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/10/18/Some-code-and-command-application-20251019/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/10/18/Some-code-and-command-application-20251019/","path":"2025/10/18/Some-code-and-command-application-20251019/","title":"一些代码与命令行小工具"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>一些代码与命令行小工具 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#PART-I-ffmpeg%E5%8E%8B%E7%BC%A9%E5%9B%BE%E7%89%87"><span class="nav-number">1.</span> <span class="nav-text">PART I. ffmpeg压缩图片</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PART-II-adb%E6%8F%90%E5%8F%96%E7%B3%BB%E7%BB%9F%E5%BA%94%E7%94%A8"><span class="nav-number"></span> <span class="nav-text">PART II. adb提取系统应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#step1-%E5%AE%89%E8%A3%85ADB"><span class="nav-number">1.</span> <span class="nav-text">step1. 安装ADB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#step2-%E9%80%9A%E8%BF%87USB-debug%E8%BF%9E%E6%8E%A5%E5%88%B0ADB"><span class="nav-number">2.</span> <span class="nav-text">step2. 通过USB debug连接到ADB</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">235</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">427</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/10/18/Some-code-and-command-application-20251019/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="一些代码与命令行小工具 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一些代码与命令行小工具
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-10-18 19:30:00" itemprop="dateCreated datePublished" datetime="2025-10-18T19:30:00+08:00">2025-10-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-10-19 16:49:13" itemprop="dateModified" datetime="2025-10-19T16:49:13+08:00">2025-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>最近的一些code实践。<br>包括两个部分：基于ffmpeg的批量图片压缩，以及基于adb的软件安装包提取。</p>
+<span id="more"></span>
+
+
+<h3 id="PART-I-ffmpeg压缩图片"><a href="#PART-I-ffmpeg压缩图片" class="headerlink" title="PART I. ffmpeg压缩图片"></a>PART I. ffmpeg压缩图片</h3><p>某天整理照片时，觉得照片占用的存储空间太多了，想要精简一下体积。</p>
+<p>鉴于大多数照片都是生活中的随手拍，照片清晰度没有特别重要的意义，因此萌生了一个想法：把照片的长和宽都减小为原先的一半（整个图片面积减小为原先的1/4），是不是可以极大压缩文件体积，同时不会对生活的记录有太多影响呢？于是检索了压缩图片体积的方法，成果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!bash</span></span><br><span class="line"><span class="comment"># step1. 创建输出目录</span></span><br><span class="line"><span class="built_in">mkdir</span> resized_img</span><br><span class="line"></span><br><span class="line"><span class="comment"># step2. 进入原始图片的目录</span></span><br><span class="line"><span class="built_in">cd</span> original_img;</span><br><span class="line"></span><br><span class="line"><span class="comment"># step3. 对于每一张jpg格式的文件，循环调用ffmpeg指令进行画质压缩，并导出到输出目录</span></span><br><span class="line"><span class="keyword">for</span> img <span class="keyword">in</span> *.jpg; <span class="keyword">do</span></span><br><span class="line">	ffmpeg -i <span class="string">&quot;<span class="variable">$&#123;img&#125;</span>&quot;</span> \</span><br><span class="line">		-vf <span class="string">&quot;scale=iw/2:ih/2&quot;</span> \</span><br><span class="line">		-q:v 3\</span><br><span class="line">		-map_metadata 0 \</span><br><span class="line">		<span class="string">&quot;../resized_img/<span class="variable">$&#123;img&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;DONE&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>原理是通过ffpmeg这个工具的  <code>vf</code>  滤镜，重新调整图片的长和宽（全部减小为原图的1/2）。</p>
+<p>有个缺点：这样处理过后的图片，meta信息会消失（也就是拍摄地点、相机镜头参数之类的信息会被抹掉），即使我听从AI的建议添加了 <code>-map_metadata</code> 参数也无济于事。不过如果meta信息不重要的话，这个缺点可以无视。</p>
+<h2 id="PART-II-adb提取系统应用"><a href="#PART-II-adb提取系统应用" class="headerlink" title="PART II. adb提取系统应用"></a>PART II. adb提取系统应用</h2><p>最近换了荣耀的手机。发现了一个不太方便的事情：荣耀和华为现在数据没法互通了，也就是说，我在matepad上设置的日历日程、编辑的备忘录便签，在荣耀手机上没法查看，反之亦然。</p>
+<p>于是想着移植一下app——把华为日历/华为便签移动到手机上。</p>
+<p>我们知道，移动端的QQ可以分享已安装应用的apk。但是对于系统应用（例如日历、备忘录这种），QQ是无法提取apk并分享的。搜索了下相关教程，有人提到可以使用ADB（Android Debug Bridge）提取系统应用，于是我进行了一些尝试。</p>
+<h3 id="step1-安装ADB"><a href="#step1-安装ADB" class="headerlink" title="step1. 安装ADB"></a>step1. 安装ADB</h3><p>参考<a target="_blank" rel="noopener" href="https://developer.android.google.cn/tools/adb?hl=zh-cn">安卓开发者官网</a> :</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019145844.png" alt="image.png"></p>
+<p>我们可以在 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools?hl=zh-cn">这个网页</a> 下载独立的Android SDK平台工具包——这个工具包体积不到10MB，包含了一系列命令行小工具（包括ADB），如下图所示。我们要做的是把这个工具包解压到一个合适的位置，并编辑系统环境变量（PATH路径），以便在命令行中调用 <code>adb</code> 指令。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019150016.png" alt="image.png"></p>
+<h3 id="step2-通过USB-debug连接到ADB"><a href="#step2-通过USB-debug连接到ADB" class="headerlink" title="step2. 通过USB debug连接到ADB"></a>step2. 通过USB debug连接到ADB</h3><p>在安卓设备上开启USB debug的方法在网上有很多说明，有需要的读者朋友可以自行搜索相关教程。简单来说，就是 ”系统设置→连续点击7次系统版本号→开启开发者模式→在开发者模式中开启USB debug“。</p>
+<p>接下来，使用USB数据线连接安卓设备与电脑，并在电脑端启动一个命令行，输入 <code>adb devices</code> 指令以进行连接。首次连接时，安卓设备端会弹出一个对话框进行验证，此处点同意就行。连接成功的输出如下所述：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019151022.png" alt="image.png"></p>
+<p>接下来，要查找系统应用的包名。我们输入 <code>adb shell</code> 进入安卓设备内部的shell控制台，并运行 <code>pm list packages</code> 展示所有已安装的app的包名；运行 <code>pm path &lt;package name&gt;</code> 提取app路径。要想查找特定应用，可以配合grep工具。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">run `adb shell` first</span></span><br><span class="line">HWBAH3:/ $ pm list packages | grep -i &quot;calendar&quot;</span><br><span class="line">package:com.android.providers.calendar</span><br><span class="line">package:com.huawei.calendar</span><br><span class="line">HWBAH3:/ $ pm list packages | grep -i &quot;note&quot;</span><br><span class="line">package:com.huawei.hinote</span><br><span class="line">package:com.microsoft.office.onenote</span><br><span class="line">package:cn.wps.note</span><br><span class="line">package:com.huawei.notepad</span><br><span class="line">HWBAH3:/ $ pm path com.huawei.calendar</span><br><span class="line">package:/hw_product/app/HwCalendarHm/HwCalendarHm_signed_entry.apk</span><br><span class="line">package:/hw_product/app/HwCalendarHm/entry_phone_calendar_widget_release_signed_feature.apk</span><br><span class="line">HWBAH3:/ $ pm path com.android.providers.calendar</span><br><span class="line">package:/system/priv-app/CalendarProvider/CalendarProvider.apk</span><br><span class="line">HWBAH3:/ $ pm path com.huawei.notepad</span><br><span class="line">package:/hw_product/app/HwNotePadHm/HwNotePadHm_signed_entry.apk</span><br><span class="line">package:/hw_product/app/HwNotePadHm/notepad_release_signed_feature.apk</span><br><span class="line">HWBAH3:/ $</span><br></pre></td></tr></table></figure>
+
+<p>接下来，我们根据前面获取到的路径，提取apk文件。此处要使用的指令是 <code>adb pull &lt;package path&gt;</code>： </p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">in</span> another session</span><br><span class="line"><span class="function">H:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwCalendarHm</span>/<span class="title">HwCalendarHm_signed_entry.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwCalendarHm</span>/<span class="title">HwCalendarHm_signed_entry.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 34.5 <span class="title">MB</span>/<span class="title">s</span> (14594002 <span class="title">bytes</span> <span class="title">in</span> 0.404<span class="title">s</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">H</span>:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwCalendarHm</span>/<span class="title">entry_phone_calendar_widget_release_signed_feature.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwCalendarHm</span>/<span class="title">entry_phone_calendar_widget_release_signed_feature.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 17.3 <span class="title">MB</span>/<span class="title">s</span> (127511 <span class="title">bytes</span> <span class="title">in</span> 0.007<span class="title">s</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">H</span>:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">system</span>/<span class="title">priv</span>-<span class="title">app</span>/<span class="title">CalendarProvider</span>/<span class="title">CalendarProvider.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">system</span>/<span class="title">priv</span>-<span class="title">app</span>/<span class="title">CalendarProvider</span>/<span class="title">CalendarProvider.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 33.0 <span class="title">MB</span>/<span class="title">s</span> (1315212 <span class="title">bytes</span> <span class="title">in</span> 0.038<span class="title">s</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">H</span>:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwNotePadHm</span>/<span class="title">HwNotePadHm_signed_entry.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwNotePadHm</span>/<span class="title">HwNotePadHm_signed_entry.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 37.4 <span class="title">MB</span>/<span class="title">s</span> (15347304 <span class="title">bytes</span> <span class="title">in</span> 0.391<span class="title">s</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">H</span>:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwNotePadHm</span>/<span class="title">notepad_release_signed_feature.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwNotePadHm</span>/<span class="title">notepad_release_signed_feature.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 13.0 <span class="title">MB</span>/<span class="title">s</span> (115268 <span class="title">bytes</span> <span class="title">in</span> 0.008<span class="title">s</span>)</span></span><br></pre></td></tr></table></figure>
+
+<p>这样，就完成了系统app的安装包apk的提取。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019151442.png" alt="image.png"></p>
+<p>（当然，最后我并没能成功在荣耀设备上安装成功这几个apk，推测是因为系统底层库的差异导致不兼容。这是后话了）</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/10/18/Some-code-and-command-application-20251019/" title="一些代码与命令行小工具">https://wz.anoms.top/2025/10/18/Some-code-and-command-application-20251019/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+              <a href="/tags/FFmpeg/" rel="tag"><i class="fa fa-tag"></i> FFmpeg</a>
+              <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+              <a href="/tags/ADB/" rel="tag"><i class="fa fa-tag"></i> ADB</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/10/16/rGREAT-a-R-tool-for-genomics-annotation/" rel="prev" title="rGREAT：适用于R语言的GREAT工具">
+                  <i class="fa fa-chevron-left"></i> rGREAT：适用于R语言的GREAT工具
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/10/18/OrthoList2-a-tool-for-orthological-gene-convert/" rel="next" title="OrthoList2：一个用于搜寻哺乳类和线虫的同源基因的工具">
+                  OrthoList2：一个用于搜寻哺乳类和线虫的同源基因的工具 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>

@@ -21314,4 +21314,233 @@
         <tag>OCEAN</tag>
       </tags>
   </entry>
+  <entry>
+    <title>OrthoList2：一个用于搜寻哺乳类和线虫的同源基因的工具</title>
+    <url>/2025/10/18/OrthoList2-a-tool-for-orthological-gene-convert/</url>
+    <content><![CDATA[<p>自然界生物千千万，不同生物之间的基因命名不同。当我们在一种生物中验证了某些基因的功能，并想要在另一些生物中研究，该怎么找到同源的基因呢？OrthoList就是一个好网站！（emmm虽然这个网站是某天读文献时偶然找到的，但感觉确实很好用，所以分享一下）</p>
+<span id="more"></span>
+
+<hr>
+<p>网址： <a href="http://ortholist.shaye-lab.org/">http://ortholist.shaye-lab.org/</a></p>
+<p>网站首页如下图所示。我们在输入框中输入哺乳类的基因列表，然后点submit按钮，就可以完成对线虫基因的搜索。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251017165057.png" alt="image.png"></p>
+<p>输出结果如图所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251017165042.png" alt="image.png"></p>
+<p>非常好用的一个工具！</p>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>生物学</tag>
+        <tag>同源基因转换</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一些代码与命令行小工具</title>
+    <url>/2025/10/18/Some-code-and-command-application-20251019/</url>
+    <content><![CDATA[<p>最近的一些code实践。<br>包括两个部分：基于ffmpeg的批量图片压缩，以及基于adb的软件安装包提取。</p>
+<span id="more"></span>
+
+
+<h3 id="PART-I-ffmpeg压缩图片"><a href="#PART-I-ffmpeg压缩图片" class="headerlink" title="PART I. ffmpeg压缩图片"></a>PART I. ffmpeg压缩图片</h3><p>某天整理照片时，觉得照片占用的存储空间太多了，想要精简一下体积。</p>
+<p>鉴于大多数照片都是生活中的随手拍，照片清晰度没有特别重要的意义，因此萌生了一个想法：把照片的长和宽都减小为原先的一半（整个图片面积减小为原先的1/4），是不是可以极大压缩文件体积，同时不会对生活的记录有太多影响呢？于是检索了压缩图片体积的方法，成果如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!bash</span></span><br><span class="line"><span class="comment"># step1. 创建输出目录</span></span><br><span class="line"><span class="built_in">mkdir</span> resized_img</span><br><span class="line"></span><br><span class="line"><span class="comment"># step2. 进入原始图片的目录</span></span><br><span class="line"><span class="built_in">cd</span> original_img;</span><br><span class="line"></span><br><span class="line"><span class="comment"># step3. 对于每一张jpg格式的文件，循环调用ffmpeg指令进行画质压缩，并导出到输出目录</span></span><br><span class="line"><span class="keyword">for</span> img <span class="keyword">in</span> *.jpg; <span class="keyword">do</span></span><br><span class="line">	ffmpeg -i <span class="string">&quot;<span class="variable">$&#123;img&#125;</span>&quot;</span> \</span><br><span class="line">		-vf <span class="string">&quot;scale=iw/2:ih/2&quot;</span> \</span><br><span class="line">		-q:v 3\</span><br><span class="line">		-map_metadata 0 \</span><br><span class="line">		<span class="string">&quot;../resized_img/<span class="variable">$&#123;img&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;DONE&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>原理是通过ffpmeg这个工具的  <code>vf</code>  滤镜，重新调整图片的长和宽（全部减小为原图的1/2）。</p>
+<p>有个缺点：这样处理过后的图片，meta信息会消失（也就是拍摄地点、相机镜头参数之类的信息会被抹掉），即使我听从AI的建议添加了 <code>-map_metadata</code> 参数也无济于事。不过如果meta信息不重要的话，这个缺点可以无视。</p>
+<h2 id="PART-II-adb提取系统应用"><a href="#PART-II-adb提取系统应用" class="headerlink" title="PART II. adb提取系统应用"></a>PART II. adb提取系统应用</h2><p>最近换了荣耀的手机。发现了一个不太方便的事情：荣耀和华为现在数据没法互通了，也就是说，我在matepad上设置的日历日程、编辑的备忘录便签，在荣耀手机上没法查看，反之亦然。</p>
+<p>于是想着移植一下app——把华为日历/华为便签移动到手机上。</p>
+<p>我们知道，移动端的QQ可以分享已安装应用的apk。但是对于系统应用（例如日历、备忘录这种），QQ是无法提取apk并分享的。搜索了下相关教程，有人提到可以使用ADB（Android Debug Bridge）提取系统应用，于是我进行了一些尝试。</p>
+<h3 id="step1-安装ADB"><a href="#step1-安装ADB" class="headerlink" title="step1. 安装ADB"></a>step1. 安装ADB</h3><p>参考<a href="https://developer.android.google.cn/tools/adb?hl=zh-cn">安卓开发者官网</a> :</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019145844.png" alt="image.png"></p>
+<p>我们可以在 <a href="https://developer.android.google.cn/studio/releases/platform-tools?hl=zh-cn">这个网页</a> 下载独立的Android SDK平台工具包——这个工具包体积不到10MB，包含了一系列命令行小工具（包括ADB），如下图所示。我们要做的是把这个工具包解压到一个合适的位置，并编辑系统环境变量（PATH路径），以便在命令行中调用 <code>adb</code> 指令。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019150016.png" alt="image.png"></p>
+<h3 id="step2-通过USB-debug连接到ADB"><a href="#step2-通过USB-debug连接到ADB" class="headerlink" title="step2. 通过USB debug连接到ADB"></a>step2. 通过USB debug连接到ADB</h3><p>在安卓设备上开启USB debug的方法在网上有很多说明，有需要的读者朋友可以自行搜索相关教程。简单来说，就是 ”系统设置→连续点击7次系统版本号→开启开发者模式→在开发者模式中开启USB debug“。</p>
+<p>接下来，使用USB数据线连接安卓设备与电脑，并在电脑端启动一个命令行，输入 <code>adb devices</code> 指令以进行连接。首次连接时，安卓设备端会弹出一个对话框进行验证，此处点同意就行。连接成功的输出如下所述：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019151022.png" alt="image.png"></p>
+<p>接下来，要查找系统应用的包名。我们输入 <code>adb shell</code> 进入安卓设备内部的shell控制台，并运行 <code>pm list packages</code> 展示所有已安装的app的包名；运行 <code>pm path &lt;package name&gt;</code> 提取app路径。要想查找特定应用，可以配合grep工具。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">run `adb shell` first</span></span><br><span class="line">HWBAH3:/ $ pm list packages | grep -i &quot;calendar&quot;</span><br><span class="line">package:com.android.providers.calendar</span><br><span class="line">package:com.huawei.calendar</span><br><span class="line">HWBAH3:/ $ pm list packages | grep -i &quot;note&quot;</span><br><span class="line">package:com.huawei.hinote</span><br><span class="line">package:com.microsoft.office.onenote</span><br><span class="line">package:cn.wps.note</span><br><span class="line">package:com.huawei.notepad</span><br><span class="line">HWBAH3:/ $ pm path com.huawei.calendar</span><br><span class="line">package:/hw_product/app/HwCalendarHm/HwCalendarHm_signed_entry.apk</span><br><span class="line">package:/hw_product/app/HwCalendarHm/entry_phone_calendar_widget_release_signed_feature.apk</span><br><span class="line">HWBAH3:/ $ pm path com.android.providers.calendar</span><br><span class="line">package:/system/priv-app/CalendarProvider/CalendarProvider.apk</span><br><span class="line">HWBAH3:/ $ pm path com.huawei.notepad</span><br><span class="line">package:/hw_product/app/HwNotePadHm/HwNotePadHm_signed_entry.apk</span><br><span class="line">package:/hw_product/app/HwNotePadHm/notepad_release_signed_feature.apk</span><br><span class="line">HWBAH3:/ $</span><br></pre></td></tr></table></figure>
+
+<p>接下来，我们根据前面获取到的路径，提取apk文件。此处要使用的指令是 <code>adb pull &lt;package path&gt;</code>： </p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"># <span class="keyword">in</span> another session</span><br><span class="line"><span class="function">H:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwCalendarHm</span>/<span class="title">HwCalendarHm_signed_entry.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwCalendarHm</span>/<span class="title">HwCalendarHm_signed_entry.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 34.5 <span class="title">MB</span>/<span class="title">s</span> (14594002 <span class="title">bytes</span> <span class="title">in</span> 0.404<span class="title">s</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">H</span>:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwCalendarHm</span>/<span class="title">entry_phone_calendar_widget_release_signed_feature.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwCalendarHm</span>/<span class="title">entry_phone_calendar_widget_release_signed_feature.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 17.3 <span class="title">MB</span>/<span class="title">s</span> (127511 <span class="title">bytes</span> <span class="title">in</span> 0.007<span class="title">s</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">H</span>:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">system</span>/<span class="title">priv</span>-<span class="title">app</span>/<span class="title">CalendarProvider</span>/<span class="title">CalendarProvider.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">system</span>/<span class="title">priv</span>-<span class="title">app</span>/<span class="title">CalendarProvider</span>/<span class="title">CalendarProvider.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 33.0 <span class="title">MB</span>/<span class="title">s</span> (1315212 <span class="title">bytes</span> <span class="title">in</span> 0.038<span class="title">s</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">H</span>:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwNotePadHm</span>/<span class="title">HwNotePadHm_signed_entry.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwNotePadHm</span>/<span class="title">HwNotePadHm_signed_entry.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 37.4 <span class="title">MB</span>/<span class="title">s</span> (15347304 <span class="title">bytes</span> <span class="title">in</span> 0.391<span class="title">s</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">H</span>:\<span class="title">temp</span>\<span class="title">temp</span>-2025-10-17-<span class="title">EMUI</span>-<span class="title">apk</span>-<span class="title">extract</span>&gt;<span class="title">adb</span> <span class="title">pull</span> /<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwNotePadHm</span>/<span class="title">notepad_release_signed_feature.apk</span></span></span><br><span class="line"><span class="function">/<span class="title">hw_product</span>/<span class="title">app</span>/<span class="title">HwNotePadHm</span>/<span class="title">notepad_release_signed_feature.apk</span>: 1 <span class="title">file</span> <span class="title">pulled</span>, 0 <span class="title">skipped</span>. 13.0 <span class="title">MB</span>/<span class="title">s</span> (115268 <span class="title">bytes</span> <span class="title">in</span> 0.008<span class="title">s</span>)</span></span><br></pre></td></tr></table></figure>
+
+<p>这样，就完成了系统app的安装包apk的提取。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019151442.png" alt="image.png"></p>
+<p>（当然，最后我并没能成功在荣耀设备上安装成功这几个apk，推测是因为系统底层库的差异导致不兼容。这是后话了）</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux</tag>
+        <tag>FFmpeg</tag>
+        <tag>Android</tag>
+        <tag>ADB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>近期生活记录（2025年10月）</title>
+    <url>/2025/10/19/20251019_updatelog/</url>
+    <content><![CDATA[<p>似乎有一段时间没有写日记了。浅浅记录下最近的生活。</p>
+<span id="more"></span>
+
+<h2 id="一"><a href="#一" class="headerlink" title="一"></a>一</h2><p>最近天气变凉了。早晨起来推开窗，一股寒意扑面而来，“风萧萧而异响，云漫漫而奇色”，不禁感慨，秋天真的到了。</p>
+<p>十月份始于国庆长假。假期回了家，爬了大别山，回学校又逛了许多地方。</p>
+<p>小红书在办一个马路生活节的线下活动，某天晚上和几位同门打卡了一些点位，收获了几杯甜点还有一堆小黄鸭公仔，萌萌的很可爱。似乎万圣节快到了，一些店铺开始装点起来南瓜灯的主题元素，橙色的灯光在黑夜中还挺温馨的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/d0b8cdd6ddcf3073ff73ebc52a584dc2.jpg" alt="d0b8cdd6ddcf3073ff73ebc52a584dc2.jpg"></p>
+<p>昨天参加了一个在浦东举办的线下长跑活动（依然是南开校友会举办的）。社恐如我，一下午活动结束依然没有多认识几位校友，但是收获了奖牌与汗水。粉黛乱子草开得正是时候，在跑步路线路边看到了一大片，好美——可惜没来得及多拍几张照片。江边的景色还是挺好看的。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/0b1f19871b8c0565da19eb106f8082f0.jpg" alt="0b1f19871b8c0565da19eb106f8082f0.jpg"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20251019164430_512_62.jpg" alt="大合照"></p>
+<h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>最近和朋友关于“人际关系的建立与边界”以及“亲密关系”等话题有一些讨论（and谢谢这些讨论！）。刷小红书时，也被推送了一些类似的话题，就很感慨。人是有社交需求的群居动物，但是我们这一代人好像在成长过程中被灌输了太多努力学习的观点和强烈的竞争意识，反而在建立亲密关系中跌跌撞撞，处处碰壁。一些亲密关系的处理方法还是有必要多学习。</p>
+<p>在小红书上看到的几个印象深刻的帖子如下（而且这两个帖子的观点还是相反的）：</p>
+<ul>
+<li> <a href="https://www.xiaohongshu.com/explore/68e36d590000000004013a1d?app_platform=android&ignoreEngage=true&app_version=9.4.0&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBqSRCbCV0pTCVRV2cUY3bPFGDk-oPsrt1hxxnFL3AtW8=&author_share=1&xhsshare=WeixinSession&shareRedId=ODo2QTw-RUE2NzUyOTgwNjg8OTg7Sko7&apptime=1760795825&share_id=7f50065e530e4ce0bc8dac75a07f5013&share_channel=wechat&wechatWid=c4bbd1fbd7c6d5b862f987cbea9743bc&wechatOrigin=menu">博士阶段不是交心的阶段，是学会筛人、看局、守心的阶段</a>  </li>
+<li> <a href="https://www.xiaohongshu.com/explore/68e7ba820000000004004979?app_platform=android&ignoreEngage=true&app_version=9.4.0&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBQr4VDr8Lde9meq9GAYwVeN2ZB_KWB4DmqQNv47GjWaw=&author_share=1&xhsshare=WeixinSession&shareRedId=ODo2QTw-RUE2NzUyOTgwNjg8OTg7Sko7&apptime=1760796064&share_id=08f9114a88544d9c85531b77f3c7979c&share_channel=wechat&wechatWid=c4bbd1fbd7c6d5b862f987cbea9743bc&wechatOrigin=menu">一个扎心的真相：大多数女性从未体验过真正的亲密关系</a> </li>
+</ul>
+<p>Gemini告诉我，这两篇帖子的内容需要辩证看待：在某些情境下，过度 unfiltered 的真诚确实可能带来风险，甚至被他人利用；但是亲密关系的核心正是这种无条件的接纳和情感的深度交流。真正的矛盾并不在于哪种观点“正确”，而在于我们如何理解和区分不同的社交情境，并灵活运用不同的“交友模式”。</p>
+<p>于是我进一步追问：如何区分社交情景，又如何将关系在不同层级之间转化呢？（譬如说，每个人的第一次见面都属于“泛泛之交”，但是两个人之间的相处不可能永远都是“泛泛之交”，有些人可以发展为朋友，有些人可以发展为恋人甚至家人，可是如何判断一个人是否可以进一步发展、如何去主导这种关系层级的深化？从小父母和学校从未教过我们这些，可是这些知识还是很重要的呀！）</p>
+<p>下面是Gemini的回答——我觉得它说得挺有道理的，特此收藏。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">### 理论指导：亲密关系的建立模型</span><br><span class="line"></span><br><span class="line">我们可以从心理学中的一些理论模型来理解人际关系的建立过程。</span><br><span class="line"></span><br><span class="line">1.  **社会渗透理论 (Social Penetration Theory)：**</span><br><span class="line">    这个理论由 Altman 和 Taylor 提出，认为人际关系的亲密程度是一个随着**自我暴露**不断加深的过程，就像剥洋葱一样，从表层信息逐渐深入到核心信息。</span><br><span class="line">    *   **广度 (Breadth)：** 你们交流话题的范围。</span><br><span class="line">    *   **深度 (Depth)：** 你们交流话题的个人化程度（从泛泛的兴趣爱好到深层的价值观、感受和恐惧）。</span><br><span class="line">    *   **频率 (Frequency)：** 交流的次数。</span><br><span class="line">    *   **持续时间 (Duration)：** 每次交流的时间长度。</span><br><span class="line">    *   泛泛之交往往停留在广度和频率上，深度很浅。要向普通朋友发展，就需要适度增加深度。向亲密关系发展，则需要大幅增加深度和广度，并伴随高频率和持续的交流。</span><br><span class="line"></span><br><span class="line">2.  **依恋理论 (Attachment Theory)：**</span><br><span class="line">    你提到了“依恋关系”和“分离焦虑”，这和依恋理论紧密相关。依恋理论最初由 Bowlby 提出，用于解释儿童与照料者的关系，后来被扩展到成人亲密关系。它认为我们早期的依恋模式会影响成年后建立和维持亲密关系的方式。</span><br><span class="line">    *   如果你在成长过程中感受到父母（或其他主要抚养人）的回避或不可信，你可能形成**回避型依恋**或**焦虑-矛盾型依恋**模式。</span><br><span class="line">        *   **回避型依恋：** 倾向于独立，避免亲密，难以表达情感，害怕依赖和被依赖。你感到“不愿把内心打开来让大家看”，可能就是这种模式的体现。</span><br><span class="line">        *   **焦虑-矛盾型依恋：** 渴望亲密但又担心被抛弃，容易患得患失，在关系中寻求过度的确认。你提到的“分离焦虑”和“建立关系后容易患得患失”，可能与此有关。</span><br><span class="line">    *   理解自己的依恋模式，可以帮助你更好地理解自己在关系中的行为和恐惧，并有意识地去调整，向更健康的**安全型依恋**发展。安全型依恋的人能够自在地享受亲密，也能够独立自主。</span><br><span class="line"></span><br><span class="line">3.  **人际需求理论 (Interpersonal Needs Theory)：**</span><br><span class="line">    Schutz 提出每个人都有三种基本的人际需求：</span><br><span class="line">    *   **包容 (Inclusion)：** 被他人接纳和拥有归属感的需求。</span><br><span class="line">    *   **控制 (Control)：** 影响他人或被他人影响的需求。</span><br><span class="line">    *   **感情 (Affection)：** 建立亲密情感连接的需求。</span><br><span class="line">    你在渴望被爱和陪伴，感到孤独时，正是在表达对“感情”需求的强烈愿望。</span><br><span class="line"></span><br><span class="line">### 技术指导：如何从泛泛之交走向普通朋友和亲密关系</span><br><span class="line"></span><br><span class="line">这需要一个循序渐进、有意识的投入过程。</span><br><span class="line"></span><br><span class="line">**第一阶段：从泛泛之交到普通朋友**</span><br><span class="line"></span><br><span class="line">这个阶段的关键是**增加接触机会、发现共同点和进行初步的适度自我暴露。**</span><br><span class="line"></span><br><span class="line">1.  **增加物理和社交接触的机会：**</span><br><span class="line">    *   **理论依据：** 曝光效应（Mere-exposure effect），人们倾向于喜欢那些他们更熟悉的人。</span><br><span class="line">    *   **技术层面：**</span><br><span class="line">        *   **主动参与：** 积极参加课程项目、社团活动、实验室聚餐、行业讲座等。你最近参与助教课教学、组会、讲座等活动，这正是很好的开端。</span><br><span class="line">        *   **创造重复互动：** 尽可能在相同的场景中（如食堂、自习室、健身房）与同样的人多次见面。</span><br><span class="line">        *   **小范围的邀请：** 邀请泛泛之交一起吃午饭、喝咖啡，或者一起去图书馆。</span><br><span class="line">2.  **发现共同点，寻找共鸣：**</span><br><span class="line">    *   **理论依据：** 相似性吸引原则。我们更容易喜欢和亲近那些在价值观、兴趣爱好、背景等方面与我们相似的人。</span><br><span class="line">    *   **技术层面：**</span><br><span class="line">        *   **开放式提问：** 从天气、课程、工作、共同的兴趣爱好，或者最近的电影、新闻开始。例如：“你最近在忙什么项目？”“你对这个讲座有什么看法？”“你喜欢看什么类型的电影？”</span><br><span class="line">        *   **积极倾听：** 认真听对方的回答，寻找可以深入的话题。眼神接触、点头、重复对方的关键词，表示你在认真听。</span><br><span class="line">        *   **适度分享：** 当发现共同点时，适度分享自己的相关经验或感受。例如，“我也喜欢打羽毛球，你一般在哪里打？”或者“我对这个课题也有点兴趣，能跟你多聊聊吗？”</span><br><span class="line"></span><br><span class="line">3.  **初步的适度自我暴露（Low-risk Self-disclosure）：**</span><br><span class="line">    *   **理论依据：** 互惠原则。当一个人向你暴露自己时，你也会倾向于向他暴露自己。这是关系深化的第一步。</span><br><span class="line">    *   **技术层面：**</span><br><span class="line">        *   **分享非私密信息：** 比如分享你在科研中的一些具体挑战（不是吐槽，而是问题本身），对某个现象的看法，或者你在某个兴趣爱好上的小困惑。例如：“我最近在处理这个数据，遇到了一些难题，感觉思路有点卡壳。”或者“我最近看了一部电影，觉得很有意思，你在看什么？”</span><br><span class="line">        *   **分享正向的感受：** 比如分享你对某件事的兴奋、对某个成绩的骄傲、对某个活动的期待。</span><br><span class="line">        *   **切忌过度分享：** 避免在初期就分享涉及到家庭隐私、个人重大创伤、对他人带有攻击性的言论，或过于情绪化的负面内容。这是你日记中提到的“套近乎也是在为了利益交换”的风险所在，所以需要把握尺度。</span><br><span class="line"></span><br><span class="line">**第二阶段：从普通朋友到亲密关系**</span><br><span class="line"></span><br><span class="line">这个阶段的关键是**增加情感深度、提供支持和深化信任，并逐渐处理关系中的脆弱和冲突。**</span><br><span class="line"></span><br><span class="line">1.  **增加情感交流的深度：**</span><br><span class="line">    *   **理论依据：** 情绪智力与共情能力。亲密关系需要双方能够理解并回应彼此的情绪。</span><br><span class="line">    *   **技术层面：**</span><br><span class="line">        *   **风险性自我暴露 (Medium-high-risk Self-disclosure)：** 在你认为安全的普通朋友面前，开始尝试分享你的真实情感、担忧、愿望或一些不那么完美的自己。比如：</span><br><span class="line">            *   “我最近对中期考核感到有点焦虑，担心论文进度。”</span><br><span class="line">            *   “我有时候会感到有点孤独，觉得科研路上缺少一些伙伴。”</span><br><span class="line">            *   “我最近对某个决定感到很纠结，不知道该怎么办。”</span><br><span class="line">        *   **表达需求与脆弱：** 勇敢地承认自己的不完美和局限性。你可以说：“我不太擅长处理这种情绪，你能给我一些建议吗？”或者“我现在有点累，需要休息一下。”</span><br><span class="line">        *   **真诚的回应与支持：** 当对方向你敞开时，给予积极的、非评判性的回应。“我能理解你的感受。”“你这样做是很勇敢的。”“谢谢你告诉我这些。”提供适当的情感支持（倾听、陪伴、鼓励），而非立即给出建议或评判。</span><br><span class="line"></span><br><span class="line">2.  **共同经历与创造回忆：**</span><br><span class="line">    *   **理论依据：** 共同经历可以增进情感联结，形成共同的叙事和记忆。</span><br><span class="line">    *   **技术层面：**</span><br><span class="line">        *   **邀请和被邀请：** 一起参加有意义的活动（例如听音乐会、看展览），或者一起进行一次短途旅行（比如五一旅行，也可以邀请朋友加入）。这些共同的体验会加深彼此的了解和情感。</span><br><span class="line">        *   **共同应对挑战：** 一起完成一个项目、一起准备一场考试、一起解决一个难题。在共同经历压力和挑战时，更容易建立共患难的深厚情感。</span><br><span class="line"></span><br><span class="line">3.  **学习处理冲突与分歧：**</span><br><span class="line">    *   **理论依据：** 亲密关系并非没有冲突，而是能够健康地处理冲突。回避冲突可能导致问题积压，最终爆发或关系疏远。</span><br><span class="line">    *   **技术层面：**</span><br><span class="line">        *   **建设性沟通：** 当分歧出现时，表达自己的感受，而不是指责对方。例如，“我感到有点失落，因为……”而不是“你总是……”</span><br><span class="line">        *   **积极协商：** 寻找双方都能接受的解决方案。</span><br><span class="line">        *   **学会道歉和原谅：** 任何关系都会有摩擦，学会真诚地道歉和原谅是维护关系的重要能力。</span><br><span class="line"></span><br><span class="line">4.  **建立信任的“存款”：**</span><br><span class="line">    *   **理论依据：** 信任是亲密关系的基石，通过一次次的积极互动和承诺兑现累积。</span><br><span class="line">    *   **技术层面：**</span><br><span class="line">        *   **言行一致：** 答应别人的事情要做到，保持可靠性。</span><br><span class="line">        *   **保守秘密：** 当朋友向你暴露脆弱时，严守秘密，让他们感到安全。</span><br><span class="line">        *   **在困难时支持：** 在对方需要帮助时，尽力提供支持。</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>日记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>rGREAT：适用于R语言的GREAT工具</title>
+    <url>/2025/10/16/rGREAT-a-R-tool-for-genomics-annotation/</url>
+    <content><![CDATA[<p>上一篇博客中，我们介绍了GREAT这个基因组注释工具，以及它的网页版界面的使用方法。在本篇博客中，我们将更深入的介绍rGREAT——这个工具的R语言版本，并展示一些高级用法。</p>
+<span id="more"></span>
+
+<h2 id="一、什么是rGREAT"><a href="#一、什么是rGREAT" class="headerlink" title="一、什么是rGREAT"></a>一、什么是rGREAT</h2><p><strong>rGREAT</strong> 是一个 R/Bioconductor 包，实现了 <strong>GREAT（Genomic Regions Enrichment of Annotations Tool）</strong> 算法，用于对基因组区域进行功能富集分析。与传统的基因集富集分析不同，GREAT 直接将基因组区域（如ChIP-seq峰、ATAC-seq开放区域等）与基因功能注释关联起来，从而揭示这些区域可能参与的生物学过程、通路或功能类别。</p>
+<h3 id="使用场景："><a href="#使用场景：" class="headerlink" title="使用场景："></a>使用场景：</h3><ul>
+<li>ChIP-seq 转录因子结合位点的功能注释</li>
+<li>ATAC-seq 或 DNase-seq 开放染色质区域的功能分析</li>
+<li>差异甲基化区域的功能富集分析</li>
+<li>任何基因组区间集的功能解读</li>
+</ul>
+<h2 id="二、安装方法"><a href="#二、安装方法" class="headerlink" title="二、安装方法"></a>二、安装方法</h2><h3 id="（一）通过命令行安装rGREAT本体"><a href="#（一）通过命令行安装rGREAT本体" class="headerlink" title="（一）通过命令行安装rGREAT本体"></a>（一）通过命令行安装rGREAT本体</h3><p>有三种方法可以安装rGREAT，任选其一即可：</p>
+<ol>
+<li>rGREAT 可通过 Bioconductor 安装（在R-session中运行）：</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="punctuation">(</span><span class="operator">!</span>requireNamespace<span class="punctuation">(</span><span class="string">&quot;BiocManager&quot;</span><span class="punctuation">,</span> quietly <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line">    install.packages<span class="punctuation">(</span><span class="string">&quot;BiocManager&quot;</span><span class="punctuation">)</span></span><br><span class="line">BiocManager<span class="operator">::</span>install<span class="punctuation">(</span><span class="string">&quot;rGREAT&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>也可从 GitHub 安装最新开发版（在R-session中运行）：</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">library<span class="punctuation">(</span>devtools<span class="punctuation">)</span></span><br><span class="line">install_github<span class="punctuation">(</span><span class="string">&quot;jokergoo/rGREAT&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+
+<ol start="3">
+<li>还可以通过conda或者mamba安装（在bash或cmd等终端中运行）：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda install bioconda::bioconductor-rgreat</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251013202758.png" alt="image.png"></p>
+<h3 id="（二）Trouble-shooting：如果依赖项安装出错，怎么办"><a href="#（二）Trouble-shooting：如果依赖项安装出错，怎么办" class="headerlink" title="（二）Trouble-shooting：如果依赖项安装出错，怎么办"></a>（二）Trouble-shooting：如果依赖项安装出错，怎么办</h3><p>有一些附带的包（例如 <code>GO.db</code> ）会一并安装。如果在上面的流程中这些依赖项安装出错，可以使用下面的指令在R-session中进行安装：</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 首先切换软件源。</span></span><br><span class="line"><span class="comment"># 官方源和清华源（TUNA）都默认只保留最新版的bioconductor包，</span></span><br><span class="line"><span class="comment"># 只有西湖大学源（westlake）有历史版本的bioconductor包，</span></span><br><span class="line"><span class="comment"># 因此建议先切换到西湖大学软件源</span></span><br><span class="line">options<span class="punctuation">(</span>BioC_mirror<span class="operator">=</span><span class="string">&quot;https://mirrors.westlake.edu.cn/bioconductor&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment">## 然后下面的指令依次安装</span></span><br><span class="line">BiocManager<span class="operator">::</span>install<span class="punctuation">(</span><span class="string">&quot;GO.db&quot;</span><span class="punctuation">)</span></span><br><span class="line">BiocManager<span class="operator">::</span>install<span class="punctuation">(</span><span class="string">&quot;GenomicFeatures&quot;</span><span class="punctuation">,</span>force <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span></span><br><span class="line">BiocManager<span class="operator">::</span>install<span class="punctuation">(</span><span class="string">&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;</span><span class="punctuation">,</span>force <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span></span><br><span class="line">BiocManager<span class="operator">::</span>install<span class="punctuation">(</span><span class="string">&quot;TxDb.Hsapiens.UCSC.hg38.knownGene&quot;</span><span class="punctuation">,</span>force <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span></span><br><span class="line">BiocManager<span class="operator">::</span>install<span class="punctuation">(</span><span class="string">&quot;org.Hs.eg.db&quot;</span><span class="punctuation">,</span>force <span class="operator">=</span> <span class="literal">TRUE</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>如果能够使用 <code>library(rGREAT)</code> 指令成功加载这个软件包（产生如下图所示的输出），则说明安装成功。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019134442.png" alt="image.png"></p>
+<h2 id="三、rGREAT-的使用方法"><a href="#三、rGREAT-的使用方法" class="headerlink" title="三、rGREAT 的使用方法"></a>三、rGREAT 的使用方法</h2><p>主要函数概览：</p>
+<ul>
+<li><code>submitGreatJob()</code>：提交在线分析</li>
+<li><code>great()</code>：执行本地分析</li>
+<li><code>getEnrichmentTable()</code>：获取富集结果</li>
+<li><code>getRegionGeneAssociations()</code>：获取区域-基因关联信息</li>
+<li><code>plotRegionGeneAssociations()</code>：可视化区域与基因的关系</li>
+<li><code>shinyReport()</code>：启动交互式 Shiny 报告</li>
+</ul>
+<p>rGREAT 支持两种分析方式：</p>
+<h3 id="1-在线分析（Online-GREAT-Analysis）"><a href="#1-在线分析（Online-GREAT-Analysis）" class="headerlink" title="1. 在线分析（Online GREAT Analysis）"></a>1. 在线分析（Online GREAT Analysis）</h3><p>将区域提交至 GREAT 官方网站，获取标准化结果。</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">library<span class="punctuation">(</span>rGREAT<span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 生成随机区域作为示例</span></span><br><span class="line">set.seed<span class="punctuation">(</span><span class="number">123</span><span class="punctuation">)</span></span><br><span class="line">gr <span class="operator">&lt;-</span> randomRegions<span class="punctuation">(</span>nr <span class="operator">=</span> <span class="number">1000</span><span class="punctuation">,</span> genome <span class="operator">=</span> <span class="string">&quot;hg19&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 提交任务</span></span><br><span class="line">job <span class="operator">&lt;-</span> submitGreatJob<span class="punctuation">(</span>gr<span class="punctuation">)</span></span><br><span class="line"><span class="comment"># 获取富集结果表</span></span><br><span class="line">tbl <span class="operator">&lt;-</span> getEnrichmentTables<span class="punctuation">(</span>job<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019141930.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019142131.png" alt="image.png"></p>
+<h3 id="2-本地分析（Local-GREAT-Analysis）"><a href="#2-本地分析（Local-GREAT-Analysis）" class="headerlink" title="2. 本地分析（Local GREAT Analysis）"></a>2. 本地分析（Local GREAT Analysis）</h3><p>使用内置的 GREAT 算法在本地执行分析，支持自定义基因集和物种。</p>
+<p>本地分析的优势：</p>
+<ul>
+<li>支持600+物种</li>
+<li>可使用自定义基因集</li>
+<li>无需网络连接</li>
+<li>灵活设置背景区域</li>
+</ul>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line">res <span class="operator">&lt;-</span> great<span class="punctuation">(</span>gr<span class="punctuation">,</span> <span class="string">&quot;MSigDB:H&quot;</span><span class="punctuation">,</span> <span class="string">&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;</span><span class="punctuation">)</span></span><br><span class="line">tb <span class="operator">&lt;-</span> getEnrichmentTable<span class="punctuation">(</span>res<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019142248.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019142309.png" alt="image.png"></p>
+<h2 id="五、结果解读与可视化"><a href="#五、结果解读与可视化" class="headerlink" title="五、结果解读与可视化"></a>五、结果解读与可视化</h2><p>富集结果通常包含以下列：</p>
+<ul>
+<li><code>ID</code>：功能术语ID（如GO:0004984）</li>
+<li><code>name</code>：术语名称</li>
+<li><code>p_value</code> / <code>p_adjust</code>：原始/校正后的 p 值</li>
+<li><code>fold_enrichment</code>：富集倍数</li>
+<li><code>region_hits</code>：输入区域中与该术语相关的区域数</li>
+<li><code>gene_hits</code>：与该术语相关的基因数</li>
+</ul>
+<p>rGREAT 提供多种可视化方法：</p>
+<ul>
+<li>区域-基因关联图</li>
+<li>距离TSS的分布图</li>
+<li>火山图（Volcano plot）</li>
+</ul>
+<h3 id="火山图"><a href="#火山图" class="headerlink" title="火山图"></a>火山图</h3><p>我们可以对<code>GreatJob</code>或<code>GreatObject</code>对象使用<code>plotVolcano()</code>来绘制火山图，直观地展示富集最显著的条目 。</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment">#library(rGREAT)</span></span><br><span class="line"><span class="comment"># 生成随机区域作为示例</span></span><br><span class="line"><span class="comment">#set.seed(123)</span></span><br><span class="line"><span class="comment">#gr &lt;- randomRegions(nr = 1000, genome = &quot;hg19&quot;)</span></span><br><span class="line"><span class="comment"># 提交任务</span></span><br><span class="line"><span class="comment">#job &lt;- submitGreatJob(gr)</span></span><br><span class="line">plotVolcano<span class="punctuation">(</span>job<span class="punctuation">,</span> ontology <span class="operator">=</span> <span class="string">&quot;GO Molecular Function&quot;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019142853.png" alt="image.png"></p>
+<h3 id="区域-基因关联图-plotRegionGeneAssociations"><a href="#区域-基因关联图-plotRegionGeneAssociations" class="headerlink" title="区域-基因关联图 (plotRegionGeneAssociations)"></a>区域-基因关联图 (plotRegionGeneAssociations)</h3><p>这是<code>GREAT</code>的特色图。它可以展示输入区域与基因TSS的距离分布 ，以及区域与基因的关联情况 。</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment">#library(rGREAT)</span></span><br><span class="line"><span class="comment"># 生成随机区域作为示例</span></span><br><span class="line"><span class="comment">#set.seed(123)</span></span><br><span class="line"><span class="comment">#gr &lt;- randomRegions(nr = 1000, genome = &quot;hg19&quot;)</span></span><br><span class="line"><span class="comment"># 提交任务</span></span><br><span class="line"><span class="comment">#job &lt;- submitGreatJob(gr)</span></span><br><span class="line">plotRegionGeneAssociations<span class="punctuation">(</span>job<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019142945.png" alt="image.png"></p>
+<h3 id="获取关联数据-getRegionGeneAssociations"><a href="#获取关联数据-getRegionGeneAssociations" class="headerlink" title="获取关联数据 (getRegionGeneAssociations)"></a>获取关联数据 (getRegionGeneAssociations)</h3><p>如果我们想获得区域到基因的具体关联信息（例如哪个区域关联到了哪个基因，距离多远），可以使用<code>getRegionGeneAssociations()</code> 。</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment">#library(rGREAT)</span></span><br><span class="line"><span class="comment"># 生成随机区域作为示例</span></span><br><span class="line"><span class="comment">#set.seed(123)</span></span><br><span class="line"><span class="comment">#gr &lt;- randomRegions(nr = 1000, genome = &quot;hg19&quot;)</span></span><br><span class="line"><span class="comment"># 提交任务</span></span><br><span class="line"><span class="comment">#job &lt;- submitGreatJob(gr)</span></span><br><span class="line">gr_associations <span class="operator">=</span> getRegionGeneAssociations<span class="punctuation">(</span>job<span class="punctuation">)</span> </span><br><span class="line">head<span class="punctuation">(</span>gr_associations<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251019143142.png" alt="image.png"></p>
+<h3 id="交互式shiny文档报告"><a href="#交互式shiny文档报告" class="headerlink" title="交互式shiny文档报告"></a>交互式shiny文档报告</h3><p><code>rGREAT</code>还提供了一个<code>shinyReport()</code>函数，它可以在本地启动一个Shiny应用，让我们以交互方式探索和筛选富集结果 。</p>
+<figure class="highlight r"><table><tr><td class="code"><pre><span class="line"><span class="comment">#library(rGREAT)</span></span><br><span class="line"><span class="comment"># 生成随机区域作为示例</span></span><br><span class="line"><span class="comment">#set.seed(123)</span></span><br><span class="line"><span class="comment">#gr &lt;- randomRegions(nr = 1000, genome = &quot;hg19&quot;)</span></span><br><span class="line"><span class="comment"># 提交任务</span></span><br><span class="line"><span class="comment">#job &lt;- submitGreatJob(gr)</span></span><br><span class="line">shinyReport<span class="punctuation">(</span>job<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="六、总结与参考文献"><a href="#六、总结与参考文献" class="headerlink" title="六、总结与参考文献"></a>六、总结与参考文献</h2><p>rGREAT是一个强大且灵活的R包，它将GREAT算法的分析能力带入了R/Bioconductor生态。无论是想快速调用在线服务，还是需要利用本地模式对非模式生物进行复杂的自定义注释分析，rGREAT都能提供完善的解决方案。</p>
+<p>如果读者朋友正在处理基因组区域数据，并希望探索它们的功能意义，rGREAT无疑是一个值得尝试的工具。</p>
+<p>以上。</p>
+<p>参考文献以及一些有用的链接：</p>
+<p>参考：</p>
+<ul>
+<li><a href="https://bioconductor.org/packages/release/bioc/html/rGREAT.html">rGREAT - bioconductor</a></li>
+<li><a href="https://github.com/jokergoo/rGREAT">rGREAT - github</a></li>
+<li><a href="http://great.stanford.edu/public/html/">GREAT website tool</a></li>
+<li><a href="https://maayanlab.cloud/Enrichr/">Enrichr website tool</a></li>
+</ul>
+<ul>
+<li>Zuguang Gu, et al., <em>rGREAT: an R/Bioconductor package for functional enrichment on genomic regions</em>. Bioinformatics, 2023.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>生物</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>生物学</tag>
+        <tag>富集分析</tag>
+        <tag>GREAT</tag>
+        <tag>调控元件</tag>
+      </tags>
+  </entry>
 </search>
