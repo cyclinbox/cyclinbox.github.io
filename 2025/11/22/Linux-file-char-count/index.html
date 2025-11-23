@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="背景是这样的。最近我在升级维护自己的日记本系统，想要给目录页增加字数统计的功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux文件字数统计">
+<meta property="og:url" content="https://wz.anoms.top/2025/11/22/Linux-file-char-count/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="背景是这样的。最近我在升级维护自己的日记本系统，想要给目录页增加字数统计的功能。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-11-22T12:30:00.000Z">
+<meta property="article:modified_time" content="2025-11-23T17:30:05.719Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="字数统计">
+<meta property="article:tag" content="wc">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2025/11/22/Linux-file-char-count/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2025/11/22/Linux-file-char-count/","path":"2025/11/22/Linux-file-char-count/","title":"Linux文件字数统计"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux文件字数统计 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E6%95%B0%E7%BB%9F%E8%AE%A1%E5%88%9D%E5%8D%B0%E8%B1%A1%EF%BC%9A-wc%E6%8C%87%E4%BB%A4%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">字数统计初印象： wc指令的用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#m-%E5%8F%82%E6%95%B0%E7%9A%84%E5%A6%99%E7%94%A8%EF%BC%8C%E4%BB%A5%E5%8F%8ALOCALE%E8%AE%BE%E7%BD%AE%E5%AF%B9%E7%BB%9F%E8%AE%A1%E7%BB%93%E6%9E%9C%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">2.</span> <span class="nav-text">-m 参数的妙用，以及LOCALE设置对统计结果的影响</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">243</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">446</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2025/11/22/Linux-file-char-count/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux文件字数统计 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux文件字数统计
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-11-22 20:30:00" itemprop="dateCreated datePublished" datetime="2025-11-22T20:30:00+08:00">2025-11-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-11-24 01:30:05" itemprop="dateModified" datetime="2025-11-24T01:30:05+08:00">2025-11-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>背景是这样的。最近我在升级维护自己的日记本系统，想要给目录页增加字数统计的功能。</p>
+<span id="more"></span>
+
+<p>这个系统的工作原理是这样的：先遍历当前文件夹下的所有txt文件，然后根据文件名（就是日记的创建日期）进行排序，并按月份分类，最后根据一个HTML模板生成最终的目录页。这个日记本系统是用Python编写的，但最初为了方便，我在代码中大量使用了Linux的shell指令（例如 <code>ls</code> 获取文件名），因此这次升级时我顺便探索了Linux下统计文件字数的方法。</p>
+<h2 id="字数统计初印象：-wc指令的用法"><a href="#字数统计初印象：-wc指令的用法" class="headerlink" title="字数统计初印象： wc指令的用法"></a>字数统计初印象： wc指令的用法</h2><p>学过Linux的人或多或少听说过wc指令，其全称是 word count ，可以用来统计字数和行数。下面是Linux manual page中对这个指令的介绍：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">   wc - print newline, word, and byte counts for each</span><br><span class="line">   file</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">   wc [OPTION]... [FILE]...</span><br><span class="line">   wc [OPTION]... --files0-from=F</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">   Print newline, word, and byte counts for each FILE,</span><br><span class="line">   and a total line if more than one FILE is</span><br><span class="line">   specified.  A word is a nonempty sequence of non</span><br><span class="line">   white space delimited by white space characters or</span><br><span class="line">   by start or end of input.</span><br><span class="line"></span><br><span class="line">   With no FILE, or when FILE is -, read standard</span><br><span class="line">   input.</span><br><span class="line"></span><br><span class="line">   The options below may be used to select which</span><br><span class="line">   counts are printed, always in the following order:</span><br><span class="line">   newline, word, character, byte, maximum line</span><br><span class="line">   length.</span><br></pre></td></tr></table></figure>
+
+
+<p>例如，我们在生信分析pipeline中常常会用到 <code>wc -l &lt;file&gt;</code> 统计文件的行数，也可以使用 <code>wc -c &lt;file&gt;</code>  或者 <code>wc -w &lt;file&gt;</code> 统计文件的bytes数或单词数。但这些并不是我们想要的——日记文件多以utf-8编码的中文字符写成（也会混有数字和英文字母），而 <code>wc -c</code> 统计的是总bytes数，它会把一个中文字符算作3个bytes，导致统计偏差。</p>
+<p>那么，该怎么有效统计字符数呢？</p>
+<h2 id="m-参数的妙用，以及LOCALE设置对统计结果的影响"><a href="#m-参数的妙用，以及LOCALE设置对统计结果的影响" class="headerlink" title="-m 参数的妙用，以及LOCALE设置对统计结果的影响"></a><code>-m</code> 参数的妙用，以及LOCALE设置对统计结果的影响</h2><p>在 <code>wc</code> 指令的manual page中提到了 <code>-m</code> 指令，其作用是统计字符数量，对我们来说也许有用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-m, --chars</span><br><span class="line">    print the character counts</span><br></pre></td></tr></table></figure>
+
+
+<p>比方说，我们统计一下北宋词人柳永的《蝶恋花》：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">~/sd/termux $ cat test.txt</span><br><span class="line">蝶恋花·伫倚危楼风细细</span><br><span class="line"> 柳永〔宋代〕</span><br><span class="line">伫倚危楼风细细，望极春愁，黯黯生天际。草色烟光残照里， 无言谁会凭阑意。</span><br><span class="line">拟把疏狂图一醉，对酒当歌，强乐还无味。衣带渐宽终不悔， 为伊消得人憔悴。</span><br><span class="line">~/sd/termux $ wc test.txt</span><br><span class="line">  4   4 265 test.txt</span><br><span class="line">~/sd/termux $ wc -m test.txt</span><br><span class="line">92 test.txt</span><br><span class="line">~/sd/termux $</span><br></pre></td></tr></table></figure>
+
+<p>全词算上标题和标点符号共92个字符，但是使用 <code>wc</code> 直接统计，会统计出来265个bytes的大小。相比之下， <code>wc -m</code> 的统计结果是对的。</p>
+<p>到此为止，我们本以为故事已经到达了终点，只需要将 <code>wc -m</code> 写入Python文件的字数统计模块，一切就大功告成了</p>
+<p>——直到第二天我看到了服务器自动更新以后的字数统计结果——依然不对。</p>
+<p>多说一句，这个日记本系统每天会自动扫描并更新一次目录，这个自动扫描的功能托管在Linux的cron服务下。</p>
+<p>询问了AI，它告诉我：“crontab环境中，可能缺少正确的locale设置，导致wc命令默认使用C locale，从而将中文字符按字节统计。  解决方法有两种：1. 在crontab中设置正确的locale环境变量。 2. 在Python中使用其他不依赖locale的方法来统计字符数”。为了方便调试，这里我自然选择了方案1。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(base) cyclin@vm:~$ LANG=C.UTF-8 wc -m test.txt</span><br><span class="line">92 test.txt</span><br><span class="line">(base) cyclin@vm:~$ LANG=C wc -m test.txt</span><br><span class="line">265 test.txt</span><br></pre></td></tr></table></figure>
+
+<p>如上所示，当我们在调用 <code>wc</code> 指令前强制设置环境变量 <code>LANG</code> ，那么 <code>LANG</code> 的取值会影响 <code>wc -m</code> 的统计结果。在termux环境下测试时大部分LANG设置都能正常统计字数，但是在服务器端（Ubuntu 22.04），只有当设置 <code>LANG=C.UTF-8</code> 时才能让 <code>wc -m</code> 正确识别中文字符。</p>
+<p>总结：要想正确统计字符数（并且不依赖于环境变量），那么应该使用这个指令： <code>LANG=C.UTF-8 wc -m &lt;file&gt;</code></p>
+<hr>
+<p>后记：在上述探索之后，DeepSeek建议我如果想要提高性能和安全性，就不要再继续用Linux shell指令进行文件名读取和字数统计了，使用Python内置的文件接口 <code>os.listdir</code> 和 <code>file.read</code> 是更安全和高效的选择。因此，我又花了一些时间重构了代码——效果还是很显著的，每次扫描的时间从5秒多提升到了不到3秒。</p>
+<p>AI可真好用呀。</p>
+<p>以及，统计完以后我才发现，这几年下来我的日记居然攒到了一百多万字——原来我在日记里话可真多啊，笑死。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2025/11/22/Linux-file-char-count/" title="Linux文件字数统计">https://wz.anoms.top/2025/11/22/Linux-file-char-count/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+              <a href="/tags/%E5%AD%97%E6%95%B0%E7%BB%9F%E8%AE%A1/" rel="tag"><i class="fa fa-tag"></i> 字数统计</a>
+              <a href="/tags/wc/" rel="tag"><i class="fa fa-tag"></i> wc</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/11/09/20251109_updatelog/" rel="prev" title="【AI对话】如何在“屏蔽杂音”与“听取正确的成长建议”之间取得平衡">
+                  <i class="fa fa-chevron-left"></i> 【AI对话】如何在“屏蔽杂音”与“听取正确的成长建议”之间取得平衡
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/11/23/Windows_C_disk_clean_and_WizTree/" rel="next" title="我与电脑C盘的战争">
+                  我与电脑C盘的战争 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>

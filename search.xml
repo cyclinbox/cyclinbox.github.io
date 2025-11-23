@@ -21814,4 +21814,179 @@
         <tag>datetimectl</tag>
       </tags>
   </entry>
+  <entry>
+    <title>近期生活记录（2025年11月）</title>
+    <url>/2025/11/24/20251124_updatelog/</url>
+    <content><![CDATA[<p>如题。</p>
+<span id="more"></span>
+
+
+<p>立冬已经过去半个多月了，最近一阵子天气着实有些寒冷，身处江南却莫名有了一种北方冬日的萧瑟孤寂感。似乎有点想家了。</p>
+<p>进入十一月，感觉相比于上个月生活清净了很多。周末几乎无事，不过打了很多羽毛球，还算快乐——也感谢大家的陪伴和切磋。但说实话，寒冷且昼短夜长的日子对身心健康有不少负面影响，某个周六的晚上，独自一人去附近的商圈解决晚饭，突然没来由的悲伤，开着网易云单曲循环了一路，有点情不自禁想哭。2025年又快过完了啊。</p>
+<p>这学期继续担任了计算生物学的助教。为了能够上一堂助教课，要准备很多东西——于是上周助教课前的那几天很忙。好在组会/助教课之后的生活是相对比较轻松的。上周四参与了新园区参观活动，周五又去听了一个科普讲座，回来的路上还被研一的新同学拦住问了很多科研和轮转方面的事情（就，还挺开心的，感觉在帮助别人的时候自己的价值也得到了确认）。不过回来之后，又被分享了许多课题方面的焦虑——还是得抓紧时间做科研呀！</p>
+<p>某天晚上和实验室大家一起吃饭的时候，因为餐馆播放的一首背景音乐（梁汉文的《七友》，林夕作词），又不小心又聊到了情感问题。我说 “香港乐坛作词家林夕居然至今未婚，感觉他好惨，似乎一直爱而不得” ，于是和大家展开了关于恋爱中的底线原则的一些大讨论。我说，虽然自己追求“从前车马很慢，一生只爱一个人”的长久的爱情，但是其实对于“先婚后爱”这样的关系模式并不抗拒；另外，在关系中，我可能倾向于对自己要求很高，但是对伴侣来说并没有特别高的要求，就像<a href="https://www.zhihu.com/question/309282780/answer/868991240">“图书馆30秒”</a>的故事【注1】，这样的故事如果发生在我的身上，如果我是女主，我会选择原谅男生，而如果我是男主，我压根不会和师妹发展出那样亲密暧昧的关系——师姐说我这算是“受委屈人格”（应该就是讨好型人格吧），还提醒说不要高估其他人的道德水平，别太天真太傻白甜了。</p>
+<p>最近倒没有其他的事情。这几天看完了一本书《图书馆疗愈手记》，是一位英国的图书管理员写下的手札，记录了自己通过在图书馆做管理员，在不断和读者群体接触、不断帮助他人和组织各种活动中间慢慢找到自己的价值，从一个抑郁症患者成为一个小有名气的网红+作者的成长历程。帮助别人确实能够带来很多好的感觉呀！还有，这本书也探讨了在互联网时代中图书馆存在的意义：尽管看纸质书的人相比于以前少了很多，但图书馆依然是公共服务的重要一环，是许多需要帮助的人获得信息的渠道，是牙牙学语的孩子接触世界的窗口。以及，一条很重要的生存法则：“永远不要失去你的同理心，但要学会搁置愤怒”。</p>
+<p>最近的事情大概就是这样。天气越来越冷了，屏幕前的朋友们一定注意保暖。2025年快要过完了，愿一切顺利。加油。</p>
+<p>以上。</p>
+<blockquote>
+<p>注1：这个故事在知乎上有很多讨论了，感兴趣的可以看<a href="https://www.zhihu.com/question/495836892">这里</a> ，简单来说就是有一对相恋多年的异地恋情侣，其中的男主和同门师妹长期保持高频聊天（有一点点暧昧的倾向），但是女主被蒙在鼓里，而事情爆发的导火索是女主过生日，在许愿吹蜡烛的时候发现男主在低头看手机，事后检查聊天记录发现是师妹给男主发消息“图书馆停电了，我好怕”。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>日记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux文件字数统计</title>
+    <url>/2025/11/22/Linux-file-char-count/</url>
+    <content><![CDATA[<p>背景是这样的。最近我在升级维护自己的日记本系统，想要给目录页增加字数统计的功能。</p>
+<span id="more"></span>
+
+<p>这个系统的工作原理是这样的：先遍历当前文件夹下的所有txt文件，然后根据文件名（就是日记的创建日期）进行排序，并按月份分类，最后根据一个HTML模板生成最终的目录页。这个日记本系统是用Python编写的，但最初为了方便，我在代码中大量使用了Linux的shell指令（例如 <code>ls</code> 获取文件名），因此这次升级时我顺便探索了Linux下统计文件字数的方法。</p>
+<h2 id="字数统计初印象：-wc指令的用法"><a href="#字数统计初印象：-wc指令的用法" class="headerlink" title="字数统计初印象： wc指令的用法"></a>字数统计初印象： wc指令的用法</h2><p>学过Linux的人或多或少听说过wc指令，其全称是 word count ，可以用来统计字数和行数。下面是Linux manual page中对这个指令的介绍：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">NAME</span><br><span class="line">   wc - print newline, word, and byte counts for each</span><br><span class="line">   file</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">   wc [OPTION]... [FILE]...</span><br><span class="line">   wc [OPTION]... --files0-from=F</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">   Print newline, word, and byte counts for each FILE,</span><br><span class="line">   and a total line if more than one FILE is</span><br><span class="line">   specified.  A word is a nonempty sequence of non</span><br><span class="line">   white space delimited by white space characters or</span><br><span class="line">   by start or end of input.</span><br><span class="line"></span><br><span class="line">   With no FILE, or when FILE is -, read standard</span><br><span class="line">   input.</span><br><span class="line"></span><br><span class="line">   The options below may be used to select which</span><br><span class="line">   counts are printed, always in the following order:</span><br><span class="line">   newline, word, character, byte, maximum line</span><br><span class="line">   length.</span><br></pre></td></tr></table></figure>
+
+
+<p>例如，我们在生信分析pipeline中常常会用到 <code>wc -l &lt;file&gt;</code> 统计文件的行数，也可以使用 <code>wc -c &lt;file&gt;</code>  或者 <code>wc -w &lt;file&gt;</code> 统计文件的bytes数或单词数。但这些并不是我们想要的——日记文件多以utf-8编码的中文字符写成（也会混有数字和英文字母），而 <code>wc -c</code> 统计的是总bytes数，它会把一个中文字符算作3个bytes，导致统计偏差。</p>
+<p>那么，该怎么有效统计字符数呢？</p>
+<h2 id="m-参数的妙用，以及LOCALE设置对统计结果的影响"><a href="#m-参数的妙用，以及LOCALE设置对统计结果的影响" class="headerlink" title="-m 参数的妙用，以及LOCALE设置对统计结果的影响"></a><code>-m</code> 参数的妙用，以及LOCALE设置对统计结果的影响</h2><p>在 <code>wc</code> 指令的manual page中提到了 <code>-m</code> 指令，其作用是统计字符数量，对我们来说也许有用：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-m, --chars</span><br><span class="line">    print the character counts</span><br></pre></td></tr></table></figure>
+
+
+<p>比方说，我们统计一下北宋词人柳永的《蝶恋花》：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~/sd/termux $ cat test.txt</span><br><span class="line">蝶恋花·伫倚危楼风细细</span><br><span class="line"> 柳永〔宋代〕</span><br><span class="line">伫倚危楼风细细，望极春愁，黯黯生天际。草色烟光残照里， 无言谁会凭阑意。</span><br><span class="line">拟把疏狂图一醉，对酒当歌，强乐还无味。衣带渐宽终不悔， 为伊消得人憔悴。</span><br><span class="line">~/sd/termux $ wc test.txt</span><br><span class="line">  4   4 265 test.txt</span><br><span class="line">~/sd/termux $ wc -m test.txt</span><br><span class="line">92 test.txt</span><br><span class="line">~/sd/termux $</span><br></pre></td></tr></table></figure>
+
+<p>全词算上标题和标点符号共92个字符，但是使用 <code>wc</code> 直接统计，会统计出来265个bytes的大小。相比之下， <code>wc -m</code> 的统计结果是对的。</p>
+<p>到此为止，我们本以为故事已经到达了终点，只需要将 <code>wc -m</code> 写入Python文件的字数统计模块，一切就大功告成了</p>
+<p>——直到第二天我看到了服务器自动更新以后的字数统计结果——依然不对。</p>
+<p>多说一句，这个日记本系统每天会自动扫描并更新一次目录，这个自动扫描的功能托管在Linux的cron服务下。</p>
+<p>询问了AI，它告诉我：“crontab环境中，可能缺少正确的locale设置，导致wc命令默认使用C locale，从而将中文字符按字节统计。  解决方法有两种：1. 在crontab中设置正确的locale环境变量。 2. 在Python中使用其他不依赖locale的方法来统计字符数”。为了方便调试，这里我自然选择了方案1。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(base) cyclin@vm:~$ LANG=C.UTF-8 wc -m test.txt</span><br><span class="line">92 test.txt</span><br><span class="line">(base) cyclin@vm:~$ LANG=C wc -m test.txt</span><br><span class="line">265 test.txt</span><br></pre></td></tr></table></figure>
+
+<p>如上所示，当我们在调用 <code>wc</code> 指令前强制设置环境变量 <code>LANG</code> ，那么 <code>LANG</code> 的取值会影响 <code>wc -m</code> 的统计结果。在termux环境下测试时大部分LANG设置都能正常统计字数，但是在服务器端（Ubuntu 22.04），只有当设置 <code>LANG=C.UTF-8</code> 时才能让 <code>wc -m</code> 正确识别中文字符。</p>
+<p>总结：要想正确统计字符数（并且不依赖于环境变量），那么应该使用这个指令： <code>LANG=C.UTF-8 wc -m &lt;file&gt;</code></p>
+<hr>
+<p>后记：在上述探索之后，DeepSeek建议我如果想要提高性能和安全性，就不要再继续用Linux shell指令进行文件名读取和字数统计了，使用Python内置的文件接口 <code>os.listdir</code> 和 <code>file.read</code> 是更安全和高效的选择。因此，我又花了一些时间重构了代码——效果还是很显著的，每次扫描的时间从5秒多提升到了不到3秒。</p>
+<p>AI可真好用呀。</p>
+<p>以及，统计完以后我才发现，这几年下来我的日记居然攒到了一百多万字——原来我在日记里话可真多啊，笑死。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux</tag>
+        <tag>字数统计</tag>
+        <tag>wc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>我与电脑C盘的战争</title>
+    <url>/2025/11/23/Windows_C_disk_clean_and_WizTree/</url>
+    <content><![CDATA[<p>如题。</p>
+<p>事情要从前几天的一些烦心事说起。我的办公电脑——那台服役不知道多少年的、从我研一就流转到我手里的二手台式机，C盘满了。</p>
+<span id="more"></span>
+
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>Windows系统在面对内存占用爆满的情况有一套成熟的自动化应对机制（例如创建分页文件，或者强制终止部分进程释放内存）。</p>
+<p>但是，Windows分页文件占用的是硬盘（特别是C盘）的空间，而对于一些数年前的、配置较低的电脑，C盘空间并不是很大，很容易就会占满</p>
+<p>——于是那天的一天时间内，我已经连续5次碰到了C盘可用空间0MB的惨状。</p>
+<p>Windows系统是否存在和内存爆满一样的自动化应对机制，来应对C盘空间不足的问题？这个问题我去问了AI，答案是不能。因此我得手动清理C盘存储空间，直到存储空间够用为止。</p>
+<h2 id="二、关于C盘清理，我之前做过的所有尝试"><a href="#二、关于C盘清理，我之前做过的所有尝试" class="headerlink" title="二、关于C盘清理，我之前做过的所有尝试"></a>二、关于C盘清理，我之前做过的所有尝试</h2><h3 id="（一）清理回收站、Download目录等用户目录"><a href="#（一）清理回收站、Download目录等用户目录" class="headerlink" title="（一）清理回收站、Download目录等用户目录"></a>（一）清理回收站、Download目录等用户目录</h3><p>这是AI给我的第一条建议。事实上，这些地方我清理不了一点。</p>
+<p>关于回收站和Download目录，我一直有随手清理的习惯，因此这几个文件夹几乎没有占用太多空间。我还想补充的是，我的Pictures目录、Videos目录也几乎没有占用太多空间——照片和视频我存储在其他位置。而Document目录我无能为力，因为据我所知很多软件都默认把用户数据存储在这里。</p>
+<p>所以只得尝试其他方法。</p>
+<h3 id="（二）卸载不用的软件，或者把软件重装到其他磁盘"><a href="#（二）卸载不用的软件，或者把软件重装到其他磁盘" class="headerlink" title="（二）卸载不用的软件，或者把软件重装到其他磁盘"></a>（二）卸载不用的软件，或者把软件重装到其他磁盘</h3><p>这恐怕是许多人第一时间想到的对策。我也一样。因此在之前许多次C盘占满以后，我已经多次做了这样的事情——去Windows控制面板里翻看系统上已安装的软件，并把一些占用空间太大、短时间内用不到的软件全部删去。正因为如此，我已经前前后后清理过matlab、openSCAD、VMWare等等一系列的软件了。至于“把软件重装到其他磁盘”，我一直有着安装软件时默认安装到D盘的好习惯，因此这一部分能够清理的也不是很多。</p>
+<h3 id="（三）调整分页文件的分配比例-amp-关闭休眠文件和存储感知"><a href="#（三）调整分页文件的分配比例-amp-关闭休眠文件和存储感知" class="headerlink" title="（三）调整分页文件的分配比例&amp;关闭休眠文件和存储感知"></a>（三）调整分页文件的分配比例&amp;关闭休眠文件和存储感知</h3><p>这一点是AI给我的建议之一。不过我其实在很久以前也考虑过这一点了——我自掏腰包安装了一块固态硬盘（H盘），并把大部分分页文件（最多64GB）移动到了那里。</p>
+<p>现在查看分页文件的情况，只能得到下表这样的占比。C盘剩下的这400-800MB存储空间是Windows运行所必要的，无法关闭，所以基本上这一块没有可清理的东西了：</p>
+<p>每个驱动器的分页文件大小</p>
+<table>
+<thead>
+<tr>
+<th>驱动器卷标</th>
+<th>分页文件大小(MB)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C:</td>
+<td>400-800</td>
+</tr>
+<tr>
+<td>D:[软件]</td>
+<td>无</td>
+</tr>
+<tr>
+<td>E:[文档]</td>
+<td>无</td>
+</tr>
+<tr>
+<td>F:[娱乐]</td>
+<td>无</td>
+</tr>
+<tr>
+<td>H:[新加卷]</td>
+<td>8000-65000</td>
+</tr>
+</tbody></table>
+<p>AI还提到，Windows 默认会在 C 盘保留一个和内存一样大的文件 (<code>hiberfil.sys</code>) 用于快速开机（休眠）。对于空间吃紧的旧电脑，这个奢侈功能可以关掉。具体做法是以系统管理员身份启动命令行（按win+x，之后选择“命令提示符(管理员)”），之后运行下面的指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">powercfg -h off</span><br></pre></td></tr></table></figure>
+
+<p>实际测试后发现没有效果——也许在许多年前我就已经因为磁盘空间紧张而早早关闭过这个功能了。</p>
+<p>存储感知是另一个磁盘空间占用的大头。其设置路径在 <code>设置</code> &gt; <code>系统</code> &gt; <code>存储</code> &gt; <code>存储感知</code> 。经过检查，这个功能我也早早关掉了。</p>
+<h3 id="（四）Windows-更新缓存、系统搜索日志、临时文件等项目的清理"><a href="#（四）Windows-更新缓存、系统搜索日志、临时文件等项目的清理" class="headerlink" title="（四）Windows 更新缓存、系统搜索日志、临时文件等项目的清理"></a>（四）Windows 更新缓存、系统搜索日志、临时文件等项目的清理</h3><p>这些在AI给出的磁盘清理建议中属于高阶操作。好在我安装有360安全卫士，在360当中提供了开箱即用的“垃圾清理”的组件，使用这个组件就可以清理这几项内容。</p>
+<p>实际清理下来，我的C盘多了大约2GB空间——还行，至少C盘能够存东西了。但这并非长久之计，因为Windows更新缓存和日志这些东西会随着使用而不断累积，不出1个月，它们又会把我的C盘剩余空间吃完。</p>
+<h3 id="（五）-conda-pip-apt等包管理器缓存清理"><a href="#（五）-conda-pip-apt等包管理器缓存清理" class="headerlink" title="（五） conda/pip/apt等包管理器缓存清理"></a>（五） conda/pip/apt等包管理器缓存清理</h3><p>这一部分的教程在网上有很多，因此不再赘述。下面列举一些常用指令：</p>
+<ul>
+<li>conda清理缓存： <code>conda clean --all</code></li>
+<li>pip缓存清理： <code>pip cache purge</code></li>
+<li>apt缓存清理:  <code>sudo apt clean &amp;&amp; sudo apt autoclean</code></li>
+<li>macOS homebrew缓存清理: <code>brew cleanup</code></li>
+</ul>
+<p>不过这些方法对我没什么用——上一次运行指令清理缓存就是在几天前，而这次C盘爆满时我能清理的缓存几乎为0 。</p>
+<h3 id="（六）清理-HOMEPATH-AppData-目录"><a href="#（六）清理-HOMEPATH-AppData-目录" class="headerlink" title="（六）清理 %HOMEPATH%/AppData 目录"></a>（六）清理 <code>%HOMEPATH%/AppData</code> 目录</h3><p>也就是 <code>C:\Users\&lt;用户名&gt;\AppData</code> 。</p>
+<p>这个目录大概长下面这个样子，它是大部分软件存储用户配置的地方。也就是说，一个软件，不管我们在安装的时候选择的“安装路径”是哪里（那个只决定软件本体的存放位置），在软件运行过程中产生的大部分数据、以及我们作为用户的所有配置，基本上都在C盘的这个目录下面。这个目录一般还贼大（你看这下面存储了多少软件的数据啊！）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251124000018.png" alt="image.png"></p>
+<p>清理这个目录，是一件极其复杂繁琐且费力不讨好的事情！！！因为，我们不知道每个具体的软件其目录结构长什么样子；就算通过手动排查弄清楚了，也不知道每个具体的文件是有用的文件，还是需要清理的垃圾。逐个排查起来，需要很长时间，且不一定能够清理出多大的磁盘空间，实在是费力不讨好。</p>
+<p><strong>还有一种方法是迁移这里的用户数据去其他磁盘，然后在原地建立软链接</strong> （软链接是个Linux中的概念，但是Windows系统同样支持软链接）。Windows上建立软链接的方法是 <code>mklink</code> 指令（需要以管理员身份启动命令行才能运行），具体来说方法如下：（假设我想要迁移的文件夹是 <code>C:\Users\ab124\AppData\Roaming\Code</code> ，这个是vscode的用户数据目录，迁移的目标位置是 <code>H:\ab124\AppData\Roaming\Code</code> ）</p>
+<ul>
+<li>step1: 关闭正在运行的vscode主程序（否则强行迁移会造成文件损坏）。</li>
+<li>step2:  <strong>复制</strong> 文件夹 <code>C:\Users\ab124\AppData\Roaming\Code</code> 到 <code>H:\ab124\AppData\Roaming\</code> 下面。此时vscode的用户数据应该在 <code>H:\ab124\AppData\Roaming\Code</code> 已经有了一份副本。</li>
+<li>step3: 将原先位置的文件夹重新命名为 <code>Code-backup</code> 之类的名字（方便改回来就行）。之所以此处仅仅是重命名而不是删除，是以防万一，如果迁移失败还不至于丢数据。</li>
+<li>step4: 以管理员身份启动命令行（按win+x，之后选择“命令提示符(管理员)”），然后输入指令 <code>mklink /D C:\Users\ab124\AppData\Roaming\Code H:\ab124\AppData\Roaming\Code</code> ，其中 <code>/D</code> 参数的意思是建立指向一个目录的软链接（默认创建的软链接是指向文件的）</li>
+<li>step5: 启动vscode，检查用户数据是否还在、插件是否运行正常、项目文件是否完好。</li>
+<li>step6: 如果上一步检查没有问题，那么就可以清理C盘下原先的文件夹了——直接删除即可。如果上一步检查出了问题，那么退回step3，删除软链接文件，并将原来的文件夹名字再改回来。</li>
+</ul>
+<p>迁移一个软件的用户数据目录，总共需要6步。迁移10个软件就是60步，100个软件就是600步——这谁受得了啊！所以到现在为止，我也就只试着迁移过vscode、Firefox、thunderbird（一个邮件客户端）和微信这几个软件，而其他的软件我实在没有心力搞迁移了。</p>
+<p>到此为止，我的C盘依然只清理出来2GB不到的空间。还有其他办法吗？</p>
+<h2 id="三、救星：WizTree，一个存储空间可视化软件"><a href="#三、救星：WizTree，一个存储空间可视化软件" class="headerlink" title="三、救星：WizTree，一个存储空间可视化软件"></a>三、救星：WizTree，一个存储空间可视化软件</h2><p>这个工具是Gemini推给我的，它说： </p>
+<blockquote>
+<p>既然你不想做复杂迁移，那你必须<strong>看见</strong>是谁在吃空间。 Windows 自带的查看功能太弱了。请下载一个 <strong>WizTree</strong>（绿色版，只有几MB，无需安装）。 打开它，扫描 C 盘。它会给你一张<strong>可视化矩形图</strong>。你大概率会发现一些大块头的文件和文件夹，从而更有针对性的清理。</p>
+</blockquote>
+<p>WizTree可以从 <a href="https://www.diskanalyzer.com/download">官网</a> 处下载，其提供了开箱即用的portable版本，软件本体大小不到10MB。启动时它会索要管理员权限（这和它的扫描原理有关），使用管理员身份重启后选择C盘并点击“扫描”，它就能很快分析出磁盘的各个文件夹的空间占用情况（真的很快！十秒不到就把我将近80G的C盘扫完了！），并使用矩形图进行可视化，如下图所示。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251124002655.png" alt="image.png"></p>
+<p>这个矩形图还可以鼠标悬停查看文件名和文件路径，如下图所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251124002922.png" alt="image.png"></p>
+<p>说起WizTree扫描速度如此快的原理，好像还和Windows的NTFS文件系统有关——NTFS文件系统是一种日志式的文件系统，Microsoft为了保证文件系统的稳健型和安全性，增加了许多特性，其中就包括MFT（主文件表）——这是一个记录了所有文件位置和空间占用的特殊文件。而WizTree在管理员权限下直接读取了这个文件，从而很快建立了文件树。更详细的解释如下图：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251124003719.png" alt="image.png"></p>
+<p>故事的结局是，我用WizTree发现了几个藏得比较深的临时文件，占用空间可大了，平时还用不上。把这些临时文件删除，终于空出来了5GB的空闲空间。</p>
+<p>可以暂时喘口气了。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>缓存清理</tag>
+        <tag>NTFS</tag>
+        <tag>Windows</tag>
+        <tag>WizTree</tag>
+        <tag>存储空间清理</tag>
+        <tag>mklink</tag>
+        <tag>分页文件</tag>
+        <tag>文件系统</tag>
+        <tag>存储空间可视化</tag>
+      </tags>
+  </entry>
 </search>
