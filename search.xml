@@ -21989,4 +21989,127 @@
         <tag>存储空间可视化</tag>
       </tags>
   </entry>
+  <entry>
+    <title>近期生活记录（2025年12月上旬）</title>
+    <url>/2025/12/07/20251207_updatelog/</url>
+    <content><![CDATA[<p>似乎有一阵子没有更新blog了。最近总是很忙且状态不佳，提笔想要写些什么，却发现无从写起。</p>
+<span id="more"></span>
+<p>一周前的那个周末，我久违的翻开日记本，看完了从大三到现在为止的近百万字日记。我发现这几年里自己确实做了很多事情，而研一那会儿的自己，其实在迷茫中也有很多思考——比方说，“放弃西湖大学是一个错误决定吗”，比方说一些关于科研和人际关系的反思。那时候的我还有很多社交联系，也有比现在健康得多的生活状态（比方说，坚持阅读和锻炼，熬夜也没现在这么离谱）。或许是最近一年来的各种压力太多了吧。 </p>
+<p>这一周主要在干活（搞科研），被一些问题卡了很久（我想这或许是“状态不佳”的原因之一吧）。几天前朋友分享了一个关于AI agent for science的培训班，于是同样报名，并听了第一次的演讲——感觉这个培训班应该能带来许多收获（特别感谢分享！）。组会之后和大家一起打了不少羽毛球和乒乓，感谢大家的陪伴。周末两天天气很好，昨天傍晚为了看晚霞骑车去了一趟滨江绿道。冬日的黄浦江水位很低，能够看见江底的水草，江边人来人往，温馨而热闹。</p>
+<p>上周末看完了一本书叫《橘子不是唯一的水果》，这是一本关于女性成长的自传体小说，讲述了珍妮特·温特森如何在母亲和教会压力下艰难成长并寻找爱情的故事。书中并没有特别描绘伟大的爱情（毕竟女主的第一任女朋友梅兰妮在教会压力下离开了她，最终甚至进入了传统家庭，这让主人公感到背叛），但一些细节处的“看见”和关怀也足够让人感动；而“橘子不是唯一的水果”更是一个双关，是在向世人宣告这世上没有唯一的生活方式、人与人之间需要理解而不是禁锢和压制。很巧合的是实验室的一位师妹也曾看过这本书，但是她说“感觉里面有很多宗教相关的东西，不是很能看得懂”——书中确实用了大量的宗教隐喻，也许这是本书的一点点局限性吧。</p>
+<p>这几天在看另一本书——《你当像鸟飞往你的山》。目前只看了开头，但书友们的评论已经让我感觉这又是本很好的书。期待读完的一天。</p>
+<p>今日大雪节气，气温依旧寒冷但天气晴朗，是个让人心情愉悦的天。真希望2025年剩下的这些日子里也能如今日一样辽阔而晴朗，愿一切顺利。</p>
+<p>加油。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>日记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>蛋白质定量工具DIA-NN在Linux系统上的安装与使用</title>
+    <url>/2025/12/07/DIANN-installation-and-usage/</url>
+    <content><![CDATA[<p>多组学研究已经成为了目前生物学研究中的重要方向之一。而支撑多组学研究的是多组学测序技术，包括DNA测序、RNA测序、RNA微阵列芯片、蛋白质质谱测序等诸多方法。其中，蛋白质组学，由于涉及到生命活动最重要的承载者即蛋白质本身，就显得尤为重要。</p>
+<span id="more"></span>
+
+<p>传统的蛋白质测序以Edman降解法为代表，原理是通过酶切反应在蛋白质的N端（或C端）逐个分解氨基酸残基，并对分解下来的氨基酸残基进行鉴定，最终组装为一整条多肽序列。这种方法精度很高，但反应复杂、测序速度慢，无法进行大规模高通量检测。近年来快速发展的高通量蛋白质测序方法是质谱法，将蛋白质（或经过特定蛋白酶预先消化的肽段）通过高压电场带上电荷，再通过磁场偏转，测定肽段碎片的质荷比，并比对数据库中已知肽段的数据，最终拼凑出完整肽段的序列（以及相应的蛋白质丰度）。近年来快速发展起来的深度神经网络（Deep Neuron Network，DNN）更为质谱法测序的拼接和比对工作增添了许多活力。</p>
+<p>目前常用的蛋白质定量工具包括Spectronaut 、 MaxQuant 、 FragPipe 、 DIA-NN 等。不同软件有不同的特点和使用场景，例如Spectronaut是商业授权软件，功能齐全但价格昂贵；MaxQuant和DIA-NN为开源软件，前者历史悠久兼容性好，后者则引入了深度神经网络效率更高。</p>
+<p>本文将简单介绍DiaNN的原理、安装和运行demo的方法。</p>
+<h2 id="一、DiaNN介绍"><a href="#一、DiaNN介绍" class="headerlink" title="一、DiaNN介绍"></a>一、DiaNN介绍</h2><p>DIA-NN 是一款用于数据非依赖性采集（Data-Independent Acquisition, DIA）蛋白质组学数据分析的软件套件，由剑桥大学的团队Vadim Demichev等人开发。下面是这个工具最初的论文以及Github页面，在GitHub页面上有这一工具的详细使用手册。</p>
+<blockquote>
+<p><strong>citation:</strong> Demichev, V., Messner, C.B., Vernardis, S.I. <em>et al.</em> DIA-NN: neural networks and interference correction enable deep proteome coverage in high throughput. <em>Nat Methods</em> <strong>17</strong>, 41–44 (2020). <a href="https://doi.org/10.1038/s41592-019-0638-x">https://doi.org/10.1038/s41592-019-0638-x</a></p>
+<p><strong>github:</strong> <a href="https://github.com/vdemichev/DiaNN">vdemichev/DiaNN</a></p>
+</blockquote>
+<h3 id="（一）什么是DIA"><a href="#（一）什么是DIA" class="headerlink" title="（一）什么是DIA"></a>（一）什么是DIA</h3><p>DIA（Data-Independent Acquisition，数据非依赖性采集）<strong>是一种质谱仪的操作模式或技术流派</strong>，而不是一种数据格式或单纯的数据处理方法。它与另一种主流技术DDA（Data-Dependent Acquisition，数据依赖性采集）相对。</p>
+<ul>
+<li>在传统的 <strong>DDA</strong> 模式下，质谱仪会先进行一次扫描（MS1），检测所有离子的信号强度。然后，它会“智能地”选择信号最强的前N个离子（通常是肽段），将它们隔离并打碎（碎片化），再对这些碎片离子进行第二次扫描（MS2），生成一张针对这N个特定母离子的“峰图”（Spectrum）。这个过程是“依赖性”的——它依赖于上一轮扫描中哪些离子信号强。</li>
+<li>而在 <strong>DIA</strong> 模式下，质谱仪会放弃这种“选择强者”的策略。它会将整个质量范围划分成一系列连续的小窗口（例如，每次覆盖4 Da的质量范围），然后<strong>循环地、不加选择地</strong>对每一个窗口内的所有离子同时进行隔离和碎片化，并记录下所有产生的碎片离子信息。这样做的结果是，每一次循环都会产生一个复杂的混合碎片谱图，其中包含了该质量窗口内所有共洗脱肽段的碎片信息。</li>
+</ul>
+<h3 id="（二）-DIA-NN的原理"><a href="#（二）-DIA-NN的原理" class="headerlink" title="（二） DIA-NN的原理"></a>（二） DIA-NN的原理</h3><p>DIA-NN 的核心是利用<strong>深度神经网络</strong>（Deep Neural Networks, DNNs）来区分真实的质谱信号与背景噪声，并结合新的定量和信号校正策略。</p>
+<ol>
+<li><strong>分析流程</strong>：DIA-NN 的工作流程始于一个以肽段为中心的方法。它可以从一个已有的光谱库中获取信息，或者直接从蛋白质序列数据库（FASTA文件）中自动进行_in silico_（计算机模拟）生成一个预测的光谱库（即“无库模式”）。</li>
+<li><strong>信号识别与去噪</strong>：软件会为每个目标或“诱饵”（decoy，用于计算假阳性率FDR）前体离子提取色谱图，并在预估的洗脱峰附近寻找由前体离子和碎片离子共同构成的信号。DIA-NN 使用的深度神经网络能更有效地从复杂的背景噪音中识别出真实的肽段信号。</li>
+<li><strong>干扰校正</strong>：DIA-NN 采用了一种独特的策略，可以有效处理共洗脱肽段之间的碎片离子干扰问题。它会评估不同前体离子间的碎片干扰程度，并报告其中得分最高的那个，从而结合了“肽段中心”和“谱图中心”两种分析方法的优点。</li>
+<li><strong>定量与归一化</strong>：DIA-NN 实现了名为 <strong>QuantUMS</strong> 的机器学习优化定量模式，旨在最大化定量精度，同时减少比值压缩（ratio compression）现象。它还会对技术变异（如上样量差异）进行归一化处理，以突出生物学差异。</li>
+<li><strong>统计控制</strong>：通过创建“诱饵”库并严格计算q值（false discovery rate, FDR），DIA-NN 能够对肽段和蛋白质的鉴定提供严格的统计学置信度评估。</li>
+</ol>
+<p>需要注意的是，虽然DIA-NN原生为分析DIA数据而开发，但在最新版本（2.3）中已经引入了对DDA测序模式的数据的支持，只需要在命令行中添加 <code>--dda</code> 参数即可。</p>
+<h2 id="（二）在Linux中以docker方式安装DIA-NN"><a href="#（二）在Linux中以docker方式安装DIA-NN" class="headerlink" title="（二）在Linux中以docker方式安装DIA-NN"></a>（二）在Linux中以docker方式安装DIA-NN</h2><p>这一部分的工作笔者花了很多时间探索。DiaNN基于微软的 <code>.NET framework</code> 技术开发，原生运行在Windows系统上，且有一个优秀的GUI界面（如下图）；但是我们的数据在Linux服务器上，下载下来不现实。如何在Linux服务器上运行DIA-NN成为了一个问题。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251207234701.png" alt="image.png"></p>
+<p>官方文档中给出了在Linux中安装的方法，如下段落所示。其需要在Linux系统中预先安装.NET SDK 8——对于实验室的服务器集群来说没有root权限很难实现这一点。另一种退而求其次的方法是通过docker运行，在DIA-NN的安装包中提供了docker的脚本，可以进行安装。</p>
+<blockquote>
+<p>On <strong>Linux</strong> (command-line use only), download and unpack the Linux .zip file. The Linux version of DIA-NN is generated on Linux Mint 21.2, and the target system must have the standard libraries that are at least as recent plus .NET SDK 8.0-series, version 8.0.407 or later. There is no such requirement, however, if you make a Docker or Apptainer/Singularity container image. To generate either container, we recommend starting with the latest debian docker image, the script make_docker.sh that does this is included. You can also check the excellent <a href="https://github.com/vdemichev/DiaNN/issues/1202#issuecomment-2417108281">guide</a> by Roger Olivella. See <a href="https://github.com/vdemichev/DiaNN?tab=readme-ov-file#command-interface">Command interface</a> for Linux-specific usage guidance.</p>
+</blockquote>
+<p>下图为DIA-NN的Linux安装包的内容。其中， <code>diann-2.2.0/diann-linux</code> 是主程序（但需要依赖.NET SDK 8，直接运行是运行不了的）；<code>Dockerfile</code>和 <code>make-docker.sh</code> 是创建docker镜像所需的配置文件。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20251207235256.png" alt="image.png"></p>
+<p>其中，<code>make-docker.sh</code> 文件只有一行（如下所示），看起来是调用docker指令创建了一个镜像容器，容器的名称为 <code>diann_docker</code> 即为我们最终要用的容器名称。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker build --no-cache -t diann_docker .</span><br></pre></td></tr></table></figure>
+
+<p>Dockerfile的内容如下所示。左边是原始Dockerfile，总共大约分为4个步骤，分别实现了环境配置和软件安装；由于安装过程中网络连接出错，我对Dockerfile进行了修改，最终的Dockerfile如右图。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/d618ee7a-6dbc-4378-a01f-a609fa76fde0.png" alt="d618ee7a-6dbc-4378-a01f-a609fa76fde0.png"></p>
+<p>修改过的Dockerfile内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FROM ckmrogdt0elhyw.xuanyuan.run/library/debian:12</span><br><span class="line">USER root</span><br><span class="line">ENV DEBIAN_FRONTEND=noninteractive</span><br><span class="line"></span><br><span class="line"># 替换为国内镜像源</span><br><span class="line">RUN printf &#x27;# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释\ndeb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free non-free-firmware\n# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free non-free-firmware\n\ndeb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main contrib non-free non-free-firmware\n# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main contrib non-free non-free-firmware\n\ndeb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib non-free non-free-firmware\n# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib non-free non-free-firmware\n\n# 以下安全更新软件源包含了官方源与镜像站配置，如有需要可自行修改注释切换\ndeb https://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware\n# deb-src https://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware\n&#x27; &gt; /etc/apt/sources.list</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">RUN cat /etc/apt/sources.list &gt;&amp;2</span><br><span class="line"></span><br><span class="line">RUN apt-get update -y</span><br><span class="line"></span><br><span class="line">RUN apt-get install -y \</span><br><span class="line">        locales &amp;&amp; \</span><br><span class="line">    rm -r /var/lib/apt/lists/*</span><br><span class="line"></span><br><span class="line">RUN sed -i -e &#x27;s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/&#x27; /etc/locale.gen &amp;&amp; \</span><br><span class="line">    sed -i -e &#x27;s/# de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/&#x27; /etc/locale.gen &amp;&amp; \</span><br><span class="line">    dpkg-reconfigure --frontend=noninteractive locales</span><br><span class="line"></span><br><span class="line">RUN apt update &amp;&amp; apt install -y libgomp1 build-essential wget</span><br><span class="line"></span><br><span class="line">RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb &amp;&amp; \</span><br><span class="line">    dpkg -i packages-microsoft-prod.deb &amp;&amp; \</span><br><span class="line">    rm packages-microsoft-prod.deb</span><br><span class="line"></span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y dotnet-sdk-8.0 &amp;&amp; rm -r /var/lib/apt/lists/*</span><br><span class="line"></span><br><span class="line">ARG DIANNV=2.2.0</span><br><span class="line">COPY diann-$DIANNV /diann-$DIANNV</span><br><span class="line"></span><br><span class="line">RUN echo ls</span><br><span class="line">RUN chmod -R 775 /diann-$DIANNV</span><br></pre></td></tr></table></figure>
+
+
+<p>这里多说一句：鉴于docker官方镜像站的网络访问问题，我注册了轩辕云（xuanyuan.run）的账户，并使用轩辕云镜像站作为dockerhub地址，因此在拉取镜像的这一步使用的镜像名称为 <code>ckmrogdt0elhyw.xuanyuan.run/library/debian:12</code> 而不是 <code>debian:12</code>。</p>
+<p>对于我们用户来说，DIA-NN的安装只需要一步（前提是Dockerfile已经修改好了；否则整个过程中的网络问题会给我们带来许多困扰）：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash ./make-docker.sh</span><br></pre></td></tr></table></figure>
+
+<p>安装过程大约需要几分钟，最终完成以后会输出下面这样的安装日志：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">=&gt; [11/12] RUN echo ls                                                                                                                                                           0.3s</span><br><span class="line">=&gt; [12/12] RUN chmod -R 775 /diann-2.2.0                                                                                                                                         1.8s</span><br><span class="line">=&gt; exporting to image                                                                                                                                                            2.5s</span><br><span class="line">=&gt; =&gt; exporting layers                                                                                                                                                           2.5s</span><br><span class="line">=&gt; =&gt; writing image sha256:404a4ce040a864366041a2be66208495186b570a74788a166985125566f44909                                                                                      0.0s</span><br><span class="line">=&gt; =&gt; naming to docker.io/library/diann_docker                                     </span><br></pre></td></tr></table></figure>
+
+<p>还可以使用下面的指令测试是否安装成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm --user $(id -u):$(id -g) diann_docker /diann-2.2.0/diann-linux --version</span><br></pre></td></tr></table></figure>
+
+<p>如果安装成功，则上述指令会产生如下的输出：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/15db4fc7-44f0-47be-830e-e891109ccfeb.png" alt="15db4fc7-44f0-47be-830e-e891109ccfeb.png"></p>
+<h2 id="三、在Linux上使用DIA-NN：一个简单的demo"><a href="#三、在Linux上使用DIA-NN：一个简单的demo" class="headerlink" title="三、在Linux上使用DIA-NN：一个简单的demo"></a>三、在Linux上使用DIA-NN：一个简单的demo</h2><p>前面我们提到，如果想要查看DIA-NN是否安装成功（或者仅仅是查看版本号），可以运行下面的指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm --user $(id -u):$(id -g) diann_docker /diann-2.2.0/diann-linux --version</span><br></pre></td></tr></table></figure>
+
+<p>而在使用DIA-NN分析数据的时候，我们只需要把 <code>--version</code> 这一部分替换为实际分析的指令参数即可。</p>
+<p>下面是一个具体的例子（写在 <code>run_diann_quantification.sh</code> 文件当中）。我们需要准备输入文件（<code>.d</code>格式的文件夹）和fasta库文件。fasta库文件（参考蛋白组文件）是必需的，这个fasta库文件可以从uniprot下载，注意需要与样本的物种对应。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 先定义一系列环境变量</span></span><br><span class="line">HOST_WORK_DIR=<span class="string">&quot;&quot;</span> <span class="comment"># 改为实际工作区路径</span></span><br><span class="line">DATA_SUBDIR=<span class="string">&quot;&quot;</span>   <span class="comment"># 改为实际输入文件存储路径</span></span><br><span class="line">FASTA_FILE=<span class="string">&quot;&quot;</span>    <span class="comment"># 改为实际fasta库文件的路径</span></span><br><span class="line">OUT_NAME=<span class="string">&quot;&quot;</span>      <span class="comment"># 改为实际输出文件的名称</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 获取输入文件路径下的所有 `.d` 目录，每个 `.d` 目录对应一个样本</span></span><br><span class="line">CMD_FILES=<span class="string">&quot;&quot;</span></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="variable">$&#123;HOST_WORK_DIR&#125;</span>/<span class="variable">$&#123;DATA_SUBDIR&#125;</span>/*.d; <span class="keyword">do</span></span><br><span class="line">    filename=$(<span class="built_in">basename</span> <span class="string">&quot;<span class="variable">$file</span>&quot;</span>)</span><br><span class="line">    <span class="comment"># 下面的指令是将文件路径映射到docker容器内，以便diann识别</span></span><br><span class="line">    CMD_FILES=<span class="string">&quot;<span class="variable">$CMD_FILES</span> --f /data/<span class="variable">$&#123;DATA_SUBDIR&#125;</span>/<span class="variable">$filename</span>&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 然后运行docker diann</span></span><br><span class="line"><span class="comment">#  注意，在下面的脚本中列出了一系列搜库参数，</span></span><br><span class="line"><span class="comment">#  这些参数会影响搜库的过程。</span></span><br><span class="line"><span class="comment">#  参数的具体含义可以查询文档或询问AI，</span></span><br><span class="line"><span class="comment">#  此处限于篇幅不再一一解释。</span></span><br><span class="line">IMAGE_NAME=<span class="string">&quot;diann_docker&quot;</span></span><br><span class="line">THREADS=4 <span class="comment"># 使用4个线程运行。DIANN支持多线程，如果服务器CPU足够多，此参数可以设置更高</span></span><br><span class="line">docker run --<span class="built_in">rm</span> \</span><br><span class="line">    -v <span class="string">&quot;<span class="variable">$&#123;HOST_WORK_DIR&#125;</span>:/data:z&quot;</span> \</span><br><span class="line">    --user $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) \</span><br><span class="line">    <span class="variable">$IMAGE_NAME</span> /diann-2.2.0/diann-linux \</span><br><span class="line">    <span class="variable">$CMD_FILES</span> \</span><br><span class="line">    --lib <span class="string">&quot;&quot;</span>   \</span><br><span class="line">    --threads <span class="variable">$THREADS</span> \</span><br><span class="line">    --verbose 1 \</span><br><span class="line">    --out     <span class="string">&quot;/data/<span class="variable">$&#123;DATA_SUBDIR&#125;</span>/result/<span class="variable">$&#123;OUT_NAME&#125;</span>.parquet&quot;</span> \</span><br><span class="line">    --qvalue 0.01 \</span><br><span class="line">    --matrices \</span><br><span class="line">    --out-lib <span class="string">&quot;/data/<span class="variable">$&#123;DATA_SUBDIR&#125;</span>/result/<span class="variable">$&#123;OUT_NAME&#125;</span>_lib.parquet&quot;</span> \</span><br><span class="line">    --gen-spec-lib --predictor \</span><br><span class="line">    --fasta   <span class="string">&quot;/data/<span class="variable">$&#123;FASTA_FILE&#125;</span>&quot;</span> \</span><br><span class="line">    --fasta-search \</span><br><span class="line">    --min-fr-mz 200 \</span><br><span class="line">    --max-fr-mz 1800 \</span><br><span class="line">    --met-excision \</span><br><span class="line">    --min-pep-len 7 \</span><br><span class="line">    --max-pep-len 30 \</span><br><span class="line">    --min-pr-mz 300 \</span><br><span class="line">    --max-pr-mz 1800 \</span><br><span class="line">    --min-pr-charge 1 \</span><br><span class="line">    --max-pr-charge 4  \</span><br><span class="line">    --<span class="built_in">cut</span> K*,R* \</span><br><span class="line">    --missed-cleavages 1 \</span><br><span class="line">    --unimod4 --var-mods 1 \</span><br><span class="line">    --var-mod UniMod:35,15.994915,M \</span><br><span class="line">    --var-mod UniMod:1,42.010565,*n \</span><br><span class="line">    --mass-acc 15 --mass-acc-ms1 20 \</span><br><span class="line">    --peptidoforms --reanalyse --rt-profiling \</span><br><span class="line">    --met-excision \</span><br><span class="line">    --reanalyse \</span><br><span class="line">    --smart-profiling \</span><br><span class="line">    --pg-level 1</span><br></pre></td></tr></table></figure>
+
+
+<p>另一个需要注意的地方是，许多实验室的高性能计算集群服务器使用了网络文件系统（Net File system，NFS）以方便存储空间拓展以及服务器托管，但是docker并不能很好的处理跨NFS或者跨软链接的文件访问，因此读者在运行前需要先确认一下文件路径中是否存在跨NFS的路径或者跨软链接的路径，如果存在，需要统一一下路径，或者以系统 <code>/tmp</code> 目录作为临时中转站。</p>
+<p>在分析流程结束后，DIANN会在result目录下生成多个文件，包含了分析过程的一些中间文件以及最终的定量结果。在这些文件当中，最重要的文件有三个：</p>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>*.pg_matrix.tsv</td>
+<td>这是核心文件，包含表达矩阵信息，后续做差异分析就靠它</td>
+</tr>
+<tr>
+<td>*.pr_matrix.tsv</td>
+<td>肽段层面的矩阵，质控用</td>
+</tr>
+<tr>
+<td>*.parquet</td>
+<td>包含所有细节以及中间过程的大表，以备不时之需</td>
+</tr>
+</tbody></table>
+<p>以上。</p>
+<p>最后，祝大家代码全跑通，可以准时下班awa。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux</tag>
+        <tag>docker</tag>
+        <tag>生物信息学</tag>
+        <tag>多组学技术</tag>
+        <tag>蛋白质定量</tag>
+        <tag>DIA-NN</tag>
+      </tags>
+  </entry>
 </search>
