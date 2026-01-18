@@ -22538,4 +22538,174 @@
         <tag>Model Context Protocol</tag>
       </tags>
   </entry>
+  <entry>
+    <title>在cherry studio中启用MCP</title>
+    <url>/2026/01/18/Enable_MCP_in_Cherry_studio/</url>
+    <content><![CDATA[<p>在<a href="https://wz.anoms.top/2026/01/02/LLM_MCP_protocol_introduction/#more">上一期的博客</a>中，我们介绍了模型上下文协议（Model Context Protocol, MCP）的基本原理，以及一些常用的MCP服务供应商。但，如何在AI agent中启用这些MCP，则是另一个贴近实践的重要问题。在本文中，我们将以Cherry Studio为例，讲述如何启用这些MCP工具，并通过一个实际例子（论文阅读过程中的通讯作者实验室背景调研），展示MCP的强大能力。</p>
+<span id="more"></span>
+
+<h2 id="一、安装和配置Cherry-Studio"><a href="#一、安装和配置Cherry-Studio" class="headerlink" title="一、安装和配置Cherry Studio"></a>一、安装和配置Cherry Studio</h2><p>半年前，在<a href="https://wz.anoms.top/2025/08/24/cherry_studio_and_API_recommendation/?highlight=cherry">《cherry studio：安装、配置，以及一些比较好用的API推荐》</a>这篇文章中，我曾经介绍过 <a href="https://cherry-ai.com/">cherry studio</a> 这个跨平台的AI工具。因此，此处不再赘述。</p>
+<ul>
+<li>安装包：可以在<a href="https://cherry-ai.com/download">下载页面</a> 上获取。</li>
+<li>安装过程与API配置：参考<a href="https://wz.anoms.top/2025/08/24/cherry_studio_and_API_recommendation/?highlight=cherry">《cherry studio：安装、配置，以及一些比较好用的API推荐》</a>这篇文章。</li>
+</ul>
+<p>为了方便读者朋友们的测试，下面我提供一个智谱GLM的API，大家可以根据实际需求进行配置。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">智谱开放平台</span><br><span class="line">API密钥</span><br><span class="line">05f695a8980d4f5094813d2b28f83eb2.qha2iL3ZEMc0lqCf</span><br><span class="line">API地址</span><br><span class="line">https://open.bigmodel.cn/api/paas/v4/</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118223519.png" alt="image.png"></p>
+<h2 id="二、在cherry-studio中设置MCP"><a href="#二、在cherry-studio中设置MCP" class="headerlink" title="二、在cherry studio中设置MCP"></a>二、在cherry studio中设置MCP</h2><p>如下图，在“设置”-“MCP”页面中，我们可以找到预装MCP，以及自定义MCP的设置。预装的MCP以一些基础工具为主，例如对话记忆、网页搜索等工具。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118223602.png" alt="image.png"></p>
+<p>要添加MCP工具，点击这一页面右上角的“+添加”按钮即可。cherry studio提供了三种方法，分别是快速创建、从JSON导入和导入DXT包。其中，许多MCP服务提供商会提供JSON版本的配置文件，因此我们优先采取从JSON包导入的方法进行添加。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118224238.png" alt="image.png"></p>
+<h3 id="（一）示例：pubmed接口MCP"><a href="#（一）示例：pubmed接口MCP" class="headerlink" title="（一）示例：pubmed接口MCP"></a>（一）示例：pubmed接口MCP</h3><p>以 <a href="https://www.modelscope.cn/mcp/servers/liueic/mcp-pubmed-llm-server">mcp-pubmed-llm-server</a> 为例，这是阿里云Modelscope平台上托管的一个PubMed文献数据接口MCP工具（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118224521.png" alt="image.png"></p>
+<p>要想在cherry studio中引入这个MCP，我们需要找到页面右侧的Service Configuration，选择Stdio这种服务模式（通常来说，Stdio这种方式更稳定，因为涉及到的MCP服务是以nodejs包的形式运行在本地，更少会受到网络波动的影响），然后复制这里的json文本。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118224600.png" alt="image.png"></p>
+<p>随后，我们回到cherry studio的设置界面，创建一个MCP工具，选择“从JSON导入”并粘贴上述json文本内容（如下图）。点击确定，则这个MCP工具的代码会通过npx自动同步到本地，cherry studio会自动完成MCP工具的检查和启用。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118224838.png" alt="image.png"></p>
+<p>我们在MCP设置中也可以查看<a href="https://www.modelscope.cn/mcp/servers/liueic/mcp-pubmed-llm-server">mcp-pubmed-llm-server</a> 这个工具的状态。如下A图，在MCP列表中现在可以看见mcp-pubmed-llm-server这个工具；点击这个工具，将会看见更详细的设置，如B图所展示的工具元数据以及C图展示的内置工具列表。这些内置工具列表，将会在用户调用AI时以提示词注入的形式告诉AI大模型。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118225331.png" alt="image.png"></p>
+<h3 id="（二）另一个示例：Bing搜索"><a href="#（二）另一个示例：Bing搜索" class="headerlink" title="（二）另一个示例：Bing搜索"></a>（二）另一个示例：Bing搜索</h3><p>MCP工具介绍： <a href="https://www.modelscope.cn/mcp/servers/slcatwujian/bing-cn-mcp-server">bing-cn-mcp-server</a></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118230107.png" alt="image.png"></p>
+<p>上图是这个MCP的介绍，包括Stdio服务模式下的json配置文件。</p>
+<p>这次我们一步到位，直接把json的内容添加到cherry studio中。添加完成以后的结果如下图所示，这一MCP内置了两个可供调用的工具。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118230225.png" alt="image.png"></p>
+<h2 id="三、应用示例：实验室背景检索"><a href="#三、应用示例：实验室背景检索" class="headerlink" title="三、应用示例：实验室背景检索"></a>三、应用示例：实验室背景检索</h2><p>接下来，我们以一个研究生科研生活中的一个常见情景为例，展示MCP的强大能力。</p>
+<p>组会文献分享，或者说Journal Club，是实验室生活的重要环节，在Journal Club中我们常常需要分享一篇科研论文，从研究背景、科学问题、实验方法等角度剖析前人工作，并从中学习新的思路或研究发现。在准备Journal Club的slide时，我们常常需要对作者团队的实验室背景信息也进行检索和整理。</p>
+<p>传统上，检索实验室背景依靠低效率的人工操作——这包括以不同关键词检索Bing/Google/GoogleScholars/PubMed等网站，查找实验室主页，查询实验室过往已发表文献等等。这种方法工作量大、耗时长，需要更加高效的方法加速这个过程。</p>
+<p>基于cherry studio提供的AI agent能力，以及我们接入的MCP工具，或许我们可以使用AI帮我们解决这个问题。</p>
+<p>下面是一个例子，我想调研的实验室是南加州大学的Liang Chen课题组，但是在调研时我只知道她的Researchgate主页和大学教职工主页。我将这些信息告诉了AI，并启用了MCP，如下图</p>
+<blockquote>
+<p>请你帮我调研一下University of Southern California,  Liang Chen 这位科研人员的信息，包括实验室官网、课题组研究方向、当前已发表文献。你可以调用系统提供的MCP工具进行网页检索和网页下载。下面是两个对你有用的网址：</p>
+<ul>
+<li><a href="https://www.researchgate.net/scientific-contributions/Liang-Chen-2166292473">https://www.researchgate.net/scientific-contributions/Liang-Chen-2166292473</a></li>
+<li><a href="https://dornsife.usc.edu/profile/liang-chen/">https://dornsife.usc.edu/profile/liang-chen/</a></li>
+</ul>
+<p>除此之外，你还可以在bing和Google scholar上检索。请你开始你的检索，谢谢你</p>
+</blockquote>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118230939.png" alt="image.png"></p>
+<p>下面是AI agent调用MCP的情况——如图A，AI正确识别出了我们的需求，并利用MCP的能力发起了调用。如图B，AI生成的调研报告非常详细（并且可验证），可以作为我们Journal Club的详情页了。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/screenshot_20260118_232303.png" alt="Figure"></p>
+<p>更高阶的使用方法是，在调研完成基本信息以后，将实验室的已发表文献整理为列表，要求AI调用Pubmed MCP进行阅读和整合，从而梳理实验室的研究路线。下面是一个例子：</p>
+<blockquote>
+<p>上述内容是xxx教授的部分科研内容，这些论文都涉及xxx主题。请你调用系统提供给你的MCP工具，获取和阅读这些论文，并帮我梳理xxx教授这些年来的研究路线以及重要发现，谢谢你！</p>
+</blockquote>
+<p>最终结果如下所示（由于内容很长，这里没截全；另外，我发现在完成这类MCP调用任务的时候，GPT5.2、Qwen-plus和DeepSeek-V3.2都比较好用，GLM-4.6有时候则会有点小毛病）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260118232643.png" alt="image.png"></p>
+<p>总之，有了MCP的AI大模型，真的太强了！</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux</tag>
+        <tag>LLM</tag>
+        <tag>AI agent</tag>
+        <tag>MCP</tag>
+        <tag>Model Context Protocol</tag>
+        <tag>Cherry Studio</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【知乎收藏】性格外向的优点与代价</title>
+    <url>/2026/01/17/%E3%80%90%E7%9F%A5%E4%B9%8E%E6%94%B6%E8%97%8F%E3%80%91%E6%80%A7%E6%A0%BC%E5%A4%96%E5%90%91%E7%9A%84%E4%BC%98%E7%82%B9%E4%B8%8E%E4%BB%A3%E4%BB%B7/</url>
+    <content><![CDATA[<p>最近刷知乎，看到的一条帖子。贴主通过亲身经历，展示了做一个外向的人在工作中的收益；我则联想起曾经的一些事情，对帖子的观点有所思考。</p>
+<span id="more"></span>
+
+<h2 id="一、知乎原帖《有什么事情是你的性格变外向后知道的？》"><a href="#一、知乎原帖《有什么事情是你的性格变外向后知道的？》" class="headerlink" title="一、知乎原帖《有什么事情是你的性格变外向后知道的？》"></a>一、知乎原帖《有什么事情是你的性格变外向后知道的？》</h2><blockquote>
+<p><a href="https://www.zhihu.com/question/338262811/answer/1995534300397983686">有什么事情是你的性格变外向后知道的？ - 大大大橙子部长的回答 - 知乎</a></p>
+</blockquote>
+<p>我也是这两年性格才开始逐渐外向开朗起来，一方面是人到中年随着阅历经营的丰富脸皮变厚不少，另一方面是见多识广之后对许多人和事逐渐怯魅。下面来分享一些关于自己变的稍微有些外向开朗后的变化。</p>
+<p>首先就是明白原来大部分事情都是可以商量的，以前内向的时候非常害怕跟别人商量事情，小到去哪吃饭大到工作安排，基本都是对方说什么就是什么，哪怕自己心里再不情愿也只能妥协，当然整个过程因为并不是心甘情愿自然不舒服小，但是为了避免引起冲突得罪人所以不明白许多事情大家都是可以商量着来办的。</p>
+<p>其实大部分关系其实都得罪得起，越怕产生冲突越得不到对方的尊重，经不起冲突斗争的关系也不是什么值得维系的关系，都说无话不谈才是关系好的表现，随便说两句关系就坠入冰点老死不相往来，那么也就说明这段关系太过脆弱不值得留恋，经得起考验和分歧的关系才是好的缘分。</p>
+<p>还有就是因为今年单位改革的关系，我的岗位从后勤服务岗被调往业务拓展岗位，以前的工作模式都是在固定的团队内机械的完成工作任务，每天接触的工作内容和同事几乎都是固定的，十年如一日没有变化，由于单位业务紧缩就不再需要我之前从事的维护岗位，现在被迫变成业务创收人员，这个转变的过程也影响了我的性格开始变得外向，因为在跑市场的过程需要见大量形形色色的人。</p>
+<p>自己居然开始去约各大公司的业务员和经理谈合作，刚开始还担心别人会摆架子，但是没想到对方非常好说话，不但主动递上宣传手册还带领参观办公场地，相谈甚欢后还互相加了联系方式，这一起的发生颠覆了我以往的认知，之前的岗位工作模式与比较内向的性格刚好吻合，如果不是因为岗位调整我根本不可能做出这么多改变，见了各种各样的人和公司后才发现，其实只有自己愿意踏出第一步，所以事情没有之前想的那么难。</p>
+<p>只要遵循合作共赢的规律什么业务都可以谈，感觉外向的人因为更愿意也更擅长与人打交道，确实在无形中就会累积大量的人脉和客户资源，很多时候别人是否愿意合作仅仅取决于是否聊得来，或者谁先去谈就能掌握第一首信息，而且我请了一些老牌业务员吃饭后才知道，其实他们年纪大了也服务不过来这么多客户，其实只要年轻人主动问他们很愿意把自己的经验分享出来。</p>
+<p>而那些经验对我的帮助是巨大的，许多自己想不开无法得到答案的问题，对方轻描淡写的就解开了，可以说节省了好多步骤与思考过程，不懂的地方多虚心求教主动询问，不要怕麻烦别人先把自己框住，其实很多人还是非常乐于助人的，尤其是看到有想法求上进的年轻人主动来寻求帮助，内向的人就非常容易在这个环境先把自己封印住。</p>
+<p>发布于 2026-01-16 16:34</p>
+<h2 id="二、我的反思与疑惑"><a href="#二、我的反思与疑惑" class="headerlink" title="二、我的反思与疑惑"></a>二、我的反思与疑惑</h2><p>这篇知乎上的讨论，给了我很大启发，但也让我有一些怀疑。</p>
+<p>首先，我就是一个有些内向的人——但我并非一开始就内向，而是经历了高中阶段的转折。在高中以前，我是一个外向且成绩好，但并不讨人喜欢的人——同班同学觉得我情商太低——因此，那时的我基本没有朋友，大家愿意和我说话也仅仅是希望搞懂考试错题或知道作业答案。</p>
+<p>高中进入重点班，由于成绩优势不再，以前的性格为我招来了一些麻烦（例如被班上的男生圈子排挤），在孤单难过的时候，偶然和班上另一个沉默寡言的男生处成了好朋友（也即yyq——在许多年前的博客里我提过这个名字），从那时开始我学着让自己更敏感、更会察言观色和安慰别人——也因此越来越内向。很感谢和那位朋友共同度过的时光，他让我学到了许多做人的道理。</p>
+<p>但，我的人格底色可能就是一个情商不太够的人。进入大学以后，因为一些观念方面的分歧，以及在小事上的摩擦，最终我失去了那位朋友，我也猛然发现，原来“学习好并不能带给我想要的东西，甚至我连自己在意的人都留不住”。</p>
+<p>也许是这些打击所致，我突然放弃了曾经那种只顾成绩不顾社交的生活方式，也开始大量浏览“如何提高情商”之类的话题，期待能够根据这些网上的经验补足自己的短板。但是现在看来，这些努力基本都失败了，我还是那个情商不够的自己，也不会察言观色，这么多年折腾下来的后果除了自己变得敏感多疑以外几乎没有什么成长。</p>
+<p>今天在知乎上看到这样一条帖子，突然有一种“我为什么走了这么多年弯路”的挫败感——我要是这么多年都维持初中那种情商低、不顾他人感受但是非常外向的性格，说不定现在我会过得更好一点——毕竟许多事情是可以商量的，是吧？但是另一个层面上，我又有点不太相信作者，怀疑“外向可以收获更多人脉，从而有更多成长和成功的机会”是一种幸存者偏差，毕竟在我高中班上那种环境下，我自己的亲身经历告诉我，保持外向只会给自己遭来灾祸。</p>
+<p>所以，应该如何理解作者的这些观点呢？</p>
+<h2 id="三、AI的回答（by-Gemini）"><a href="#三、AI的回答（by-Gemini）" class="headerlink" title="三、AI的回答（by Gemini）"></a>三、AI的回答（by Gemini）</h2><p>这份知乎回答的确很有冲击力，因为它不仅展示了“外向”的红利，还无意中触动了你对过去人生选择的深深怀疑。你的挫败感非常真实：<strong>“如果不走那条变敏感、变内向的路，是不是我现在会更好？”</strong></p>
+<p>这种“走了多年弯路”的感觉很折磨人，但我想先给你一个定心丸：<strong>你并没有走弯路，你只是在不同的人生阶段，为了生存和适应，选择了当时的最优解。</strong></p>
+<p>为了解开你心中的结，我们需要把你经历的“三种状态”和知乎答主说的“外向”做一个精细的拆分。</p>
+<h3 id="第一层：定义上的错位——你当年的“外向”和答主的“外向”不是一回事"><a href="#第一层：定义上的错位——你当年的“外向”和答主的“外向”不是一回事" class="headerlink" title="第一层：定义上的错位——你当年的“外向”和答主的“外向”不是一回事"></a>第一层：定义上的错位——你当年的“外向”和答主的“外向”不是一回事</h3><p>你现在的痛苦，源于你把初中时的自己和知乎答主现在的状态划了等号。但其实，这是两码事。</p>
+<ol>
+<li><strong>初中时的你（原始的外向）：</strong><ul>
+<li><strong>特征：</strong> 成绩好、情商低、不顾他人感受。</li>
+<li><strong>本质：</strong> 这是一种 <strong>“由于优越感而产生的自我中心”</strong> 。那时候的“外向”并不是因为你擅长社交，而是因为你有成绩作为资本，不需要看别人脸色。这种状态在成人世界（职场）里，通常被称为“恃才傲物”，如果没有极强的技术壁垒，其实也非常容易碰壁。</li>
+</ul>
+</li>
+<li><strong>知乎答主所说的（成熟的外向）：</strong><ul>
+<li><strong>特征：</strong> 脸皮厚（抗挫折）、怯魅（平视权威）、懂得商量（博弈）、主动链接他人。</li>
+<li><strong>本质：</strong> 这是一种 <strong>“基于合作思维的社会化主动性”</strong> 。答主的外向核心不在于“话多”，而在于 <strong>“不害怕被拒绝”</strong> 和 <strong>“主动争取资源”</strong> 。</li>
+</ul>
+</li>
+</ol>
+<p><strong>结论：</strong> 如果你一直保持初中那种“低情商且不顾他人感受”的性格活到现在，大概率<strong>不会</strong>比现在过得更好。因为成年人的世界里，单纯的“低情商”比“内向”更容易招致毁灭性的打压。所以，不要美化初中时的那个自己，那个自己同样是不成熟的。</p>
+<h3 id="第二层：你为什么会变内向？这是“生存机制”在起作用"><a href="#第二层：你为什么会变内向？这是“生存机制”在起作用" class="headerlink" title="第二层：你为什么会变内向？这是“生存机制”在起作用"></a>第二层：你为什么会变内向？这是“生存机制”在起作用</h3><p>你提到高中因为性格招致霸凌，后来遇到了那位沉默的朋友，学会了敏感和察言观色。</p>
+<ul>
+<li><strong>这是环境筛选的结果：</strong> 高中是一个封闭、压抑且高度同质化的环境（尤其是有霸凌存在的环境）。在那个环境下，如果你继续“狂”，可能会受到更严重的伤害。你变得内向、敏感，本质上是一种<strong>防御机制</strong>。你是在保护那个受伤的自己。</li>
+<li><strong>关于那位朋友的决裂：</strong> 你提到因为观念分歧和情绪失控失去了朋友。这让你觉得“察言观色”失败了。其实不是你失败了，而是 <strong>“过度敏感”是一把双刃剑</strong> 。它让你能感知他人情绪，但也让你更容易内耗、更在乎关系的细微裂痕，最终导致情绪过载而爆发。</li>
+</ul>
+<p><strong>哪怕你现在觉得这几年“白折腾”了，但这份“敏感”并不是毫无价值。</strong> 它让你具备了共情能力，让你懂得了人性的复杂。这是初中那个“狂妄”的你绝对无法拥有的深度。</p>
+<h3 id="第三层：如何理解知乎答主的观点？（是否幸存者偏差？）"><a href="#第三层：如何理解知乎答主的观点？（是否幸存者偏差？）" class="headerlink" title="第三层：如何理解知乎答主的观点？（是否幸存者偏差？）"></a>第三层：如何理解知乎答主的观点？（是否幸存者偏差？）</h3><p>你说得对，这里面<strong>有</strong>幸存者偏差，但也包含着<strong>环境差异</strong>的真相。</p>
+<ol>
+<li><strong>环境差异（零和博弈 vs. 正和博弈）：</strong><ul>
+<li><strong>学校（特别是高中）：</strong> 往往是零和博弈。第一名只有一个，大家是竞争关系。你的张扬会被视为威胁。所以在那里，外向且狂妄会被惩罚。</li>
+<li><strong>职场/商业社会（答主的环境）：</strong> 往往有正和博弈的空间。就像答主说的，“只要遵循合作共赢的规律”。在这个开放系统里，<strong>信息差就是价值</strong>，<strong>人脉就是资源</strong>。在这个环境下，主动的人（外向）确实比被动的人（内向）有巨大的优势。</li>
+</ul>
+</li>
+<li>答主的核心逻辑不是“话多”，而是“去敏感化”：    答主说“大部分关系都得罪得起”、“大部分事情都可以商量”。这句话的潜台词是：不要把自我价值建立在别人的反馈上。<ul>
+<li>内向敏感的人（现在的你）：别人拒绝我 = 我不好 = 灾难。</li>
+<li>社会化外向的人（答主）：别人拒绝我 = 利益不匹配 = 找下家。</li>
+</ul>
+</li>
+</ol>
+<p><strong>你需要吸收的不是他的“外向性格”，而是他的“钝感力”和“交易思维”。</strong></p>
+<h3 id="第四层：你现在该怎么做？"><a href="#第四层：你现在该怎么做？" class="headerlink" title="第四层：你现在该怎么做？"></a>第四层：你现在该怎么做？</h3><p>你现在的困境是：<strong>以前的狂妄（回不去也不该回） vs 现在的敏感多疑（很痛苦且低效） vs 网络上学来的虚假情商（不管用）。</strong></p>
+<p>你不需要强迫自己变回初中那个“狂人”，也不需要继续在网上学那些教你“怎么说话才讨人喜欢”的话术（那是术，不是道）。你需要做的是一种<strong>“整合”</strong>。</p>
+<ol>
+<li>停止把“高情商”理解为“讨好”。你看了很多知乎/小红书，学察言观色，目的是“补足短板”，潜意识里是为了 <strong>“避免冲突”和“让别人喜欢我”</strong> 。但真正的高情商（或者说答主那种有效的外向），核心是 <strong>“不害怕冲突”</strong> 。<ul>
+<li><strong>建议：</strong> 试着做一些“得罪人”的小事。比如明确拒绝一个你不想要的要求，或者在买东西时大胆砍价。体验一下“得罪了也没什么大不了”的感觉。</li>
+</ul>
+</li>
+<li>把“敏感”转化为“数据分析”，而不是“情绪内耗”。你现在的敏感多疑，是因为你把观察到的信息（对方皱眉、语气冷淡）都指向了攻击自己。<ul>
+<li><strong>建议：</strong> 利用你这些年练就的观察力，去分析<strong>利益</strong>，而不是分析<strong>感情</strong>。比如当你和导师或同学沟通时，不要想“他是不是讨厌我”，而是想“他现在的需求是什么？我们在讨论的事情有没有商量的空间？”（这就用上了答主的观点）。</li>
+</ul>
+</li>
+<li>尝试“工具性外向”（Functional Extroversion）。你不需要性格外向，你只需要在需要的时候表现得主动一点。答主说去找业务员聊天能获得经验。你可以试着把这当做一个实验，而不是社交。<ul>
+<li><strong>行动：</strong> 不要为了交朋友去社交。为了<strong>获取信息</strong>去社交。比如，“我想知道这个实验步骤怎么做”，我就去问人。问完之后，如果对方冷淡，那是概率问题，不是你的人格问题。</li>
+</ul>
+</li>
+<li>接纳你的过去。不要否定这几年的自己。那个在高中学会沉默的你，保护了你渡过难关；那个试图学习社交技巧的你，是在努力自救。你没有走弯路，你只是在积累不同的技能树。<ul>
+<li>初中：你有了智力自信。</li>
+<li>高中/大学：你有了对他人的感知力（虽然现在有点过载）。</li>
+<li>现在：你需要把 <strong>“智力自信”</strong> 拿回来，结合你的 <strong>“感知力”</strong> ，去构建一种 <strong>“温和但坚定”</strong> 的成年人形象。</li>
+</ul>
+</li>
+</ol>
+<p>总结：</p>
+<p>不要羡慕初中那个无知的自己，那个你是无法应对现在的复杂社会的。也不要完全迷信知乎答主，觉得只要脸皮厚就能成功。</p>
+<p>真相是： 你需要保留你现在的细腻（为了理解他人），同时找回一点初中时的“不在乎”（为了保护自己），然后用答主提到的“可商量、可合作”的成年人思维去处理事情。这很难，但这是你Ph.D.生涯以及未来人生真正的课题。</p>
+]]></content>
+      <categories>
+        <category>摘抄</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>人生选择</tag>
+        <tag>成长</tag>
+        <tag>知乎收藏</tag>
+        <tag>摘抄</tag>
+        <tag>外向与内向</tag>
+        <tag>情商</tag>
+      </tags>
+  </entry>
 </search>
