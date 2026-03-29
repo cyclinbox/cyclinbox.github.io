@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如题。最近利用闲暇时间，攒了一个自动化处理RSS论文订阅源的工具（并接入了AI论文总结的功能），相关代码已开源，见 cyclinbox&#x2F;RSS-report-with-AI-process 。欢迎大家试用和提意见！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于RSS订阅源以及LLM的文献订阅追踪工具">
+<meta property="og:url" content="https://wz.anoms.top/2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="如题。最近利用闲暇时间，攒了一个自动化处理RSS论文订阅源的工具（并接入了AI论文总结的功能），相关代码已开源，见 cyclinbox&#x2F;RSS-report-with-AI-process 。欢迎大家试用和提意见！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329175109.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329225024.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329225628.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329230315.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329232946.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233134.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233537.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233257.png">
+<meta property="article:published_time" content="2026-03-29T15:20:00.000Z">
+<meta property="article:modified_time" content="2026-03-29T15:50:57.529Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="通义千问">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="网页爬虫">
+<meta property="article:tag" content="RSS">
+<meta property="article:tag" content="OPML">
+<meta property="article:tag" content="论文阅读">
+<meta property="article:tag" content="订阅追踪">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329175109.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading/","path":"2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading/","title":"基于RSS订阅源以及LLM的文献订阅追踪工具"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>基于RSS订阅源以及LLM的文献订阅追踪工具 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">一、背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%83%B3%E6%B3%95%E7%9A%84%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.1.</span> <span class="nav-text">（一）想法的起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E8%A1%A5%E5%85%85%E4%B8%80%E4%BA%9B%E7%9F%A5%E8%AF%86%E7%82%B9%EF%BC%88%E6%AD%A4%E7%AB%A0%E8%8A%82%E9%83%A8%E5%88%86%E5%86%85%E5%AE%B9%E7%94%B1DeepSeek%E7%94%9F%E6%88%90%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">（二）补充一些知识点（此章节部分内容由DeepSeek生成）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-RSS"><span class="nav-number">1.2.1.</span> <span class="nav-text">什么是 RSS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-OPML"><span class="nav-number">1.2.2.</span> <span class="nav-text">什么是 OPML</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">二、项目架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89RSS%E8%AE%A2%E9%98%85%E6%BA%90%E8%A7%A3%E6%9E%90"><span class="nav-number">2.1.</span> <span class="nav-text">（一）RSS订阅源解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E8%AE%BA%E6%96%87%E5%85%A8%E6%96%87%E8%8E%B7%E5%8F%96%EF%BC%88%E5%9F%BA%E4%BA%8E%E7%BD%91%E9%A1%B5%E7%88%AC%E8%99%AB%E5%B7%A5%E5%85%B7%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">（二）论文全文获取（基于网页爬虫工具）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89AI%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A5%E5%8F%A3%E8%B0%83%E7%94%A8%E4%B8%8E%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF%E7%94%9F%E6%88%90"><span class="nav-number">2.3.</span> <span class="nav-text">（三）AI大模型接口调用与报告模板生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89%E5%AD%98%E5%82%A8%E4%B8%8E%E8%BE%93%E5%87%BA"><span class="nav-number">2.4.</span> <span class="nav-text">（四）存储与输出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81%E5%B1%95%E7%A4%BA%E4%B8%8E%E9%A1%B9%E7%9B%AE%E6%BC%94%E7%A4%BA"><span class="nav-number">3.</span> <span class="nav-text">三、完整代码展示与项目演示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%B1%80%E9%99%90%E6%80%A7%E4%B8%8E%E6%9C%AA%E6%9D%A5%E5%8F%AF%E6%8B%93%E5%B1%95%E6%96%B9%E5%90%91"><span class="nav-number">4.</span> <span class="nav-text">四、局限性与未来可拓展方向</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">265</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">485</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="基于RSS订阅源以及LLM的文献订阅追踪工具 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于RSS订阅源以及LLM的文献订阅追踪工具
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-03-29 23:20:00 / 修改时间：23:50:57" itemprop="dateCreated datePublished" datetime="2026-03-29T23:20:00+08:00">2026-03-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如题。最近利用闲暇时间，攒了一个自动化处理RSS论文订阅源的工具（并接入了AI论文总结的功能），相关代码已开源，见 <a target="_blank" rel="noopener" href="https://github.com/cyclinbox/RSS-report-with-AI-process">cyclinbox/RSS-report-with-AI-process</a> 。欢迎大家试用和提意见！</p>
+<span id="more"></span>
+
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><h3 id="（一）想法的起因"><a href="#（一）想法的起因" class="headerlink" title="（一）想法的起因"></a>（一）想法的起因</h3><p>作为一名生物医学专业的在读研究生，跟踪期刊论文发表情况是一个很重要的工作。虽然目前有各种学术公众号（例如 BioArt、生物世界、iNature）、网站（例如<a target="_blank" rel="noopener" href="https://www.bohrium.com/">玻尔</a>、<a target="_blank" rel="noopener" href="https://www.scienceone.cn/lit/#/assistant">中科院磐石系统</a>）可以提供类似的功能，但是直接从源头追踪文献订阅依然有重要的意义。</p>
+<p>先前我使用FeedBro浏览器插件进行文献订阅追踪，每周抽出固定的时间整理和阅读新上线的论文。但是随着订阅的论文数量增多，手动处理需要耗费大量时间（如下图；每周合计刷新论文200到300篇），因此萌生了编写一个自动化处理工具的想法。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329175109.png" alt="image.png"></p>
+<p>大体拆解了一下项目：要实现自动化处理，需要以下模块联动配合：</p>
+<ul>
+<li><ol>
+<li>RSS订阅源解析模块：加载和解析RSS订阅源，获取近期发表（或上线）的论文。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>论文全文爬取模块：RSS订阅源一般只提供标题和摘要，如果想要更好的了解论文内容，最好需要获取论文全文。这里有两种思路：①获取论文的PDF版+使用MinerU之类的OCR工具转换为文本②通过网页爬虫直接获取论文的文本。考虑到工程实现的难度，我选择了思路②这种相对更为简单的思路。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>AI论文解析。这一部分其实相对简单，因为我有现成的API接口，只需要编写好prompt模板然后调用接口即可</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>报告生成。这一部分也很简单，只需要编写好markdown模板然后按实际情况填写内容即可。</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>（可选）定时运行和生成报告，并发送给用户。这个模块我没有做，是因为对我来说每周定时手动运行足以满足我的需求。但其实想要实现定时也很简单，只需要拥有一台Linux服务器，然后通过设置cron定时任务+邮件接口发送即可。现在的openClaw、CoPaw之类的自动化AI agent工具也可以实现类似的功能。</li>
+</ol>
+</li>
+</ul>
+<p>这里面最为困难的是模块1和2。以至于，我其实早在去年就萌生了创建这样的一个项目的想法，却一直拖到现在才真正实现。</p>
+<h3 id="（二）补充一些知识点（此章节部分内容由DeepSeek生成）"><a href="#（二）补充一些知识点（此章节部分内容由DeepSeek生成）" class="headerlink" title="（二）补充一些知识点（此章节部分内容由DeepSeek生成）"></a>（二）补充一些知识点（此章节部分内容由DeepSeek生成）</h3><h4 id="什么是-RSS"><a href="#什么是-RSS" class="headerlink" title="什么是 RSS"></a>什么是 RSS</h4><p>RSS（Really Simple Syndication，简易信息聚合）是一种基于 XML 格式的网络内容订阅规范。您可以将它理解为一种“信息推送管道”。</p>
+<ul>
+<li>  <strong>工作原理</strong>：网站（如期刊官网、博客、新闻站）将其最新发布的内容（标题、摘要、发布日期、链接等）按照 RSS 规范格式生成一个特殊的 XML 文件（即 RSS Feed 源）。用户通过一个称为 <strong>RSS 阅读器</strong> （如您使用的 FeedBro，或 Feedly、Inoreader 等）的工具，订阅这个 Feed 地址。</li>
+<li>  <strong>核心优势</strong>：RSS 阅读器会定期自动检查所有已订阅的 Feed 源，将所有网站的新内容<strong>聚合</strong>在一个界面中呈现给用户。这<strong>彻底改变了被动刷新、逐一访问网站的信息获取模式</strong>，实现了信息的主动、高效聚合。对于科研人员而言，订阅心仪期刊的 RSS Feed，是确保不会错过任何一篇新发表论文的高效方式。</li>
+<li>  <strong>在本项目中的作用</strong>：本项目中的 <strong>“RSS订阅源解析模块”</strong> ，其本质就是一个程序化的 RSS 阅读器。它取代了手动使用 FeedBro 等浏览器插件，自动抓取并解析您订阅的所有期刊 RSS Feed，获取最新的论文条目列表，为后续的自动化处理提供数据源头。</li>
+</ul>
+<p>那么，如何获取一个期刊的RSS订阅链接呢？实话说这个问题很难回答，因为不同出版社对于RSS Feed的态度是不一样的。对于Nature旗下的期刊来说，RSS URL在首页右上角即可获取（如下图）；Science的要稍微难找一点（同样如下图）；但是另外的一些期刊，如Cell、EMBO journal等，则不太好找，需要利用搜索引擎费一番功夫才能找到（具体方法此处略）。</p>
+<p>总之，在研一的时候，我就使用这样的方法，追踪了大概20多个期刊的RSS订阅。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329225024.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329225628.png" alt="image.png"></p>
+<h4 id="什么是-OPML"><a href="#什么是-OPML" class="headerlink" title="什么是 OPML"></a>什么是 OPML</h4><p>OPML（Outline Processor Markup Language，大纲处理标记语言）同样是一种基于 XML 的格式，但它主要用于描述<strong>结构化的列表或大纲</strong>，特别是在 RSS 订阅领域。</p>
+<ul>
+<li>  <strong>核心用途</strong>：<strong>RSS 订阅列表的导入和导出</strong>。几乎所有的 RSS 阅读器都支持 OPML 格式。当您在一个阅读器中管理了数十甚至上百个 RSS 订阅后，可以使用“导出为 OPML 文件”功能，将这些订阅源的地址、分类等信息完整保存为一个 <code>.opml</code> 文件。</li>
+<li><strong>带来的便利</strong>：<ol>
+<li> <strong>备份与迁移</strong>：当您更换阅读器时，无需重新手动添加每一个订阅，只需导入这个 OPML 文件，所有订阅关系即可瞬间恢复。</li>
+<li> <strong>共享订阅列表</strong>：您可以轻松地将自己精心整理的某一领域（如“肿瘤学顶刊”）的期刊订阅列表，通过 OPML 文件分享给同行。</li>
+</ol>
+</li>
+<li>  <strong>在本项目中的意义</strong>：OPML 文件是本项目实现 <strong>“一键配置”</strong> 的关键。您可以将目前在 FeedBro 或其他阅读器中管理好的所有期刊 RSS 订阅<strong>导出为一个 OPML 文件</strong>。本项目的解析模块可以直接读取这个文件，自动加载其中包含的所有 RSS Feed 地址，从而免去了在代码中逐个手动填写订阅源的繁琐过程，极大地提升了工具的可用性和可维护性。</li>
+</ul>
+<p><strong>简单总结两者的关系</strong>：<strong>RSS Feed 是信息的“内容源”</strong>，而 <strong>OPML 文件是管理这些“内容源地址”的清单</strong>。本项目利用 OPML 文件快速载入清单，然后通过程序自动抓取清单中每个 RSS Feed 的内容，从而启动整个自动化流程。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329230315.png" alt="image.png"></p>
+<h2 id="二、项目架构"><a href="#二、项目架构" class="headerlink" title="二、项目架构"></a>二、项目架构</h2><p>本项目基于python3编写，需要用到下面的第三方库</p>
+<table>
+<thead>
+<tr>
+<th>依赖项</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pandas</td>
+<td>用于生成Excel版报告</td>
+</tr>
+<tr>
+<td>numpy</td>
+<td>pandas的上一层依赖</td>
+</tr>
+<tr>
+<td>requests</td>
+<td>网络爬虫库，用于获取论文全文</td>
+</tr>
+<tr>
+<td>bs4</td>
+<td>网页解析库，用于获取论文全文</td>
+</tr>
+<tr>
+<td>feedparser</td>
+<td>RSS订阅源解析</td>
+</tr>
+</tbody></table>
+<p>按照前面的描述，整个项目大致可以分为四个部分。</p>
+<h3 id="（一）RSS订阅源解析"><a href="#（一）RSS订阅源解析" class="headerlink" title="（一）RSS订阅源解析"></a>（一）RSS订阅源解析</h3><p>正如前面所介绍的那样，RSS feed URL本质是一个网址，而OPML本质是一个XML文件。因此，我们可以采取这样的两步法去处理：</p>
+<ul>
+<li>①解析OPML文件，获取RSS feed URL列表( <code>parse_opml()</code> )</li>
+<li>②通过requests接口解析每一个RSS feed URL，获取对应期刊的论文列表( <code>fetch_feed()</code> )。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET</span><br><span class="line"><span class="keyword">import</span> feedparser</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta</span><br><span class="line"><span class="comment"># Parse OPML file and get rss url.</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse_opml</span>(<span class="params">file_path</span>):</span><br><span class="line">    tree = ET.parse(file_path)</span><br><span class="line">    root = tree.getroot()</span><br><span class="line">    urls = []</span><br><span class="line">    <span class="comment"># find all `outline` element to extract xmlUrl attribution</span></span><br><span class="line">    <span class="keyword">for</span> outline <span class="keyword">in</span> root.<span class="built_in">iter</span>(<span class="string">&#x27;outline&#x27;</span>):</span><br><span class="line">        xml_url = outline.get(<span class="string">&#x27;xmlUrl&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> xml_url:</span><br><span class="line">            title = outline.get(<span class="string">&#x27;title&#x27;</span>, outline.get(<span class="string">&#x27;text&#x27;</span>, <span class="string">&#x27;Unknown&#x27;</span>))</span><br><span class="line">            urls.append(&#123;<span class="string">&#x27;url&#x27;</span>: xml_url, <span class="string">&#x27;title&#x27;</span>: title&#125;)</span><br><span class="line">    <span class="keyword">return</span> urls</span><br><span class="line"><span class="comment"># Scratch RSS source and get all terms.</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fetch_feed</span>(<span class="params">url_info, days_limit=DAY_LIMIT</span>):</span><br><span class="line">    url = url_info[<span class="string">&#x27;url&#x27;</span>]</span><br><span class="line">    feed_title = url_info[<span class="string">&#x27;title&#x27;</span>]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Fetch: <span class="subst">&#123;feed_title&#125;</span> - <span class="subst">&#123;url&#125;</span>, \tday limit: <span class="subst">&#123;days_limit&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.get(url, timeout=<span class="number">10</span>)</span><br><span class="line">        response.raise_for_status()</span><br><span class="line">        feed = feedparser.parse(response.content)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;  Error: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> []</span><br><span class="line">    entries = []</span><br><span class="line">    cutoff_date = datetime.now() - timedelta(days=days_limit)</span><br><span class="line">    <span class="keyword">for</span> entry <span class="keyword">in</span> feed.entries: <span class="comment"># get publish date.</span></span><br><span class="line">        published_time = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;published_parsed&#x27;</span>):</span><br><span class="line">            published_time = datetime(*entry.published_parsed[:<span class="number">6</span>])</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;updated_parsed&#x27;</span>):</span><br><span class="line">            published_time = datetime(*entry.updated_parsed[:<span class="number">6</span>])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span> published_time &lt; cutoff_date:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="comment"># Extract meta info</span></span><br><span class="line">        title = entry.title <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;title&#x27;</span>) <span class="keyword">else</span> <span class="string">&#x27;Untitle&#x27;</span></span><br><span class="line">        authors = []</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;authors&#x27;</span>):</span><br><span class="line">            authors = [author.name <span class="keyword">for</span> author <span class="keyword">in</span> entry.authors]</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;author&#x27;</span>):</span><br><span class="line">            authors = [entry.author]</span><br><span class="line">        <span class="comment"># Abstract or summary</span></span><br><span class="line">        summary = <span class="string">&#x27;&#x27;</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;summary&#x27;</span>):</span><br><span class="line">            summary = entry.summary</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;description&#x27;</span>):</span><br><span class="line">            summary = entry.description</span><br><span class="line">        <span class="comment"># Article link</span></span><br><span class="line">        link = entry.link <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;link&#x27;</span>) <span class="keyword">else</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">        entries.append(&#123;</span><br><span class="line">            <span class="string">&#x27;title&#x27;</span>: title,</span><br><span class="line">            <span class="string">&#x27;authors&#x27;</span>: authors,</span><br><span class="line">            <span class="string">&#x27;journal&#x27;</span>: feed_title,</span><br><span class="line">            <span class="string">&#x27;published&#x27;</span>: published_time.strftime(<span class="string">&quot;%Y-%m-%d&quot;</span>),</span><br><span class="line">            <span class="string">&#x27;summary&#x27;</span>: summary,</span><br><span class="line">            <span class="string">&#x27;link&#x27;</span>: link,</span><br><span class="line">            <span class="string">&#x27;source_url&#x27;</span>: url</span><br><span class="line">        &#125;)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot; - <span class="subst">&#123;<span class="built_in">len</span>(entries)&#125;</span> articles founded&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> entries</span><br></pre></td></tr></table></figure>
+
+<h3 id="（二）论文全文获取（基于网页爬虫工具）"><a href="#（二）论文全文获取（基于网页爬虫工具）" class="headerlink" title="（二）论文全文获取（基于网页爬虫工具）"></a>（二）论文全文获取（基于网页爬虫工具）</h3><p>正如前面所说，这里有两种思路：</p>
+<ul>
+<li><ol>
+<li>获取论文的PDF版+使用MinerU之类的OCR工具转换为文本</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>通过网页爬虫直接获取论文的文本。</li>
+</ol>
+</li>
+</ul>
+<p>考虑到工程实现的难度，我选择了思路2这种相对更为简单的思路。</p>
+<p>但是前面没有说的是，其实仅思路2，依然有两种实现思路：</p>
+<ul>
+<li>2.1 直接爬取RSS feed中提供的论文全文网址（通常指向期刊官网，或者通过doi识别号指向 <a target="_blank" rel="noopener" href="https://doi.org/">doi.org</a> 的网址）</li>
+<li>2.2 一些论文会被NCBI旗下的PMC数据库收录，因此可以通过PubMed-PMC的接口，获取论文全文。</li>
+</ul>
+<p>对于2.1和2.2这两种思路，我当然也提前准备好了相应的函数库（分别封装在 <code>libweb.py</code> , <code>libpubmed.py</code> 两个文件当中），前者只需要提供一个网址URL，即可通过爬虫的方法获取网页全文；后者则需要提供论文标题，随后<code>libpubmed.py</code> 会向PubMed发起一次查询，并在查询结果中寻找PMC ID，如果PMC ID存在则爬取对应PMC页面的全文内容，否则返回空字符串。</p>
+<p>当然，这两个方法都各有不足之处：</p>
+<ul>
+<li>libweb是直接解析文章链接，有时候可能会出现网页访问失败的问题，返回空字符串；或者遇到无访问权限的论文，返回的只有论文摘要。</li>
+<li>而在libpubmed这边，问题也有很多。例如，PubMed会在检索时进行模糊匹配，因此当检索一些较新的、暂未收录的文章时，其检索结果可能会指向标题文本相似的其他文章；或者，某一篇文章并未被收入pmc数据库，因此pmcid解析失败、返回空字符串。</li>
+</ul>
+<p>为了利用好这两个方法的优点，我在AI的帮助下实现了一个函数 <code>calculate_credibility_score()</code> ，这个函数可以对接口返回的论文全文进行可靠性打分，并选择可靠性最高的结果作为最终的全文。打分基于三个指标：是否为空字符串、文本总长是否够长（长文本更有可能为全文，短文本更有可能是摘要）、是否包含标题字符串（用于排除PubMed模糊匹配找错文章的问题）。</p>
+<p>这一块的代码实现见 <code>libweb.py</code> , <code>libpubmed.py</code>，以及主程序的 <code>process_articles()</code> 。限于篇幅，此处不粘贴源码，读者朋友可以去本项目的GitHub仓库 <a target="_blank" rel="noopener" href="https://github.com/cyclinbox/RSS-report-with-AI-process">cyclinbox/RSS-report-with-AI-process</a>一探究竟。</p>
+<h3 id="（三）AI大模型接口调用与报告模板生成"><a href="#（三）AI大模型接口调用与报告模板生成" class="headerlink" title="（三）AI大模型接口调用与报告模板生成"></a>（三）AI大模型接口调用与报告模板生成</h3><p>这一部分内容相对比较简单。在代码中，我通过curl的方式，调用了阿里巴巴通义千问大模型平台的接口（后端模型是qwen3.5-flash非思考版），相关代码封装在 <code>libqwen.py</code> 文件当中。</p>
+<p>当然，在调用接口时，不仅需要提供论文全文，还需要提供一份输出模板，以便AI能够按照所需格式生成报告。我的prompt模板是这样写的，其中 <code>(-abstract-)</code> 和 <code>(-content-)</code> 分别是摘要占位符和全文占位符，实际调用时需要用replace函数修改。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">prompt = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">## Role</span></span><br><span class="line"><span class="string">You are an expert Population Genetics &amp; Bioinformatics Literature Review Agent. </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Task</span></span><br><span class="line"><span class="string">You specialize in analyzing complex evolutionary algorithms, advanced aging-related or longevity-related research, and cross-species data resource.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Article Analysis Guidelines</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### Information to Extract &amp; Professional Logic:</span></span><br><span class="line"><span class="string">1. **Core Problem**: What&#x27;s the key scientific question in this article?</span></span><br><span class="line"><span class="string">2. **Methodological Challenge**: What are the main technical challenges in solving this problem?</span></span><br><span class="line"><span class="string">3. **Innovative method**: Whether this article provided some new method/technology/algorithm? If yes, what is the core idea and how it works?</span></span><br><span class="line"><span class="string">4. **Data availability**: Whether the article provides data, and if so, what type of data and how to access it?</span></span><br><span class="line"><span class="string">5. **Key Conclusions**: What are the article&#x27;s main findings?&quot;,</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### Output Format Specification</span></span><br><span class="line"><span class="string">Generate a JSON object with the following exact structure:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">	&quot;Title&quot;: &quot;The translation of article title into simplified Chinese&quot;,</span></span><br><span class="line"><span class="string">	&quot;Type&quot;: &quot;Research|Review|Method|Tool|Other&quot;,</span></span><br><span class="line"><span class="string">	&quot;Abstract_translation&quot;: &quot;The translation of the abstract into simplified Chinese&quot;,</span></span><br><span class="line"><span class="string">	&quot;Core_Problem&quot;: &quot;A statement of the main scientific questions, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">	&quot;Meth_Chllg&quot;: &quot;A statement of the main technical challenges, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">	&quot;Innovative_Method&quot;: &quot;A statement of article&#x27;s innovative methods, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">	&quot;Is_data&quot;: &quot;Yes|No&quot;,</span></span><br><span class="line"><span class="string">	&quot;data&quot;: &quot;Dataset URLs or identifiers if Is_data=&#x27;Yes&#x27;; otherwise &#x27;-&#x27;&quot;,</span></span><br><span class="line"><span class="string">	&quot;Is_code&quot;: &quot;Yes|No&quot;,</span></span><br><span class="line"><span class="string">	&quot;code&quot;: &quot;Code repository/tool links if Is_code=&#x27;Yes&#x27;; otherwise &#x27;-&#x27;&quot;,</span></span><br><span class="line"><span class="string">	&quot;Key_Conclusions&quot;: &quot;A detailed summary of main findings, keep all in one line&quot;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### Notes:</span></span><br><span class="line"><span class="string">- Use &quot;Yes&quot;/&quot;No&quot; consistently for boolean fields.</span></span><br><span class="line"><span class="string">- For missing information, use &quot;-&quot; as placeholder.</span></span><br><span class="line"><span class="string">- All statements should be concise, factual statements, and **keep all statements/summary in one line**.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Article Content</span></span><br><span class="line"><span class="string">### Title &amp; Abstract:</span></span><br><span class="line"><span class="string">(-abstract-)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### Full Text:</span></span><br><span class="line"><span class="string">(-content-)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Output Instruction</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Generate the complete JSON object based on your analysis.</span></span><br><span class="line"><span class="string">Now produce the JSON.</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="（四）存储与输出"><a href="#（四）存储与输出" class="headerlink" title="（四）存储与输出"></a>（四）存储与输出</h3><p>存储部分的逻辑是这样：先逐条处理论文（包括获取全文，以及调用AI接口解析），随后在markdown报告里使用报告模板生成对应的报告内容，并使用pandas库保存一份parquet格式的中间文件。当所有论文处理完成以后，还会额外使用pandas库生成一份xlsx文件，这份xlsx文件可以用于二次编辑和筛选。</p>
+<p>这一部分的内容封装在主程序的主函数 <code>main()</code> 当中。限于篇幅，此处不粘贴完整代码。</p>
+<h2 id="三、完整代码展示与项目演示"><a href="#三、完整代码展示与项目演示" class="headerlink" title="三、完整代码展示与项目演示"></a>三、完整代码展示与项目演示</h2><p>见GitHub仓库 <a target="_blank" rel="noopener" href="https://github.com/cyclinbox/RSS-report-with-AI-process">cyclinbox/RSS-report-with-AI-process</a>。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329232946.png" alt="image.png"></p>
+<p><strong>使用方法如下：</strong></p>
+<ol>
+<li>将本项目克隆到本地，或下载本项目根目录下的所有 <code>.py</code> 文件并放在同一个文件夹下</li>
+<li>准备一个保存有论文RSS订阅源的OPML文件。如果不确定如何生成OPML文件，可以使用本项目提供的 <code> feed-rss-list.opml</code> ，其中包含了对CNS三大顶刊以及诸多子刊的订阅源URL。</li>
+<li>命令行运行代码 <code>python parse_opml-with-AI-process.py -f feed-rss-list.opml</code> ，这将会自动获取近8天内订阅期刊的论文列表，并根据特定主题关键词过滤文章，最终生成报告（位于 <code>outputs</code> 目录下</li>
+</ol>
+<p>目前提供两个命令行参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-d DAY_LIMIT, --day-limit DAY_LIMIT</span><br><span class="line">                      Day limit. Default: 8.</span><br><span class="line">-f FILE_PATH, --file-path FILE_PATH</span><br><span class="line">                      OPML file path. Default: &quot;feed-rss-list.opml&quot;.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>可以使用 <code>-d</code> 参数调整论文追踪时间，默认是追踪近8天内上线的论文。</li>
+<li>可以使用 <code>-f</code> 参数调整OPML订阅源文件，默认订阅源文件是 <code>feed-rss-list.opml</code> 文件</li>
+</ul>
+<p><strong>示例输出</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233134.png" alt="image.png"></p>
+<p><strong>下图为XLSX报告的展示</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233537.png" alt="image.png"></p>
+<p><strong>下图为markdown报告的展示</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233257.png" alt="image.png"></p>
+<h2 id="四、局限性与未来可拓展方向"><a href="#四、局限性与未来可拓展方向" class="headerlink" title="四、局限性与未来可拓展方向"></a>四、局限性与未来可拓展方向</h2><p><strong>问题1：基于主题关键词的论文筛选功能：能用，但用户改起来很麻烦</strong></p>
+<p>目前主题关键词硬编码于代码 239-242 行（位于  <code>main()</code> 函数当中），相关代码如下： </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">220</span> <span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">...</span><br><span class="line"><span class="number">238</span>     <span class="comment">## Main process</span></span><br><span class="line"><span class="number">239</span>     topics_keywords = &#123;</span><br><span class="line"><span class="number">240</span>         <span class="string">&#x27;Evolution&#x27;</span>: [<span class="string">&#x27;evolution&#x27;</span>, <span class="string">&#x27;selection&#x27;</span>, <span class="string">&#x27;evol&#x27;</span>, <span class="string">&#x27;phylo&#x27;</span>, <span class="string">&#x27;speciation&#x27;</span>, <span class="string">&#x27;adaptation&#x27;</span>],</span><br><span class="line"><span class="number">241</span>         <span class="string">&#x27;Tumor&#x27;</span>: [<span class="string">&#x27;cancer&#x27;</span>, <span class="string">&#x27;tumor&#x27;</span>, <span class="string">&#x27;oncology&#x27;</span>, <span class="string">&#x27;carcinoma&#x27;</span>, <span class="string">&#x27;neoplas&#x27;</span>, <span class="string">&#x27;metastasis&#x27;</span>]</span><br><span class="line"><span class="number">242</span>     &#125;</span><br></pre></td></tr></table></figure>
+
+<p>目前定义了两个主题，分别是 <code>Evolution</code> 和 <code>Tumor</code> ，每个主题类别下设置有若干关键词，这些关键词用于论文主题匹配和过滤。</p>
+<p>用户如果想要使用其他的主题，可以在此处调整 <code>topics_keywords</code> 的定义，编辑或添加更多的主题或主题关键词。</p>
+<p>但是说实话，这样改起来非常麻烦。或许未来可以提供一个命令行接口，或者配置文件接口，允许用户以更方便的方式设置过滤关键词，或关闭这一功能。</p>
+<p><strong>问题2： 输出语言设置的问题</strong></p>
+<p>目前markdown格式的输出语言默认为简体中文（由system prompt硬编码，涉及的代码包括如下代码块提到的几行内容），如果用户希望使用其他语言（例如英语）输出markdown报告内容，可以修改这一部分的prompt内容，将json模板里的 “simplified Chinese” 改为其他目标语言</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">104</span> <span class="keyword">def</span> <span class="title function_">process_single_article</span>(<span class="params">title, journal, published,abstract_text, article_text</span>):</span><br><span class="line"><span class="number">105</span>     prompt = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line"><span class="string">121     ### Output Format Specification</span></span><br><span class="line"><span class="string">122     Generate a JSON object with the following exact structure:</span></span><br><span class="line"><span class="string">123</span></span><br><span class="line"><span class="string">124     &#123;</span></span><br><span class="line"><span class="string">125         &quot;Title&quot;: &quot;The translation of article title into simplified Chinese&quot;,</span></span><br><span class="line"><span class="string">126         &quot;Type&quot;: &quot;Research|Review|Method|Tool|Other&quot;,</span></span><br><span class="line"><span class="string">127         &quot;Abstract_translation&quot;: &quot;The translation of the abstract into simplified Chinese&quot;,</span></span><br><span class="line"><span class="string">128         &quot;Core_Problem&quot;: &quot;A statement of the main scientific questions, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">129         &quot;Meth_Chllg&quot;: &quot;A statement of the main technical challenges, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">130         &quot;Innovative_Method&quot;: &quot;A statement of article&#x27;s innovative methods, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">131         &quot;Is_data&quot;: &quot;Yes|No&quot;,</span></span><br><span class="line"><span class="string">132         &quot;data&quot;: &quot;Dataset URLs or identifiers if Is_data=&#x27;Yes&#x27;; otherwise &#x27;-&#x27;&quot;,</span></span><br><span class="line"><span class="string">133         &quot;Is_code&quot;: &quot;Yes|No&quot;,</span></span><br><span class="line"><span class="string">134         &quot;code&quot;: &quot;Code repository/tool links if Is_code=&#x27;Yes&#x27;; otherwise &#x27;-&#x27;&quot;,</span></span><br><span class="line"><span class="string">135         &quot;Key_Conclusions&quot;: &quot;A detailed summary of main findings, keep all in one line&quot;</span></span><br><span class="line"><span class="string">136     &#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是和问题1一样，就是这样改起来非常麻烦。或许未来同样可以提供一个命令行接口，或者配置文件接口，允许用户以更方便的方式设置输出语言。</p>
+<p><strong>问题3：易用性问题</strong></p>
+<p>目前要使用这个项目，需要在命令行中操作，包括克隆仓库、安装软件包、运行代码。这些操作专业性过高，会挡住许多有实际需求的用户。</p>
+<p>未来的想法（以及反思）：</p>
+<ol>
+<li>接入openClaw（小龙虾）之类的AI agent自动化平台，比方说以一个skills的方式提供，这样用户可以通过小龙虾这个中间层调用底层代码，从而实现更智能、更自动化的操作</li>
+<li>构建一个网页版应用平台，利用H5技术实现一个可视化界面，以便用户能够在浏览器中操作。（但是这样的应用平台似乎又和 <a target="_blank" rel="noopener" href="https://www.bohrium.com/">玻尔</a>、<a target="_blank" rel="noopener" href="https://www.scienceone.cn/lit/#/assistant">中科院磐石系统</a> 等功能重叠了，可能吸引不到用户）</li>
+<li>构建一个带有GUI界面的桌面版应用。（但是这么做的问题在于技术难度更高，同时想法2中面临的问题一样都少不了）</li>
+</ol>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading/" title="基于RSS订阅源以及LLM的文献订阅追踪工具">https://wz.anoms.top/2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AE/" rel="tag"><i class="fa fa-tag"></i> 通义千问</a>
+              <a href="/tags/LLM/" rel="tag"><i class="fa fa-tag"></i> LLM</a>
+              <a href="/tags/%E7%BD%91%E9%A1%B5%E7%88%AC%E8%99%AB/" rel="tag"><i class="fa fa-tag"></i> 网页爬虫</a>
+              <a href="/tags/RSS/" rel="tag"><i class="fa fa-tag"></i> RSS</a>
+              <a href="/tags/OPML/" rel="tag"><i class="fa fa-tag"></i> OPML</a>
+              <a href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" rel="tag"><i class="fa fa-tag"></i> 论文阅读</a>
+              <a href="/tags/%E8%AE%A2%E9%98%85%E8%BF%BD%E8%B8%AA/" rel="tag"><i class="fa fa-tag"></i> 订阅追踪</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/03/15/Recommend-three-vioce-to-text-application/" rel="prev" title="【个人推荐】一些好用的录音转写工具">
+                  <i class="fa fa-chevron-left"></i> 【个人推荐】一些好用的录音转写工具
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/03/29/20260329_updatelog/" rel="next" title="萧红《呼兰河传》读书笔记">
+                  萧红《呼兰河传》读书笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>

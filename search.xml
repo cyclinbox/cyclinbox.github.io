@@ -23390,4 +23390,211 @@
         <tag>拾花小记</tag>
       </tags>
   </entry>
+  <entry>
+    <title>基于RSS订阅源以及LLM的文献订阅追踪工具</title>
+    <url>/2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading/</url>
+    <content><![CDATA[<p>如题。最近利用闲暇时间，攒了一个自动化处理RSS论文订阅源的工具（并接入了AI论文总结的功能），相关代码已开源，见 <a href="https://github.com/cyclinbox/RSS-report-with-AI-process">cyclinbox/RSS-report-with-AI-process</a> 。欢迎大家试用和提意见！</p>
+<span id="more"></span>
+
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><h3 id="（一）想法的起因"><a href="#（一）想法的起因" class="headerlink" title="（一）想法的起因"></a>（一）想法的起因</h3><p>作为一名生物医学专业的在读研究生，跟踪期刊论文发表情况是一个很重要的工作。虽然目前有各种学术公众号（例如 BioArt、生物世界、iNature）、网站（例如<a href="https://www.bohrium.com/">玻尔</a>、<a href="https://www.scienceone.cn/lit/#/assistant">中科院磐石系统</a>）可以提供类似的功能，但是直接从源头追踪文献订阅依然有重要的意义。</p>
+<p>先前我使用FeedBro浏览器插件进行文献订阅追踪，每周抽出固定的时间整理和阅读新上线的论文。但是随着订阅的论文数量增多，手动处理需要耗费大量时间（如下图；每周合计刷新论文200到300篇），因此萌生了编写一个自动化处理工具的想法。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329175109.png" alt="image.png"></p>
+<p>大体拆解了一下项目：要实现自动化处理，需要以下模块联动配合：</p>
+<ul>
+<li><ol>
+<li>RSS订阅源解析模块：加载和解析RSS订阅源，获取近期发表（或上线）的论文。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>论文全文爬取模块：RSS订阅源一般只提供标题和摘要，如果想要更好的了解论文内容，最好需要获取论文全文。这里有两种思路：①获取论文的PDF版+使用MinerU之类的OCR工具转换为文本②通过网页爬虫直接获取论文的文本。考虑到工程实现的难度，我选择了思路②这种相对更为简单的思路。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>AI论文解析。这一部分其实相对简单，因为我有现成的API接口，只需要编写好prompt模板然后调用接口即可</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>报告生成。这一部分也很简单，只需要编写好markdown模板然后按实际情况填写内容即可。</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>（可选）定时运行和生成报告，并发送给用户。这个模块我没有做，是因为对我来说每周定时手动运行足以满足我的需求。但其实想要实现定时也很简单，只需要拥有一台Linux服务器，然后通过设置cron定时任务+邮件接口发送即可。现在的openClaw、CoPaw之类的自动化AI agent工具也可以实现类似的功能。</li>
+</ol>
+</li>
+</ul>
+<p>这里面最为困难的是模块1和2。以至于，我其实早在去年就萌生了创建这样的一个项目的想法，却一直拖到现在才真正实现。</p>
+<h3 id="（二）补充一些知识点（此章节部分内容由DeepSeek生成）"><a href="#（二）补充一些知识点（此章节部分内容由DeepSeek生成）" class="headerlink" title="（二）补充一些知识点（此章节部分内容由DeepSeek生成）"></a>（二）补充一些知识点（此章节部分内容由DeepSeek生成）</h3><h4 id="什么是-RSS"><a href="#什么是-RSS" class="headerlink" title="什么是 RSS"></a>什么是 RSS</h4><p>RSS（Really Simple Syndication，简易信息聚合）是一种基于 XML 格式的网络内容订阅规范。您可以将它理解为一种“信息推送管道”。</p>
+<ul>
+<li>  <strong>工作原理</strong>：网站（如期刊官网、博客、新闻站）将其最新发布的内容（标题、摘要、发布日期、链接等）按照 RSS 规范格式生成一个特殊的 XML 文件（即 RSS Feed 源）。用户通过一个称为 <strong>RSS 阅读器</strong> （如您使用的 FeedBro，或 Feedly、Inoreader 等）的工具，订阅这个 Feed 地址。</li>
+<li>  <strong>核心优势</strong>：RSS 阅读器会定期自动检查所有已订阅的 Feed 源，将所有网站的新内容<strong>聚合</strong>在一个界面中呈现给用户。这<strong>彻底改变了被动刷新、逐一访问网站的信息获取模式</strong>，实现了信息的主动、高效聚合。对于科研人员而言，订阅心仪期刊的 RSS Feed，是确保不会错过任何一篇新发表论文的高效方式。</li>
+<li>  <strong>在本项目中的作用</strong>：本项目中的 <strong>“RSS订阅源解析模块”</strong> ，其本质就是一个程序化的 RSS 阅读器。它取代了手动使用 FeedBro 等浏览器插件，自动抓取并解析您订阅的所有期刊 RSS Feed，获取最新的论文条目列表，为后续的自动化处理提供数据源头。</li>
+</ul>
+<p>那么，如何获取一个期刊的RSS订阅链接呢？实话说这个问题很难回答，因为不同出版社对于RSS Feed的态度是不一样的。对于Nature旗下的期刊来说，RSS URL在首页右上角即可获取（如下图）；Science的要稍微难找一点（同样如下图）；但是另外的一些期刊，如Cell、EMBO journal等，则不太好找，需要利用搜索引擎费一番功夫才能找到（具体方法此处略）。</p>
+<p>总之，在研一的时候，我就使用这样的方法，追踪了大概20多个期刊的RSS订阅。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329225024.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329225628.png" alt="image.png"></p>
+<h4 id="什么是-OPML"><a href="#什么是-OPML" class="headerlink" title="什么是 OPML"></a>什么是 OPML</h4><p>OPML（Outline Processor Markup Language，大纲处理标记语言）同样是一种基于 XML 的格式，但它主要用于描述<strong>结构化的列表或大纲</strong>，特别是在 RSS 订阅领域。</p>
+<ul>
+<li>  <strong>核心用途</strong>：<strong>RSS 订阅列表的导入和导出</strong>。几乎所有的 RSS 阅读器都支持 OPML 格式。当您在一个阅读器中管理了数十甚至上百个 RSS 订阅后，可以使用“导出为 OPML 文件”功能，将这些订阅源的地址、分类等信息完整保存为一个 <code>.opml</code> 文件。</li>
+<li><strong>带来的便利</strong>：<ol>
+<li> <strong>备份与迁移</strong>：当您更换阅读器时，无需重新手动添加每一个订阅，只需导入这个 OPML 文件，所有订阅关系即可瞬间恢复。</li>
+<li> <strong>共享订阅列表</strong>：您可以轻松地将自己精心整理的某一领域（如“肿瘤学顶刊”）的期刊订阅列表，通过 OPML 文件分享给同行。</li>
+</ol>
+</li>
+<li>  <strong>在本项目中的意义</strong>：OPML 文件是本项目实现 <strong>“一键配置”</strong> 的关键。您可以将目前在 FeedBro 或其他阅读器中管理好的所有期刊 RSS 订阅<strong>导出为一个 OPML 文件</strong>。本项目的解析模块可以直接读取这个文件，自动加载其中包含的所有 RSS Feed 地址，从而免去了在代码中逐个手动填写订阅源的繁琐过程，极大地提升了工具的可用性和可维护性。</li>
+</ul>
+<p><strong>简单总结两者的关系</strong>：<strong>RSS Feed 是信息的“内容源”</strong>，而 <strong>OPML 文件是管理这些“内容源地址”的清单</strong>。本项目利用 OPML 文件快速载入清单，然后通过程序自动抓取清单中每个 RSS Feed 的内容，从而启动整个自动化流程。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329230315.png" alt="image.png"></p>
+<h2 id="二、项目架构"><a href="#二、项目架构" class="headerlink" title="二、项目架构"></a>二、项目架构</h2><p>本项目基于python3编写，需要用到下面的第三方库</p>
+<table>
+<thead>
+<tr>
+<th>依赖项</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pandas</td>
+<td>用于生成Excel版报告</td>
+</tr>
+<tr>
+<td>numpy</td>
+<td>pandas的上一层依赖</td>
+</tr>
+<tr>
+<td>requests</td>
+<td>网络爬虫库，用于获取论文全文</td>
+</tr>
+<tr>
+<td>bs4</td>
+<td>网页解析库，用于获取论文全文</td>
+</tr>
+<tr>
+<td>feedparser</td>
+<td>RSS订阅源解析</td>
+</tr>
+</tbody></table>
+<p>按照前面的描述，整个项目大致可以分为四个部分。</p>
+<h3 id="（一）RSS订阅源解析"><a href="#（一）RSS订阅源解析" class="headerlink" title="（一）RSS订阅源解析"></a>（一）RSS订阅源解析</h3><p>正如前面所介绍的那样，RSS feed URL本质是一个网址，而OPML本质是一个XML文件。因此，我们可以采取这样的两步法去处理：</p>
+<ul>
+<li>①解析OPML文件，获取RSS feed URL列表( <code>parse_opml()</code> )</li>
+<li>②通过requests接口解析每一个RSS feed URL，获取对应期刊的论文列表( <code>fetch_feed()</code> )。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET</span><br><span class="line"><span class="keyword">import</span> feedparser</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta</span><br><span class="line"><span class="comment"># Parse OPML file and get rss url.</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse_opml</span>(<span class="params">file_path</span>):</span><br><span class="line">    tree = ET.parse(file_path)</span><br><span class="line">    root = tree.getroot()</span><br><span class="line">    urls = []</span><br><span class="line">    <span class="comment"># find all `outline` element to extract xmlUrl attribution</span></span><br><span class="line">    <span class="keyword">for</span> outline <span class="keyword">in</span> root.<span class="built_in">iter</span>(<span class="string">&#x27;outline&#x27;</span>):</span><br><span class="line">        xml_url = outline.get(<span class="string">&#x27;xmlUrl&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> xml_url:</span><br><span class="line">            title = outline.get(<span class="string">&#x27;title&#x27;</span>, outline.get(<span class="string">&#x27;text&#x27;</span>, <span class="string">&#x27;Unknown&#x27;</span>))</span><br><span class="line">            urls.append(&#123;<span class="string">&#x27;url&#x27;</span>: xml_url, <span class="string">&#x27;title&#x27;</span>: title&#125;)</span><br><span class="line">    <span class="keyword">return</span> urls</span><br><span class="line"><span class="comment"># Scratch RSS source and get all terms.</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fetch_feed</span>(<span class="params">url_info, days_limit=DAY_LIMIT</span>):</span><br><span class="line">    url = url_info[<span class="string">&#x27;url&#x27;</span>]</span><br><span class="line">    feed_title = url_info[<span class="string">&#x27;title&#x27;</span>]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Fetch: <span class="subst">&#123;feed_title&#125;</span> - <span class="subst">&#123;url&#125;</span>, \tday limit: <span class="subst">&#123;days_limit&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.get(url, timeout=<span class="number">10</span>)</span><br><span class="line">        response.raise_for_status()</span><br><span class="line">        feed = feedparser.parse(response.content)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;  Error: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> []</span><br><span class="line">    entries = []</span><br><span class="line">    cutoff_date = datetime.now() - timedelta(days=days_limit)</span><br><span class="line">    <span class="keyword">for</span> entry <span class="keyword">in</span> feed.entries: <span class="comment"># get publish date.</span></span><br><span class="line">        published_time = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;published_parsed&#x27;</span>):</span><br><span class="line">            published_time = datetime(*entry.published_parsed[:<span class="number">6</span>])</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;updated_parsed&#x27;</span>):</span><br><span class="line">            published_time = datetime(*entry.updated_parsed[:<span class="number">6</span>])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span> published_time &lt; cutoff_date:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="comment"># Extract meta info</span></span><br><span class="line">        title = entry.title <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;title&#x27;</span>) <span class="keyword">else</span> <span class="string">&#x27;Untitle&#x27;</span></span><br><span class="line">        authors = []</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;authors&#x27;</span>):</span><br><span class="line">            authors = [author.name <span class="keyword">for</span> author <span class="keyword">in</span> entry.authors]</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;author&#x27;</span>):</span><br><span class="line">            authors = [entry.author]</span><br><span class="line">        <span class="comment"># Abstract or summary</span></span><br><span class="line">        summary = <span class="string">&#x27;&#x27;</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;summary&#x27;</span>):</span><br><span class="line">            summary = entry.summary</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;description&#x27;</span>):</span><br><span class="line">            summary = entry.description</span><br><span class="line">        <span class="comment"># Article link</span></span><br><span class="line">        link = entry.link <span class="keyword">if</span> <span class="built_in">hasattr</span>(entry, <span class="string">&#x27;link&#x27;</span>) <span class="keyword">else</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">        entries.append(&#123;</span><br><span class="line">            <span class="string">&#x27;title&#x27;</span>: title,</span><br><span class="line">            <span class="string">&#x27;authors&#x27;</span>: authors,</span><br><span class="line">            <span class="string">&#x27;journal&#x27;</span>: feed_title,</span><br><span class="line">            <span class="string">&#x27;published&#x27;</span>: published_time.strftime(<span class="string">&quot;%Y-%m-%d&quot;</span>),</span><br><span class="line">            <span class="string">&#x27;summary&#x27;</span>: summary,</span><br><span class="line">            <span class="string">&#x27;link&#x27;</span>: link,</span><br><span class="line">            <span class="string">&#x27;source_url&#x27;</span>: url</span><br><span class="line">        &#125;)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot; - <span class="subst">&#123;<span class="built_in">len</span>(entries)&#125;</span> articles founded&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> entries</span><br></pre></td></tr></table></figure>
+
+<h3 id="（二）论文全文获取（基于网页爬虫工具）"><a href="#（二）论文全文获取（基于网页爬虫工具）" class="headerlink" title="（二）论文全文获取（基于网页爬虫工具）"></a>（二）论文全文获取（基于网页爬虫工具）</h3><p>正如前面所说，这里有两种思路：</p>
+<ul>
+<li><ol>
+<li>获取论文的PDF版+使用MinerU之类的OCR工具转换为文本</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>通过网页爬虫直接获取论文的文本。</li>
+</ol>
+</li>
+</ul>
+<p>考虑到工程实现的难度，我选择了思路2这种相对更为简单的思路。</p>
+<p>但是前面没有说的是，其实仅思路2，依然有两种实现思路：</p>
+<ul>
+<li>2.1 直接爬取RSS feed中提供的论文全文网址（通常指向期刊官网，或者通过doi识别号指向 <a href="https://doi.org/">doi.org</a> 的网址）</li>
+<li>2.2 一些论文会被NCBI旗下的PMC数据库收录，因此可以通过PubMed-PMC的接口，获取论文全文。</li>
+</ul>
+<p>对于2.1和2.2这两种思路，我当然也提前准备好了相应的函数库（分别封装在 <code>libweb.py</code> , <code>libpubmed.py</code> 两个文件当中），前者只需要提供一个网址URL，即可通过爬虫的方法获取网页全文；后者则需要提供论文标题，随后<code>libpubmed.py</code> 会向PubMed发起一次查询，并在查询结果中寻找PMC ID，如果PMC ID存在则爬取对应PMC页面的全文内容，否则返回空字符串。</p>
+<p>当然，这两个方法都各有不足之处：</p>
+<ul>
+<li>libweb是直接解析文章链接，有时候可能会出现网页访问失败的问题，返回空字符串；或者遇到无访问权限的论文，返回的只有论文摘要。</li>
+<li>而在libpubmed这边，问题也有很多。例如，PubMed会在检索时进行模糊匹配，因此当检索一些较新的、暂未收录的文章时，其检索结果可能会指向标题文本相似的其他文章；或者，某一篇文章并未被收入pmc数据库，因此pmcid解析失败、返回空字符串。</li>
+</ul>
+<p>为了利用好这两个方法的优点，我在AI的帮助下实现了一个函数 <code>calculate_credibility_score()</code> ，这个函数可以对接口返回的论文全文进行可靠性打分，并选择可靠性最高的结果作为最终的全文。打分基于三个指标：是否为空字符串、文本总长是否够长（长文本更有可能为全文，短文本更有可能是摘要）、是否包含标题字符串（用于排除PubMed模糊匹配找错文章的问题）。</p>
+<p>这一块的代码实现见 <code>libweb.py</code> , <code>libpubmed.py</code>，以及主程序的 <code>process_articles()</code> 。限于篇幅，此处不粘贴源码，读者朋友可以去本项目的GitHub仓库 <a href="https://github.com/cyclinbox/RSS-report-with-AI-process">cyclinbox/RSS-report-with-AI-process</a>一探究竟。</p>
+<h3 id="（三）AI大模型接口调用与报告模板生成"><a href="#（三）AI大模型接口调用与报告模板生成" class="headerlink" title="（三）AI大模型接口调用与报告模板生成"></a>（三）AI大模型接口调用与报告模板生成</h3><p>这一部分内容相对比较简单。在代码中，我通过curl的方式，调用了阿里巴巴通义千问大模型平台的接口（后端模型是qwen3.5-flash非思考版），相关代码封装在 <code>libqwen.py</code> 文件当中。</p>
+<p>当然，在调用接口时，不仅需要提供论文全文，还需要提供一份输出模板，以便AI能够按照所需格式生成报告。我的prompt模板是这样写的，其中 <code>(-abstract-)</code> 和 <code>(-content-)</code> 分别是摘要占位符和全文占位符，实际调用时需要用replace函数修改。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">prompt = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">## Role</span></span><br><span class="line"><span class="string">You are an expert Population Genetics &amp; Bioinformatics Literature Review Agent. </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Task</span></span><br><span class="line"><span class="string">You specialize in analyzing complex evolutionary algorithms, advanced aging-related or longevity-related research, and cross-species data resource.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Article Analysis Guidelines</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### Information to Extract &amp; Professional Logic:</span></span><br><span class="line"><span class="string">1. **Core Problem**: What&#x27;s the key scientific question in this article?</span></span><br><span class="line"><span class="string">2. **Methodological Challenge**: What are the main technical challenges in solving this problem?</span></span><br><span class="line"><span class="string">3. **Innovative method**: Whether this article provided some new method/technology/algorithm? If yes, what is the core idea and how it works?</span></span><br><span class="line"><span class="string">4. **Data availability**: Whether the article provides data, and if so, what type of data and how to access it?</span></span><br><span class="line"><span class="string">5. **Key Conclusions**: What are the article&#x27;s main findings?&quot;,</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### Output Format Specification</span></span><br><span class="line"><span class="string">Generate a JSON object with the following exact structure:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">	&quot;Title&quot;: &quot;The translation of article title into simplified Chinese&quot;,</span></span><br><span class="line"><span class="string">	&quot;Type&quot;: &quot;Research|Review|Method|Tool|Other&quot;,</span></span><br><span class="line"><span class="string">	&quot;Abstract_translation&quot;: &quot;The translation of the abstract into simplified Chinese&quot;,</span></span><br><span class="line"><span class="string">	&quot;Core_Problem&quot;: &quot;A statement of the main scientific questions, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">	&quot;Meth_Chllg&quot;: &quot;A statement of the main technical challenges, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">	&quot;Innovative_Method&quot;: &quot;A statement of article&#x27;s innovative methods, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">	&quot;Is_data&quot;: &quot;Yes|No&quot;,</span></span><br><span class="line"><span class="string">	&quot;data&quot;: &quot;Dataset URLs or identifiers if Is_data=&#x27;Yes&#x27;; otherwise &#x27;-&#x27;&quot;,</span></span><br><span class="line"><span class="string">	&quot;Is_code&quot;: &quot;Yes|No&quot;,</span></span><br><span class="line"><span class="string">	&quot;code&quot;: &quot;Code repository/tool links if Is_code=&#x27;Yes&#x27;; otherwise &#x27;-&#x27;&quot;,</span></span><br><span class="line"><span class="string">	&quot;Key_Conclusions&quot;: &quot;A detailed summary of main findings, keep all in one line&quot;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### Notes:</span></span><br><span class="line"><span class="string">- Use &quot;Yes&quot;/&quot;No&quot; consistently for boolean fields.</span></span><br><span class="line"><span class="string">- For missing information, use &quot;-&quot; as placeholder.</span></span><br><span class="line"><span class="string">- All statements should be concise, factual statements, and **keep all statements/summary in one line**.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Article Content</span></span><br><span class="line"><span class="string">### Title &amp; Abstract:</span></span><br><span class="line"><span class="string">(-abstract-)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### Full Text:</span></span><br><span class="line"><span class="string">(-content-)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Output Instruction</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Generate the complete JSON object based on your analysis.</span></span><br><span class="line"><span class="string">Now produce the JSON.</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="（四）存储与输出"><a href="#（四）存储与输出" class="headerlink" title="（四）存储与输出"></a>（四）存储与输出</h3><p>存储部分的逻辑是这样：先逐条处理论文（包括获取全文，以及调用AI接口解析），随后在markdown报告里使用报告模板生成对应的报告内容，并使用pandas库保存一份parquet格式的中间文件。当所有论文处理完成以后，还会额外使用pandas库生成一份xlsx文件，这份xlsx文件可以用于二次编辑和筛选。</p>
+<p>这一部分的内容封装在主程序的主函数 <code>main()</code> 当中。限于篇幅，此处不粘贴完整代码。</p>
+<h2 id="三、完整代码展示与项目演示"><a href="#三、完整代码展示与项目演示" class="headerlink" title="三、完整代码展示与项目演示"></a>三、完整代码展示与项目演示</h2><p>见GitHub仓库 <a href="https://github.com/cyclinbox/RSS-report-with-AI-process">cyclinbox/RSS-report-with-AI-process</a>。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329232946.png" alt="image.png"></p>
+<p><strong>使用方法如下：</strong></p>
+<ol>
+<li>将本项目克隆到本地，或下载本项目根目录下的所有 <code>.py</code> 文件并放在同一个文件夹下</li>
+<li>准备一个保存有论文RSS订阅源的OPML文件。如果不确定如何生成OPML文件，可以使用本项目提供的 <code> feed-rss-list.opml</code> ，其中包含了对CNS三大顶刊以及诸多子刊的订阅源URL。</li>
+<li>命令行运行代码 <code>python parse_opml-with-AI-process.py -f feed-rss-list.opml</code> ，这将会自动获取近8天内订阅期刊的论文列表，并根据特定主题关键词过滤文章，最终生成报告（位于 <code>outputs</code> 目录下</li>
+</ol>
+<p>目前提供两个命令行参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-d DAY_LIMIT, --day-limit DAY_LIMIT</span><br><span class="line">                      Day limit. Default: 8.</span><br><span class="line">-f FILE_PATH, --file-path FILE_PATH</span><br><span class="line">                      OPML file path. Default: &quot;feed-rss-list.opml&quot;.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>可以使用 <code>-d</code> 参数调整论文追踪时间，默认是追踪近8天内上线的论文。</li>
+<li>可以使用 <code>-f</code> 参数调整OPML订阅源文件，默认订阅源文件是 <code>feed-rss-list.opml</code> 文件</li>
+</ul>
+<p><strong>示例输出</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233134.png" alt="image.png"></p>
+<p><strong>下图为XLSX报告的展示</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233537.png" alt="image.png"></p>
+<p><strong>下图为markdown报告的展示</strong></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260329233257.png" alt="image.png"></p>
+<h2 id="四、局限性与未来可拓展方向"><a href="#四、局限性与未来可拓展方向" class="headerlink" title="四、局限性与未来可拓展方向"></a>四、局限性与未来可拓展方向</h2><p><strong>问题1：基于主题关键词的论文筛选功能：能用，但用户改起来很麻烦</strong></p>
+<p>目前主题关键词硬编码于代码 239-242 行（位于  <code>main()</code> 函数当中），相关代码如下： </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="number">220</span> <span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">...</span><br><span class="line"><span class="number">238</span>     <span class="comment">## Main process</span></span><br><span class="line"><span class="number">239</span>     topics_keywords = &#123;</span><br><span class="line"><span class="number">240</span>         <span class="string">&#x27;Evolution&#x27;</span>: [<span class="string">&#x27;evolution&#x27;</span>, <span class="string">&#x27;selection&#x27;</span>, <span class="string">&#x27;evol&#x27;</span>, <span class="string">&#x27;phylo&#x27;</span>, <span class="string">&#x27;speciation&#x27;</span>, <span class="string">&#x27;adaptation&#x27;</span>],</span><br><span class="line"><span class="number">241</span>         <span class="string">&#x27;Tumor&#x27;</span>: [<span class="string">&#x27;cancer&#x27;</span>, <span class="string">&#x27;tumor&#x27;</span>, <span class="string">&#x27;oncology&#x27;</span>, <span class="string">&#x27;carcinoma&#x27;</span>, <span class="string">&#x27;neoplas&#x27;</span>, <span class="string">&#x27;metastasis&#x27;</span>]</span><br><span class="line"><span class="number">242</span>     &#125;</span><br></pre></td></tr></table></figure>
+
+<p>目前定义了两个主题，分别是 <code>Evolution</code> 和 <code>Tumor</code> ，每个主题类别下设置有若干关键词，这些关键词用于论文主题匹配和过滤。</p>
+<p>用户如果想要使用其他的主题，可以在此处调整 <code>topics_keywords</code> 的定义，编辑或添加更多的主题或主题关键词。</p>
+<p>但是说实话，这样改起来非常麻烦。或许未来可以提供一个命令行接口，或者配置文件接口，允许用户以更方便的方式设置过滤关键词，或关闭这一功能。</p>
+<p><strong>问题2： 输出语言设置的问题</strong></p>
+<p>目前markdown格式的输出语言默认为简体中文（由system prompt硬编码，涉及的代码包括如下代码块提到的几行内容），如果用户希望使用其他语言（例如英语）输出markdown报告内容，可以修改这一部分的prompt内容，将json模板里的 “simplified Chinese” 改为其他目标语言</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="number">104</span> <span class="keyword">def</span> <span class="title function_">process_single_article</span>(<span class="params">title, journal, published,abstract_text, article_text</span>):</span><br><span class="line"><span class="number">105</span>     prompt = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line"><span class="string">121     ### Output Format Specification</span></span><br><span class="line"><span class="string">122     Generate a JSON object with the following exact structure:</span></span><br><span class="line"><span class="string">123</span></span><br><span class="line"><span class="string">124     &#123;</span></span><br><span class="line"><span class="string">125         &quot;Title&quot;: &quot;The translation of article title into simplified Chinese&quot;,</span></span><br><span class="line"><span class="string">126         &quot;Type&quot;: &quot;Research|Review|Method|Tool|Other&quot;,</span></span><br><span class="line"><span class="string">127         &quot;Abstract_translation&quot;: &quot;The translation of the abstract into simplified Chinese&quot;,</span></span><br><span class="line"><span class="string">128         &quot;Core_Problem&quot;: &quot;A statement of the main scientific questions, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">129         &quot;Meth_Chllg&quot;: &quot;A statement of the main technical challenges, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">130         &quot;Innovative_Method&quot;: &quot;A statement of article&#x27;s innovative methods, keep all in one line&quot;,</span></span><br><span class="line"><span class="string">131         &quot;Is_data&quot;: &quot;Yes|No&quot;,</span></span><br><span class="line"><span class="string">132         &quot;data&quot;: &quot;Dataset URLs or identifiers if Is_data=&#x27;Yes&#x27;; otherwise &#x27;-&#x27;&quot;,</span></span><br><span class="line"><span class="string">133         &quot;Is_code&quot;: &quot;Yes|No&quot;,</span></span><br><span class="line"><span class="string">134         &quot;code&quot;: &quot;Code repository/tool links if Is_code=&#x27;Yes&#x27;; otherwise &#x27;-&#x27;&quot;,</span></span><br><span class="line"><span class="string">135         &quot;Key_Conclusions&quot;: &quot;A detailed summary of main findings, keep all in one line&quot;</span></span><br><span class="line"><span class="string">136     &#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是和问题1一样，就是这样改起来非常麻烦。或许未来同样可以提供一个命令行接口，或者配置文件接口，允许用户以更方便的方式设置输出语言。</p>
+<p><strong>问题3：易用性问题</strong></p>
+<p>目前要使用这个项目，需要在命令行中操作，包括克隆仓库、安装软件包、运行代码。这些操作专业性过高，会挡住许多有实际需求的用户。</p>
+<p>未来的想法（以及反思）：</p>
+<ol>
+<li>接入openClaw（小龙虾）之类的AI agent自动化平台，比方说以一个skills的方式提供，这样用户可以通过小龙虾这个中间层调用底层代码，从而实现更智能、更自动化的操作</li>
+<li>构建一个网页版应用平台，利用H5技术实现一个可视化界面，以便用户能够在浏览器中操作。（但是这样的应用平台似乎又和 <a href="https://www.bohrium.com/">玻尔</a>、<a href="https://www.scienceone.cn/lit/#/assistant">中科院磐石系统</a> 等功能重叠了，可能吸引不到用户）</li>
+<li>构建一个带有GUI界面的桌面版应用。（但是这么做的问题在于技术难度更高，同时想法2中面临的问题一样都少不了）</li>
+</ol>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>通义千问</tag>
+        <tag>LLM</tag>
+        <tag>网页爬虫</tag>
+        <tag>RSS</tag>
+        <tag>OPML</tag>
+        <tag>论文阅读</tag>
+        <tag>订阅追踪</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>萧红《呼兰河传》读书笔记</title>
+    <url>/2026/03/29/20260329_updatelog/</url>
+    <content><![CDATA[<p>看完了一本后劲很大的书。一度为书中人物的命运落泪。</p>
+<span id="more"></span>
+
+<hr>
+<p>今天晚上看完一本书，萧红的《呼兰河传》。</p>
+<p>这本书大半可以算是萧红的自传，她以一个孩童的笔触记录下了呼兰河这个东北小县城在解放前的状况——那种不忍卒读的、落后封建且愚昧的生活。</p>
+<p>说实话，刚开始读这本书的时候，根本没想到后劲这么大。那天只是书荒，闲来无事翻了翻微信读书的书架，发现有这本书，于是有一搭没一搭的读了起来。前面几章内容其实还好，读来只是觉得呼兰河的人们愚昧荒诞，甚至一些细节（如带来无限谈资的大泥坑、热闹的跳大神/河灯仪式）似乎还有些趣味。</p>
+<p>现在想来，所谓的“有趣”可能也仅仅是孩童视角带来的一层滤镜吧。呼兰河并不美好，生活贫穷落后，人们之间互相倾轧看不起，大家又颇爱闲言碎语看热闹——可是言语也会伤人，君不见鲁迅笔下那些冷血的、甚至吃人血馒头的看客否？某户人家的孙媳妇因为不听话而被婆婆虐待、被污名化为“鬼上身”而被跳大神、不知多少个日夜而被折磨至死，某户青年仅仅因为未经父母之命自由恋爱而被大家非议（甚至下咒），如此种种（甚至书中还有更多情节），看完让人不禁想问：这究竟是一种什么生活？</p>
+<p>“从来如此，便对吗？”，这个问题，呼兰河的许多人恐怕不能苟同——大家日子都是这么过来的，有什么问题？甚至于ta们还会觉得自己委屈悲哀（“虽然我打骂子女、虐待孙媳，但我平生没做恶事、常常拜佛，为何让我遭受这无妄之灾”），觉得是年轻人不守道德（“哪有的勾当，姑娘家家的，打起水来，比个男子大丈夫还有力气”、“看热闹吧，xxx又该喝酒了，又该坐在磨床上哭了”）。一些情节看得人血压高。</p>
+<p>最后几章内容把全书情节推向了高潮。一些好人死了，一些坏人还留在人间；坏人们不觉得自己坏，反倒指责起那些死去的人，指责起命运的不公，指责起身边其他人。那些活着的人们啊，可能内心有鬼，甚至不敢走夜路不敢过河，生怕被那死后化作厉鬼的人们缠上。可是那些死去的好人们，ta们（按书中情节，写作“她们”也许更合适——所以问题来了，究竟是什么样的社会，会让那么多女性遭受如此悲惨的生活呢？）本是一个个活生生的、会说会笑的人们啊！地狱空荡荡，魔鬼在人间，多么可笑可悲。</p>
+<p>当然，或许也得结合一些现实。比方说，有句古话“仓廪足而知礼节”，呼兰河小城的一些愚昧的习俗，可能也来自于经济上的落后。比方说，生病以后大家多去跳大神、请符纸，却少有人求医问药，恐怕也是因为看医生治病更能拖垮一个家庭吧。</p>
+<p>总之，这本书看得我心情有点沉重。今晚在美罗城吃晚饭，然后在五楼电影院外的走廊上（那里曾经是大众书局的位置，书局自从去年初闭店以后再也没重开）看完了最后几章；读完已是夜晚，华灯初上热闹非凡，我却还沉浸在书中那些遥远的故事当中，一瞬间甚至有点想哭。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>日记</tag>
+        <tag>读书笔记</tag>
+        <tag>萧红</tag>
+        <tag>呼兰河传</tag>
+      </tags>
+  </entry>
 </search>
