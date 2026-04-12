@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="探索了ggtreeExtra这个R包，学习如何用其绘制环形进化树。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于ggtreeExtra的环形进化树(circos plot)图片绘制">
+<meta property="og:url" content="https://wz.anoms.top/2026/04/12/ggtreeExtra_draw_circos_phylogen_plot/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="探索了ggtreeExtra这个R包，学习如何用其绘制环形进化树。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412144516.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412144801.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412153830.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412153847.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412155255.png">
+<meta property="article:published_time" content="2026-04-12T07:17:13.000Z">
+<meta property="article:modified_time" content="2026-04-12T09:15:00.283Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="ggtree">
+<meta property="article:tag" content="系统发育树">
+<meta property="article:tag" content="R">
+<meta property="article:tag" content="数据可视化">
+<meta property="article:tag" content="ggtreeExtra">
+<meta property="article:tag" content="circos plot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412144516.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2026/04/12/ggtreeExtra_draw_circos_phylogen_plot/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2026/04/12/ggtreeExtra_draw_circos_phylogen_plot/","path":"2026/04/12/ggtreeExtra_draw_circos_phylogen_plot/","title":"基于ggtreeExtra的环形进化树(circos plot)图片绘制"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>基于ggtreeExtra的环形进化树(circos plot)图片绘制 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">一、背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">二、安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BD%BF%E7%94%A8%EF%BC%88%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、使用（代码示例）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E8%AE%A8%E8%AE%BA"><span class="nav-number">4.</span> <span class="nav-text">四、讨论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">267</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">490</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2026/04/12/ggtreeExtra_draw_circos_phylogen_plot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="基于ggtreeExtra的环形进化树(circos plot)图片绘制 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于ggtreeExtra的环形进化树(circos plot)图片绘制
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-04-12 15:17:13 / 修改时间：17:15:00" itemprop="dateCreated datePublished" datetime="2026-04-12T15:17:13+08:00">2026-04-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>探索了ggtreeExtra这个R包，学习如何用其绘制环形进化树。</p>
+<span id="more"></span>
+
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>是这样的。</p>
+<p>最近想要绘制一些环形的图表（比方说下图，来自 <a target="_blank" rel="noopener" href="https://doi.org/10.1126/sciadv.adq5038">DOI: 10.1126/sciadv.adq5038</a>）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412144516.png" alt="image.png"></p>
+<p>这种图片有个专门的名字，叫做circos plot，顾名思义就是把数据拼成一系列的圆环，看起来直观也好看。</p>
+<p>有一个用perl开发的专业软件叫做 <a target="_blank" rel="noopener" href="https://circos.ca/">circos.ca</a> ，可以绘制这种图（如下图），笔者曾在大三的时候用过这个软件，它很专业，几乎所有的图表类型都可以画，而且样式多样，可以调得很美观。但说实话，这个软件太难用了，需要编写晦涩难懂的配置文件，并且渲染速度也很慢，因此这里不考虑。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412144801.png" alt="image.png"></p>
+<p>另一个软件是ggtree，这是一个基于ggplot2的R包，可以绘制进化树，在往期博客中我们介绍过（见<a href="https://wz.anoms.top/2022/07/26/%E4%BD%BF%E7%94%A8ggtree%E7%BB%98%E5%88%B6%E7%B3%BB%E7%BB%9F%E5%8F%91%E8%82%B2%E6%A0%91">《使用ggtree绘制系统发育树》</a>）。在这一次的学习和探索中，我发现ggtree还有一个Extra版本，可以绘制更为高端的图像，可以实现论文中的那种专业图片的效果。下面是探索记录</p>
+<h2 id="二、安装"><a href="#二、安装" class="headerlink" title="二、安装"></a>二、安装</h2><p>主要需要用到的R包有下面这几个：</p>
+<ul>
+<li>ape：进化树读取与处理</li>
+<li>ggplot2：绘图的底层库</li>
+<li>ggtree：绘制进化树</li>
+<li>ggtreeExtra：绘制进化树外圈的circos plot</li>
+</ul>
+<p>如果有conda，强烈建议使用conda安装上述R包（安装方法是去 <a target="_blank" rel="noopener" href="https://anaconda.org/">anaconda.org</a> 搜索包名，然后使用对应的指令进行安装，如下图）。</p>
+<p>如果没有conda，那么需要借助 <code>install.packages()</code> 和 <code>BiocManager::install()</code> 进行安装。其中，ape、ggplot2托管在CRAN上，使用 <code>install.packages()</code> 即可安装；ggtree和ggtreeExtra托管在bioconductor上，需要使用 <code>BiocManager::install()</code> 进行安装。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412153830.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412153847.png" alt="image.png"></p>
+<h2 id="三、使用（代码示例）"><a href="#三、使用（代码示例）" class="headerlink" title="三、使用（代码示例）"></a>三、使用（代码示例）</h2><p>下面是一个例子，在例子中展示了我们是如何一步一步绘制出带有进化树信息的circos plot的。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">## 示例代码2（ggtreeExtra提供的示例树）</span></span><br><span class="line"><span class="comment"># 1. 加载核心包 (若无则需先安装: BiocManager::install(&quot;ggtreeExtra&quot;))</span></span><br><span class="line">library<span class="punctuation">(</span>ggtree<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>ggtreeExtra<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>ggplot2<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>ggnewscale<span class="punctuation">)</span>  <span class="comment"># 用于重置颜色映射，避免冲突</span></span><br><span class="line">library<span class="punctuation">(</span>ape<span class="punctuation">)</span>         <span class="comment"># 用于生成示例树数据</span></span><br><span class="line">library<span class="punctuation">(</span>ggstar<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>treeio<span class="punctuation">)</span></span><br><span class="line"><span class="comment"># The path of tree file.</span></span><br><span class="line">trfile <span class="operator">&lt;-</span> system.file<span class="punctuation">(</span><span class="string">&quot;extdata&quot;</span><span class="punctuation">,</span> <span class="string">&quot;tree.nwk&quot;</span><span class="punctuation">,</span> package<span class="operator">=</span><span class="string">&quot;ggtreeExtra&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># The path of file to plot tip point.</span></span><br><span class="line">tippoint1 <span class="operator">&lt;-</span> system.file<span class="punctuation">(</span><span class="string">&quot;extdata&quot;</span><span class="punctuation">,</span> <span class="string">&quot;tree_tippoint_bar.csv&quot;</span><span class="punctuation">,</span> package<span class="operator">=</span><span class="string">&quot;ggtreeExtra&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># The path of first layer outside of tree.</span></span><br><span class="line">ring1 <span class="operator">&lt;-</span> system.file<span class="punctuation">(</span><span class="string">&quot;extdata&quot;</span><span class="punctuation">,</span> <span class="string">&quot;first_ring_discrete.csv&quot;</span><span class="punctuation">,</span> package<span class="operator">=</span><span class="string">&quot;ggtreeExtra&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># The path of second layer outside of tree.</span></span><br><span class="line">ring2 <span class="operator">&lt;-</span> system.file<span class="punctuation">(</span><span class="string">&quot;extdata&quot;</span><span class="punctuation">,</span> <span class="string">&quot;second_ring_continuous.csv&quot;</span><span class="punctuation">,</span> package<span class="operator">=</span><span class="string">&quot;ggtreeExtra&quot;</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># The tree file was imported using read.tree. If you have other tree format files, you can use corresponding functions from treeio package to read it.</span></span><br><span class="line">tree <span class="operator">&lt;-</span> read.tree<span class="punctuation">(</span>trfile<span class="punctuation">)</span></span><br><span class="line"><span class="comment"># This dataset will to be plotted point and bar.</span></span><br><span class="line">dat1 <span class="operator">&lt;-</span> read.csv<span class="punctuation">(</span>tippoint1<span class="punctuation">)</span></span><br><span class="line">knitr<span class="operator">::</span>kable<span class="punctuation">(</span>head<span class="punctuation">(</span>dat1<span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># This dataset will to be plotted heatmap</span></span><br><span class="line">dat2 <span class="operator">&lt;-</span> read.csv<span class="punctuation">(</span>ring1<span class="punctuation">)</span></span><br><span class="line">knitr<span class="operator">::</span>kable<span class="punctuation">(</span>head<span class="punctuation">(</span>dat2<span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># This dataset will to be plotted heatmap</span></span><br><span class="line">dat3 <span class="operator">&lt;-</span> read.csv<span class="punctuation">(</span>ring2<span class="punctuation">)</span></span><br><span class="line">knitr<span class="operator">::</span>kable<span class="punctuation">(</span>head<span class="punctuation">(</span>dat3<span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment"># The format of the datasets is the long shape for ggplot2. If you have short shape dataset,</span></span><br><span class="line"><span class="comment"># you can use `melt` of `reshape2` or `pivot_longer` of `tidyr` to convert it.</span></span><br><span class="line"><span class="comment"># We use ggtree to create fan layout tree. </span></span><br><span class="line">p1 <span class="operator">&lt;-</span> ggtree<span class="punctuation">(</span>tree<span class="punctuation">,</span> layout<span class="operator">=</span><span class="string">&quot;fan&quot;</span><span class="punctuation">,</span> open.angle<span class="operator">=</span><span class="number">10</span><span class="punctuation">,</span> size<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">)</span></span><br><span class="line"><span class="comment">#&gt; Scale for y is already present.</span></span><br><span class="line"><span class="comment">#&gt; Adding another scale for y, which will replace the existing scale.</span></span><br><span class="line">p1</span><br><span class="line">p2 <span class="operator">&lt;-</span> p1 <span class="operator">+</span> </span><br><span class="line">      geom_fruit<span class="punctuation">(</span></span><br><span class="line">          data<span class="operator">=</span>dat1<span class="punctuation">,</span></span><br><span class="line">          geom<span class="operator">=</span>geom_star<span class="punctuation">,</span></span><br><span class="line">          mapping<span class="operator">=</span>aes<span class="punctuation">(</span>y<span class="operator">=</span>ID<span class="punctuation">,</span> fill<span class="operator">=</span>Location<span class="punctuation">,</span> size<span class="operator">=</span>Length<span class="punctuation">,</span> starshape<span class="operator">=</span>Group<span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          position<span class="operator">=</span><span class="string">&quot;identity&quot;</span><span class="punctuation">,</span></span><br><span class="line">          starstroke<span class="operator">=</span><span class="number">0.2</span></span><br><span class="line">      <span class="punctuation">)</span> <span class="operator">+</span> </span><br><span class="line">      scale_size_continuous<span class="punctuation">(</span></span><br><span class="line">          <span class="built_in">range</span><span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">3</span><span class="punctuation">)</span><span class="punctuation">,</span> <span class="comment"># the range of size.</span></span><br><span class="line">          guide<span class="operator">=</span>guide_legend<span class="punctuation">(</span></span><br><span class="line">                    keywidth<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> </span><br><span class="line">                    keyheight<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span></span><br><span class="line">                    override.aes<span class="operator">=</span><span class="built_in">list</span><span class="punctuation">(</span>starshape<span class="operator">=</span><span class="number">15</span><span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">                    order<span class="operator">=</span><span class="number">2</span></span><br><span class="line">                <span class="punctuation">)</span></span><br><span class="line">      <span class="punctuation">)</span> <span class="operator">+</span></span><br><span class="line">      scale_fill_manual<span class="punctuation">(</span></span><br><span class="line">          values<span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;#F8766D&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#C49A00&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#53B400&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#00C094&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#00B6EB&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#A58AFF&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#FB61D7&quot;</span><span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          guide<span class="operator">=</span><span class="string">&quot;none&quot;</span> </span><br><span class="line">      <span class="punctuation">)</span> <span class="operator">+</span> </span><br><span class="line">      scale_starshape_manual<span class="punctuation">(</span></span><br><span class="line">          values<span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">15</span><span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          guide<span class="operator">=</span>guide_legend<span class="punctuation">(</span></span><br><span class="line">                    keywidth<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span></span><br><span class="line">                    keyheight<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span></span><br><span class="line">                    order<span class="operator">=</span><span class="number">1</span></span><br><span class="line">                <span class="punctuation">)</span></span><br><span class="line">      <span class="punctuation">)</span></span><br><span class="line">p2</span><br><span class="line">p3 <span class="operator">&lt;-</span> p2 <span class="operator">+</span> </span><br><span class="line">      new_scale_fill<span class="punctuation">(</span><span class="punctuation">)</span> <span class="operator">+</span> </span><br><span class="line">      geom_fruit<span class="punctuation">(</span></span><br><span class="line">          data<span class="operator">=</span>dat2<span class="punctuation">,</span></span><br><span class="line">          geom<span class="operator">=</span>geom_tile<span class="punctuation">,</span></span><br><span class="line">          mapping<span class="operator">=</span>aes<span class="punctuation">(</span>y<span class="operator">=</span>ID<span class="punctuation">,</span> x<span class="operator">=</span>Pos<span class="punctuation">,</span> fill<span class="operator">=</span>Type<span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          offset<span class="operator">=</span><span class="number">0.08</span><span class="punctuation">,</span>   <span class="comment"># The distance between external layers, default is 0.03 times of x range of tree.</span></span><br><span class="line">          pwidth<span class="operator">=</span><span class="number">0.25</span> <span class="comment"># width of the external layer, default is 0.2 times of x range of tree.</span></span><br><span class="line">      <span class="punctuation">)</span> <span class="operator">+</span> </span><br><span class="line">      scale_fill_manual<span class="punctuation">(</span></span><br><span class="line">          values<span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;#339933&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#dfac03&quot;</span><span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          guide<span class="operator">=</span>guide_legend<span class="punctuation">(</span>keywidth<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> keyheight<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> order<span class="operator">=</span><span class="number">3</span><span class="punctuation">)</span></span><br><span class="line">      <span class="punctuation">)</span> </span><br><span class="line">p3</span><br><span class="line"><span class="comment"># You can also add heatmap layer for continuous values.</span></span><br><span class="line">p4 <span class="operator">&lt;-</span> p3 <span class="operator">+</span> </span><br><span class="line">      new_scale_fill<span class="punctuation">(</span><span class="punctuation">)</span> <span class="operator">+</span></span><br><span class="line">      geom_fruit<span class="punctuation">(</span></span><br><span class="line">          data<span class="operator">=</span>dat3<span class="punctuation">,</span></span><br><span class="line">          geom<span class="operator">=</span>geom_tile<span class="punctuation">,</span></span><br><span class="line">          mapping<span class="operator">=</span>aes<span class="punctuation">(</span>y<span class="operator">=</span>ID<span class="punctuation">,</span> x<span class="operator">=</span>Type2<span class="punctuation">,</span> alpha<span class="operator">=</span>Alpha<span class="punctuation">,</span> fill<span class="operator">=</span>Type2<span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          pwidth<span class="operator">=</span><span class="number">0.15</span><span class="punctuation">,</span></span><br><span class="line">          axis.params<span class="operator">=</span><span class="built_in">list</span><span class="punctuation">(</span></span><br><span class="line">                          axis<span class="operator">=</span><span class="string">&quot;x&quot;</span><span class="punctuation">,</span> <span class="comment"># add axis text of the layer.</span></span><br><span class="line">                          text.angle<span class="operator">=</span><span class="operator">-</span><span class="number">45</span><span class="punctuation">,</span> <span class="comment"># the text angle of x-axis.</span></span><br><span class="line">                          hjust<span class="operator">=</span><span class="number">0</span>  <span class="comment"># adjust the horizontal position of text of axis.</span></span><br><span class="line">                      <span class="punctuation">)</span></span><br><span class="line">      <span class="punctuation">)</span> <span class="operator">+</span></span><br><span class="line">      scale_fill_manual<span class="punctuation">(</span></span><br><span class="line">          values<span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;#b22222&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#005500&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#0000be&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#9f1f9f&quot;</span><span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          guide<span class="operator">=</span>guide_legend<span class="punctuation">(</span>keywidth<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> keyheight<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> order<span class="operator">=</span><span class="number">4</span><span class="punctuation">)</span></span><br><span class="line">      <span class="punctuation">)</span> <span class="operator">+</span></span><br><span class="line">      scale_alpha_continuous<span class="punctuation">(</span></span><br><span class="line">          <span class="built_in">range</span><span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">0.4</span><span class="punctuation">)</span><span class="punctuation">,</span> <span class="comment"># the range of alpha</span></span><br><span class="line">          guide<span class="operator">=</span>guide_legend<span class="punctuation">(</span>keywidth<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> keyheight<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> order<span class="operator">=</span><span class="number">5</span><span class="punctuation">)</span></span><br><span class="line">      <span class="punctuation">)</span> </span><br><span class="line">p4</span><br><span class="line"><span class="comment"># Then add a bar layer outside of the tree.</span></span><br><span class="line">p5 <span class="operator">&lt;-</span> p4 <span class="operator">+</span> </span><br><span class="line">      new_scale_fill<span class="punctuation">(</span><span class="punctuation">)</span> <span class="operator">+</span></span><br><span class="line">      geom_fruit<span class="punctuation">(</span></span><br><span class="line">          data<span class="operator">=</span>dat1<span class="punctuation">,</span></span><br><span class="line">          geom<span class="operator">=</span>geom_col<span class="punctuation">,</span></span><br><span class="line">          mapping<span class="operator">=</span>aes<span class="punctuation">(</span>y<span class="operator">=</span>ID<span class="punctuation">,</span> x<span class="operator">=</span>Abundance<span class="punctuation">,</span> fill<span class="operator">=</span>Location<span class="punctuation">)</span><span class="punctuation">,</span>  <span class="comment">#The &#x27;Abundance&#x27; of &#x27;dat1&#x27; will be mapped to x</span></span><br><span class="line">          pwidth<span class="operator">=</span><span class="number">0.4</span><span class="punctuation">,</span></span><br><span class="line">          axis.params<span class="operator">=</span><span class="built_in">list</span><span class="punctuation">(</span></span><br><span class="line">                          axis<span class="operator">=</span><span class="string">&quot;x&quot;</span><span class="punctuation">,</span> <span class="comment"># add axis text of the layer.</span></span><br><span class="line">                          text.angle<span class="operator">=</span><span class="operator">-</span><span class="number">45</span><span class="punctuation">,</span> <span class="comment"># the text size of axis.</span></span><br><span class="line">                          hjust<span class="operator">=</span><span class="number">0</span>  <span class="comment"># adjust the horizontal position of text of axis.</span></span><br><span class="line">                      <span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          grid.params<span class="operator">=</span><span class="built_in">list</span><span class="punctuation">(</span><span class="punctuation">)</span> <span class="comment"># add the grid line of the external bar plot.</span></span><br><span class="line">      <span class="punctuation">)</span> <span class="operator">+</span> </span><br><span class="line">      scale_fill_manual<span class="punctuation">(</span></span><br><span class="line">          values<span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;#F8766D&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#C49A00&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#53B400&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#00C094&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#00B6EB&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#A58AFF&quot;</span><span class="punctuation">,</span> <span class="string">&quot;#FB61D7&quot;</span><span class="punctuation">)</span><span class="punctuation">,</span></span><br><span class="line">          guide<span class="operator">=</span>guide_legend<span class="punctuation">(</span>keywidth<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> keyheight<span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> order<span class="operator">=</span><span class="number">6</span><span class="punctuation">)</span></span><br><span class="line">      <span class="punctuation">)</span> <span class="operator">+</span></span><br><span class="line">      theme<span class="punctuation">(</span><span class="comment">#legend.position=c(0.96, 0.5), # the position of legend.</span></span><br><span class="line">          legend.background<span class="operator">=</span>element_rect<span class="punctuation">(</span>fill<span class="operator">=</span><span class="literal">NA</span><span class="punctuation">)</span><span class="punctuation">,</span> <span class="comment"># the background of legend.</span></span><br><span class="line">          legend.title<span class="operator">=</span>element_text<span class="punctuation">(</span>size<span class="operator">=</span><span class="number">7</span><span class="punctuation">)</span><span class="punctuation">,</span> <span class="comment"># the title size of legend.</span></span><br><span class="line">          legend.text<span class="operator">=</span>element_text<span class="punctuation">(</span>size<span class="operator">=</span><span class="number">6</span><span class="punctuation">)</span><span class="punctuation">,</span> <span class="comment"># the text size of legend.</span></span><br><span class="line">          legend.spacing.y <span class="operator">=</span> unit<span class="punctuation">(</span><span class="number">0.02</span><span class="punctuation">,</span> <span class="string">&quot;cm&quot;</span><span class="punctuation">)</span>  <span class="comment"># the distance of legends (y orientation).</span></span><br><span class="line">      <span class="punctuation">)</span> </span><br><span class="line">p5</span><br></pre></td></tr></table></figure>
+
+<p>我们可以注意到，代码中分了多个步骤，依次绘制了p1到p5。ggplot2的绘图语法是一种声明式的语法，允许用户使用“+”（加号）在一个绘图对象上增加新的东西，因此我们可以在每一个步骤中增加圆环的数量，层层递进。</p>
+<p>在上述代码中， <code>geom_fruit()</code> 这个函数是其中最为关键的函数，其名称很形象（绘制一颗环形进化树外圈数据的过程，就像在一棵树上挂果实一样），通过 <code>mapping</code> 参数可以指定如何对齐进化树的树枝以及对应的数据点。举一个例子， <code>mapping=aes(y=ID, x=Type2)</code> ，这里就是说使用数据里面的ID这一列去对齐进化树的树枝，而 <code>x=Type2</code> 是需要可视化的数据。</p>
+<p>下面是p1到p5的全部内容：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260412155255.png" alt="image.png"></p>
+<h2 id="四、讨论"><a href="#四、讨论" class="headerlink" title="四、讨论"></a>四、讨论</h2><p>相比于基于perl编程语言的 <a target="_blank" rel="noopener" href="https://circos.ca/">circos.ca</a> ，ggtreeExtra的性能要好许多，并且借助ggplot2强大的图形库与调色板功能，可以绘制出非常好看的图像，因此这个包是绘制环形进化树统计图的非常好的选择。</p>
+<p>实际使用中，我们可以把数据存储为nwk格式（进化树）和csv（需要可视化的外层数据），只要进化树的叶子节点的ID能够与数据中的记录ID（用mapping参数指定的那个）一一对应起来即可。这里面需要留意的问题是，在一些数据源中，物种名称的属名与种加词（Genus and species name）是使用空格字符相连接的（比方说， <em>“Homo sapiens”</em> ） ，另一些数据源中则以下划线相连（如 <em>“Homo_sapiens”</em> ），这种不同之处会导致mapping的时候对应不上，需要预先转换——所以我们在绘图前需要检查数据。</p>
+<p>总的来说，这是一个很好的工具，强烈推荐有需要的朋友试用。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2026/04/12/ggtreeExtra_draw_circos_phylogen_plot/" title="基于ggtreeExtra的环形进化树(circos plot)图片绘制">https://wz.anoms.top/2026/04/12/ggtreeExtra_draw_circos_phylogen_plot/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/ggtree/" rel="tag"><i class="fa fa-tag"></i> ggtree</a>
+              <a href="/tags/%E7%B3%BB%E7%BB%9F%E5%8F%91%E8%82%B2%E6%A0%91/" rel="tag"><i class="fa fa-tag"></i> 系统发育树</a>
+              <a href="/tags/R/" rel="tag"><i class="fa fa-tag"></i> R</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 数据可视化</a>
+              <a href="/tags/ggtreeExtra/" rel="tag"><i class="fa fa-tag"></i> ggtreeExtra</a>
+              <a href="/tags/circos-plot/" rel="tag"><i class="fa fa-tag"></i> circos plot</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/03/29/20260329_updatelog/" rel="prev" title="萧红《呼兰河传》读书笔记">
+                  <i class="fa fa-chevron-left"></i> 萧红《呼兰河传》读书笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/04/12/20260412_updatelog/" rel="next" title="碎碎念（2026年4月上旬）">
+                  碎碎念（2026年4月上旬） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
