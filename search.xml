@@ -24122,4 +24122,42 @@
         <tag>生活记录</tag>
       </tags>
   </entry>
+  <entry>
+    <title>WPS便签停服，以及笔记导出方法</title>
+    <url>/2026/07/31/WPS_note_will_be_stop_maintence_and_how_to_export_data/</url>
+    <content><![CDATA[<p>7月30日晚，我照常打开了我的WPS便签，打算写一点日记，结果突然弹出了一个警告：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/cd87c743de7e21bfb7b64a8fe74954e0.png" alt="cd87c743de7e21bfb7b64a8fe74954e0.png"></p>
+<p>“WPS便签将于即日起停止运营”。这句话如图晴天霹雳般击中了我。作为WPS便签重度用户，大学至今的这些年来，我一直把WPS便签作为一个记录生活的地方，在这里留下了许多笔记和日记，一旦真的到了停服删库这一步，多年心血将付之东流。</p>
+<span id="more"></span>
+
+<p>于是，这两天我展开了积极的自救。</p>
+<h2 id="官方提供的策略：看似有用，实则鸡肋"><a href="#官方提供的策略：看似有用，实则鸡肋" class="headerlink" title="官方提供的策略：看似有用，实则鸡肋"></a>官方提供的策略：看似有用，实则鸡肋</h2><p>WPS官方希望用户迁移自己的笔记到<a href="https://ainote.kdocs.cn/home/">“WPS笔记”</a> 这一新的平台上，并提供了迁移工具（如下图）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260731151345.png" alt="image.png"></p>
+<p>然而有两点不便： </p>
+<ul>
+<li>（1） 官方迁移工具使用体验很糟糕，迁移速度很慢不说，而且还会因为网络波动而传输中断【严重怀疑这是个粗糙赶工的产品】；</li>
+<li>（2）WPS笔记，相比于WPS便签增加了许多AI功能，但整体上感觉很鸡肋，而且新软件的界面非常卡顿，远没有WPS便签的丝滑流畅。【另外，从下面这个页面上感觉WPS笔记抄了很多flomo app的设计思路，那么既然如此为什么大家不去用flomo app呢】</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260731152327.png" alt="image.png"></p>
+<h2 id="这件事是否还有转机？"><a href="#这件事是否还有转机？" class="headerlink" title="这件事是否还有转机？"></a>这件事是否还有转机？</h2><p>在小红书，我发现了很多有同样困惑的网友。于是，带者大家的疑问，我去咨询了WPS客服，客服的回答如下所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260731153516.png" alt="image.png"></p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/185027d9cfadc6b6e1fedef9954b0980.jpg" alt="f2053ca659772fc05066df5d22765deb.jpg"></p>
+<p>也就是说，即使现在传出了停服公告，我也可以正常使用WPS便签直到明年底；在此期间，我可以选择各种方法去备份和迁移数据。</p>
+<p>稍稍松了口气。</p>
+<h2 id="新的希望：批量导出笔记到压缩包"><a href="#新的希望：批量导出笔记到压缩包" class="headerlink" title="新的希望：批量导出笔记到压缩包"></a>新的希望：批量导出笔记到压缩包</h2><p>在WPS客服的指导下，我又得知了一种导出笔记的方法，如下图所示。在WPS便签APP中，存在一个隐藏的入口（需要在“关于”界面中连续点击5次logo才能开启），在这里输入一串验证码（当日日期的<a href="https://www.toolhelper.cn/EncodeDecode/Base64">base64加密</a>），就可以导出所有笔记的源文件到一个zip压缩包当中。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/%E6%97%A0%E6%A0%87%E9%A2%98.png" alt="无标题.png"></p>
+<p>这个压缩包的内部结构如下图所示，其中是以hash字符串分类存放的笔记文件（note文件，纯文本格式）以及笔记当中的图片。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/e8da8509d460a13322c8f77b4e84e054.png" alt="e8da8509d460a13322c8f77b4e84e054.png"></p>
+<p>进一步解析这个zip结构尚需时间，但至少这意味着我们的数据不会丢了！</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>数据同步</tag>
+        <tag>金山办公</tag>
+        <tag>WPS便签</tag>
+      </tags>
+  </entry>
 </search>
