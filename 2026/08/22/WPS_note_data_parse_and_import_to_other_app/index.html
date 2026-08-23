@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="7月底，WPS便签提示即将停服。为了拯救这几年来攒下的笔记，我展开了积极自救。 上一篇文章 中我们已经介绍了从WPS便签APP端导出数据的方法，本篇我们则说一说如何处理这些笔记，并导入到各个笔记软件里——这里包括 Obsidian， Flomo浮墨笔记 ，Notion，以及WPS笔记。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WPS便签导出内容解析与导入各个平台">
+<meta property="og:url" content="https://wz.anoms.top/2026/08/22/WPS_note_data_parse_and_import_to_other_app/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="7月底，WPS便签提示即将停服。为了拯救这几年来攒下的笔记，我展开了积极自救。 上一篇文章 中我们已经介绍了从WPS便签APP端导出数据的方法，本篇我们则说一说如何处理这些笔记，并导入到各个笔记软件里——这里包括 Obsidian， Flomo浮墨笔记 ，Notion，以及WPS笔记。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260807204145.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/d075d28f-2214-443c-be9d-d96c538c694e.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/95fd7202-bd7f-489a-809e-c51835f0a527.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823231637.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823231900.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823232134.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823232949.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823233153.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823233109.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823233713.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/e9135ded-0b36-433d-ae38-8f9ca15472e6.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823234225.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823234354.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823234722.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823235441.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823235722.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260824000449.png">
+<meta property="article:published_time" content="2026-08-22T15:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-23T17:05:54.407Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="数据同步">
+<meta property="article:tag" content="金山办公">
+<meta property="article:tag" content="WPS便签">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260807204145.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2026/08/22/WPS_note_data_parse_and_import_to_other_app/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2026/08/22/WPS_note_data_parse_and_import_to_other_app/","path":"2026/08/22/WPS_note_data_parse_and_import_to_other_app/","title":"WPS便签导出内容解析与导入各个平台"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WPS便签导出内容解析与导入各个平台 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%A7%A3%E5%8C%85-amp-%E8%8E%B7%E5%8F%96%E7%AC%94%E8%AE%B0%E5%85%83%E4%BF%A1%E6%81%AF"><span class="nav-number">1.</span> <span class="nav-text">一、解包&amp;获取笔记元信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E9%80%9A%E8%BF%87%E7%BD%91%E9%A1%B5%E7%88%AC%E8%99%AB%E7%9A%84%E6%96%B9%E6%B3%95%E8%8E%B7%E5%BE%97%E5%85%83%E4%BF%A1%E6%81%AFjson"><span class="nav-number">1.1.</span> <span class="nav-text">（一）通过网页爬虫的方法获得元信息json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%A4%84%E7%90%86json%E5%B9%B6%E5%B0%86%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF%E5%90%88%E5%B9%B6%E5%88%B0%E7%AC%94%E8%AE%B0%E5%BD%93%E4%B8%AD"><span class="nav-number">1.2.</span> <span class="nav-text">（二）处理json并将相关信息合并到笔记当中</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AF%BC%E5%87%BA%E5%88%B0%E5%90%84%E4%B8%AA%E7%AC%94%E8%AE%B0%E8%BD%AF%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">二、导出到各个笔记软件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B4%E7%90%86%E4%B8%BADataFrame%E5%92%8Ccsv%E6%96%87%E4%BB%B6%E4%BE%9B%E5%AD%98%E6%A1%A3"><span class="nav-number">2.1.</span> <span class="nav-text">（一）整理为DataFrame和csv文件供存档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E6%95%B4%E7%90%86%E4%B8%BAcsv%E5%B9%B6%E5%AF%BC%E5%85%A5Flomo%E6%B5%AE%E5%A2%A8%E7%AC%94%E8%AE%B0"><span class="nav-number">2.2.</span> <span class="nav-text">（二）整理为csv并导入Flomo浮墨笔记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E9%80%9A%E8%BF%87Flomo%E6%B5%AE%E5%A2%A8%E7%AC%94%E8%AE%B0%E7%9A%84%E6%8E%A5%E5%8F%A3%E5%AF%BC%E5%85%A5Notion%E7%AC%94%E8%AE%B0"><span class="nav-number">2.3.</span> <span class="nav-text">（三）通过Flomo浮墨笔记的接口导入Notion笔记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89%E6%B8%85%E7%90%86markdown%E6%A0%BC%E5%BC%8F%E6%A0%87%E7%AD%BE%E5%B9%B6%E5%AF%BC%E5%85%A5obsidian"><span class="nav-number">2.4.</span> <span class="nav-text">（四）清理markdown格式标签并导入obsidian</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%94%EF%BC%89%E9%80%9A%E8%BF%87%E5%AE%98%E6%96%B9MCP%E6%8E%A5%E5%8F%A3%E5%AF%BC%E5%85%A5WPS%E7%AC%94%E8%AE%B0%EF%BC%88WPS-AI-note%EF%BC%89"><span class="nav-number">2.5.</span> <span class="nav-text">（五）通过官方MCP接口导入WPS笔记（WPS AI note）</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">280</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">505</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2026/08/22/WPS_note_data_parse_and_import_to_other_app/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WPS便签导出内容解析与导入各个平台 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WPS便签导出内容解析与导入各个平台
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-22 23:00:00" itemprop="dateCreated datePublished" datetime="2026-08-22T23:00:00+08:00">2026-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-24 01:05:54" itemprop="dateModified" datetime="2026-08-24T01:05:54+08:00">2026-08-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>7月底，WPS便签提示即将停服。为了拯救这几年来攒下的笔记，我展开了积极自救。 <a href="https://wz.anoms.top/2026/07/31/WPS_note_will_be_stop_maintence_and_how_to_export_data/">上一篇文章</a> 中我们已经介绍了从WPS便签APP端导出数据的方法，本篇我们则说一说如何处理这些笔记，并导入到各个笔记软件里——这里包括 <a target="_blank" rel="noopener" href="https://obsidian.md/">Obsidian</a>， <a target="_blank" rel="noopener" href="https://v.flomoapp.com/mine">Flomo浮墨笔记</a> ，<a target="_blank" rel="noopener" href="https://www.notion.so/">Notion</a>，以及<a target="_blank" rel="noopener" href="https://ainote.kdocs.cn/">WPS笔记</a>。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="一、解包-amp-获取笔记元信息"><a href="#一、解包-amp-获取笔记元信息" class="headerlink" title="一、解包&amp;获取笔记元信息"></a>一、解包&amp;获取笔记元信息</h2><h3 id="（一）通过网页爬虫的方法获得元信息json"><a href="#（一）通过网页爬虫的方法获得元信息json" class="headerlink" title="（一）通过网页爬虫的方法获得元信息json"></a>（一）通过网页爬虫的方法获得元信息json</h3><p>正如上篇文章所述，导出的结果是一个zip压缩包，解压缩后是一系列以hash编码命名的文件夹，也没有创建日期的信息，更没有子文件夹或者置顶、星标之类的信息。</p>
+<p>那么这些信息应该从哪里获取呢？很遗憾，官方没有暴露接口，我们只能使用一些土办法去半人工半自动的获取。</p>
+<p>说人话：使用WPS便签网页版，进行网页抓包的方法获取信息。需要准备的材料是一个现代化的浏览器（如Chrome，Firefox，Edge等），并知道如何使用F12开发者工具抓包。</p>
+<p>如下图，当我们打开一个WPS笔记页面时，在Network标签页中可以看到网页加载了许多XHR资源（这是因为网页端WPS便签是动态网页架构，只会下载和展示用户翻到的笔记，当用户使用鼠标滚动目录栏、查看过去的笔记时，网页会通过XHR请求的方式自动加载这些新的笔记条目，并将这些笔记的标题、链接、创建日期等信息以json请求的形式发送给浏览器）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260807204145.png" alt="image.png"></p>
+<p>那么，具体是要怎么做呢？如下图，我们需要开启开发者工具，然后滚动鼠标加载当前分组下所有日记条目，随后筛选出XHR请求中对应的json文件，将这些json文件保存下来，它们就是我们笔记的元数据。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/d075d28f-2214-443c-be9d-d96c538c694e.png" alt="d075d28f-2214-443c-be9d-d96c538c694e.png"></p>
+<p>对于我的WPS便签，我保存了很多个json，最终的结果如下（有些分组下只有一个json，因此没有为此新建文件夹）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(base) cyclin@DESKTOP-23BCT60:jsons$ ls *json</span><br><span class="line">iGEM.json  vivoX21便签备份.json  公选课-中国文学与传统文化.json  就业相关.json  植物实验.json  生命科学职业发展规划课.json</span><br><span class="line">(base) cyclin@DESKTOP-23BCT60:jsons$ ls */*json</span><br><span class="line">account/1.json  ideas/2.json  recyclebin/1.json  untitle/1.json  学业相关/1.json   心情日记/12.json  心情日记/4.json  心情日记/9.json  计算机/1.json</span><br><span class="line">account/2.json  other/1.json  recyclebin/2.json  untitle/2.json  学业相关/2.json   心情日记/13.json  心情日记/5.json  文学/1.json      计算机/2.json</span><br><span class="line">account/3.json  other/2.json  recyclebin/3.json  untitle/3.json  心情日记/1.json   心情日记/14.json  心情日记/6.json  文学/2.json</span><br><span class="line">account/4.json  other/3.json  recyclebin/4.json  untitle/4.json  心情日记/10.json  心情日记/2.json   心情日记/7.json  百项国创/1.json</span><br><span class="line">ideas/1.json    other/4.json  recyclebin/5.json  untitle/5.json  心情日记/11.json  心情日记/3.json   心情日记/8.json  百项国创/2.json</span><br></pre></td></tr></table></figure>
+
+<p>对于单个json文件，其内部是一个<code>webNotes</code> 字典列表，列表中的每一个元素对应着一篇笔记，包含这篇笔记的hash编码、创建和修改的时间，以及标题、内容等信息。我们重点提取hash编码（即noteId）和笔记创建的时间戳（createTime），如下图：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/95fd7202-bd7f-489a-809e-c51835f0a527.png" alt="95fd7202-bd7f-489a-809e-c51835f0a527.png"></p>
+<h3 id="（二）处理json并将相关信息合并到笔记当中"><a href="#（二）处理json并将相关信息合并到笔记当中" class="headerlink" title="（二）处理json并将相关信息合并到笔记当中"></a>（二）处理json并将相关信息合并到笔记当中</h3><p>这一步也需要半人工半自动的去处理。如下图，我写了一个json转tsv的脚本，输入json文件的路径，以及这个json文件所属的分组，则输出的tsv中就会包含笔记条目的hash编码、创建时间和分组信息。通过batch run调用脚本，批量处理上面得到的json，最终就可以得到一个完整的metadata表。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823231637.png" alt="image.png"></p>
+<p>最终得到的metadata表如下所示：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823231900.png" alt="image.png"></p>
+<p>我们将WPS便签APP导出的便签压缩包解压到 <code>./unzip</code> 文件夹，并使用 <code>os.listdir()</code> 获取所有的笔记信息，之后就可以对照上面的metadata表，明确每一篇笔记的创建日期和分组信息了。值得注意的是，由于WPS便签APP端和服务器端同步不充分，一些远古笔记可能没有对应的metadata信息，这里我们可以用随机数为其生成一个时间戳，并新增标签”unknown_group”。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823232134.png" alt="image.png"></p>
+<p>到这一步，我们的预处理基本上算是完成了。</p>
+<h2 id="二、导出到各个笔记软件"><a href="#二、导出到各个笔记软件" class="headerlink" title="二、导出到各个笔记软件"></a>二、导出到各个笔记软件</h2><h3 id="（一）整理为DataFrame和csv文件供存档"><a href="#（一）整理为DataFrame和csv文件供存档" class="headerlink" title="（一）整理为DataFrame和csv文件供存档"></a>（一）整理为DataFrame和csv文件供存档</h3><p>这是最简单的处理步骤。我们只需要从文件夹中读取笔记内容，并附上笔记标签（分组信息）和创建日记就算完成了。【下图中的代码对图片链接进行了替换，这是因为为了节省存储空间，我把图片全部上传到了我的私人腾讯云图床，因此markdown中对应的图片链接也需要替换】</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823232949.png" alt="image.png"></p>
+<h3 id="（二）整理为csv并导入Flomo浮墨笔记"><a href="#（二）整理为csv并导入Flomo浮墨笔记" class="headerlink" title="（二）整理为csv并导入Flomo浮墨笔记"></a>（二）整理为csv并导入Flomo浮墨笔记</h3><p>如下图所示，Flomo浮墨笔记支持通过csv格式的文件导入笔记，入口在网页端的flomo笔记的设置页面当中。这个csv文件只需要提供两列内容即可：content（笔记内容），created_at（创建时间）</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823233153.png" alt="image.png"></p>
+<p>我们构建这个csv文件的方法和（一）中的方法基本相同；但是有一点需要注意，Flomo笔记当中，井字符号 <code>#</code> 会被识别为标签，而不是markdown中的标题开头——因此我们需要批量替换删除文件中原本的 <code>#</code>  符号，并增加 <code>#&#123;tag&#125;</code> （将tag替换为实际分组名称）这样的标签信息，从而实现类似WPS便签中分组的效果。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823233109.png" alt="image.png"></p>
+<p>完成后，将输出的文件 <code>flomo_import_df.csv</code> 拖入flomo的导入接口，等待其处理完成后点击确认按钮，即可完成导入。最终效果如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823233713.png" alt="image.png"></p>
+<p>【补充：flomo笔记不支持markdown格式标记，也不支持在批量导入时插入图片，因此使用体验上有阉割】</p>
+<h3 id="（三）通过Flomo浮墨笔记的接口导入Notion笔记"><a href="#（三）通过Flomo浮墨笔记的接口导入Notion笔记" class="headerlink" title="（三）通过Flomo浮墨笔记的接口导入Notion笔记"></a>（三）通过Flomo浮墨笔记的接口导入Notion笔记</h3><p>这一步最为简单，但是需要Flomo笔记的VIP会员。</p>
+<p>如下图，在网页端flomo的设置界面，有个“实验室”（Labs）选项，这里有个“同步到Notion”的开关，点击开关后按提示完成操作就完事了。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/e9135ded-0b36-433d-ae38-8f9ca15472e6.png" alt="e9135ded-0b36-433d-ae38-8f9ca15472e6.png"></p>
+<p>最终效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823234225.png" alt="image.png"></p>
+<p>【很不幸的是，免费版的Notion对于笔记block数量有限制，上述批量导入方法很有可能触发导入block数量上限，影响后续使用】</p>
+<h3 id="（四）清理markdown格式标签并导入obsidian"><a href="#（四）清理markdown格式标签并导入obsidian" class="headerlink" title="（四）清理markdown格式标签并导入obsidian"></a>（四）清理markdown格式标签并导入obsidian</h3><p>这一步也非常简单。</p>
+<p>如下图，我们直接创建一个formated文件夹，然后按照笔记分组将每条笔记存储到 <code>formated/&#123;tag&#125;</code> （tag替换为实际分组）即可——为了方便，直接使用笔记的创建时间作为文件名。</p>
+<p>之后，我们将formated文件夹整体复制到obsidian的vault下面，就完成了导入。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823234354.png" alt="image.png"></p>
+<p>最终效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823234722.png" alt="image.png"></p>
+<h3 id="（五）通过官方MCP接口导入WPS笔记（WPS-AI-note）"><a href="#（五）通过官方MCP接口导入WPS笔记（WPS-AI-note）" class="headerlink" title="（五）通过官方MCP接口导入WPS笔记（WPS AI note）"></a>（五）通过官方MCP接口导入WPS笔记（WPS AI note）</h3><p>这个步骤是最繁琐的。因为WPS笔记提供了导入接口，但是导入接口做得非常麻烦——他们是以MCP的格式提供接口的，并且开启MCP的前提是安装他们的PC客户端。下面几个链接是官方提供的教程参考（很显然，他们的MCP接口做得很草台班子，这几个教程写的非常简单，许多细节都没提到，还是我后面和DeepSeek一起翻源码搞明白的）</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://ainote.kdocs.cn/home/tutorial/getstarted/">WPS笔记PC客户端-快速开始</a></li>
+<li><a target="_blank" rel="noopener" href="https://ainote.kdocs.cn/home/tutorial/cherry/">WPS笔记的MCP接口接入cherry studio教程</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/wpsnote/wpsnote-skills/">https://github.com/wpsnote/wpsnote-skills/</a></li>
+</ul>
+<p>具体来说，我先安装了他们的客户端，启动了开发者功能并获得了API KEY，之后我写了下面这段代码测试MCP接口：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823235441.png" alt="image.png"></p>
+<p>最终得到的MCP工具列表如下：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260823235722.png" alt="image.png"></p>
+<p>围绕这一堆MCP工具，我们就可以使用python编写一些方法解析笔记并插入。</p>
+<p>比较麻烦的地方在于：</p>
+<ul>
+<li>笔记需要先创建→获取笔记ID→调用编辑工具写入数据，并不是一步就能完成的</li>
+<li>MCP接口不支持markdown格式；相反，它们接受xml格式的笔记，也就是说笔记的标题、文本格式需要用xml编码好，然后提交到MCP接口，才能实现插入</li>
+<li>MCP接口支持插入图片，但是插入图片时需要提供锚点位置（也就是需要在笔记的哪个位置插入），因此需要额外的代码维护和更新笔记篇目中的文本锚点信息</li>
+<li>笔记标签需要额外的代码进行设置</li>
+<li>通过MCP的编辑速度很慢，一篇笔记大概需要几十秒才能处理完</li>
+</ul>
+<p>因此，我们的代码需要同时实现markdown格式解析+转xml格式+实时维护和更新笔记ID以及文本锚点信息等功能。这个工作量很大，我用AI帮忙实现了一下；受限于篇目长度，此处不展示源代码了（我想读者朋友们根据上面那个MCP工具列表，用AI帮忙大概率能够实现一个功能类似的程序）。</p>
+<p>最终效果：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260824000449.png" alt="image.png"></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2026/08/22/WPS_note_data_parse_and_import_to_other_app/" title="WPS便签导出内容解析与导入各个平台">https://wz.anoms.top/2026/08/22/WPS_note_data_parse_and_import_to_other_app/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/" rel="tag"><i class="fa fa-tag"></i> 数据同步</a>
+              <a href="/tags/%E9%87%91%E5%B1%B1%E5%8A%9E%E5%85%AC/" rel="tag"><i class="fa fa-tag"></i> 金山办公</a>
+              <a href="/tags/WPS%E4%BE%BF%E7%AD%BE/" rel="tag"><i class="fa fa-tag"></i> WPS便签</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/08/10/20260810_updatelog/" rel="prev" title="26岁，站在青年时代的中间点前后望">
+                  <i class="fa fa-chevron-left"></i> 26岁，站在青年时代的中间点前后望
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/08/23/Codex-how-to-use-DeepSeek-as-provider/" rel="next" title="给Codex接入DeepSeek">
+                  给Codex接入DeepSeek <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
