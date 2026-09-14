@@ -24425,4 +24425,71 @@
         <tag>WPS便签</tag>
       </tags>
   </entry>
+  <entry>
+    <title>将BusyBox移植到macOS 26上</title>
+    <url>/2026/09/13/BusyBox_port_for_macOS26/</url>
+    <content><![CDATA[<p>在Codex的帮助下，将BusyBox命令行工具移植到了MacBook上面。</p>
+<span id="more"></span>
+
+<p>代码已开源，见 <a href="https://github.com/cyclinbox/busybox-macOS26">cyclinbox/busybox-macOS26</a> 。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>众所周知，BusyBox 是 Linux 上一个功能强大的命令行工具，包含 100 多个小程序。</p>
+<p>macOS 是由苹果公司设计的一套系统，基于 Darwin 内核。Darwin 内核是一种类 BSD Unix，因此它与 Linux 共享部分系统调用和 API。</p>
+<p>遗憾的是，目前没有适用于新 macOS（搭载 Apple Silicon）的 BusyBox 移植版本。存在一些名为”<a href="https://github.com/daliworks/busybox-osx">busybox-osx</a>“或其他名称的项目，但这些项目都非常古老（有些几乎是十年前的！）且已不再维护。</p>
+<p>所以我希望从源代码在 MacBook 上从头构建一个 BusyBox 二进制文件。</p>
+<h2 id="我所做的事情"><a href="#我所做的事情" class="headerlink" title="我所做的事情"></a>我所做的事情</h2><ul>
+<li>源代码已从 BusyBox 官方网站下载： <a href="https://busybox.net/downloads/">busybox.net</a>  </li>
+<li>编译工具：Apple xcode-tools，包括 make、clang 和 ar。<ul>
+<li>（注意：macOS 的 <code>ar</code> 归档指令与 Linux 的 <code>ar</code> 指令行为不同，因此若在源代码上不加修改地直接运行 <code>make</code> 编译指令，将收到错误消息）</li>
+</ul>
+</li>
+</ul>
+<p>此外还有一些补丁（感谢 Codex 的帮助！）：</p>
+<h3 id="必要补丁"><a href="#必要补丁" class="headerlink" title="必要补丁"></a>必要补丁</h3><p>在 <code>include/libbb.h</code> 中：</p>
+<p>第 143-149 行，添加一行：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined __APPLE__</span></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span>  <span class="comment">// Add this new line!</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="comment">//This breaks on bionic:</span></span><br></pre></td></tr></table></figure>
+
+<p>在 <code>include/platform.h</code> ：</p>
+<p>第 169-201 行，添加若干行：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__APPLE__)   <span class="comment">// Add this new MACROS block! Block starts from here and ends at &quot;endif&quot;</span></span></span><br><span class="line"><span class="comment">/* Apple&#x27;s machine/endian.h doesn&#x27;t reliably provide __bswap* on all SDKs. */</span></span><br><span class="line"><span class="meta"># <span class="keyword">undef</span> bswap_64</span></span><br><span class="line"><span class="meta"># <span class="keyword">undef</span> bswap_32</span></span><br><span class="line"><span class="meta"># <span class="keyword">undef</span> bswap_16</span></span><br><span class="line"><span class="meta"># <span class="keyword">define</span> bswap_64 __builtin_bswap64</span></span><br><span class="line"><span class="meta"># <span class="keyword">define</span> bswap_32 __builtin_bswap32</span></span><br><span class="line"><span class="meta"># <span class="keyword">define</span> bswap_16 __builtin_bswap16</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&lt;poll.h&gt;</span></span></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&lt;time.h&gt;</span></span></span><br><span class="line"><span class="comment">/* macOS has poll() but not ppoll().  Busybox blocks/unblocks signals around</span></span><br><span class="line"><span class="comment"> * this call, so the signal-mask argument is not needed for correctness here.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">int</span> <span class="title function_">ppoll</span><span class="params">(<span class="keyword">struct</span> pollfd *fds, <span class="type">nfds_t</span> nfds,</span></span><br><span class="line"><span class="params">		<span class="type">const</span> <span class="keyword">struct</span> timespec *timeout,</span></span><br><span class="line"><span class="params">		<span class="type">const</span> <span class="type">sigset_t</span> *sigmask UNUSED_PARAM)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> timeout_ms = <span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">if</span> (timeout)</span><br><span class="line">		timeout_ms = timeout-&gt;tv_sec * <span class="number">1000</span></span><br><span class="line">			+ (timeout-&gt;tv_nsec + <span class="number">999999</span>) / <span class="number">1000000</span>;</span><br><span class="line">	<span class="keyword">return</span> poll(fds, nfds, timeout_ms);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span>   <span class="comment">// New MACROS block ends here!</span></span></span><br></pre></td></tr></table></figure>
+
+<p>且在同一个文件中，第 528-534 行：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__APPLE__)</span></span><br><span class="line"><span class="meta"># <span class="keyword">undef</span> HAVE_STRCHRNUL</span></span><br><span class="line"><span class="meta"># <span class="keyword">undef</span> HAVE_MEMPCPY <span class="comment">// Add this new line</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__FreeBSD__)</span></span><br></pre></td></tr></table></figure>
+
+<p>在文件 <code>libbb/Kbuild.src</code></p>
+<p>第 10-16 行，我们注释（禁用）了一行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># lib-y += alloc_affinity.o  # Here is what we disabled.</span><br><span class="line">lib-y += appletlib.o</span><br><span class="line">lib-y += ask_confirmation.o</span><br><span class="line">lib-y += bb_askpass.o</span><br></pre></td></tr></table></figure>
+
+<h3 id="macOS-的-ar-命令的补丁"><a href="#macOS-的-ar-命令的补丁" class="headerlink" title="macOS 的 ar 命令的补丁"></a>macOS 的 <code>ar</code> 命令的补丁</h3><p>和Linux上的 <code>ar</code> 指令不同，在macOS上的ar指令（本质上是BSD unix的ar指令）不接受空文件输入。因此我们需要进行如下修改：</p>
+<p>我们修改了 <code>Makefile.flags</code> 文件，以避免 macOS 的 <code>ar</code> 和 Linux 的 <code>ar</code> 之间的冲突</p>
+<p>首先，我们通过在第 6-10 行禁用该标志来禁止调用 <code>strip</code> ：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SKIP_STRIP ?= y </span><br></pre></td></tr></table></figure>
+
+<p>第 258-264 行，我们重新定义了函数 <code>cmd_link_o_target</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">cmd_link_o_target = $(<span class="keyword">if</span> $(strip $(obj-y)),\</span><br><span class="line">		$(LD) -nostdlib $(ld_flags) -r -o $@ $(filter $(obj-y), $^),\</span><br><span class="line">		rm -f $@; $(CC) -c -x c /dev/null -o $@)</span><br></pre></td></tr></table></figure>
+
+<p>在第 271-279 行，我们重新定义了函数 <code>cmd_link_l_target</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">cmd_link_l_target = $(<span class="keyword">if</span> $(strip $(lib-y)),\</span><br><span class="line">		rm -f $@; $(AR) $(EXTRA_ARFLAGS) rcs $@ $(lib-y),\</span><br><span class="line">		rm -f $@; $(CC) -c -x c /dev/null -o $@.empty.o; $(AR) rcs $@ $@.empty.o; rm -f $@.empty.o)</span><br></pre></td></tr></table></figure>
+
+<h3 id="编译的配置文件（-config）"><a href="#编译的配置文件（-config）" class="headerlink" title="编译的配置文件（.config）"></a>编译的配置文件（<code>.config</code>）</h3><p>由于 macOS 与 Linux 之间的系统差异，busybox 中的一些小程序无法编译。因此，我在 <code>.config</code> 文件中禁用了它们。</p>
+<p>如果想要知道哪些功能被禁用，可以查看GitHub存储库根目录中的 <code>.config</code> 文件。</p>
+<h2 id="编译方法"><a href="#编译方法" class="headerlink" title="编译方法"></a>编译方法</h2><p>目前我已经完成了编译前的配置过程，生成了编译指令所需的 <code>.config</code> 文件。因此，读者只需要将整个仓库下载到本地，然后运行 <code>make</code> 指令即可。</p>
+<h2 id="预编译的二进制文件-amp-下载与安装"><a href="#预编译的二进制文件-amp-下载与安装" class="headerlink" title="预编译的二进制文件&amp;下载与安装"></a>预编译的二进制文件&amp;下载与安装</h2><p>我在MacBook neo（A18pro， macOS 26）上完成了编译，编译好的可执行文件在仓库根目录中，文件名为 “busybox” 。下载它，通过 <code>chmod +x busybox</code> 授予可执行权限，然后直接运行就可以了。</p>
+<p>BusyBox内置的这近百个小工具，很多是Linux上的常用工具，因此将其移植到macOS上，大大拓展了MacBook命令行环境下的软件生态（毕竟这里面很多小工具macOS上并没有，甚至使用homebrew都不一定能够安装到）</p>
+<p>不过需要注意的是，这个可执行文件是针对Apple Silicon ARM 64架构编译的，在老版本Intel Soc的MacBook上无法直接运行（好在Intel版本的MacBook已经停产多年，现在大家的MacBook应该基本都是Apple Silicon的了）。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/921ed0629fb08f79d50a404b2f3c9ffe.png" alt="921ed0629fb08f79d50a404b2f3c9ffe.png"></p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>Linux</tag>
+        <tag>macOS</tag>
+        <tag>BusyBox</tag>
+        <tag>clang</tag>
+        <tag>Xcode</tag>
+        <tag>Apple silicon</tag>
+        <tag>MacBook</tag>
+      </tags>
+  </entry>
 </search>
