@@ -23264,11 +23264,11 @@
 ]]></content>
       <categories>
         <category>计算机</category>
-        <category>录音转写</category>
-        <category>AI</category>
       </categories>
       <tags>
         <tag>计算机技术杂谈</tag>
+        <tag>AI</tag>
+        <tag>录音转写</tag>
       </tags>
   </entry>
   <entry>
@@ -23379,7 +23379,6 @@
 <p>仿佛又重温了大一植物学的学习时光。</p>
 ]]></content>
       <categories>
-        <category>杂思</category>
         <category>生物</category>
       </categories>
       <tags>
@@ -24522,6 +24521,425 @@
         <tag>亲密关系</tag>
         <tag>成长</tag>
         <tag>防御</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>2026.10.24更新日志与一些碎碎念</title>
+    <url>/2026/10/24/20261024_updatelog/</url>
+    <content><![CDATA[<p>有挺长一段时间没更新博客了。</p>
+<span id="more"></span>
+
+<p>最近一段时间不知怎的变得很忙，生活状态一键切换到了“生存模式”，于是不由自主减少了很多向外的探索——阅读，社交，自我学习，以及计算机技术方面的探索。很长一段时间里不知道该为blog update准备些什么话题，面对着空空的编辑器欲言又止。</p>
+<p>还有一个原因，就是现在的AI agent太厉害了。前段时间我发了《<a href="https://wz.anoms.top/2026/08/23/Codex-how-to-use-DeepSeek-as-provider/">给Codex接入DeepSeek</a>》 一文，那时我已经用了很长时间的codex了，但是受限于免费额度限制（以及找不到付费版chatGPT的订阅途径），所以没怎么正儿八经使用过。然而，接入DeepSeek的API以后，一切都不一样了——DS资费便宜且充值方便，于是这几个星期我变成了codex的重度用户，在codex的辅助下完成了课题的许多分析流程搭建，当然也顺带让它干了点儿私活——帮我升级RSS-AI论文订阅程序，以及ANOMS网站的部分源码（后者暂未实装，但效果确实很好）。</p>
+<p>codex的效果足够令人惊艳——它不知疲劳，不会休息，只要接到任务就会孜孜不倦开始写代码、整理文件、运行指令，直到得出足够完美的报告（这还仅仅是DeepSeek API的效果呢！要是用的是codex官方的接口，不敢想象能力会有多强）。然而我开始恍惚：似乎仅仅掌握着入门级编程技术的我们，已经失去了自己的价值。</p>
+<p>codex的代码比我自己能够写出的要好不知多少，更难过的是我看不懂它了——为了追求完美，每一份代码都被仔细的添加了很多额外参数、功能模块和严谨的边界条件检查，于是codex一晚上的代码量顶得上我曾经大半个月的心血，而我阅读理解这些代码的速度还比不上它生成的速度。检查它的代码变成了另一个难题。</p>
+<hr>
+<p>最近半年来，总是感觉到一种生活方式的崩坏，例如不再能坚持早睡早起，不再能坚持锻炼，并且每周的RSS订阅论文的阅读任务和blog update也都难以为继。但是今天意识到，这些规律的生活方式，其实于我而言并不是某种特别古早的传统——它们是我转博后才建立起的生活方式，至今也才两年。转博后我经历了很长一段的“安宁期”，课题进度没有人催促，实验室内部的朋辈压力也没有那么大，因此我可以从容不迫的去安排自己的生活，去建立一种很健康的生活方式。</p>
+<p>这些东西，在转博后的“安宁期”末尾被打破了。从外部来看，中期考核、课题进度、毕业压力、同龄人的成果等等都是主要的因素；从内部而言，AI工具的普及让人变笨（例如把写代码、总结文献等任务外包给AI，放弃了自己的思考），也越来越容易陷入及时满足（当我内心涌现出某种好奇的问题，以前我会记录下来，作为一个idea攒起来；现在我则会直接问AI，好奇心确实是被满足了，但对于知识积累而言其实并不利），于是也渐渐失去了对自己的掌控力，慢慢滑向懒散怠慢的深渊。</p>
+<p>我觉得这种状态并不好。</p>
+<p>所以说还是要谨慎，慎独（这里还有一层意思就是对AI使用也加以限制，不要有什么好奇的事情或者情感问题就立马找AI唠嗑；只有那种很重要的工作问题才建议去找AI），并且专注于自己的事情。</p>
+<p>另外，最近很幸运的参加了几次以正念冥想为主题的心理学团辅课程。感觉正念这种活动是有不少积极作用的——一方面，在焦虑、浮躁、信息流泛滥的当下，正念这类方法可以让我们自己重拾注意力；另一方面，通过觉察情绪、接纳情绪，承认痛苦的存在并允许存在、包容存在（尊重每一个当下的内在体验），这也未尝是一种大智慧。</p>
+<p>在经历了这几次课程以后，还萌生了一些感激的想法。我总是对尚未拥有的耿耿于怀，却不珍惜正在拥有的东西，这是一种盲目。“当我们拥有很多美好事物的时候，我们不会珍惜，甚至忘记了这些曾经是我们渴望拥有的东西”。感谢自己一路走到了现在，感谢我已经拥有了很多美好，感谢自己收获的友谊、尊重和关怀，感谢日常生活中的点滴美好。</p>
+<p>碎碎念好像到这里就差不多了。博客后面还会继续更新，也许我还会写一些技术科普，或者特定领域生信软件的使用教程。</p>
+<p>霜降节气已过，天气越来越冷。依然愿大家一切顺利，还有注意保暖，换季别感冒啊！</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>杂思</category>
+      </categories>
+      <tags>
+        <tag>碎碎念</tag>
+        <tag>LLM</tag>
+        <tag>AI</tag>
+        <tag>成长</tag>
+        <tag>正念</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于python和edge浏览器的网页批量保存方法探索</title>
+    <url>/2026/10/24/Automatically_save_webpage_as_PDF/</url>
+    <content><![CDATA[<p>如题。</p>
+<p>前段时间为了帮助老师完成一个批量存储网页的任务，借助codex探索了一下批量下载网页和批量网页转PDF的功能。</p>
+<span id="more"></span>
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>网页（HTML）转PDF有好几条技术路线。</p>
+<p>一种路线是使用<a href="https://www.pandoc.net.cn/">pandoc</a> 这个软件做转换。pandoc是一个文档格式中转站，可以在markdown/docx/latex/pdf/epub/… 等等上百种格式之间来回转换。对于HTML转PDF，pandoc内部会先将HTML翻译为latex，随后调用外部的latex编译器（texlive，tinytex，mactex等等）将latex源码编译为PDF。这条路线最为“极客”，可以流程化、自动化处理，灵活性很高，但对latex编译器有要求，很容易因为latex不兼容而编译出错或字符乱码。</p>
+<p>另一种路线是浏览器自带的“工具→打印→打印为PDF”。现代的主流浏览器都支持。但是问题在于，大多数情况下我们需要手动去浏览器里点击这些按钮完成打印（劳动密集型工作说是）。</p>
+<p>那么，如何在一个自动化流程中自动化的做这件事呢？</p>
+<p>幸运的是，chromium系浏览器（包括chrome，Microsoft edge，以及许多国产“极速/高速/快速/安全/……”浏览器）支持这一点。Chromium 内核支持“无头模式”（<code>--headless</code>)，也就是在不启动软件界面的前提下在命令行和后台渲染网页和实现一些功能。</p>
+<h2 id="具体怎么做？下面是代码"><a href="#具体怎么做？下面是代码" class="headerlink" title="具体怎么做？下面是代码"></a>具体怎么做？下面是代码</h2><p>一个示例代码如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line">EDGE = <span class="string">r&quot;C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">convert_to_pdf</span>(<span class="params">html_url,pdf_path</span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">    args = [</span><br><span class="line">        EDGE,</span><br><span class="line">        <span class="string">&quot;--headless=new&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--disable-gpu&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--window-size=2560,1440&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--no-first-run&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--no-pdf-header-footer&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--no-sandbox&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--virtual-time-budget=2000&quot;</span>,</span><br><span class="line">        <span class="string">f&quot;--print-to-pdf=<span class="subst">&#123;pdf_path&#125;</span>&quot;</span>,</span><br><span class="line">        html_url,</span><br><span class="line">    ]</span><br><span class="line">    <span class="comment">#cmd = &quot; &quot;.join(args)</span></span><br><span class="line">    <span class="comment">#print(cmd)</span></span><br><span class="line">    subprocess.run(</span><br><span class="line">        args,</span><br><span class="line">        timeout=<span class="number">120</span>,</span><br><span class="line">        stdout=subprocess.DEVNULL,</span><br><span class="line">        stderr=subprocess.DEVNULL,</span><br><span class="line">        check=<span class="literal">False</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> pdf_path.exists() <span class="keyword">and</span> pdf_path.stat().st_size &gt; <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">	html_url = <span class="string">&quot;https://wz.anoms.top/&quot;</span> <span class="comment"># 这里填写网站url</span></span><br><span class="line">	pdf_path = Path(<span class="string">&quot;./ANOMS_blog.pdf&quot;</span>).resolve() <span class="comment"># 必须用.resolve()方法转为绝对路径</span></span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&quot;Convert result:&quot;</span>,convert_to_pdf(html_url,pdf_path))</span><br></pre></td></tr></table></figure>
+
+
+<p>这里的EDGE变量存储了edge浏览器的安装路径。读者朋友的电脑上这个路径可能不一样，可以根据实际情况替换为实际的edge浏览器或者chrome浏览器的路径。</p>
+<p>args参数这一栏，就是调用无头模式edge/chromium浏览器所需要的参数。其中最重要的是”–headless=new”，以及输入的pdf path和网站url。</p>
+<p>需要注意的是，pdf path需要用绝对路径，否则浏览器在转换时会报错。</p>
+<p>另外也需要注意一下VPN/Proxy设置，有时候网站打印失败，可能是因为挂着梯子导致网站访问出现异常。</p>
+<p>上述代码的运行效果：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">H:\<span class="title">temp</span>&gt;<span class="title">python</span> <span class="title">demo.py</span></span></span><br><span class="line"><span class="function"><span class="title">Convert</span> <span class="title">result</span>: <span class="title">True</span></span></span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20261024220053.png" alt="image.png"></p>
+<p>如果还想要更加精细的调整（例如改变页面尺寸、隐藏或修改某个元素），可能就需要把网站html源代码+css样式表+资源文件全下载下来，然后hack进去修改html和css源码了——那是更深层次的工作。</p>
+<p>只就“自动化保存网页为PDF”这一项，目前的代码已经能够很好的工作了。如果需要批量下载，那么在主函数里增加一个url列表即可。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>PDF</tag>
+        <tag>edge</tag>
+        <tag>chromium</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>百度天气API的使用，以及ANOMS天气服务的数据源修复</title>
+    <url>/2026/10/24/Baidu-weather-API_and_ANOMS-weather-bug-fix/</url>
+    <content><![CDATA[<p>AI还是太好用了。</p>
+<p>我有一个域名叫做ANOMS。在这个域名下，我托管了好几个服务，除了现在 <a href="https://wz.anoms.top/">wz.anoms.top</a> 这个博客以外，还有一个minecraft服务器，以及 <a href="http://www.anoms.top/weather_get_v4.0/">ANOMS 天气服务</a> 。最近半年， <a href="http://www.anoms.top/weather_get_v4.0/">ANOMS 天气服务</a> 由于中国气象局数据源的问题，服务中断。为了修复问题，我修改了很多底层代码，并把数据源从中国气象局迁移到了百度天气API。目前服务已恢复。</p>
+<p>本文由我与codex（DeepSeek）合作创建。以下是正文。</p>
+<span id="more"></span>
+
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><h3 id="（一）想法的起因"><a href="#（一）想法的起因" class="headerlink" title="（一）想法的起因"></a>（一）想法的起因</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-cover.png"></p>
+<p>ANOMS 天气服务是我从 2020 年就开始维护的一个个人小站。它的核心逻辑其实很简单：用 Python 定时爬取中国气象局的天气预报网页，把结果落成一张 TSV 数据表，再由 PHP 前端负责查询和渲染。站点上线以后断断续续维护了几年，虽然界面说不上精致，但胜在“能用、够用、自己全都能改”，也一直是我折腾服务器和爬虫的一个试验田。</p>
+<p>今年（2026 年）5 月前后，我忽然发现网站的数据不再更新了。登录服务器一看，爬虫日志里不再是一条条的城市天气，而是中国气象局网站返回的一串拦截提示：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">您的访问请求可能对网站造成安全威胁，请求已被阻断。您的请求可能存在威胁，已被拦截！</span><br><span class="line">如存在错误拦截，请联系网站管理员并提供 Event ID</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260511003809.png"></p>
+<p>原来的爬虫是基于 <code>weather.cma.cn</code> 网页结构写的，网页一旦被 WAF 拦截，后面按 <code>BeautifulSoup</code> 的固定索引取内容自然就全部报错，典型的报错是 <code>IndexError: list index out of range</code>。换句话说，不是某个城市的数据取不到了，而是整条数据源都断了。</p>
+<p>当时摆在我面前的路无非两条：要么继续和反爬斗争，不断换 UA、换代理、调整解析逻辑；要么干脆换一个更“正规”的数据源。我最后选择了后者——把数据源从“爬网页”切换成“调 API”，也就是百度地图开放平台的天气服务。</p>
+<h3 id="（二）补充一些知识点（此章节部分内容由-AI-生成）"><a href="#（二）补充一些知识点（此章节部分内容由-AI-生成）" class="headerlink" title="（二）补充一些知识点（此章节部分内容由 AI 生成）"></a>（二）补充一些知识点（此章节部分内容由 AI 生成）</h3><h4 id="什么是-CMA-与-city-code"><a href="#什么是-CMA-与-city-code" class="headerlink" title="什么是 CMA 与 city code"></a>什么是 CMA 与 city code</h4><p>CMA 是中国气象局（China Meteorological Administration）的简称。ANOMS 天气服务最早使用的数据源 <code>https://weather.cma.cn/web/weather/</code> 正是它的官网天气页面，页面 URL 里最后那串数字就是气象部门的城市代码，例如北京是 <code>54511</code>。</p>
+<p>在我的项目里，这个 city code 不只是“爬虫要访问哪个网址”的问题，它还是前端的“城市主键”。前端查询城市天气时，URL 形如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://www.anoms.top/weather_get_v4.0/index.php?code=54511,58367,59287</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，前端完全靠 city code 来区分城市、组织数据。这也就意味着，无论后端数据源怎么换，输出表第一列最好还是原来的 city code，否则前端就得跟着大改。</p>
+<h4 id="什么是百度天气-API-与-district-id"><a href="#什么是百度天气-API-与-district-id" class="headerlink" title="什么是百度天气 API 与 district_id"></a>什么是百度天气 API 与 district_id</h4><p>百度地图开放平台也提供天气查询接口，叫“百度地图天气服务”。它的请求格式很简单：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">https://api.map.baidu.com/weather/v1/?district_id=&lt;行政区划代码&gt;&amp;data_type=all&amp;ak=&lt;你的AK&gt;</span><br></pre></td></tr></table></figure>
+
+<p>注意，这里的 <code>district_id</code> 用的是百度自己的“行政区划代码”，和气象局的 city code 不是同一套体系。例如北京的百度区划代码是 <code>110100</code>，而气象局那边是 <code>54511</code>。两套编码规则不同、位数也不同，不能直接互相替代。</p>
+<p>这就引出了本次升级里最关键的一步：在后端做一层 city code 转换，把旧的气象局 city code 映射到新的百度 district_id，同时把旧 code 继续保留在输出表里，以维持前端兼容。</p>
+<h2 id="二、升级方案"><a href="#二、升级方案" class="headerlink" title="二、升级方案"></a>二、升级方案</h2><h3 id="（一）整体思路"><a href="#（一）整体思路" class="headerlink" title="（一）整体思路"></a>（一）整体思路</h3><p>新的数据链路可以用一句话概括：<code>run.sh</code> 定时拉起 Python 爬虫，爬虫遍历旧 city code，查表得到百度 district_id，再请求百度天气 API，最后把结果按老格式写回 TSV。前端 PHP 一行都不用改。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-data-flow.svg"></p>
+<p>相比老版本，变化集中在“取数”这一段：原来是用 <code>requests</code> 抓网页再用 <code>BeautifulSoup</code> 解析，现在是用 <code>requests</code> 调 JSON 接口。解析逻辑从“猜网页结构”变成了“按字段取值”，稳定性和可维护性都好得多。</p>
+<h3 id="（二）百度天气-API-的使用方法"><a href="#（二）百度天气-API-的使用方法" class="headerlink" title="（二）百度天气 API 的使用方法"></a>（二）百度天气 API 的使用方法</h3><p>这一节单独把百度天气 API 的用法整理出来，也算是我给自己留的一份备忘。</p>
+<h4 id="1-申请-AK-与开通权限"><a href="#1-申请-AK-与开通权限" class="headerlink" title="1. 申请 AK 与开通权限"></a>1. 申请 AK 与开通权限</h4><p>首先要到<a href="https://lbsyun.baidu.com/">百度地图开放平台</a>注册开发者账号，创建应用并拿到 AK（API Key）。拿到 AK 之后，还需要单独开通“天气服务”这个接口的权限。天气接口的权限和普通的正逆地理编码、地点检索是分开的，没开通权限直接调用会返回权限错误。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64dae50f-8d8b-4a3c-87cb-5b9c0f8c8179.png" alt="64dae50f-8d8b-4a3c-87cb-5b9c0f8c8179.png"></p>
+<h4 id="2-请求参数"><a href="#2-请求参数" class="headerlink" title="2. 请求参数"></a>2. 请求参数</h4><p>天气接口是一个标准的 GET 请求，常用参数如下：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>是否必填</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>district_id</code></td>
+<td>是</td>
+<td>百度行政区划代码</td>
+<td><code>110100</code></td>
+</tr>
+<tr>
+<td><code>data_type</code></td>
+<td>是</td>
+<td>返回数据类型</td>
+<td><code>all</code>、<code>now</code>、<code>fc</code>、<code>index</code>、<code>alert</code></td>
+</tr>
+<tr>
+<td><code>ak</code></td>
+<td>是</td>
+<td>开发者密钥</td>
+<td><code>你的AK</code></td>
+</tr>
+</tbody></table>
+<p>其中 <code>data_type</code> 是我用得最顺的一个参数。<code>all</code> 会一次性把实时天气、7 天预报、生活指数和预警信息全部返回，省得为不同数据发多次请求。对离线生成数据表的场景来说，一次拿全是最省事的。</p>
+<h4 id="3-请求示例"><a href="#3-请求示例" class="headerlink" title="3. 请求示例"></a>3. 请求示例</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">AK = <span class="string">&quot;你的AK&quot;</span></span><br><span class="line">url = <span class="string">&quot;https://api.map.baidu.com/weather/v1/&quot;</span></span><br><span class="line">params = &#123;</span><br><span class="line">    <span class="string">&quot;district_id&quot;</span>: <span class="number">110100</span>,</span><br><span class="line">    <span class="string">&quot;data_type&quot;</span>: <span class="string">&quot;all&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ak&quot;</span>: AK,</span><br><span class="line">&#125;</span><br><span class="line">resp = requests.get(url, params=params, timeout=<span class="number">20</span>)</span><br><span class="line">resp.raise_for_status()</span><br><span class="line">data = resp.json()</span><br><span class="line"><span class="built_in">print</span>(data[<span class="string">&quot;status&quot;</span>], data[<span class="string">&quot;message&quot;</span>])</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-返回字段解读"><a href="#4-返回字段解读" class="headerlink" title="4. 返回字段解读"></a>4. 返回字段解读</h4><p>接口返回的 JSON 里，<code>status</code> 为 <code>0</code> 表示成功，核心数据都在 <code>result</code> 里。对我最有用的三块是 <code>now</code>、<code>forecasts</code> 和 <code>indexes</code>：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>result.location</code></td>
+<td>地区信息</td>
+<td><code>province</code>、<code>city</code>、<code>name</code>、<code>id</code> 等</td>
+</tr>
+<tr>
+<td><code>result.now.text</code></td>
+<td>实时天气现象</td>
+<td>如“晴”“多云”</td>
+</tr>
+<tr>
+<td><code>result.now.temp</code></td>
+<td>实时气温</td>
+<td>单位为摄氏度</td>
+</tr>
+<tr>
+<td><code>result.now.wind_class</code> / <code>wind_dir</code></td>
+<td>实时风力风向</td>
+<td>如“4级”“西南风”</td>
+</tr>
+<tr>
+<td><code>result.forecasts[]</code></td>
+<td>未来 7 天预报</td>
+<td><code>text_day</code>、<code>text_night</code>、<code>high</code>、<code>low</code>、<code>wd_day</code>、<code>wc_day</code> 等</td>
+</tr>
+<tr>
+<td><code>result.indexes[]</code></td>
+<td>生活指数</td>
+<td>晨练、洗车、感冒、紫外线等</td>
+</tr>
+<tr>
+<td><code>result.alerts[]</code></td>
+<td>气象预警</td>
+<td>蓝色/黄色/橙色/红色预警</td>
+</tr>
+</tbody></table>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-baidu-api-fields.svg"></p>
+<p>旧版本前端每天展示 7 天、每天 8 个字段（日期、白天天气、白天风向、白天风力、低/高温、夜间天气、夜间风向、夜间风力）。百度接口的 <code>forecasts</code> 恰好也返回 7 天，字段基本一一对应，转换成本很低：</p>
+<table>
+<thead>
+<tr>
+<th>前端老字段</th>
+<th>百度接口字段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>日期</td>
+<td><code>date</code>（<code>YYYY-MM-DD</code> → <code>MM/DD</code>）</td>
+</tr>
+<tr>
+<td>白天天气</td>
+<td><code>text_day</code></td>
+</tr>
+<tr>
+<td>白天风向</td>
+<td><code>wd_day</code></td>
+</tr>
+<tr>
+<td>白天风力</td>
+<td><code>wc_day</code></td>
+</tr>
+<tr>
+<td>低/高温</td>
+<td><code>low</code> / <code>high</code></td>
+</tr>
+<tr>
+<td>夜间天气</td>
+<td><code>text_night</code></td>
+</tr>
+<tr>
+<td>夜间风向</td>
+<td><code>wd_night</code></td>
+</tr>
+<tr>
+<td>夜间风力</td>
+<td><code>wc_night</code></td>
+</tr>
+</tbody></table>
+<h3 id="（三）city-code-转换"><a href="#（三）city-code-转换" class="headerlink" title="（三）city code 转换"></a>（三）city code 转换</h3><p>前面说过，前端只认识气象局的 city code，而百度 API 只认 district_id，所以转换表是这次升级的“翻译官”。</p>
+<p>我最初让 AI 帮忙写了一个 <code>convert_program.py</code>，思路是：读入旧的 <code>weather_get_for_server_v4.0_citylist.json</code>（里面是“省份 → 城市名 → city code”），再读入从百度下载的 <code>weather_district_id.csv</code>（里面是“district_id、省、市、区县、经纬度”），用字符串相似度把两者匹配起来，生成 <code>id_conversion_table.csv</code>。</p>
+<p>这张转换表最终长这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">old_id,new_id,province,city</span><br><span class="line">50136,232701,黑龙江,漠河</span><br><span class="line">50246,232722,黑龙江,塔河</span><br><span class="line">50468,231100,黑龙江,黑河</span><br><span class="line">50953,230100,黑龙江,哈尔滨</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-citycode-conversion.svg"></p>
+<p>不过第一版转换表并不完美：2408 个城市里有 98 个没有匹配上。原因很现实——气象局的 city code 里混着大量“非行政区”的观测站（例如“乌伊岭”“小二沟”“珠峰大本营”这种），而百度天气接口基本只覆盖到区县一级，这些站自然匹配不到。</p>
+<p>于是我又补了一个 <code>complete_conversion_table.py</code>，把这 98 个空缺按规则补齐：已经改名的区县映射到现在的名称，非行政区的观测站则回退到所属的县、市或最近的区划。例如“杜蒙”映射到“杜尔伯特”，“珠峰大本营”回退到“定日”。这样一来，转换表里 2408 行就全部有主了。</p>
+<h3 id="（四）前端兼容性处理"><a href="#（四）前端兼容性处理" class="headerlink" title="（四）前端兼容性处理"></a>（四）前端兼容性处理</h3><p>前端兼容的关键只有一句话：输出表的格式不要变。</p>
+<p>老版本输出表每一行的结构是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">code, province,city, [7 天 × 8 个字段]</span><br></pre></td></tr></table></figure>
+
+<p>7 天 × 8 个字段，加上第一列的 code 和第二列的城市名，一共 58 列。前端 <code>index.php</code> 和 <code>search.php</code> 里所有按列号取值、按 <code>/</code> 切分温度的代码，都是基于这个约定写的。</p>
+<p>因此新爬虫在写表时，仍然把旧 city code 放在第一列，城市名仍然写成 <code>省,市</code>，后面 7 天每个预报都严格映射成 8 个字段。前端几乎可以无感地继续运行。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cells = [<span class="built_in">str</span>(old_code), city_name]</span><br><span class="line"><span class="keyword">for</span> forecast <span class="keyword">in</span> forecasts[:FORECAST_DAYS]:</span><br><span class="line">    cells.extend([</span><br><span class="line">        to_month_day(forecast.get(<span class="string">&quot;date&quot;</span>)),</span><br><span class="line">        forecast.get(<span class="string">&quot;text_day&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        forecast.get(<span class="string">&quot;wd_day&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        forecast.get(<span class="string">&quot;wc_day&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        temperature_pair(forecast.get(<span class="string">&quot;low&quot;</span>), forecast.get(<span class="string">&quot;high&quot;</span>)),</span><br><span class="line">        forecast.get(<span class="string">&quot;text_night&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        forecast.get(<span class="string">&quot;wd_night&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        forecast.get(<span class="string">&quot;wc_night&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">    ])</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、完整代码展示与部署"><a href="#三、完整代码展示与部署" class="headerlink" title="三、完整代码展示与部署"></a>三、完整代码展示与部署</h2><p>新版爬虫的完整代码是 <code>weather_get_for_server_v4.3.1.py</code>，部署时只需把它和转换表一起放到服务器目录，再让 <code>run.sh</code> 指向新文件即可：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">source</span> /home/cyclin/.bashrc</span><br><span class="line"></span><br><span class="line">DIR=/var/www/html/weather_get_v4.0</span><br><span class="line">PYTHON=/home/cyclin/miniconda3/bin/python</span><br><span class="line"></span><br><span class="line"><span class="variable">$PYTHON</span> <span class="variable">$DIR</span>/weather_get_for_server_v4.3.1.py &gt; <span class="variable">$DIR</span>/error.log 2&gt;&amp;1</span><br><span class="line"><span class="built_in">mv</span> <span class="variable">$DIR</span>/weather_get_for_server_v4.0_output.generating.tsv <span class="variable">$DIR</span>/weather_get_for_server_v4.0_output.tsv</span><br></pre></td></tr></table></figure>
+
+<p>运行逻辑沿用老版本的习惯：先生成 <code>weather_get_for_server_v4.0_output.generating.tsv</code>，全部跑完后再改名为 <code>weather_get_for_server_v4.0_output.tsv</code>，避免前端在爬取中途读到半成品。考虑到百度接口有调用频次限制，循环里仍然保留了每个城市 2 秒的间隔；完整跑一遍 2400 多个城市大概需要一个多小时。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20261024232731.png" alt="image.png"></p>
+<h2 id="四、局限性与未来可拓展方向"><a href="#四、局限性与未来可拓展方向" class="headerlink" title="四、局限性与未来可拓展方向"></a>四、局限性与未来可拓展方向</h2><p><strong>问题1：取数仍是“离线全量”模式，而不是实时查询</strong></p>
+<p>目前的做法是定时全量抓取，前端读的是抓好的 TSV。好处是前端不依赖第三方接口、响应快；坏处是数据存在滞后，而且每次全量抓取都要一个多小时。如果将来想改成“用户点开页面才实时查询”，后端可以进一步封装一个实时代理接口，但这会牵扯到 AK 的暴露和并发额度问题，需要重新设计。</p>
+<p><strong>问题2：98 个非行政区站号做了近似回退</strong></p>
+<p>气象局 city code 里有不少观测站并不是行政区，百度天气接口覆盖不到。这次升级里我给它们回退到了所属县市或最近的区划，功能上“有数据”，但严格来说显示的是邻近地区的天气。对这类站点，也许未来可以在地图上用坐标点来精确匹配，或者干脆在前端标注“邻近区域近似天气”。</p>
+<p><strong>问题3：AK 与额度是硬编码的</strong></p>
+<p>目前 AK 直接写在脚本常量里。个人使用没问题，但如果是多人协作或想开源，还是应该改成配置文件或环境变量，避免密钥泄露。额度、QPS 限制这类信息也值得在代码里做成可配置项。</p>
+<p><strong>未来的想法</strong></p>
+<ol>
+<li>给爬虫加上配置文件，把 AK、路径、请求间隔、重试次数都收敛到一份配置里。</li>
+<li>在数据表之外，顺带保存一份 JSON 原始数据，方便以后做历史天气统计或重新生成不同格式的报表。</li>
+<li>做一个简单的部署脚本，把“建目录、放文件、设 cron、跑首轮抓取”串起来，降低迁移到新服务器的成本。</li>
+</ol>
+<p><strong>4. （这一点DeepSeek在撰稿的时候没有想到，而是一位友人之前提出的建议）把整个网站服务做成一个小程序，增加更多个性化支持比如说衣物搭配、远方亲友关心提醒等。——我觉得这位朋友的建议非常有用！后面可以抽空安排上，嘻嘻。</strong></p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>python</tag>
+        <tag>echarts</tag>
+        <tag>Baidu API</tag>
+        <tag>weather</tag>
+        <tag>ANOMS天气服务</tag>
+        <tag>codex</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>RSS-AI论文订阅工具升级</title>
+    <url>/2026/10/24/RSS-report-with-AI_a_big_update/</url>
+    <content><![CDATA[<p>AI还是太好用了。</p>
+<p>在codex的帮助下，更新了一下先前开发的那个基于RSS的论文订阅追踪工具+AI解读工具。先前对这个工具的介绍，参考这篇文章： <a href="https://wz.anoms.top/2026/03/29/RSS-report-with-AI-process_a-tool-for-biomedical-paper-reading">《基于RSS订阅源以及LLM的文献订阅追踪工具》</a> 。这一次，则修补了很多之前不够完善的功能。</p>
+<p>本文由我与codex（DeepSeek）合作创建。以下是正文。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="零、背景"><a href="#零、背景" class="headerlink" title="零、背景"></a>零、背景</h2><p>如题。</p>
+<blockquote>
+<p><a href="https://github.com/cyclinbox/RSS-report-with-AI-process">https://github.com/cyclinbox/RSS-report-with-AI-process</a></p>
+</blockquote>
+<p>距离我上一次介绍这个项目，已经过去了一段时间。初版发布之后，又有了很多反思，功能本身是完整的，但用起来还是不够顺手：关键词写死在代码里、想换模型要改源码、报告只能自己打开文件看。于是这段时间里，我在不改变原有处理流程的基础上，把项目做了一次偏“易用性”的升级。</p>
+<p>这篇文章想聊清楚三件事：</p>
+<ol>
+<li>相比初版，这次到底升级了什么；</li>
+<li>每一项升级解决了什么问题；</li>
+<li>现在这套工具应该怎么配置和使用。</li>
+</ol>
+<h2 id="一、先回顾一下初版做了什么"><a href="#一、先回顾一下初版做了什么" class="headerlink" title="一、先回顾一下初版做了什么"></a>一、先回顾一下初版做了什么</h2><p>如果我们没有看过上一篇，也可以直接先看这一段。</p>
+<p>这个项目的核心流程没有变化，依然是：</p>
+<ol>
+<li>解析 OPML 文件，读取里面保存的期刊 RSS Feed 地址；</li>
+<li>抓取每个 Feed 最近一段时间的论文标题、摘要、作者和链接；</li>
+<li>尝试从期刊网页或 PubMed/PMC 获取论文全文；</li>
+<li>调用大语言模型，按照固定模板解读论文；</li>
+<li>生成 Markdown 报告，并额外保存一份 JSON、Parquet 和 Excel 文件。</li>
+</ol>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/%E9%A1%B9%E7%9B%AE%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B%E5%9B%BE.svg"></p>
+<p>初版最大的问题，我在上一篇的第四部分也总结过：主题关键词硬编码、输出语言写死在 prompt 里、模型接口信息藏在代码中，以及缺少自动推送能力。这次的升级，基本上就是围绕这几点逐一展开的。</p>
+<h2 id="二、这次升级了什么"><a href="#二、这次升级了什么" class="headerlink" title="二、这次升级了什么"></a>二、这次升级了什么</h2><h3 id="1-配置全面外置到-YAML"><a href="#1-配置全面外置到-YAML" class="headerlink" title="1. 配置全面外置到 YAML"></a>1. 配置全面外置到 YAML</h3><p>初版中，如果我们想修改关注的话题，或者换一个模型，只能打开源码手动改。现在，这些内容都搬到了一个 <code>config.yaml</code> 文件里。</p>
+<p>配置文件主要分为四块：</p>
+<ul>
+<li><code>app</code>：订阅源文件、追踪天数、输出目录和输出语言；</li>
+<li><code>llm</code>：大模型的 endpoint、model id、auth key 和超时时间；</li>
+<li><code>topics</code>：关注的话题，以及每个话题的正向、反向关键词；</li>
+<li><code>email</code>：邮件开关、SMTP 服务器、发件人、授权码和收件人列表。</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">app:</span></span><br><span class="line">  <span class="attr">opml_path:</span> <span class="string">&quot;feed-rss-list.opml&quot;</span></span><br><span class="line">  <span class="attr">day_limit:</span> <span class="number">8</span></span><br><span class="line">  <span class="attr">output_dir:</span> <span class="string">&quot;outputs&quot;</span></span><br><span class="line">  <span class="attr">output_language:</span> <span class="string">&quot;zh&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">llm:</span></span><br><span class="line">  <span class="attr">endpoint_url:</span> <span class="string">&quot;https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions&quot;</span></span><br><span class="line">  <span class="attr">model_id:</span> <span class="string">&quot;qwen-flash&quot;</span></span><br><span class="line">  <span class="attr">auth_key:</span> <span class="string">&quot;your-auth-key&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">topics:</span></span><br><span class="line">  <span class="attr">Aging:</span></span><br><span class="line">    <span class="attr">positive_keywords:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">aging</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">senescence</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">longevity</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lifespan</span></span><br><span class="line">    <span class="attr">negative_keywords:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">imaging</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">managing</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">packaging</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">staging</span></span><br><span class="line"></span><br><span class="line"><span class="attr">email:</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">smtp_server:</span> <span class="string">&quot;smtp.qq.com&quot;</span></span><br><span class="line">  <span class="attr">smtp_port:</span> <span class="number">465</span></span><br><span class="line">  <span class="attr">sender:</span> <span class="string">&quot;your-sender@example.com&quot;</span></span><br><span class="line">  <span class="attr">password:</span> <span class="string">&quot;your-email-authorization-code&quot;</span></span><br><span class="line">  <span class="attr">receivers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&quot;receiver@example.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>这样改动之后，换模型、换邮箱、调整追踪天数都不再需要碰主程序代码。对于刚接触这个项目的同学来说，门槛明显低了不少。</p>
+<h3 id="2-正向关键词之外，增加了反向关键词"><a href="#2-正向关键词之外，增加了反向关键词" class="headerlink" title="2. 正向关键词之外，增加了反向关键词"></a>2. 正向关键词之外，增加了反向关键词</h3><p>这是初版的一个典型痛点。比如我想检索“衰老”相关论文，设置了关键词 <code>aging</code>。但 <code>aging</code> 这个字符串同时也会出现在 <code>imaging</code>、<code>managing</code> 里。于是，一些和衰老完全无关的论文就会被误筛进来。</p>
+<p>现在，每个话题下面可以单独设置 <code>negative_keywords</code>。程序在匹配正向关键词之前，会先把这些反向关键词从文本中“mask”掉，再去做正向匹配。</p>
+<p>还是拿 <code>aging</code> 举例：</p>
+<ul>
+<li><code>Molecular mechanisms of aging</code>：可以命中；</li>
+<li><code>Imaging biomarkers of cancer</code>：<code>imaging</code> 被 mask 掉，不再因为其中包含 <code>aging</code> 被误判；</li>
+<li><code>Managing chronic disease</code>：<code>managing</code> 被 mask 掉，同样不再误判。</li>
+</ul>
+<p>更重要的是，如果一篇文章既包含 <code>aging</code>，又包含 <code>imaging</code>，它仍然可以正常命中。也就是说，反向关键词只解决“子串误判”的问题，不会粗暴地删掉所有带这些词的文章。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/%E6%AD%A3%E5%90%91%E5%85%B3%E9%94%AE%E8%AF%8D%E4%B8%8E%E5%8F%8D%E5%90%91%E5%85%B3%E9%94%AE%E8%AF%8D%E5%8C%B9%E9%85%8D%E7%A4%BA%E6%84%8F.svg"></p>
+<h3 id="3-大模型配置与调用逻辑简化"><a href="#3-大模型配置与调用逻辑简化" class="headerlink" title="3. 大模型配置与调用逻辑简化"></a>3. 大模型配置与调用逻辑简化</h3><p>初版的 <code>libqwen.py</code> 里，既写死了 API key，又写死了模型列表，还有不少和 CLI 交互相关的内容。对于一个只需要调用接口的任务来说，这些内容有些重。</p>
+<p>这次我把 <code>libqwen.py</code> 做了大幅精简，只保留最核心的 HTTP JSON 调用。调用方只需要从 YAML 中读取三样东西：</p>
+<ul>
+<li><code>endpoint_url</code></li>
+<li><code>model_id</code></li>
+<li><code>auth_key</code></li>
+</ul>
+<p>这也意味着，只要我们的服务提供 OpenAI-compatible 的 Chat Completions 接口，就不一定非得使用通义千问。换成一个自建模型、其他云厂商的模型，都可以通过修改配置完成。</p>
+<h3 id="4-输出语言也可以配置"><a href="#4-输出语言也可以配置" class="headerlink" title="4. 输出语言也可以配置"></a>4. 输出语言也可以配置</h3><p>初版的输出语言写在 prompt 模板里，想改成英语，只能去源码里搜索“simplified Chinese”然后替换。现在只需要在 <code>config.yaml</code> 中设置：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">app:</span></span><br><span class="line">  <span class="attr">output_language:</span> <span class="string">&quot;zh&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>zh</code> 表示简体中文，<code>en</code> 表示英文。程序会自动替换 prompt 中的语言说明，模型解析出的标题翻译和摘要翻译就会按目标语言输出。</p>
+<h3 id="5-增加邮件发送"><a href="#5-增加邮件发送" class="headerlink" title="5. 增加邮件发送"></a>5. 增加邮件发送</h3><p>初版里，报告生成后只能自己到 <code>outputs</code> 目录里打开。现在可以在 <code>email</code> 配置中开启邮件推送：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">email:</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">smtp_server:</span> <span class="string">&quot;smtp.qq.com&quot;</span></span><br><span class="line">  <span class="attr">smtp_port:</span> <span class="number">465</span></span><br><span class="line">  <span class="attr">sender:</span> <span class="string">&quot;your-sender@example.com&quot;</span></span><br><span class="line">  <span class="attr">password:</span> <span class="string">&quot;your-email-authorization-code&quot;</span></span><br><span class="line">  <span class="attr">receivers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&quot;receiver1@example.com&quot;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&quot;receiver2@example.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>开启后，程序会在报告生成完成后，自动把报告发送到收件人列表里的所有邮箱。</p>
+<p>比方说这样：</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20261024223230.png" alt="image.png"></p>
+<h3 id="6-检测-Pandoc，并输出-HTML-版报告"><a href="#6-检测-Pandoc，并输出-HTML-版报告" class="headerlink" title="6. 检测 Pandoc，并输出 HTML 版报告"></a>6. 检测 Pandoc，并输出 HTML 版报告</h3><p>这是配合邮件功能一起做的一个小优化。</p>
+<p>程序会先检测系统中是否存在 Pandoc：</p>
+<ul>
+<li>如果存在，就在 Markdown 报告之外，再编译一份 HTML 报告；发送邮件时，优先发送这份 HTML 版本；</li>
+<li>如果不存在，就仍然发送 Markdown 版本。</li>
+</ul>
+<p>HTML 版报告在邮件里阅读起来更舒服，标题、表格和链接的排版也更清晰。对于习惯在手机或电脑邮件客户端里阅读报告的人来说，这个改进比较实用。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20261024223707.png" alt="image.png"></p>
+<h2 id="三、新版使用方法"><a href="#三、新版使用方法" class="headerlink" title="三、新版使用方法"></a>三、新版使用方法</h2><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.svg"></p>
+<h3 id="第一步：准备目录"><a href="#第一步：准备目录" class="headerlink" title="第一步：准备目录"></a>第一步：准备目录</h3><p>下载项目文件后，保证主程序、OPML 文件和配置文件在同一个工作目录下。</p>
+<p>新版目录结构大致如下：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">RSS-AI-report/</span><br><span class="line">    parse_opml-with-AI-process.py</span><br><span class="line">    config.yaml</span><br><span class="line">    feed-rss-list.opml</span><br><span class="line">    libqwen.py</span><br><span class="line">    libweb.py</span><br><span class="line">    libpubmed.py</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/%E6%96%B0%E7%89%88%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.svg"></p>
+<h3 id="第二步：编辑-config-yaml"><a href="#第二步：编辑-config-yaml" class="headerlink" title="第二步：编辑 config.yaml"></a>第二步：编辑 config.yaml</h3><p>把下面几项改成我们自己的信息：</p>
+<ul>
+<li>如果想换订阅源，修改 <code>app.opml_path</code>；</li>
+<li>如果想调整追踪天数，修改 <code>app.day_limit</code>；</li>
+<li>如果想更换模型，修改 <code>llm.endpoint_url</code>、<code>llm.model_id</code> 和 <code>llm.auth_key</code>；</li>
+<li>如果想调整关注话题，修改 <code>topics</code>；</li>
+<li>如果想接收邮件，把 <code>email.enabled</code> 设为 <code>true</code>，并填写发件人和收件人。</li>
+</ul>
+<h3 id="第三步：运行"><a href="#第三步：运行" class="headerlink" title="第三步：运行"></a>第三步：运行</h3><p>在项目目录下执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python parse_opml-with-AI-process.py -c config.yaml</span><br></pre></td></tr></table></figure>
+
+<p>如果只是临时换一个 OPML 文件或时间范围，也可以继续使用命令行参数覆盖：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python parse_opml-with-AI-process.py -c config.yaml -f my-feeds.opml -d 8</span><br></pre></td></tr></table></figure>
+
+<p>目前的命令行参数有三个：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">-c CONFIG, --config CONFIG</span><br><span class="line">                       YAML 配置文件路径</span><br><span class="line">-d DAY_LIMIT, --day-limit DAY_LIMIT</span><br><span class="line">                       覆盖配置文件中的追踪天数</span><br><span class="line">-f FILE_PATH, --file-path FILE_PATH</span><br><span class="line">                       覆盖配置文件中的 OPML 路径</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四步：查看输出"><a href="#第四步：查看输出" class="headerlink" title="第四步：查看输出"></a>第四步：查看输出</h3><p>运行完成后，<code>output_dir</code> 目录下会生成以下文件：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">RSS_primary_report_YYYYMMDD_HHMMSS.json</span><br><span class="line">RSS_primary_report_YYYYMMDD_HHMMSS.md</span><br><span class="line">RSS_primary_report_YYYYMMDD_HHMMSS_ai_report.parquet</span><br><span class="line">RSS_primary_report_YYYYMMDD_HHMMSS_ai_report.xlsx</span><br></pre></td></tr></table></figure>
+
+<p>如果检测到 Pandoc，还会多一个：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">RSS_primary_report_YYYYMMDD_HHMMSS.html</span><br></pre></td></tr></table></figure>
+
+<p>各文件分别对应：</p>
+<ul>
+<li><code>.json</code>：抓取并过滤后的论文元数据；</li>
+<li><code>.md</code>：Markdown 版阅读报告；</li>
+<li><code>.parquet</code>：AI 解析过程中保存的中间数据；</li>
+<li><code>.xlsx</code>：适合二次筛选和编辑的表格；</li>
+<li><code>.html</code>：由 Pandoc 生成的网页版报告。</li>
+</ul>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/%E6%8A%A5%E5%91%8A%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6.svg"></p>
+<h2 id="四、初版的问题，现在解决到哪里了"><a href="#四、初版的问题，现在解决到哪里了" class="headerlink" title="四、初版的问题，现在解决到哪里了"></a>四、初版的问题，现在解决到哪里了</h2><p>上一篇结尾我提了三个问题，现在可以对照一下：</p>
+<ol>
+<li><strong>关键词和语言写死在代码里</strong>：已经通过 <code>config.yaml</code> 解决；</li>
+<li><strong>没有自动推送</strong>：已经通过邮件功能解决；</li>
+<li><strong>命令行操作门槛高</strong>：目前仍然存在，这也是这个项目下一步最想改善的方向。</li>
+</ol>
+<p>对于第三点，我仍然保留此前的两个思路：</p>
+<ul>
+<li>接入 openClaw 之类的自动化 Agent 平台，做成一个 skill，让用户用自然语言调用；</li>
+<li>或者构建一个更可视化的网页版界面。</li>
+</ul>
+<p>不过，在界面方案成熟之前，先把核心逻辑稳定下来、把配置和推送做扎实，可能是更实际的一步。</p>
+<h2 id="五、写在最后"><a href="#五、写在最后" class="headerlink" title="五、写在最后"></a>五、写在最后</h2><p>这个项目的定位一直没有变：它不是一个“什么都能做”的学术助手，而是一个从源头出发的文献追踪工具。RSS 负责及时性，OPML 负责订阅管理，LLM 负责把论文摘要和全文整理成可读的报告，邮件负责把结果送到我们手上。</p>
+<p>如果我们也受够了每周手动刷新几十个期刊，欢迎试试这个新版。配置文件和订阅源都放在仓库里，动手门槛应该比初版低了不少。</p>
+<p>如果使用中遇到问题，或者对反向关键词、邮件格式、模型接入有什么建议，欢迎在仓库里留言交流。</p>
+<p>以上。</p>
+]]></content>
+      <categories>
+        <category>计算机</category>
+      </categories>
+      <tags>
+        <tag>计算机技术杂谈</tag>
+        <tag>通义千问</tag>
+        <tag>LLM</tag>
+        <tag>网页爬虫</tag>
+        <tag>RSS</tag>
+        <tag>OPML</tag>
+        <tag>论文阅读</tag>
+        <tag>订阅追踪</tag>
+        <tag>codex</tag>
       </tags>
   </entry>
 </search>

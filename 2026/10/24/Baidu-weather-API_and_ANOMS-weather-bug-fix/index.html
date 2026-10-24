@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#335599"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-cyclinbox.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-cyclinbox.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon-cyclinbox.png" color="#335599">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wz.anoms.top","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#37c0c6","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="AI还是太好用了。 我有一个域名叫做ANOMS。在这个域名下，我托管了好几个服务，除了现在 wz.anoms.top 这个博客以外，还有一个minecraft服务器，以及 ANOMS 天气服务 。最近半年， ANOMS 天气服务 由于中国气象局数据源的问题，服务中断。为了修复问题，我修改了很多底层代码，并把数据源从中国气象局迁移到了百度天气API。目前服务已恢复。 本文由我与codex（DeepS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="百度天气API的使用，以及ANOMS天气服务的数据源修复">
+<meta property="og:url" content="https://wz.anoms.top/2026/10/24/Baidu-weather-API_and_ANOMS-weather-bug-fix/index.html">
+<meta property="og:site_name" content="Warren&#39;s Blog">
+<meta property="og:description" content="AI还是太好用了。 我有一个域名叫做ANOMS。在这个域名下，我托管了好几个服务，除了现在 wz.anoms.top 这个博客以外，还有一个minecraft服务器，以及 ANOMS 天气服务 。最近半年， ANOMS 天气服务 由于中国气象局数据源的问题，服务中断。为了修复问题，我修改了很多底层代码，并把数据源从中国气象局迁移到了百度天气API。目前服务已恢复。 本文由我与codex（DeepS">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-cover.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260511003809.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-data-flow.svg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64dae50f-8d8b-4a3c-87cb-5b9c0f8c8179.png">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-baidu-api-fields.svg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-citycode-conversion.svg">
+<meta property="og:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20261024232731.png">
+<meta property="article:published_time" content="2026-10-24T11:50:00.000Z">
+<meta property="article:modified_time" content="2026-10-24T16:12:44.713Z">
+<meta property="article:author" content="Warren Z">
+<meta property="article:tag" content="计算机技术杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="echarts">
+<meta property="article:tag" content="Baidu API">
+<meta property="article:tag" content="weather">
+<meta property="article:tag" content="ANOMS天气服务">
+<meta property="article:tag" content="codex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-cover.png">
+
+
+<link rel="canonical" href="https://wz.anoms.top/2026/10/24/Baidu-weather-API_and_ANOMS-weather-bug-fix/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wz.anoms.top/2026/10/24/Baidu-weather-API_and_ANOMS-weather-bug-fix/","path":"2026/10/24/Baidu-weather-API_and_ANOMS-weather-bug-fix/","title":"百度天气API的使用，以及ANOMS天气服务的数据源修复"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>百度天气API的使用，以及ANOMS天气服务的数据源修复 | Warren's Blog</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?b9a00db803ec11a8bedcc6012afff1b3"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Warren's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-友链"><a href="/%E5%8F%8B%E9%93%BE/" rel="section"><i class="fa fa-user-group fa-fw"></i>友链</a></li><li class="menu-item menu-item-about"><a href="/%E5%85%B3%E4%BA%8E/" rel="section"><i class="fa fa-circle-info fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">一、背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%83%B3%E6%B3%95%E7%9A%84%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.1.</span> <span class="nav-text">（一）想法的起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E8%A1%A5%E5%85%85%E4%B8%80%E4%BA%9B%E7%9F%A5%E8%AF%86%E7%82%B9%EF%BC%88%E6%AD%A4%E7%AB%A0%E8%8A%82%E9%83%A8%E5%88%86%E5%86%85%E5%AE%B9%E7%94%B1-AI-%E7%94%9F%E6%88%90%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">（二）补充一些知识点（此章节部分内容由 AI 生成）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-CMA-%E4%B8%8E-city-code"><span class="nav-number">1.2.1.</span> <span class="nav-text">什么是 CMA 与 city code</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%99%BE%E5%BA%A6%E5%A4%A9%E6%B0%94-API-%E4%B8%8E-district-id"><span class="nav-number">1.2.2.</span> <span class="nav-text">什么是百度天气 API 与 district_id</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%8D%87%E7%BA%A7%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">二、升级方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B4%E4%BD%93%E6%80%9D%E8%B7%AF"><span class="nav-number">2.1.</span> <span class="nav-text">（一）整体思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E7%99%BE%E5%BA%A6%E5%A4%A9%E6%B0%94-API-%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">（二）百度天气 API 的使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E7%94%B3%E8%AF%B7-AK-%E4%B8%8E%E5%BC%80%E9%80%9A%E6%9D%83%E9%99%90"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. 申请 AK 与开通权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0"><span class="nav-number">2.2.2.</span> <span class="nav-text">2. 请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E8%AF%B7%E6%B1%82%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.2.3.</span> <span class="nav-text">3. 请求示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E8%BF%94%E5%9B%9E%E5%AD%97%E6%AE%B5%E8%A7%A3%E8%AF%BB"><span class="nav-number">2.2.4.</span> <span class="nav-text">4. 返回字段解读</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89city-code-%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.3.</span> <span class="nav-text">（三）city code 转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89%E5%89%8D%E7%AB%AF%E5%85%BC%E5%AE%B9%E6%80%A7%E5%A4%84%E7%90%86"><span class="nav-number">2.4.</span> <span class="nav-text">（四）前端兼容性处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81%E5%B1%95%E7%A4%BA%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="nav-number">3.</span> <span class="nav-text">三、完整代码展示与部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%B1%80%E9%99%90%E6%80%A7%E4%B8%8E%E6%9C%AA%E6%9D%A5%E5%8F%AF%E6%8B%93%E5%B1%95%E6%96%B9%E5%90%91"><span class="nav-number">4.</span> <span class="nav-text">四、局限性与未来可拓展方向</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Warren Z"
+      src="/images/cyclinbox.png">
+  <p class="site-author-name" itemprop="name">Warren Z</p>
+  <div class="site-description" itemprop="description">小楼一夜听春雨，深巷明朝卖杏花</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">286</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">519</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyclinbox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyclinbox" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangwanyu2000@outlook.com" title="E-Mail → mailto:zhangwanyu2000@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/" title="回主页 → &#x2F;"><i class="fa fa-home fa-fw"></i>回主页</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/cyclinbox" class="github-corner" title="My GitHub" aria-label="My GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wz.anoms.top/2026/10/24/Baidu-weather-API_and_ANOMS-weather-bug-fix/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cyclinbox.png">
+      <meta itemprop="name" content="Warren Z">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Warren's Blog">
+      <meta itemprop="description" content="小楼一夜听春雨，深巷明朝卖杏花">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="百度天气API的使用，以及ANOMS天气服务的数据源修复 | Warren's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          百度天气API的使用，以及ANOMS天气服务的数据源修复
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-24 19:50:00" itemprop="dateCreated datePublished" datetime="2026-10-24T19:50:00+08:00">2026-10-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-10-25 00:12:44" itemprop="dateModified" datetime="2026-10-25T00:12:44+08:00">2026-10-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>AI还是太好用了。</p>
+<p>我有一个域名叫做ANOMS。在这个域名下，我托管了好几个服务，除了现在 <a href="https://wz.anoms.top/">wz.anoms.top</a> 这个博客以外，还有一个minecraft服务器，以及 <a target="_blank" rel="noopener" href="http://www.anoms.top/weather_get_v4.0/">ANOMS 天气服务</a> 。最近半年， <a target="_blank" rel="noopener" href="http://www.anoms.top/weather_get_v4.0/">ANOMS 天气服务</a> 由于中国气象局数据源的问题，服务中断。为了修复问题，我修改了很多底层代码，并把数据源从中国气象局迁移到了百度天气API。目前服务已恢复。</p>
+<p>本文由我与codex（DeepSeek）合作创建。以下是正文。</p>
+<span id="more"></span>
+
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><h3 id="（一）想法的起因"><a href="#（一）想法的起因" class="headerlink" title="（一）想法的起因"></a>（一）想法的起因</h3><p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-cover.png"></p>
+<p>ANOMS 天气服务是我从 2020 年就开始维护的一个个人小站。它的核心逻辑其实很简单：用 Python 定时爬取中国气象局的天气预报网页，把结果落成一张 TSV 数据表，再由 PHP 前端负责查询和渲染。站点上线以后断断续续维护了几年，虽然界面说不上精致，但胜在“能用、够用、自己全都能改”，也一直是我折腾服务器和爬虫的一个试验田。</p>
+<p>今年（2026 年）5 月前后，我忽然发现网站的数据不再更新了。登录服务器一看，爬虫日志里不再是一条条的城市天气，而是中国气象局网站返回的一串拦截提示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">您的访问请求可能对网站造成安全威胁，请求已被阻断。您的请求可能存在威胁，已被拦截！</span><br><span class="line">如存在错误拦截，请联系网站管理员并提供 Event ID</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20260511003809.png"></p>
+<p>原来的爬虫是基于 <code>weather.cma.cn</code> 网页结构写的，网页一旦被 WAF 拦截，后面按 <code>BeautifulSoup</code> 的固定索引取内容自然就全部报错，典型的报错是 <code>IndexError: list index out of range</code>。换句话说，不是某个城市的数据取不到了，而是整条数据源都断了。</p>
+<p>当时摆在我面前的路无非两条：要么继续和反爬斗争，不断换 UA、换代理、调整解析逻辑；要么干脆换一个更“正规”的数据源。我最后选择了后者——把数据源从“爬网页”切换成“调 API”，也就是百度地图开放平台的天气服务。</p>
+<h3 id="（二）补充一些知识点（此章节部分内容由-AI-生成）"><a href="#（二）补充一些知识点（此章节部分内容由-AI-生成）" class="headerlink" title="（二）补充一些知识点（此章节部分内容由 AI 生成）"></a>（二）补充一些知识点（此章节部分内容由 AI 生成）</h3><h4 id="什么是-CMA-与-city-code"><a href="#什么是-CMA-与-city-code" class="headerlink" title="什么是 CMA 与 city code"></a>什么是 CMA 与 city code</h4><p>CMA 是中国气象局（China Meteorological Administration）的简称。ANOMS 天气服务最早使用的数据源 <code>https://weather.cma.cn/web/weather/</code> 正是它的官网天气页面，页面 URL 里最后那串数字就是气象部门的城市代码，例如北京是 <code>54511</code>。</p>
+<p>在我的项目里，这个 city code 不只是“爬虫要访问哪个网址”的问题，它还是前端的“城市主键”。前端查询城市天气时，URL 形如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.anoms.top/weather_get_v4.0/index.php?code=54511,58367,59287</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，前端完全靠 city code 来区分城市、组织数据。这也就意味着，无论后端数据源怎么换，输出表第一列最好还是原来的 city code，否则前端就得跟着大改。</p>
+<h4 id="什么是百度天气-API-与-district-id"><a href="#什么是百度天气-API-与-district-id" class="headerlink" title="什么是百度天气 API 与 district_id"></a>什么是百度天气 API 与 district_id</h4><p>百度地图开放平台也提供天气查询接口，叫“百度地图天气服务”。它的请求格式很简单：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://api.map.baidu.com/weather/v1/?district_id=&lt;行政区划代码&gt;&amp;data_type=all&amp;ak=&lt;你的AK&gt;</span><br></pre></td></tr></table></figure>
+
+<p>注意，这里的 <code>district_id</code> 用的是百度自己的“行政区划代码”，和气象局的 city code 不是同一套体系。例如北京的百度区划代码是 <code>110100</code>，而气象局那边是 <code>54511</code>。两套编码规则不同、位数也不同，不能直接互相替代。</p>
+<p>这就引出了本次升级里最关键的一步：在后端做一层 city code 转换，把旧的气象局 city code 映射到新的百度 district_id，同时把旧 code 继续保留在输出表里，以维持前端兼容。</p>
+<h2 id="二、升级方案"><a href="#二、升级方案" class="headerlink" title="二、升级方案"></a>二、升级方案</h2><h3 id="（一）整体思路"><a href="#（一）整体思路" class="headerlink" title="（一）整体思路"></a>（一）整体思路</h3><p>新的数据链路可以用一句话概括：<code>run.sh</code> 定时拉起 Python 爬虫，爬虫遍历旧 city code，查表得到百度 district_id，再请求百度天气 API，最后把结果按老格式写回 TSV。前端 PHP 一行都不用改。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-data-flow.svg"></p>
+<p>相比老版本，变化集中在“取数”这一段：原来是用 <code>requests</code> 抓网页再用 <code>BeautifulSoup</code> 解析，现在是用 <code>requests</code> 调 JSON 接口。解析逻辑从“猜网页结构”变成了“按字段取值”，稳定性和可维护性都好得多。</p>
+<h3 id="（二）百度天气-API-的使用方法"><a href="#（二）百度天气-API-的使用方法" class="headerlink" title="（二）百度天气 API 的使用方法"></a>（二）百度天气 API 的使用方法</h3><p>这一节单独把百度天气 API 的用法整理出来，也算是我给自己留的一份备忘。</p>
+<h4 id="1-申请-AK-与开通权限"><a href="#1-申请-AK-与开通权限" class="headerlink" title="1. 申请 AK 与开通权限"></a>1. 申请 AK 与开通权限</h4><p>首先要到<a target="_blank" rel="noopener" href="https://lbsyun.baidu.com/">百度地图开放平台</a>注册开发者账号，创建应用并拿到 AK（API Key）。拿到 AK 之后，还需要单独开通“天气服务”这个接口的权限。天气接口的权限和普通的正逆地理编码、地点检索是分开的，没开通权限直接调用会返回权限错误。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/64dae50f-8d8b-4a3c-87cb-5b9c0f8c8179.png" alt="64dae50f-8d8b-4a3c-87cb-5b9c0f8c8179.png"></p>
+<h4 id="2-请求参数"><a href="#2-请求参数" class="headerlink" title="2. 请求参数"></a>2. 请求参数</h4><p>天气接口是一个标准的 GET 请求，常用参数如下：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>是否必填</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>district_id</code></td>
+<td>是</td>
+<td>百度行政区划代码</td>
+<td><code>110100</code></td>
+</tr>
+<tr>
+<td><code>data_type</code></td>
+<td>是</td>
+<td>返回数据类型</td>
+<td><code>all</code>、<code>now</code>、<code>fc</code>、<code>index</code>、<code>alert</code></td>
+</tr>
+<tr>
+<td><code>ak</code></td>
+<td>是</td>
+<td>开发者密钥</td>
+<td><code>你的AK</code></td>
+</tr>
+</tbody></table>
+<p>其中 <code>data_type</code> 是我用得最顺的一个参数。<code>all</code> 会一次性把实时天气、7 天预报、生活指数和预警信息全部返回，省得为不同数据发多次请求。对离线生成数据表的场景来说，一次拿全是最省事的。</p>
+<h4 id="3-请求示例"><a href="#3-请求示例" class="headerlink" title="3. 请求示例"></a>3. 请求示例</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">AK = <span class="string">&quot;你的AK&quot;</span></span><br><span class="line">url = <span class="string">&quot;https://api.map.baidu.com/weather/v1/&quot;</span></span><br><span class="line">params = &#123;</span><br><span class="line">    <span class="string">&quot;district_id&quot;</span>: <span class="number">110100</span>,</span><br><span class="line">    <span class="string">&quot;data_type&quot;</span>: <span class="string">&quot;all&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ak&quot;</span>: AK,</span><br><span class="line">&#125;</span><br><span class="line">resp = requests.get(url, params=params, timeout=<span class="number">20</span>)</span><br><span class="line">resp.raise_for_status()</span><br><span class="line">data = resp.json()</span><br><span class="line"><span class="built_in">print</span>(data[<span class="string">&quot;status&quot;</span>], data[<span class="string">&quot;message&quot;</span>])</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-返回字段解读"><a href="#4-返回字段解读" class="headerlink" title="4. 返回字段解读"></a>4. 返回字段解读</h4><p>接口返回的 JSON 里，<code>status</code> 为 <code>0</code> 表示成功，核心数据都在 <code>result</code> 里。对我最有用的三块是 <code>now</code>、<code>forecasts</code> 和 <code>indexes</code>：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>result.location</code></td>
+<td>地区信息</td>
+<td><code>province</code>、<code>city</code>、<code>name</code>、<code>id</code> 等</td>
+</tr>
+<tr>
+<td><code>result.now.text</code></td>
+<td>实时天气现象</td>
+<td>如“晴”“多云”</td>
+</tr>
+<tr>
+<td><code>result.now.temp</code></td>
+<td>实时气温</td>
+<td>单位为摄氏度</td>
+</tr>
+<tr>
+<td><code>result.now.wind_class</code> / <code>wind_dir</code></td>
+<td>实时风力风向</td>
+<td>如“4级”“西南风”</td>
+</tr>
+<tr>
+<td><code>result.forecasts[]</code></td>
+<td>未来 7 天预报</td>
+<td><code>text_day</code>、<code>text_night</code>、<code>high</code>、<code>low</code>、<code>wd_day</code>、<code>wc_day</code> 等</td>
+</tr>
+<tr>
+<td><code>result.indexes[]</code></td>
+<td>生活指数</td>
+<td>晨练、洗车、感冒、紫外线等</td>
+</tr>
+<tr>
+<td><code>result.alerts[]</code></td>
+<td>气象预警</td>
+<td>蓝色/黄色/橙色/红色预警</td>
+</tr>
+</tbody></table>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-baidu-api-fields.svg"></p>
+<p>旧版本前端每天展示 7 天、每天 8 个字段（日期、白天天气、白天风向、白天风力、低/高温、夜间天气、夜间风向、夜间风力）。百度接口的 <code>forecasts</code> 恰好也返回 7 天，字段基本一一对应，转换成本很低：</p>
+<table>
+<thead>
+<tr>
+<th>前端老字段</th>
+<th>百度接口字段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>日期</td>
+<td><code>date</code>（<code>YYYY-MM-DD</code> → <code>MM/DD</code>）</td>
+</tr>
+<tr>
+<td>白天天气</td>
+<td><code>text_day</code></td>
+</tr>
+<tr>
+<td>白天风向</td>
+<td><code>wd_day</code></td>
+</tr>
+<tr>
+<td>白天风力</td>
+<td><code>wc_day</code></td>
+</tr>
+<tr>
+<td>低/高温</td>
+<td><code>low</code> / <code>high</code></td>
+</tr>
+<tr>
+<td>夜间天气</td>
+<td><code>text_night</code></td>
+</tr>
+<tr>
+<td>夜间风向</td>
+<td><code>wd_night</code></td>
+</tr>
+<tr>
+<td>夜间风力</td>
+<td><code>wc_night</code></td>
+</tr>
+</tbody></table>
+<h3 id="（三）city-code-转换"><a href="#（三）city-code-转换" class="headerlink" title="（三）city code 转换"></a>（三）city code 转换</h3><p>前面说过，前端只认识气象局的 city code，而百度 API 只认 district_id，所以转换表是这次升级的“翻译官”。</p>
+<p>我最初让 AI 帮忙写了一个 <code>convert_program.py</code>，思路是：读入旧的 <code>weather_get_for_server_v4.0_citylist.json</code>（里面是“省份 → 城市名 → city code”），再读入从百度下载的 <code>weather_district_id.csv</code>（里面是“district_id、省、市、区县、经纬度”），用字符串相似度把两者匹配起来，生成 <code>id_conversion_table.csv</code>。</p>
+<p>这张转换表最终长这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">old_id,new_id,province,city</span><br><span class="line">50136,232701,黑龙江,漠河</span><br><span class="line">50246,232722,黑龙江,塔河</span><br><span class="line">50468,231100,黑龙江,黑河</span><br><span class="line">50953,230100,黑龙江,哈尔滨</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/weather_spider_debug-ad-article-citycode-conversion.svg"></p>
+<p>不过第一版转换表并不完美：2408 个城市里有 98 个没有匹配上。原因很现实——气象局的 city code 里混着大量“非行政区”的观测站（例如“乌伊岭”“小二沟”“珠峰大本营”这种），而百度天气接口基本只覆盖到区县一级，这些站自然匹配不到。</p>
+<p>于是我又补了一个 <code>complete_conversion_table.py</code>，把这 98 个空缺按规则补齐：已经改名的区县映射到现在的名称，非行政区的观测站则回退到所属的县、市或最近的区划。例如“杜蒙”映射到“杜尔伯特”，“珠峰大本营”回退到“定日”。这样一来，转换表里 2408 行就全部有主了。</p>
+<h3 id="（四）前端兼容性处理"><a href="#（四）前端兼容性处理" class="headerlink" title="（四）前端兼容性处理"></a>（四）前端兼容性处理</h3><p>前端兼容的关键只有一句话：输出表的格式不要变。</p>
+<p>老版本输出表每一行的结构是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code, province,city, [7 天 × 8 个字段]</span><br></pre></td></tr></table></figure>
+
+<p>7 天 × 8 个字段，加上第一列的 code 和第二列的城市名，一共 58 列。前端 <code>index.php</code> 和 <code>search.php</code> 里所有按列号取值、按 <code>/</code> 切分温度的代码，都是基于这个约定写的。</p>
+<p>因此新爬虫在写表时，仍然把旧 city code 放在第一列，城市名仍然写成 <code>省,市</code>，后面 7 天每个预报都严格映射成 8 个字段。前端几乎可以无感地继续运行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cells = [<span class="built_in">str</span>(old_code), city_name]</span><br><span class="line"><span class="keyword">for</span> forecast <span class="keyword">in</span> forecasts[:FORECAST_DAYS]:</span><br><span class="line">    cells.extend([</span><br><span class="line">        to_month_day(forecast.get(<span class="string">&quot;date&quot;</span>)),</span><br><span class="line">        forecast.get(<span class="string">&quot;text_day&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        forecast.get(<span class="string">&quot;wd_day&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        forecast.get(<span class="string">&quot;wc_day&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        temperature_pair(forecast.get(<span class="string">&quot;low&quot;</span>), forecast.get(<span class="string">&quot;high&quot;</span>)),</span><br><span class="line">        forecast.get(<span class="string">&quot;text_night&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        forecast.get(<span class="string">&quot;wd_night&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">        forecast.get(<span class="string">&quot;wc_night&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">    ])</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、完整代码展示与部署"><a href="#三、完整代码展示与部署" class="headerlink" title="三、完整代码展示与部署"></a>三、完整代码展示与部署</h2><p>新版爬虫的完整代码是 <code>weather_get_for_server_v4.3.1.py</code>，部署时只需把它和转换表一起放到服务器目录，再让 <code>run.sh</code> 指向新文件即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">source</span> /home/cyclin/.bashrc</span><br><span class="line"></span><br><span class="line">DIR=/var/www/html/weather_get_v4.0</span><br><span class="line">PYTHON=/home/cyclin/miniconda3/bin/python</span><br><span class="line"></span><br><span class="line"><span class="variable">$PYTHON</span> <span class="variable">$DIR</span>/weather_get_for_server_v4.3.1.py &gt; <span class="variable">$DIR</span>/error.log 2&gt;&amp;1</span><br><span class="line"><span class="built_in">mv</span> <span class="variable">$DIR</span>/weather_get_for_server_v4.0_output.generating.tsv <span class="variable">$DIR</span>/weather_get_for_server_v4.0_output.tsv</span><br></pre></td></tr></table></figure>
+
+<p>运行逻辑沿用老版本的习惯：先生成 <code>weather_get_for_server_v4.0_output.generating.tsv</code>，全部跑完后再改名为 <code>weather_get_for_server_v4.0_output.tsv</code>，避免前端在爬取中途读到半成品。考虑到百度接口有调用频次限制，循环里仍然保留了每个城市 2 秒的间隔；完整跑一遍 2400 多个城市大概需要一个多小时。</p>
+<p><img src="https://wzblog-1311469384.cos.ap-shanghai.myqcloud.com/wzblog/20261024232731.png" alt="image.png"></p>
+<h2 id="四、局限性与未来可拓展方向"><a href="#四、局限性与未来可拓展方向" class="headerlink" title="四、局限性与未来可拓展方向"></a>四、局限性与未来可拓展方向</h2><p><strong>问题1：取数仍是“离线全量”模式，而不是实时查询</strong></p>
+<p>目前的做法是定时全量抓取，前端读的是抓好的 TSV。好处是前端不依赖第三方接口、响应快；坏处是数据存在滞后，而且每次全量抓取都要一个多小时。如果将来想改成“用户点开页面才实时查询”，后端可以进一步封装一个实时代理接口，但这会牵扯到 AK 的暴露和并发额度问题，需要重新设计。</p>
+<p><strong>问题2：98 个非行政区站号做了近似回退</strong></p>
+<p>气象局 city code 里有不少观测站并不是行政区，百度天气接口覆盖不到。这次升级里我给它们回退到了所属县市或最近的区划，功能上“有数据”，但严格来说显示的是邻近地区的天气。对这类站点，也许未来可以在地图上用坐标点来精确匹配，或者干脆在前端标注“邻近区域近似天气”。</p>
+<p><strong>问题3：AK 与额度是硬编码的</strong></p>
+<p>目前 AK 直接写在脚本常量里。个人使用没问题，但如果是多人协作或想开源，还是应该改成配置文件或环境变量，避免密钥泄露。额度、QPS 限制这类信息也值得在代码里做成可配置项。</p>
+<p><strong>未来的想法</strong></p>
+<ol>
+<li>给爬虫加上配置文件，把 AK、路径、请求间隔、重试次数都收敛到一份配置里。</li>
+<li>在数据表之外，顺带保存一份 JSON 原始数据，方便以后做历史天气统计或重新生成不同格式的报表。</li>
+<li>做一个简单的部署脚本，把“建目录、放文件、设 cron、跑首轮抓取”串起来，降低迁移到新服务器的成本。</li>
+</ol>
+<p><strong>4. （这一点DeepSeek在撰稿的时候没有想到，而是一位友人之前提出的建议）把整个网站服务做成一个小程序，增加更多个性化支持比如说衣物搭配、远方亲友关心提醒等。——我觉得这位朋友的建议非常有用！后面可以抽空安排上，嘻嘻。</strong></p>
+<p>以上。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Warren Z
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wz.anoms.top/2026/10/24/Baidu-weather-API_and_ANOMS-weather-bug-fix/" title="百度天气API的使用，以及ANOMS天气服务的数据源修复">https://wz.anoms.top/2026/10/24/Baidu-weather-API_and_ANOMS-weather-bug-fix/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/" rel="tag"><i class="fa fa-tag"></i> 计算机技术杂谈</a>
+              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/echarts/" rel="tag"><i class="fa fa-tag"></i> echarts</a>
+              <a href="/tags/Baidu-API/" rel="tag"><i class="fa fa-tag"></i> Baidu API</a>
+              <a href="/tags/weather/" rel="tag"><i class="fa fa-tag"></i> weather</a>
+              <a href="/tags/ANOMS%E5%A4%A9%E6%B0%94%E6%9C%8D%E5%8A%A1/" rel="tag"><i class="fa fa-tag"></i> ANOMS天气服务</a>
+              <a href="/tags/codex/" rel="tag"><i class="fa fa-tag"></i> codex</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/27/20260928_updatelog/" rel="prev" title="说一些关于亲密关系的思考">
+                  <i class="fa fa-chevron-left"></i> 说一些关于亲密关系的思考
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/10/24/RSS-report-with-AI_a_big_update/" rel="next" title="RSS-AI论文订阅工具升级">
+                  RSS-AI论文订阅工具升级 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">津ICP备20004656号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Warren Z</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"cyclinbox/cyclinbox.github.io","repo_id":"MDEwOlJlcG9zaXRvcnk0MDQ5ODMzNzY=","category":"General","category_id":"DIC_kwDOGCOOUM4CWZSA","mapping":"pathname","reactions_enabled":1,"emit_metadata":1,"theme":"preferred-color-scheme","lang":"zh-CN","input_position":"top"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+<!-- hexo injector body_end start -->
+    <link rel="stylesheet" crossorigin href="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.css" />
+    <script type="module" crossorigin src="https://g.alicdn.com/aliyun-documentation/web-chatbot-ui/0.0.24/index.js"></script>
+    <script>
+      window.CHATBOT_CONFIG = {
+        //endpoint: "/chat", // 可以替换为 https://{your-fc-http-trigger-domain}/chat
+        endpoint: "https://webchat-bot-pbz-ojggjrcplw.cn-hangzhou.fcapp.run/chat",  
+        displayByDefault: false, // 默认不显示 AI 助手对话框
+        title: 'Warren的桌宠', // 自定义 AI 助手标题
+        draggable: true, // 是否开启拖拽
+        aiChatOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+          conversationOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#conversation-options
+            conversationStarters: [
+              {prompt: '介绍一下Warren blog？'},
+              {prompt: '博主对人生和社会的思考有哪些？'},
+              {prompt: '在这个博客中，有哪些实用的计算机技术?'},
+            ]
+          },
+          displayOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#display-options
+            height: 600,
+            // width: 400,
+          },
+          personaOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#chat-personas
+            assistant: {
+              name: 'Warren blog对话助手（powered by 通义千问）',
+              // AI 助手的图标
+              avatar: 'https://pic1.imgdb.cn/item/67b1ca92d0e0a243d4ffd69b.jpg',
+		//https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+              tagline: '您可以尝试点击下方的快捷入口开启体验！',
+            }
+          },
+          messageOptions: { // 自定义取值参考：https://docs.nlkit.com/nlux/reference/ui/ai-chat#message-options
+            waitTimeBeforeStreamCompletion: 'never'
+          }
+        },
+        dataProcessor: {
+          /**
+          * 在向后端大模型应用发起请求前改写 Prompt。
+          * 比如可以用于总结网页场景，在发送前将网页内容包含在内，同时避免在前端显示这些内容。
+          * @param {string} prompt - 用户输入的 Prompt
+          * @param {string}  - 改写后的 Prompt
+          */
+          rewritePrompt(prompt) {
+            return prompt;
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        /* webchat 工具栏的颜色 */
+        --webchat-toolbar-background-color: #1464E4;
+        /* webchat 工具栏文字和按钮的颜色 */
+        --webchat-toolbar-text-color: #FFF;
+      }
+      /* webchat 对话框如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整*/
+      .webchat-container {
+        z-index: 100;
+        bottom: 10px;
+        right: 10px;
+      }
+      /* webchat 的唤起按钮如果被遮挡，可以尝试通过 z-index、bottom、right 等设置 来调整。也可以通过 CSS 进一步定制唤起按钮的形状、大小等。 */
+      .webchat-bubble-tip {
+        z-index: 99;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style> 
+<!-- hexo injector body_end end --></body>
+</html>
